@@ -8,6 +8,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InputCoreTypes.h"
+#include "DrawDebugHelpers.h"
+
+
 
 ACSurvivor::ACSurvivor()
 {
@@ -45,8 +49,8 @@ ACSurvivor::ACSurvivor()
 	//}
 
 	bUseControllerRotationYaw = true;
-	// trueÀÏ °æ¿ì ÄÁÆ®·Ñ·¯ÀÇ È¸Àü ¹æÇâÀ¸·Î Ä³¸¯ÅÍ°¡ È¸ÀüÇÑ´Ù.
-	// falseÀÏ °æ¿ì Ä³¸¯ÅÍÀÇ ÀÌµ¿ ¹æÇâÀ¸·Î Ä³¸¯ÅÍ°¡ È¸ÀüÇÑ´Ù.
+	// trueï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½Ñ·ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ È¸ï¿½ï¿½ï¿½Ñ´ï¿½.
+	// falseï¿½ï¿½ ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ È¸ï¿½ï¿½ï¿½Ñ´ï¿½.
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
 
@@ -64,6 +68,8 @@ void ACSurvivor::BeginPlay()
 	//SpringArm->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 }
 
+
+
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -78,6 +84,8 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACSurvivor::OnMoveRight);
 	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
+	//PlayerInputComponent->BindAction("Slash", this, &ACSurvivor::OnVerticalLook);
+
 }
 
 void ACSurvivor::OnMoveForward(float InAxisValue)
@@ -106,5 +114,32 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
+void ACSurvivor::SlashTree()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing !"));
+	
+	FVector StartLocation = GetActorLocation();
+	FVector ForwardVector = GetActorForwardVector();
+	FVector EndLocation = StartLocation + (ForwardVector * TraceDistance);
 
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()-> LineTraceSingleByChannel (
+		HitResult,
+		StartLocation,
+		EndLocation,
+		ECC_Visibility,
+		CollisionParams
+			);
+
+	if (bHit)
+	{
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		if(HitComponent)
+	}
+	
+
+}
 
