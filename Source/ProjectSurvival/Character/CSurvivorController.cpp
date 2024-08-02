@@ -12,6 +12,11 @@ ACSurvivorController::ACSurvivorController()
 
 }
 
+void ACSurvivorController::BeginPlay()
+{
+	SetInputMode(FInputModeGameOnly());
+}
+
 void ACSurvivorController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -33,14 +38,4 @@ void ACSurvivorController::SlashTree()
 
 }
 
-
-ACSurvivorController::ACSurvivorController()
-{
-
-}
-
-void ACSurvivorController::BeginPlay()
-{
-	SetInputMode(FInputModeGameOnly());
-}
 

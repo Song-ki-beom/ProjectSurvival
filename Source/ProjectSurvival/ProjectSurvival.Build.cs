@@ -9,11 +9,11 @@ public class ProjectSurvival : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "SlateCore", "HeadMountedDisplay", "UMG", "OnlineSubsystem", "OnlineSubsystemSteam", "Steamworks", "Networking", "Sockets" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore", "HeadMountedDisplay", "UMG", "OnlineSubsystem", "OnlineSubsystemSteam", "Steamworks", "Networking", "Sockets" });
         PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystemUtils" });
         PrivateIncludePaths.Add("ProjectSurvival");
 
-        // Steam SDK 경로 설정
+        // Steam SDK 경로 설정 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             string SteamLibPath = Path.Combine(ModuleDirectory, "../../ThirdParty/Steamworks/Steamv147/sdk/redistributable_bin/win64");

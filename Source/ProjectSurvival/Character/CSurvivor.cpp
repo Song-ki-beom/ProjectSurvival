@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "CSurvivor.h"
+﻿#include "CSurvivor.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -11,8 +8,6 @@
 #include "InputCoreTypes.h"
 #include "DrawDebugHelpers.h"
 
-
-//한글 테스트
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -49,8 +44,8 @@ ACSurvivor::ACSurvivor()
 	//}
 
 	bUseControllerRotationYaw = true;
-	// true�� ��� ��Ʈ�ѷ��� ȸ�� �������� ĳ���Ͱ� ȸ���Ѵ�.
-	// false�� ��� ĳ������ �̵� �������� ĳ���Ͱ� ȸ���Ѵ�.
+	// true일 경우 컨트롤러의 회전 방향으로 캐릭터가 회전한다.
+	// false일 경우 캐릭터의 이동 방향으로 캐릭터가 회전한다.
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
 
