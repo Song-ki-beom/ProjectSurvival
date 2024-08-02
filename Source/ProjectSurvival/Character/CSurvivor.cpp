@@ -12,7 +12,7 @@
 #include "DrawDebugHelpers.h"
 
 
-
+//한글 테스트
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
