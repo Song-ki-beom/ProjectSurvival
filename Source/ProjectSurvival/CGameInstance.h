@@ -28,18 +28,7 @@ public:
 		void Join(uint32 InIndex) override;
 	UFUNCTION()
 		void RenewServerList() override;
-	UFUNCTION(BlueprintCallable)
-		void RemoveAllWidgets();
 
-private:
-	void OnCreateSessionComplete(FName SessionName, bool Success);
-	void OnDestroySessionComplete(FName SessionName, bool Success);
-	void OnFindSessionComplete(bool Success);
-	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
-	void CreateSession();
-	void CheckNetDriver();
-
-public:
 	UPROPERTY()
 		FString playerName;
 	UPROPERTY()
@@ -55,6 +44,14 @@ private:
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 	IOnlineIdentityPtr IdentityInterface;
 	TSharedPtr<const FUniqueNetId> playerNetId;
+	
+private:
+	void OnCreateSessionComplete(FName SessionName, bool Success);
+	void OnDestroySessionComplete(FName SessionName, bool Success);
+	void OnFindSessionComplete(bool Success);
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	void CreateSession();
+	void CheckNetDriver();
+
 	FString DesiredServerName;
 };
-

@@ -8,10 +8,5 @@ UCLASS()
 class PROJECTSURVIVAL_API ACSurvivorController : public APlayerController
 {
 	GENERATED_BODY()
-
-public:
-	ACSurvivorController();
-
-protected:
-	virtual void BeginPlay() override;
+	
 };

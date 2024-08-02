@@ -1,12 +1,8 @@
 #include "CLobbyGameMode.h"
 #include "GameFramework/PlayerState.h"
-#include "Lobby/CLobbySurvivor.h"
-#include "Lobby/CWaitingWidget.h"
-#include "Lobby/CLobbySurvivorController.h"
 
 ACLobbyGameMode::ACLobbyGameMode()
 {
-	PrimaryActorTick.bCanEverTick = true;
 	static ConstructorHelpers::FClassFinder<APawn> defaultPawnClassFinder(TEXT("/Game/PirateIsland/Include/Blueprints/Character/Survivor/BP_CLobbySurvivor.BP_CLobbySurvivor_C"));
 	if (defaultPawnClassFinder.Succeeded())
 	{
@@ -43,29 +39,11 @@ ACLobbyGameMode::ACLobbyGameMode()
 void ACLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
-	++NumberOfSurvivors;
+	++NumberOfPlayers;
 }
 
-void ACLobbyGameMode::Tick(float DeltaSeconds)
+void ACLobbyGameMode::Logout(AController* Exiting)
 {
-	Super::Tick(DeltaSeconds);
-}
-
-
-void ACLobbyGameMode::ReadyPlayer()
-{
-	++NumberOfReadySurvivors;
-}
-
-bool ACLobbyGameMode::CheckPlayer()
-{
-	bool result = (NumberOfSurvivors == NumberOfReadySurvivors) ? true : false;
-	return result;
-}
-
-void ACLobbyGameMode::StartGame()
-{
-	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
-	bUseSeamlessTravel = true;
-	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
+	Super::Logout(Exiting);
+	--NumberOfPlayers;
 }

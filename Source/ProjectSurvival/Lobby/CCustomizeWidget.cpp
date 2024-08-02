@@ -63,11 +63,12 @@ void UCCustomizeWidget::TearDownWidget()
 	}
 }
 
+
 void UCCustomizeWidget::CreateSurvivor()
 {
 	TearDownWidget();
-	LobbySurvivor->SetLocalValue();
 	LobbySurvivor->SetSurvivorName(SurvivorName->GetText());
+	LobbySurvivor->SetLocalValue();
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	if (IsValid(lobbySurvivorController))
 	{

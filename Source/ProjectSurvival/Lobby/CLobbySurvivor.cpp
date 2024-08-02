@@ -1,7 +1,6 @@
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbySurvivorController.h"
-#include "Lobby/CLobbyGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -13,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "EngineUtils.h"
 
 ACLobbySurvivor::ACLobbySurvivor()
 {
@@ -56,6 +56,16 @@ ACLobbySurvivor::ACLobbySurvivor()
 		UE_LOG(LogTemp, Warning, TEXT("skeletalMeshFinder Failed - ACLobbySurvivor"));
 	}
 
+//	static ConstructorHelpers::FClassFinder<UAnimInstance> animInstanceFinder(TEXT("AnimBlueprint'/Game/PirateIsland/Include/Animation/AnimationBlueprint/ABP_CSurvivor.ABP_CSurvivor_C'"));
+//	if (animInstanceFinder.Succeeded())
+//	{
+//		GetMesh()->SetAnimClass(animInstanceFinder.Class);
+//	}
+//	else
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("animInstanceFinder Failed - ACSurvivor"));
+//	}
+
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
@@ -76,6 +86,7 @@ void ACLobbySurvivor::BeginPlay()
 void ACLobbySurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateWidgetVisibility();
 }
 
 void ACLobbySurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -83,11 +94,6 @@ void ACLobbySurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACLobbySurvivor::OnMoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACLobbySurvivor::OnMoveRight);
-}
-
-void ACLobbySurvivor::SetLocalValue()
-{
-	Camera->AddRelativeLocation(FVector(100, 50, 50)); // 클라이언트가 로컬로만 사용하는 속성
 }
 
 void ACLobbySurvivor::SetSurvivorName(const FText& InText)
@@ -105,7 +111,7 @@ void ACLobbySurvivor::SetSurvivorName(const FText& InText)
 void ACLobbySurvivor::PerformSetSurvivorName(const FText& InText)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ServerSetSurvivorName_Implementation Called"));
-	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
+	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거
 	
 	int32 randomX = FMath::RandRange(10793, 11281);
 	int32 randomY = FMath::RandRange(-26617, -25406);
@@ -117,15 +123,20 @@ void ACLobbySurvivor::PerformSetSurvivorName(const FText& InText)
 	UpdateSurvivorNameWidget();
 }
 
+bool ACLobbySurvivor::RequestSetSurvivorName_Validate(const FText& InText)
+{
+	return true;
+}
+
 // 클라이언트에서 RequestSetSurvivorName() 로 호출, 서버에서 내용이 실행됨
 void ACLobbySurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
 {
 	PerformSetSurvivorName(InText);
 }
 
-bool ACLobbySurvivor::RequestSetSurvivorName_Validate(const FText& InText)
+void ACLobbySurvivor::SetLocalValue()
 {
-	return true;
+	Camera->AddRelativeLocation(FVector(100, 50, 50)); // 클라이언트가 로컬로만 사용하는 속성
 }
 
 void ACLobbySurvivor::UpdateSurvivorNameWidget()
@@ -157,22 +168,6 @@ void ACLobbySurvivor::UpdateSurvivorNameWidget()
 	}
 }
 
-void ACLobbySurvivor::RequestReady_Implementation()
-{
-	ACLobbyGameMode* lobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
-	lobbyGameMode->ReadyPlayer();
-}
-
-bool ACLobbySurvivor::RequestReady_Validate()
-{
-	return true;
-}
-
-void ACLobbySurvivor::BroadcastSetText_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("TEST"));
-}
-
 void ACLobbySurvivor::OnMoveForward(float InAxisValue)
 {
 	FRotator rotator = FRotator(0, GetControlRotation().Yaw, 0);
@@ -191,8 +186,28 @@ void ACLobbySurvivor::OnMoveRight(float InAxisValue)
 void ACLobbySurvivor::OnRep_ReplicatedSurvivorName()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnRep_ReplicatedSurvivorName Called"));
-
+	
 	UpdateSurvivorNameWidget(); // 리플리케이트 완료되었으니 클라 입장에서 서버의 값으로 위젯을 모두 업데이트 한다. 이 부분을 주석처리하면 클라 입장에선 모두 텍스트 기본값으로 보임
+}
+
+void ACLobbySurvivor::UpdateWidgetVisibility()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) return;
+
+	APawn* PlayerPawn = PlayerController->GetPawn();
+	if (!PlayerPawn) return;
+
+	float Distance = FVector::Dist(PlayerPawn->GetActorLocation(), GetActorLocation());
+
+	if (Distance > HideDistance)
+	{
+		SurvivorNameWidgetComponent->SetVisibility(false);
+	}
+	else
+	{
+		SurvivorNameWidgetComponent->SetVisibility(true);
+	}
 }
 
 void ACLobbySurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

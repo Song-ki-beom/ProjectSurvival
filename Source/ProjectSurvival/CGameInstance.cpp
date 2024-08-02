@@ -1,12 +1,11 @@
 #include "CGameInstance.h"
 #include "Blueprint/UserWidget.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Lobby/CLobbyWidget.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
-
+//Test
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
@@ -104,20 +103,6 @@ void UCGameInstance::RenewServerList()
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 		UE_LOG(LogTemp, Warning, TEXT("Start find session"));
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-	}
-}
-
-void UCGameInstance::RemoveAllWidgets()
-{
-	TArray<UUserWidget*> allWidgets;
-	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, allWidgets, UUserWidget::StaticClass(), true);
-
-	for (UUserWidget* widget : allWidgets)
-	{
-		if (widget && widget->IsInViewport())
-		{
-			widget->RemoveFromParent();
-		}
 	}
 }
 

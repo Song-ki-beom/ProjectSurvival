@@ -6,8 +6,21 @@
 #include "GameFramework/PlayerState.h"
 #include "CLobbySurvivorState.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
 class PROJECTSURVIVAL_API ACLobbySurvivorState : public APlayerState
 {
 	GENERATED_BODY()
+	
+public:
+	UPROPERTY(ReplicatedUsing = OnRep_StateSurvivorName, VisibleAnywhere)
+		FText StateSurvivorName;
+
+	UFUNCTION()
+		void OnRep_StateSurvivorName();
+
+
+
 };
