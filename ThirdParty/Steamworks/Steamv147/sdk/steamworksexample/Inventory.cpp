@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking inventory
 //
@@ -361,3 +361,4 @@ std::string CSpaceWarItem::GetIconURL() const
 	}
 	return ret;
 }
+

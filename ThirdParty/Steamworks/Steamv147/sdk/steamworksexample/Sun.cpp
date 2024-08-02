@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for rendering the sun
 //
@@ -40,3 +40,4 @@ void CSun::RunFrame()
 	SetRotationDeltaNextFrame( (PI_VALUE/2.0f) * (float)m_pGameEngine->GetGameTicksFrameDelta()/800.0f );
 	CVectorEntity::RunFrame();
 }
+

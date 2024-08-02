@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the game engine -- win32 implementation
 //
@@ -463,3 +463,4 @@ private:
 };
 
 #endif // GAMEENGINEWIN32_H
+

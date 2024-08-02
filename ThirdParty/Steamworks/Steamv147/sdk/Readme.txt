@@ -1,6 +1,6 @@
-================================================================
+ï»¿================================================================
 
-Copyright © 1996-2019, Valve Corporation, All rights reserved.
+Copyright ï¿½ 1996-2019, Valve Corporation, All rights reserved.
 
 ================================================================
 
@@ -63,30 +63,30 @@ v1.43 20th February 2019
 ----------------------------------------------------------------
 
 ISteamParties 
-* This API can be used to selectively advertise your multiplayer game session in a Steam chat room group. Tell Steam the number of player spots that are available for your party, and a join-game string, and it will show a beacon in the selected group and allow that many users to “follow” the beacon to your party. Adjust the number of open slots if other players join through alternate matchmaking methods.  
+* This API can be used to selectively advertise your multiplayer game session in a Steam chat room group. Tell Steam the number of player spots that are available for your party, and a join-game string, and it will show a beacon in the selected group and allow that many users to ï¿½followï¿½ the beacon to your party. Adjust the number of open slots if other players join through alternate matchmaking methods.  
 
 ISteamController
 * This interface will be deprecated and replaced with ISteamInput. For ease in upgrading the SDK ISteamController currently has feature parity with ISteamInput, but future features may not be ported back. Please use ISteamInput for new projects.
-* Added GetActionOriginFromXboxOrigin, GetStringForXboxOrigin and GetGlyphForXboxOrigin to allow Xinput games to easily query glyphs for devices coming in through Steam Input’s Xinput emulation, ex: “A button”->”Cross button” on a PS4 controller. This is a simple translation of the button and does not take user remapping into account – the full action based API is required for that.
+* Added GetActionOriginFromXboxOrigin, GetStringForXboxOrigin and GetGlyphForXboxOrigin to allow Xinput games to easily query glyphs for devices coming in through Steam Inputï¿½s Xinput emulation, ex: ï¿½A buttonï¿½->ï¿½Cross buttonï¿½ on a PS4 controller. This is a simple translation of the button and does not take user remapping into account ï¿½ the full action based API is required for that.
 * Added TranslateActionOrigin which allows Steam Input API games to which are using look up tables to translate action origins from an recognized device released after the game was last built into origins they recognize.
 * Added count and max_possible fields to current enums to make using lookup tables easier
 
 ISteamInput
-* This new interface replaces ISteamController to better reflect the fact this API supports not just the Steam Controller but every controller connected to Steam – including Xbox Controllers, Playstation Controllers and Nintendo Switch controllers. ISteamController currently has feature parity with the new features added in ISteamInput but new feature may not be ported back. Please use this interface instead of ISteamController for any new projects.
+* This new interface replaces ISteamController to better reflect the fact this API supports not just the Steam Controller but every controller connected to Steam ï¿½ including Xbox Controllers, Playstation Controllers and Nintendo Switch controllers. ISteamController currently has feature parity with the new features added in ISteamInput but new feature may not be ported back. Please use this interface instead of ISteamController for any new projects.
 * Migrating to ISteamInput from ISteamController should mostly be a search-replace operation but any action origin look up tables will need to be adjusted as some of the enum orders have changed.
-* Added GetActionOriginFromXboxOrigin, GetStringForXboxOrigin and GetGlyphForXboxOrigin to allow Xinput games to easily query glyphs for devices coming in through Steam Input’s Xinput emulation, ex: “A button”->”Cross button” on a PS4 controller. This is a simple translation of the button and does not take user remapping into account – the full action based API is required for that.
+* Added GetActionOriginFromXboxOrigin, GetStringForXboxOrigin and GetGlyphForXboxOrigin to allow Xinput games to easily query glyphs for devices coming in through Steam Inputï¿½s Xinput emulation, ex: ï¿½A buttonï¿½->ï¿½Cross buttonï¿½ on a PS4 controller. This is a simple translation of the button and does not take user remapping into account ï¿½ the full action based API is required for that.
 * Added TranslateActionOrigin which allows Steam Input API games to which are using look up tables to translate action origins from an recognized device released after the game was last built into origins they recognize.
 * Added count and max_possible fields to current enums to make using lookup tables easier
 
 ISteamFriends
-* ActivateGameOverlayToWebPage – Added a new parameter to control how the created web browser window is displayed within the Steam Overlay. The default mode will create a new browser tab next to all other overlay windows that the user already has open. The new modal mode will create a new browser window and activate the Steam Overlay, showing only that window. When the browser window is closed, the Steam Overlay is automatically closed as well.
+* ActivateGameOverlayToWebPage ï¿½ Added a new parameter to control how the created web browser window is displayed within the Steam Overlay. The default mode will create a new browser tab next to all other overlay windows that the user already has open. The new modal mode will create a new browser window and activate the Steam Overlay, showing only that window. When the browser window is closed, the Steam Overlay is automatically closed as well.
 
 ISteamInventory
-* GetItemsWithPrices and GetItemPrice - Added the ability to get the “base price” for a set of items, which you can use to markup in your own UI that items are “on sale” 
+* GetItemsWithPrices and GetItemPrice - Added the ability to get the ï¿½base priceï¿½ for a set of items, which you can use to markup in your own UI that items are ï¿½on saleï¿½ 
 
 ISteamUGC
 * SetAllowLegacyUpload - Call to force the use of Steam Cloud for back-end storage (instead of Steam Pipe), which is faster and more efficient for uploading and downloading small files (less than 100MB).
-* CreateQueryAllUGCRequest - Added ability to page through query results using a “cursor” instead of a page number.  This is more efficient and supports “deep paging” beyond page 1000.  The old version of CreateQueryAllUGCRequest() that takes a page parameter is deprecated and cannot query beyond page 1000.  Note that you will need to keep track of the “previous” cursor in order to go to a previous page.
+* CreateQueryAllUGCRequest - Added ability to page through query results using a ï¿½cursorï¿½ instead of a page number.  This is more efficient and supports ï¿½deep pagingï¿½ beyond page 1000.  The old version of CreateQueryAllUGCRequest() that takes a page parameter is deprecated and cannot query beyond page 1000.  Note that you will need to keep track of the ï¿½previousï¿½ cursor in order to go to a previous page.
 
 ISteamApps
 * GetLaunchCommandLine - Get command line if game was launched via Steam URL, e.g. steam://run/<appid>//<command line>/. If you get NewUrlLaunchParameters_t callback while running, call again to get new command line
@@ -109,11 +109,11 @@ ISteamInventory
 * Deprecated TradeItems
 
 ISteamController
-* Added Action Set Layers – Action Set Layers are optional sets of action bindings which can be overlaid upon an existing set of controls.  In contrast to Action Sets, layers draw their actions from the Action Set they exist within and do not wholesale replace what is already active when applied, but apply small modifications.  These can consist of setting changes as well as adding or removing bindings from the base action set.  More than one layer can be applied at a time and will be applied consecutively, so an example might be the Sniper Class layer which includes tweaks or bindings specific to snipers in addition to the Scoped-In layer which alters look sensitivity.
-* Added ActivateActionSetLayer – Activates the specified Layer.
-* Added DeactivateActionSetLayer – Deactivates the specified Layer.
-* Added DeactivateAllActionSetLayers – Deactivates all layers, resetting the mapping to the action base Action Set.
-* Added GetActiveActionSetLayers – Returns all currently active Action Set Layers.
+* Added Action Set Layers ï¿½ Action Set Layers are optional sets of action bindings which can be overlaid upon an existing set of controls.  In contrast to Action Sets, layers draw their actions from the Action Set they exist within and do not wholesale replace what is already active when applied, but apply small modifications.  These can consist of setting changes as well as adding or removing bindings from the base action set.  More than one layer can be applied at a time and will be applied consecutively, so an example might be the Sniper Class layer which includes tweaks or bindings specific to snipers in addition to the Scoped-In layer which alters look sensitivity.
+* Added ActivateActionSetLayer ï¿½ Activates the specified Layer.
+* Added DeactivateActionSetLayer ï¿½ Deactivates the specified Layer.
+* Added DeactivateAllActionSetLayers ï¿½ Deactivates all layers, resetting the mapping to the action base Action Set.
+* Added GetActiveActionSetLayers ï¿½ Returns all currently active Action Set Layers.
 * Added GetInputTypeForHandle - Returns the input type for a particular handle, such as Steam Controller, PS4 Controller, Xbox One or 360.
 
 ISteamHTMLSurface
@@ -428,7 +428,7 @@ User:
 * Added ISteamUser::GetBadgeLevel and ISteamUser::GetPlayerSteamLevel functions
 
 Friends:
-* Games can now initiate Steam Friend requests, removals, request -accepts and request-ignores via ISteamFriends’ ActivateGameOverlayToUser API. This prompts the user for confirmation before action is taken.
+* Games can now initiate Steam Friend requests, removals, request -accepts and request-ignores via ISteamFriendsï¿½ ActivateGameOverlayToUser API. This prompts the user for confirmation before action is taken.
 
 Mac:
 * Updated the OS X Content Prep tool and game wrapper for improved compatibility with OS X 10.8 (Mountain Lion).
@@ -577,7 +577,7 @@ User
 
 Friends
 * Added ISteamFriends::RequestFriendRichPresence, which allows requesting rich presence keys for any Steam user playing the same game as you
-* Added a set of functions to ISteamFriends which allow games to integrate with Steam Chat. Games can both join group chats, as well as get friends chats and show them in-line in the game. This API isn’t currently used in a game, so there may be some rough edges around the user experience to work out, and some experimentation is required.
+* Added a set of functions to ISteamFriends which allow games to integrate with Steam Chat. Games can both join group chats, as well as get friends chats and show them in-line in the game. This API isnï¿½t currently used in a game, so there may be some rough edges around the user experience to work out, and some experimentation is required.
 
 Game Servers
 * Removed the ISteamMasterServerUpdater interface.  It has been merged into the ISteamGameServer interface, which is used to communicate all game server state changes.
@@ -1011,3 +1011,4 @@ v1.0:
 ----------------------------------------------------------------
 
 - Initial Steamworks SDK release
+

@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // glmgrext.h
 // helper file for extension testing and runtime importing of entry points
@@ -105,3 +105,4 @@ void GLMSetupExtensions( void )
 	#endif
 }
 */
+

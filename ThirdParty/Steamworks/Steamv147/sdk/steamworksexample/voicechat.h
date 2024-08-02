@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2010, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2010, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for P2P voice chat
 //
@@ -63,3 +63,4 @@ private:
 };
 
 #endif
+

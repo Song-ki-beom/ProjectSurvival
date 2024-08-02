@@ -1,4 +1,4 @@
-//====== Copyright 1996-2018, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2018, Valve Corporation, All rights reserved. =======
 //    Note: The older ISteamController interface has been deprecated in favor of ISteamInput - this interface
 //			was updated in this SDK but will be removed from future SDK's. The Steam Client will retain
 //			compatibility with the older interfaces so your any existing integrations should be unaffected.
@@ -617,3 +617,4 @@ inline ISteamController *SteamController();
 STEAM_DEFINE_USER_INTERFACE_ACCESSOR( ISteamController *, SteamController, STEAMCONTROLLER_INTERFACE_VERSION );
 
 #endif // ISTEAMCONTROLLER_H
+

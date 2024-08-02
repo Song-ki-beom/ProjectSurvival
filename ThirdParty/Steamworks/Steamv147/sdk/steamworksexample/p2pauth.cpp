@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2004, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2004, Valve LLC, All rights reserved. ============
 //
 // Purpose:
 //
@@ -413,3 +413,4 @@ CSteamID CP2PAuthedGame::GetSteamID()
 {
 	return SteamUser()->GetSteamID();
 }
+

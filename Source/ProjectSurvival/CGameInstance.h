@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
@@ -55,3 +55,4 @@ private:
 
 	FString DesiredServerName;
 };
+

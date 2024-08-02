@@ -1,4 +1,4 @@
-//====== Copyright 1996-2013, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2013, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to display html pages in a texture
 //
@@ -478,3 +478,4 @@ STEAM_CALLBACK_END(2)
 
 
 #endif // ISTEAMHTMLSURFACE_H
+

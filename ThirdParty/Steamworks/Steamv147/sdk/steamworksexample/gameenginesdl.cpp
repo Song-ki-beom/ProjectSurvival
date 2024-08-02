@@ -1,4 +1,4 @@
-//========= Copyright 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the game engine -- win32 implementation
 //
@@ -1419,4 +1419,5 @@ bool CGameEngineGL::BIsActionSetLayerActive( ECONTROLLERACTIONSET dwActionSetLay
 
 	return false;
 }
+
 

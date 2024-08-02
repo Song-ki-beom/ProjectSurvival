@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright � 1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Main file for the SteamworksExample app
 //
@@ -373,3 +373,4 @@ int main(int argc, const char **argv)
     return RealMain( szCmdLine, 0, 0 );
 }
 #endif
+

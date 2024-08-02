@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -229,4 +229,5 @@ template <size_t maxLenInChars> void sprintf_safe(OUT_Z_ARRAY char (&pDest)[maxL
 #define Steamworks_TestSecret()
 #define Steamworks_SelfCheck()
 #endif
+
 

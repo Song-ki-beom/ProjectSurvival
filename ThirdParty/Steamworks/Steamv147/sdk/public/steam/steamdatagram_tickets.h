@@ -1,4 +1,4 @@
-//====== Copyright Valve Corporation, All rights reserved. ====================
+﻿//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Types and utilities for handling steam datagram tickets.  These are
 // useful for both the client and the backend ticket generating authority.
@@ -284,3 +284,4 @@ struct SteamDatagramGameCoordinatorServerLogin
 };
 
 #endif // STEAMDATAGRAM_TICKETS_H
+

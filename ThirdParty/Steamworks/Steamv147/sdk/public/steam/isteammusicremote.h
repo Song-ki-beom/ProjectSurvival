@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 
 #ifndef ISTEAMMUSICREMOTE_H
 #define ISTEAMMUSICREMOTE_H
@@ -131,3 +131,4 @@ STEAM_CALLBACK_END(1)
 
 
 #endif // #define ISTEAMMUSICREMOTE_H
+

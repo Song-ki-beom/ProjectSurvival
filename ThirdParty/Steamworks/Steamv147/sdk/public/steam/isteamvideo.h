@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2014 Valve Corporation, All rights reserved. =======
+ï»¿//====== Copyright ï¿½ 1996-2014 Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to Steam Video
 //
@@ -66,3 +66,4 @@ STEAM_CALLBACK_END(2)
 
 
 #endif // ISTEAMVIDEO_H
+

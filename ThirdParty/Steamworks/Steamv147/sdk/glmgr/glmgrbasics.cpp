@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // glmgrbasics.cpp
 //
@@ -4067,6 +4067,7 @@ unsigned char g_glmDebugFontMap[ 128 * 128 ] =
 "                                                                                                                                "
 "                                                                                                                                "
 };
+
 
 
 

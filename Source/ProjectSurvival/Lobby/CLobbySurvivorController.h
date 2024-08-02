@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
@@ -33,3 +33,4 @@ private:
 
 	class ACLobbySurvivor* LobbySurvivor;
 };
+

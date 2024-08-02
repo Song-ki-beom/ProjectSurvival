@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // cglmquery.cpp
 //
@@ -434,4 +434,5 @@ bool	CGLMQuery::IsStopped	( void )
 {
 	return m_stopped;
 }
+
 

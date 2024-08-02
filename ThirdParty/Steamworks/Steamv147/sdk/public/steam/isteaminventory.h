@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2014 Valve Corporation, All rights reserved. =======
+ï»¿//====== Copyright ï¿½ 1996-2014 Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to Steam Inventory
 //
@@ -435,3 +435,4 @@ struct SteamInventoryRequestPricesResult_t
 
 
 #endif // ISTEAMCONTROLLER_H
+

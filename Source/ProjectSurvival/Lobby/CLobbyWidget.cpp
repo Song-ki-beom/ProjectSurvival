@@ -1,11 +1,11 @@
-#include "Lobby/CLobbyWidget.h"
+ï»¿#include "Lobby/CLobbyWidget.h"
 #include "Lobby/CServerRow.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
 
-UCLobbyWidget::UCLobbyWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // À§Á¬ »ý¼ºÀÚ
+UCLobbyWidget::UCLobbyWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> serverRowFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Lobby/WBP_CServerRow.WBP_CServerRow_C'"));
 	if (serverRowFinder.Succeeded())
@@ -21,7 +21,7 @@ bool UCLobbyWidget::Initialize()
 	if (!Sucess)
 		return false;
 
-	// ¹öÆ° ¹ÙÀÎµå
+	// ï¿½ï¿½Æ° ï¿½ï¿½ï¿½Îµï¿½
 	if (!IsValid(CreateButton)) { UE_LOG(LogTemp, Warning, TEXT("CreateButton is invalid")); return false; }
 	CreateButton->OnClicked.AddDynamic(this, &UCLobbyWidget::SetHostServerName);
 
@@ -164,3 +164,4 @@ void UCLobbyWidget::Cancle()
 {
 	MenuSwitcher->SetActiveWidget(MainMenu);
 }
+

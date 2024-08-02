@@ -1,11 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+О╩©// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CDifficultyWidget.h"
 
-UCWaitingWidget::UCWaitingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // ю╖а╛ ╩Щ╪╨юз
+UCWaitingWidget::UCWaitingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫
 {
 
 }
@@ -29,4 +29,5 @@ void UCWaitingWidget::TearDownWidget()
 {
 	this->RemoveFromViewport();
 }
-// д©╫╨ем╦╤юлб║ а╓╨╦ юЭ╢чго╢б дз╣Е
+// д©О©╫О©╫О©╫м╦О©╫О©╫О©╫б║ О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫о╢О©╫ О©╫з╣О©╫
+

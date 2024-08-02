@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Lobby/CCustomizeWidget.h"
@@ -10,7 +10,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
-UCCustomizeWidget::UCCustomizeWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // À§Á¬ »ý¼ºÀÚ
+UCCustomizeWidget::UCCustomizeWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	
 }
@@ -80,3 +80,4 @@ void UCCustomizeWidget::ExitGame()
 {
 	GetWorld()->GetFirstPlayerController()->ConsoleCommand("quit");
 }
+

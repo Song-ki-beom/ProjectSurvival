@@ -1,4 +1,4 @@
-#include "Lobby/CLobbySurvivorController.h"
+﻿#include "Lobby/CLobbySurvivorController.h"
 #include "Lobby/CCustomizeWidget.h"
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CSurvivorName.h"
@@ -44,3 +44,4 @@ void ACLobbySurvivorController::LoadWaitingWidget()
 	else
 		UE_LOG(LogTemp, Warning, TEXT("WaitingWidget is not valid"));
 }
+

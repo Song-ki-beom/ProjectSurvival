@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2009, Valve LLC, All rights reserved. ============
+﻿//========= Copyright � 1996-2009, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for Remote Play session list
 //
@@ -178,3 +178,4 @@ void CRemotePlayList::OnRemotePlaySessionDisconnected( SteamRemotePlaySessionDis
 {
 	m_pRemotePlayListMenu->Rebuild();
 }
+

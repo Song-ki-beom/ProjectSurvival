@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -249,3 +249,4 @@ inline void gameserveritem_t::SetName( const char *pName )
 
 
 #endif // MATCHMAKINGTYPES_H
+

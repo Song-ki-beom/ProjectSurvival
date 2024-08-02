@@ -1,4 +1,4 @@
-#include "Lobby/CLobbySurvivor.h"
+ï»¿#include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbySurvivorController.h"
 #include "Components/CapsuleComponent.h"
@@ -111,15 +111,15 @@ void ACLobbySurvivor::SetSurvivorName(const FText& InText)
 void ACLobbySurvivor::PerformSetSurvivorName(const FText& InText)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ServerSetSurvivorName_Implementation Called"));
-	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() Æ®¸®°Å
+	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() Æ®ï¿½ï¿½ï¿½ï¿½
 	
 	int32 randomX = FMath::RandRange(10793, 11281);
 	int32 randomY = FMath::RandRange(-26617, -25406);
 	SetActorLocation(FVector(randomX, randomY, 557));
 	
-	// À§Á¬ ¾÷µ¥ÀÌÆ®
-	// ¼­¹ö¿¡¼­ PerformSetSurvivorName()È£Ãâ ½Ã ¼­¹öÀÇ ÀÌ¸§ÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù. (¼­¹öÀÇ ÀÔÀå¿¡¼­ ¼­¹ö ÀÌ¸§ ¼³Á¤)
-	// Å¬¶ó¿¡¼­ RequestSetSurvivorName() (ÇÔ¼ö³»¿ë PerformSetSurvivorName()) È£Ãâ ½Ã Å¬¶óÀÌ¾ðÆ®ÀÇ ÀÌ¸§ÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù. (¼­¹öÀÇ ÀÔÀå¿¡¼­ Å¬¶ó ÀÌ¸§ ¼³Á¤)
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ PerformSetSurvivorName()È£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½È´ï¿½. (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½)
+	// Å¬ï¿½ó¿¡¼ï¿½ RequestSetSurvivorName() (ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ PerformSetSurvivorName()) È£ï¿½ï¿½ ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½È´ï¿½. (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	UpdateSurvivorNameWidget();
 }
 
@@ -128,7 +128,7 @@ bool ACLobbySurvivor::RequestSetSurvivorName_Validate(const FText& InText)
 	return true;
 }
 
-// Å¬¶óÀÌ¾ðÆ®¿¡¼­ RequestSetSurvivorName() ·Î È£Ãâ, ¼­¹ö¿¡¼­ ³»¿ëÀÌ ½ÇÇàµÊ
+// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ RequestSetSurvivorName() ï¿½ï¿½ È£ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
 void ACLobbySurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
 {
 	PerformSetSurvivorName(InText);
@@ -136,7 +136,7 @@ void ACLobbySurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
 
 void ACLobbySurvivor::SetLocalValue()
 {
-	Camera->AddRelativeLocation(FVector(100, 50, 50)); // Å¬¶óÀÌ¾ðÆ®°¡ ·ÎÄÃ·Î¸¸ »ç¿ëÇÏ´Â ¼Ó¼º
+	Camera->AddRelativeLocation(FVector(100, 50, 50)); // Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ã·Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ó¼ï¿½
 }
 
 void ACLobbySurvivor::UpdateSurvivorNameWidget()
@@ -182,12 +182,12 @@ void ACLobbySurvivor::OnMoveRight(float InAxisValue)
 	AddMovementInput(direction, -InAxisValue);
 }
 
-// ÀÌ ÇÔ¼ö´Â Å¬¶óÀÌ¾ðÆ®°¡ ¼­¹ö·ÎºÎÅÍ º¯¼ö º¯°æ »çÇ×À» ¼ö½ÅÇÑ ÈÄ È£ÃâµÇ¹Ç·Î, ¾à°£ÀÇ Áö¿¬ÀÌ ÀÖÀ» ¼ö ÀÖ´Ù.
+// ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç¹Ç·ï¿½, ï¿½à°£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
 void ACLobbySurvivor::OnRep_ReplicatedSurvivorName()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnRep_ReplicatedSurvivorName Called"));
 	
-	UpdateSurvivorNameWidget(); // ¸®ÇÃ¸®ÄÉÀÌÆ® ¿Ï·áµÇ¾úÀ¸´Ï Å¬¶ó ÀÔÀå¿¡¼­ ¼­¹öÀÇ °ªÀ¸·Î À§Á¬À» ¸ðµÎ ¾÷µ¥ÀÌÆ® ÇÑ´Ù. ÀÌ ºÎºÐÀ» ÁÖ¼®Ã³¸®ÇÏ¸é Å¬¶ó ÀÔÀå¿¡¼± ¸ðµÎ ÅØ½ºÆ® ±âº»°ªÀ¸·Î º¸ÀÓ
+	UpdateSurvivorNameWidget(); // ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ï·ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ñ´ï¿½. ï¿½ï¿½ ï¿½Îºï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½Ã³ï¿½ï¿½ï¿½Ï¸ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 }
 
 void ACLobbySurvivor::UpdateWidgetVisibility()

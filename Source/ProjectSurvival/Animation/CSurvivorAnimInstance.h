@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,7 +18,7 @@ public:
 	void NativeBeginPlay() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 
-protected: // ABP¿¡¼­ »ç¿ëÇÒ º¯¼ö
+protected: // ABPí•œê¸€ í…ŒìŠ¤íŠ¸ 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		float Speed;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -26,5 +26,6 @@ protected: // ABP¿¡¼­ »ç¿ëÇÒ º¯¼ö
 
 private:
 	class ACharacter* OwnerCharacter;
-	bool bCastEnded = false; // OwnerCharacter Ä³½ºÆ® µÇ±â Àü NativeUpdateAnimation È£Ãâ ¹æÁö º¯¼ö
+	bool bCastEnded = false; // OwnerCharacter Ä³ï¿½ï¿½Æ® ï¿½Ç±ï¿½ ï¿½ï¿½ NativeUpdateAnimation È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 };
+

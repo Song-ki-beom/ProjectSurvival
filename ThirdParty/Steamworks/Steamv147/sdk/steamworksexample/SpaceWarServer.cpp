@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the space war game server
 //
@@ -1049,3 +1049,4 @@ void CSpaceWarServer::KickPlayerOffServer( CSteamID steamID )
 	}
 	m_uPlayerCount = uPlayerCount;
 }
+

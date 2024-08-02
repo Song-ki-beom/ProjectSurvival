@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // glmgr.h
 //	singleton class, common basis for managing GL contexts
@@ -1030,3 +1030,4 @@ class GLMTester
 
 
 #endif
+

@@ -1,4 +1,4 @@
-/*
+﻿/*
 ** The OpenGL Extension Wrangler Library
 ** Copyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>
 ** Copyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>
@@ -1419,3 +1419,4 @@ GLEWAPI GLboolean GLEWAPIENTRY wglewGetExtension (const char *name);
 #undef GLEWAPI
 
 #endif /* __wglew_h__ */
+

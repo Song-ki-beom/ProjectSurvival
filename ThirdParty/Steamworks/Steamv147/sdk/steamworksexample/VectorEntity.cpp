@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Base class for representation objects in the game which are drawn as 
 //			vector art (ie, a series of lines)
@@ -302,3 +302,4 @@ float CVectorEntity::GetDistanceTraveledLastFrame()
 {
 	return (float)sqrt( pow( m_flXPos - m_flXPosLastFrame, 2 ) + pow( m_flYPos - m_flYPosLastFrame, 2 ) );
 }
+

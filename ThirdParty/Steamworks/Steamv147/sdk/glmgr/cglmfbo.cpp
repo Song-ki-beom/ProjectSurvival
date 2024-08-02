@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // cglmfbo.cpp
 //
@@ -351,3 +351,4 @@ bool	CGLMFBO::IsReady( void )
 	}
 	return result;
 }
+

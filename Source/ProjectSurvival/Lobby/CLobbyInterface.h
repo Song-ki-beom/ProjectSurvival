@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -26,3 +26,4 @@ public:
 	virtual void Join(uint32 InIndex) = 0;
 	virtual void RenewServerList() = 0;
 };
+

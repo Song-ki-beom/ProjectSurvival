@@ -1,4 +1,4 @@
-#include "CSurvivorAnimInstance.h"
+﻿#include "CSurvivorAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -33,3 +33,4 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		UE_LOG(LogTemp, Warning, TEXT("OwnerCharacter is not valid - UCSurvivorAnimInstance"));
 	}
 }
+

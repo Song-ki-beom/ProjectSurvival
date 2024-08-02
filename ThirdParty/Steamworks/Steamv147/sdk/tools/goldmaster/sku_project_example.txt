@@ -1,4 +1,4 @@
-"sku"
+﻿"sku"
 {
 	"name" "Steamworks Spacewar"
 	"appID"				"480"
@@ -10,3 +10,4 @@
 	//  "2"	"482" more depots if needed
 	}
 }
+

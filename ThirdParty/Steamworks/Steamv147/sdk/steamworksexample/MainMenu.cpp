@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class to define the main game menu
 //
@@ -77,3 +77,4 @@ void CMainMenu::OnParentalSettingsChanged( SteamParentalSettingsChanged_t *pPara
 	ClearMenuItems();
 	SetupMenu();
 }
+

@@ -1,4 +1,4 @@
-#include "CGameInstance.h"
+﻿#include "CGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "Lobby/CLobbyWidget.h"
 #include "OnlineSubsystem.h"
@@ -215,4 +215,5 @@ void UCGameInstance::CheckNetDriver()
 		UE_LOG(LogTemp, Warning, TEXT("NetDriver is valid"));
 	}
 }
+
 

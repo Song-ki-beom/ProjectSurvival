@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -24,3 +24,4 @@ private:
 		class UCDifficultyWidget* DifficultyWidget;
 
 };
+

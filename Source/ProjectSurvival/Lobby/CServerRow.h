@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -37,3 +37,4 @@ private:
 		class UPanelWidget* ParentScrollBox;
 	uint32 Index;
 };
+

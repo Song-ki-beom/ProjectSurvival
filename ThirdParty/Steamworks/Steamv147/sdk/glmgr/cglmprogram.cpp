@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // cglmprogram.cpp
 //
@@ -1436,4 +1436,5 @@ void			CGLMShaderPairCache::HashRowProbe		( CGLMPairCacheEntry *row, CGLMProgram
 	if (emptywayOut)	*emptywayOut = emptyway;
 	if (oldestwayOut)	*oldestwayOut = oldestway;
 }
+
 

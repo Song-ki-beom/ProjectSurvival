@@ -1,4 +1,4 @@
-This package was debianized by Peter Cernak <pce@users.sourceforge.net> on
+﻿This package was debianized by Peter Cernak <pce@users.sourceforge.net> on
 Sun,  5 Sep 2004 17:10:26 +0200.
 
 It was downloaded from http://dejavu.sourceforge.net/
@@ -56,3 +56,4 @@ otherwise to promote the sale, use or other dealings in this Font Software
 without prior written authorization from the Gnome Foundation or Bitstream
 Inc., respectively. For further information, contact: fonts at gnome dot
 org. 
+

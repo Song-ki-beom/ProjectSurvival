@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright © 1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to app data in Steam
 //
@@ -65,3 +65,4 @@ STEAM_CALLBACK_END(1)
 
 #pragma pack( pop )
 #endif // ISTEAMAPPLIST_H
+

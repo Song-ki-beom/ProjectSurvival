@@ -1,4 +1,4 @@
-Steam Retail Setup File Overview:
+﻿Steam Retail Setup File Overview:
 ---------------------------------
 
 root\Setup.exe :
@@ -75,4 +75,5 @@ Setup_*.ini configuration values:
 "ColorDefault" : default menu text color in RGB, eg "255 0 255"
 "ColorHover" : menu text color for mouse hover event
 "ColorDown"  : menu text color for mouse pressed event
+
 

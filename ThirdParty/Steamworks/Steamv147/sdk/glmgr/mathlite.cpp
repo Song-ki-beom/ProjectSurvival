@@ -1,4 +1,4 @@
-#include "mathlite.h"
+﻿#include "mathlite.h"
 
 // ------------------------------------------------------------------------------------------- //
 // Helper functions.
@@ -1249,5 +1249,6 @@ void MatrixBuildPerspectiveOffCenterX( VMatrix& dst, double flFovX, double flAsp
 				0.0f,                           0.0f,           flZFar/(flZNear-flZFar),  flZNear*flZFar/(flZNear-flZFar),
 				0.0f,                           0.0f,                             -1.0f,                            0.0f );
 }
+
 
 

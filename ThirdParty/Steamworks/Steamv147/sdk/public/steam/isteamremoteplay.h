@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 
 #ifndef ISTEAMREMOTEPLAY_H
 #define ISTEAMREMOTEPLAY_H
@@ -86,3 +86,4 @@ STEAM_CALLBACK_END( 0 )
 
 
 #endif // #define ISTEAMREMOTEPLAY_H
+

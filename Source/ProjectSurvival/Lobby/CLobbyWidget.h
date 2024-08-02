@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -37,7 +37,7 @@ private:
 	void UpdateChildren();
 
 private:
-	//¹öÆ° ¸â¹ö º¯¼ö¸íÀº ºí·çÇÁ¸°Æ® À§Á¬¿¡ ÀÖ´Â ¹öÆ° ÀÌ¸§°ú °°¾Æ¾ßÇÔ. ÀÌ¸§ÀÌ °°À¸¸é meta = (BindWidget)¸¦ ÅëÇØ ¹ÙÀÎµå µÊ
+	//ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½Æ° ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¾ï¿½ï¿½ï¿½. ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ meta = (BindWidget)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½
 	UPROPERTY(meta = (BindWidget))
 		class UButton* CreateButton;
 	UPROPERTY(meta = (BindWidget))
@@ -55,13 +55,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* CreateCancleButton;
 	UPROPERTY(meta = (BindWidget))
-		class UWidget* MainMenu; //À§Á¬ ½ºÀ§Ä¡¸¦ À§ÇÑ ÀÚ·áÇüÀ¸·Î UWidgetÀÌ °¡Àå ¹«³­ÇÏ´Ù. (ÇÑ À§Á¬È­¸éÀÇ ÃÖ»óÀ§ º¯¼ö·Î, ÀÌ¸§ °°¾Æ¾ßÇÔ)
+		class UWidget* MainMenu; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UWidgetï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. (ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½Ö»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Æ¾ï¿½ï¿½ï¿½)
 	UPROPERTY(meta = (BindWidget))
 		class UWidget* JoinMenu;
 	UPROPERTY(meta = (BindWidget))
 		class UWidget* CreateMenu;
 	UPROPERTY(meta = (BindWidget))
-		class UWidgetSwitcher* MenuSwitcher; //ÇÑ À§Á¬ ¾È¿¡¼­ È­¸é ÀüÈ¯ÇÒ ¶§ ÇÊ¿äÇÔ (½½¶óÀÌµå ¼îÀÇ ½½¶óÀÌµå ¹Ù²Ù±â °°Àº °³³ä)
+		class UWidgetSwitcher* MenuSwitcher; //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½È¿ï¿½ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ìµï¿½ ï¿½Ù²Ù±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 	UPROPERTY(meta = (BindWidget))
 		class UPanelWidget* ServerList;
 	UPROPERTY(meta = (BindWidget))
@@ -71,7 +71,7 @@ private:
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> ServerRowClass;
 
-	//¹öÆ°¿¡ ¹ÙÀÎµå½ÃÅ³ ÇÔ¼öµé
+	//ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ï¿½Å³ ï¿½Ô¼ï¿½ï¿½ï¿½
 	UFUNCTION()
 		void SetHostServerName();
 	UFUNCTION()
@@ -91,3 +91,4 @@ private:
 	ICLobbyInterface* LobbyInterface;
 	TOptional<uint32> SelectedIndex;
 };
+

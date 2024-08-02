@@ -1,4 +1,4 @@
-//================ Copyright (c) 1996-2009 Valve Corporation. All Rights Reserved. =================
+﻿//================ Copyright (c) 1996-2009 Valve Corporation. All Rights Reserved. =================
 //
 //
 //
@@ -5938,4 +5938,5 @@ IDirect3D9 *Direct3DCreate9(UINT SDKVersion)
 
 
 #endif
+
 

@@ -1,4 +1,4 @@
-//====== Copyright 1996-2014, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2014, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Simple C++ protobuf manipulation routines. For a more advanced,
 // fully-featured library, see https://developers.google.com/protocol-buffers/
@@ -188,3 +188,4 @@ bool ProtobufReadRepeatedString( const char * &pParsePosition, const char *pPars
 
 
 #endif
+

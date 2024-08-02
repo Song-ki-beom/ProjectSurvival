@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2009, Valve LLC, All rights reserved. ============
+﻿//========= Copyright � 1996-2009, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking friends list
 //
@@ -165,4 +165,5 @@ void CFriendsList::Show()
 {
 	m_pFriendsListMenu->Rebuild();
 }
+
 

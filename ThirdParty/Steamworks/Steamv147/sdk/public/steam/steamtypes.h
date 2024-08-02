@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose:
 //
@@ -260,3 +260,4 @@ struct SteamIPAddress_t
 
 
 #endif // STEAMTYPES_H
+

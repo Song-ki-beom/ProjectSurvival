@@ -177,3 +177,4 @@ inline ISteamClient *SteamGameServerClient() { return SteamClient(); }
 #endif
 
 #endif // ISTEAMCLIENT_H
+

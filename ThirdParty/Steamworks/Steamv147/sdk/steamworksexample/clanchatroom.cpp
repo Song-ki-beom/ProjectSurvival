@@ -1,4 +1,4 @@
-//========= Copyright Valve LLC, All rights reserved. ============
+﻿//========= Copyright Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for joining and showing clan chats
 //
@@ -75,3 +75,4 @@ void CClanChatRoom::OnJoinChatRoom( JoinClanChatRoomCompletionResult_t *pResult,
 	}
 
 }
+

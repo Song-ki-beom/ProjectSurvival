@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
@@ -12,6 +12,7 @@ class PROJECTSURVIVAL_API ACMainGameMode : public AGameModeBase
 public:
 	ACMainGameMode();
 };
+
 
 
 

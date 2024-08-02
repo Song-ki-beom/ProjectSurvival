@@ -1,4 +1,4 @@
-#include "CLobbyGameMode.h"
+﻿#include "CLobbyGameMode.h"
 #include "GameFramework/PlayerState.h"
 
 ACLobbyGameMode::ACLobbyGameMode()
@@ -47,3 +47,4 @@ void ACLobbyGameMode::Logout(AController* Exiting)
 	Super::Logout(Exiting);
 	--NumberOfPlayers;
 }
+

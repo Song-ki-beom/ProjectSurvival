@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "CMainGameMode.h"
@@ -17,3 +17,4 @@ public:
 private:
 	uint32 NumberOfPlayers = 0;
 };
+

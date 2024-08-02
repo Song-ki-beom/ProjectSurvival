@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class to render a HTML page on the screen
 //
@@ -222,3 +222,4 @@ void CHTMLSurface::OnFinishedRequest( HTML_FinishedRequest_t *pParam )
 	// Uncomment this if you want to scale a pages contents when you display it
 	//SteamHTMLSurface()->SetPageScaleFactor( m_unBrowserHandle, 2.0, 0, 0 );
 }
+

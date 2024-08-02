@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008 Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ï¿½ 1996-2008 Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -18,3 +18,4 @@
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
+

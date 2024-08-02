@@ -1,4 +1,4 @@
-//====== Copyright 1996-2016, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2016, Valve Corporation, All rights reserved. =======
 //
 // Purpose: This file contains C#/managed code bindings for the SteamAPI interfaces
 // This file is auto-generated, do not edit it.
@@ -13190,4 +13190,5 @@ return new CSteamGameServerStats(SteamAPIInterop.SteamGameServerStats());
 
 
 }
+
 
