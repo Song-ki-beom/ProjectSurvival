@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class to define the pause menu
 //
@@ -19,3 +19,5 @@ CQuitMenu::CQuitMenu( IGameEngine *pGameEngine ) : CBaseMenu<EClientGameState>( 
 	AddMenuItem( MenuItem_t( "Exit To Menu", k_EClientGameMenu ) );
 	AddMenuItem( MenuItem_t( "Exit To Desktop", k_EClientGameExiting ) );
 }
+
+

@@ -1,4 +1,4 @@
-//====== Copyright 1996-2013, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2013, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to steam ugc
 //
@@ -561,3 +561,5 @@ struct DeleteItemResult_t
 #pragma pack( pop )
 
 #endif // ISTEAMUGC_H
+
+

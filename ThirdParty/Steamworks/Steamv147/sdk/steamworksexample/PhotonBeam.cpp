@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for rendering photon beams
 //
@@ -38,3 +38,4 @@ void CPhotonBeam::OnReceiveServerUpdate( ServerPhotonBeamUpdateData_t *pUpdateDa
 	SetVelocity( pUpdateData->GetXVelocity(), pUpdateData->GetYVelocity() );
 	SetAccumulatedRotation( pUpdateData->GetRotation() );
 }
+

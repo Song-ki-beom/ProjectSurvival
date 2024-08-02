@@ -1,4 +1,4 @@
-//====== Copyright � 2013-, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 占?2013-, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Interface to Steam parental settings (Family View)
 //
@@ -60,3 +60,5 @@ struct SteamParentalSettingsChanged_t
 
 
 #endif // ISTEAMPARENTALSETTINGS_H
+
+

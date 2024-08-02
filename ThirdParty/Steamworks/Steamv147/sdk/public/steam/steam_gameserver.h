@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2008, Valve Corporation, All rights reserved. =======
+ï»¿//====== Copyright ?1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -108,3 +108,5 @@ inline void SteamGameServer_ReleaseCurrentThreadMemory()
 }
 
 #endif // STEAM_GAMESERVER_H
+
+

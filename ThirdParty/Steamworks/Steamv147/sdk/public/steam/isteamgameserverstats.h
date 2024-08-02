@@ -1,4 +1,4 @@
-//====== Copyright © Valve Corporation, All rights reserved. =======
+ï»¿//====== Copyright ?Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface for game servers to steam stats and achievements
 //
@@ -103,3 +103,5 @@ struct GSStatsUnloaded_t
 
 
 #endif // ISTEAMGAMESERVERSTATS_H
+
+

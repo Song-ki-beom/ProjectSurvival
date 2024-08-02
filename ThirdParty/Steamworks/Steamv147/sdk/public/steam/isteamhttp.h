@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2009, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 짤 1996-2009, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to http client 
 //
@@ -217,3 +217,4 @@ struct HTTPRequestDataReceived_t
 #pragma pack( pop )
 
 #endif // ISTEAMHTTP_H
+

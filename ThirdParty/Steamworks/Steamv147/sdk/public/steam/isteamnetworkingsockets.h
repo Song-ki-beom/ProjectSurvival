@@ -1,4 +1,4 @@
-//====== Copyright Valve Corporation, All rights reserved. ====================
+﻿//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Networking API similar to Berkeley sockets, but for games.
 // - connection-oriented API (like TCP, not UDP)
@@ -818,3 +818,5 @@ struct SteamNetAuthenticationStatus_t
 }
 
 #endif // ISTEAMNETWORKINGSOCKETS
+
+

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for handling finding & creating lobbies, getting their details, 
 //			and seeing other users in the current lobby
@@ -380,3 +380,5 @@ void CLobbyBrowser::OnLobbyDataUpdatedCallback( LobbyDataUpdate_t *pCallback )
 		}
 	}
 }
+
+

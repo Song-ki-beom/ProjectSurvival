@@ -1,4 +1,4 @@
-//====== Copyright ©, Valve Corporation, All rights reserved. =======
+ï»¿//====== Copyright ? Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to the game coordinator for this application
 //
@@ -72,3 +72,5 @@ struct GCMessageFailed_t
 #pragma pack( pop )
 
 #endif // ISTEAMGAMECOORDINATOR
+
+

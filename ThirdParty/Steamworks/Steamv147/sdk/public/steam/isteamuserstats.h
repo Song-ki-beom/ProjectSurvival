@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2009, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 占?1996-2009, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to stats, achievements, and leaderboards 
 //
@@ -478,3 +478,5 @@ struct GlobalStatsReceived_t
 
 
 #endif // ISTEAMUSER_H
+
+

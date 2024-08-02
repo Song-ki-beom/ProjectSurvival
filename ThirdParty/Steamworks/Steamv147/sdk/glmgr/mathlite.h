@@ -1,4 +1,4 @@
-#ifndef MATHLITE_H
+﻿#ifndef MATHLITE_H
 #define MATHLITE_H
 
 //-----------------------------------------------------------------------------
@@ -4422,3 +4422,5 @@ inline void MatrixPerspectiveOffCenterX( VMatrix& dst, double flFovX, double flA
 }
 
 #endif // MATHLITE_H
+
+

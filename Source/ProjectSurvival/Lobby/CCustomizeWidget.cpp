@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Lobby/CCustomizeWidget.h"
@@ -10,7 +10,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
-UCCustomizeWidget::UCCustomizeWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // À§Á¬ »ý¼ºÀÚ
+UCCustomizeWidget::UCCustomizeWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // ìœ„ì ¯ ìƒì„±ìž
 {
 	
 }
@@ -63,12 +63,11 @@ void UCCustomizeWidget::TearDownWidget()
 	}
 }
 
-
 void UCCustomizeWidget::CreateSurvivor()
 {
 	TearDownWidget();
-	LobbySurvivor->SetSurvivorName(SurvivorName->GetText());
 	LobbySurvivor->SetLocalValue();
+	LobbySurvivor->SetSurvivorName(SurvivorName->GetText());
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	if (IsValid(lobbySurvivorController))
 	{
@@ -80,3 +79,4 @@ void UCCustomizeWidget::ExitGame()
 {
 	GetWorld()->GetFirstPlayerController()->ConsoleCommand("quit");
 }
+

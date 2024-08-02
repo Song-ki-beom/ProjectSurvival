@@ -1,4 +1,4 @@
-//====== Copyright (c) 1996-2014, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright (c) 1996-2014, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Header for flatted SteamAPI. Use this for binding to other languages.
 // This file is auto-generated, do not edit it.
@@ -953,5 +953,7 @@ S_API bool SteamAPI_ISteamGameServerStats_SetUserAchievement(intptr_t instancePt
 S_API bool SteamAPI_ISteamGameServerStats_ClearUserAchievement(intptr_t instancePtr, class CSteamID steamIDUser, const char * pchName);
 S_API SteamAPICall_t SteamAPI_ISteamGameServerStats_StoreUserStats(intptr_t instancePtr, class CSteamID steamIDUser);
 #endif // STEAMAPIFLAT_H
+
+
 
 

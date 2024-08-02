@@ -1,4 +1,4 @@
-//====== Copyright Valve Corporation, All rights reserved. ====================
+﻿//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Purpose: misc networking utilities
 //
@@ -1267,3 +1267,5 @@ inline bool SteamNetworkingIdentity::ParseString( const char *pszStr ) { return 
 #endif
 
 #endif // #ifndef STEAMNETWORKINGTYPES
+
+

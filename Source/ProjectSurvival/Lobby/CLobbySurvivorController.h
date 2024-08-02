@@ -1,8 +1,12 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "CLobbySurvivorController.generated.h"
+
+/**
+* 플레이어 개별 위젯 처리는 컨트롤러에서 할 것
+*/
 
 UCLASS()
 class PROJECTSURVIVAL_API ACLobbySurvivorController : public APlayerController
@@ -33,3 +37,4 @@ private:
 
 	class ACLobbySurvivor* LobbySurvivor;
 };
+

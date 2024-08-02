@@ -1,6 +1,7 @@
-#include "Lobby/CLobbySurvivor.h"
+ï»¿#include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbySurvivorController.h"
+#include "Lobby/CLobbyGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -12,7 +13,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "EngineUtils.h"
 
 ACLobbySurvivor::ACLobbySurvivor()
 {
@@ -56,16 +56,6 @@ ACLobbySurvivor::ACLobbySurvivor()
 		UE_LOG(LogTemp, Warning, TEXT("skeletalMeshFinder Failed - ACLobbySurvivor"));
 	}
 
-//	static ConstructorHelpers::FClassFinder<UAnimInstance> animInstanceFinder(TEXT("AnimBlueprint'/Game/PirateIsland/Include/Animation/AnimationBlueprint/ABP_CSurvivor.ABP_CSurvivor_C'"));
-//	if (animInstanceFinder.Succeeded())
-//	{
-//		GetMesh()->SetAnimClass(animInstanceFinder.Class);
-//	}
-//	else
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("animInstanceFinder Failed - ACSurvivor"));
-//	}
-
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
@@ -86,7 +76,6 @@ void ACLobbySurvivor::BeginPlay()
 void ACLobbySurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateWidgetVisibility();
 }
 
 void ACLobbySurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -94,6 +83,11 @@ void ACLobbySurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACLobbySurvivor::OnMoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACLobbySurvivor::OnMoveRight);
+}
+
+void ACLobbySurvivor::SetLocalValue()
+{
+	Camera->AddRelativeLocation(FVector(100, 50, 50)); // í´ë¼ì´ì–¸íŠ¸ê°€ ë¡œì»¬ë¡œë§Œ ì‚¬ìš©í•˜ëŠ” ì†ì„±
 }
 
 void ACLobbySurvivor::SetSurvivorName(const FText& InText)
@@ -111,32 +105,27 @@ void ACLobbySurvivor::SetSurvivorName(const FText& InText)
 void ACLobbySurvivor::PerformSetSurvivorName(const FText& InText)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ServerSetSurvivorName_Implementation Called"));
-	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() Æ®¸®°Å
+	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() íŠ¸ë¦¬ê±° (ë³€ìˆ˜ê°€ ë°”ë€Œì—ˆìœ¼ë¯€ë¡œ)
 	
 	int32 randomX = FMath::RandRange(10793, 11281);
 	int32 randomY = FMath::RandRange(-26617, -25406);
 	SetActorLocation(FVector(randomX, randomY, 557));
 	
-	// À§Á¬ ¾÷µ¥ÀÌÆ®
-	// ¼­¹ö¿¡¼­ PerformSetSurvivorName()È£Ãâ ½Ã ¼­¹öÀÇ ÀÌ¸§ÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù. (¼­¹öÀÇ ÀÔÀå¿¡¼­ ¼­¹ö ÀÌ¸§ ¼³Á¤)
-	// Å¬¶ó¿¡¼­ RequestSetSurvivorName() (ÇÔ¼ö³»¿ë PerformSetSurvivorName()) È£Ãâ ½Ã Å¬¶óÀÌ¾ğÆ®ÀÇ ÀÌ¸§ÀÌ ¾÷µ¥ÀÌÆ® µÈ´Ù. (¼­¹öÀÇ ÀÔÀå¿¡¼­ Å¬¶ó ÀÌ¸§ ¼³Á¤)
+	// ìœ„ì ¯ ì—…ë°ì´íŠ¸
+	// ì„œë²„ì—ì„œ PerformSetSurvivorName()í˜¸ì¶œ ì‹œ ì„œë²„ì˜ ì´ë¦„ì´ ì—…ë°ì´íŠ¸ ëœë‹¤. (ì„œë²„ì˜ ì…ì¥ì—ì„œ ì„œë²„ ì´ë¦„ ì„¤ì •)
+	// í´ë¼ì—ì„œ RequestSetSurvivorName() (í•¨ìˆ˜ë‚´ìš© PerformSetSurvivorName()) í˜¸ì¶œ ì‹œ í´ë¼ì´ì–¸íŠ¸ì˜ ì´ë¦„ì´ ì—…ë°ì´íŠ¸ ëœë‹¤. (ì„œë²„ì˜ ì…ì¥ì—ì„œ í´ë¼ ì´ë¦„ ì„¤ì •)
 	UpdateSurvivorNameWidget();
 }
 
-bool ACLobbySurvivor::RequestSetSurvivorName_Validate(const FText& InText)
-{
-	return true;
-}
-
-// Å¬¶óÀÌ¾ğÆ®¿¡¼­ RequestSetSurvivorName() ·Î È£Ãâ, ¼­¹ö¿¡¼­ ³»¿ëÀÌ ½ÇÇàµÊ
+// í´ë¼ì´ì–¸íŠ¸ì—ì„œ RequestSetSurvivorName() ë¡œ í˜¸ì¶œ, ì„œë²„ì—ì„œ ë‚´ìš©ì´ ì‹¤í–‰ë¨
 void ACLobbySurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
 {
 	PerformSetSurvivorName(InText);
 }
 
-void ACLobbySurvivor::SetLocalValue()
+bool ACLobbySurvivor::RequestSetSurvivorName_Validate(const FText& InText)
 {
-	Camera->AddRelativeLocation(FVector(100, 50, 50)); // Å¬¶óÀÌ¾ğÆ®°¡ ·ÎÄÃ·Î¸¸ »ç¿ëÇÏ´Â ¼Ó¼º
+	return true;
 }
 
 void ACLobbySurvivor::UpdateSurvivorNameWidget()
@@ -168,6 +157,22 @@ void ACLobbySurvivor::UpdateSurvivorNameWidget()
 	}
 }
 
+void ACLobbySurvivor::RequestReady_Implementation()
+{
+	ACLobbyGameMode* lobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
+	lobbyGameMode->ReadyPlayer();
+}
+
+bool ACLobbySurvivor::RequestReady_Validate()
+{
+	return true;
+}
+
+void ACLobbySurvivor::BroadcastSetText_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("TEST"));
+}
+
 void ACLobbySurvivor::OnMoveForward(float InAxisValue)
 {
 	FRotator rotator = FRotator(0, GetControlRotation().Yaw, 0);
@@ -182,32 +187,12 @@ void ACLobbySurvivor::OnMoveRight(float InAxisValue)
 	AddMovementInput(direction, -InAxisValue);
 }
 
-// ÀÌ ÇÔ¼ö´Â Å¬¶óÀÌ¾ğÆ®°¡ ¼­¹ö·ÎºÎÅÍ º¯¼ö º¯°æ »çÇ×À» ¼ö½ÅÇÑ ÈÄ È£ÃâµÇ¹Ç·Î, ¾à°£ÀÇ Áö¿¬ÀÌ ÀÖÀ» ¼ö ÀÖ´Ù.
+// ì´ í•¨ìˆ˜ëŠ” í´ë¼ì´ì–¸íŠ¸ê°€ ì„œë²„ë¡œë¶€í„° ë³€ìˆ˜ ë³€ê²½ ì‚¬í•­ì„ ìˆ˜ì‹ í•œ í›„ í˜¸ì¶œë˜ë¯€ë¡œ, ì•½ê°„ì˜ ì§€ì—°ì´ ìˆì„ ìˆ˜ ìˆë‹¤.
 void ACLobbySurvivor::OnRep_ReplicatedSurvivorName()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnRep_ReplicatedSurvivorName Called"));
-	
-	UpdateSurvivorNameWidget(); // ¸®ÇÃ¸®ÄÉÀÌÆ® ¿Ï·áµÇ¾úÀ¸´Ï Å¬¶ó ÀÔÀå¿¡¼­ ¼­¹öÀÇ °ªÀ¸·Î À§Á¬À» ¸ğµÎ ¾÷µ¥ÀÌÆ® ÇÑ´Ù. ÀÌ ºÎºĞÀ» ÁÖ¼®Ã³¸®ÇÏ¸é Å¬¶ó ÀÔÀå¿¡¼± ¸ğµÎ ÅØ½ºÆ® ±âº»°ªÀ¸·Î º¸ÀÓ
-}
 
-void ACLobbySurvivor::UpdateWidgetVisibility()
-{
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!PlayerController) return;
-
-	APawn* PlayerPawn = PlayerController->GetPawn();
-	if (!PlayerPawn) return;
-
-	float Distance = FVector::Dist(PlayerPawn->GetActorLocation(), GetActorLocation());
-
-	if (Distance > HideDistance)
-	{
-		SurvivorNameWidgetComponent->SetVisibility(false);
-	}
-	else
-	{
-		SurvivorNameWidgetComponent->SetVisibility(true);
-	}
+	UpdateSurvivorNameWidget(); // ë¦¬í”Œë¦¬ì¼€ì´íŠ¸ ì™„ë£Œë˜ì—ˆìœ¼ë‹ˆ í´ë¼ ì…ì¥ì—ì„œ ì„œë²„ì˜ ê°’ìœ¼ë¡œ ìœ„ì ¯ì„ ëª¨ë‘ ì—…ë°ì´íŠ¸ í•œë‹¤. ì´ ë¶€ë¶„ì„ ì£¼ì„ì²˜ë¦¬í•˜ë©´ í´ë¼ ì…ì¥ì—ì„  ëª¨ë‘ í…ìŠ¤íŠ¸ ê¸°ë³¸ê°’ìœ¼ë¡œ ë³´ì„
 }
 
 void ACLobbySurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

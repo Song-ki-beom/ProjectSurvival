@@ -1,4 +1,4 @@
-//================ Copyright (c) 1996-2009 Valve Corporation. All Rights Reserved. =================
+﻿//================ Copyright (c) 1996-2009 Valve Corporation. All Rights Reserved. =================
 //
 //
 //
@@ -4670,7 +4670,7 @@ HRESULT IDirect3DDevice9::FlushStates( uint mask )
 				/*
 				if (x<1)
 				{
-					GLMPRINTF(( " plane %d  √vers1[ %5.2f %5.2f %5.2f %5.2f ]    vers2[ %5.2f %5.2f %5.2f %5.2f ]",
+					GLMPRINTF(( " plane %d  ?쉡ers1[ %5.2f %5.2f %5.2f %5.2f ]    vers2[ %5.2f %5.2f %5.2f %5.2f ]",
 						x,
 						temp1.x,temp1.y,temp1.z,temp1.w,
 						temp2.x,temp2.y,temp2.z,temp2.w
@@ -4685,7 +4685,7 @@ HRESULT IDirect3DDevice9::FlushStates( uint mask )
 				/*
 				if (x<1)
 				{
-					GLMPRINTF(( " plane %d   vers1[ %5.2f %5.2f %5.2f %5.2f ]    √vers2[ %5.2f %5.2f %5.2f %5.2f ]",
+					GLMPRINTF(( " plane %d   vers1[ %5.2f %5.2f %5.2f %5.2f ]    ?쉡ers2[ %5.2f %5.2f %5.2f %5.2f ]",
 						x,
 						temp1.x,temp1.y,temp1.z,temp1.w,
 						temp2.x,temp2.y,temp2.z,temp2.w
@@ -5938,4 +5938,6 @@ IDirect3D9 *Direct3DCreate9(UINT SDKVersion)
 
 
 #endif
+
+
 

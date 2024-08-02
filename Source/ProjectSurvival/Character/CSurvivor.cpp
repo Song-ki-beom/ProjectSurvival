@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CSurvivor.h"
@@ -45,8 +45,8 @@ ACSurvivor::ACSurvivor()
 	//}
 
 	bUseControllerRotationYaw = true;
-	// trueÀÏ °æ¿ì ÄÁÆ®·Ñ·¯ÀÇ È¸Àü ¹æÇâÀ¸·Î Ä³¸¯ÅÍ°¡ È¸ÀüÇÑ´Ù.
-	// falseÀÏ °æ¿ì Ä³¸¯ÅÍÀÇ ÀÌµ¿ ¹æÇâÀ¸·Î Ä³¸¯ÅÍ°¡ È¸ÀüÇÑ´Ù.
+	// trueì¼ ê²½ìš° ì»¨íŠ¸ë¡¤ëŸ¬ì˜ íšŒì „ ë°©í–¥ìœ¼ë¡œ ìºë¦­í„°ê°€ íšŒì „í•œë‹¤.
+	// falseì¼ ê²½ìš° ìºë¦­í„°ì˜ ì´ë™ ë°©í–¥ìœ¼ë¡œ ìºë¦­í„°ê°€ íšŒì „í•œë‹¤.
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
 
@@ -67,7 +67,7 @@ void ACSurvivor::BeginPlay()
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateWidgetVisibility();
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -106,5 +106,24 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
+void ACSurvivor::UpdateWidgetVisibility()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) return;
+
+	APawn* PlayerPawn = PlayerController->GetPawn();
+	if (!PlayerPawn) return;
+
+	float Distance = FVector::Dist(PlayerPawn->GetActorLocation(), GetActorLocation());
+
+	if (Distance > HideDistance)
+	{
+		//SurvivorNameWidgetComponent->SetVisibility(false);
+	}
+	else
+	{
+		//SurvivorNameWidgetComponent->SetVisibility(true);
+	}
+}
 
 

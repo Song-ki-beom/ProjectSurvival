@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2009, Valve LLC, All rights reserved. ============
+﻿//========= Copyright 占?1996-2009, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking leaderboards
 //
@@ -319,3 +319,5 @@ void CLeaderboards::OnUploadScore( LeaderboardScoreUploaded_t *pScoreUploadedRes
 		// could display new rank
 	}
 }
+
+

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2004, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2004, Valve LLC, All rights reserved. ============
 //
 // Purpose:
 //
@@ -91,3 +91,5 @@ public:
 	STEAM_CALLBACK( CNetworkTransport, OnP2PSessionRequest, P2PSessionRequest_t, m_CallbackP2PSessionRequest );
 	STEAM_CALLBACK( CNetworkTransport, OnP2PSessionConnectFail, P2PSessionConnectFail_t, m_CallbackP2PSessionConnectFail );
 };
+
+

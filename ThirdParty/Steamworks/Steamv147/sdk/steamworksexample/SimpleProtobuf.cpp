@@ -1,4 +1,4 @@
-//====== Copyright 1996-2014, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2014, Valve Corporation, All rights reserved. =======
 //
 // Purpose: Simple C++ protobuf manipulation routines. For a more advanced,
 // fully-featured library, see https://developers.google.com/protocol-buffers/
@@ -462,4 +462,6 @@ bool ProtobufExtractField_Fixed32( const std::string &strProtobuf, uint32 uField
 bool ProtobufExtractField_Fixed32( const std::string &strProtobuf, uint32 uFieldNumber, std::vector<uint32> &vec ) { return ProtobufExtractField_T( strProtobuf.data(), strProtobuf.data() + strProtobuf.size(), PROTOBUF_FIELDTAG_FIXED32( uFieldNumber ), vec, &ProtobufReadRepeatedFixed32 ); }
 bool ProtobufExtractField_Fixed32( const std::string &strProtobuf, uint32 uFieldNumber, std::vector<float> &vec ) { return ProtobufExtractField_T( strProtobuf.data(), strProtobuf.data() + strProtobuf.size(), PROTOBUF_FIELDTAG_FIXED32( uFieldNumber ), vec, &ProtobufReadRepeatedFixed32 ); }
 bool ProtobufExtractField_String( const std::string &strProtobuf, uint32 uFieldNumber, std::vector<std::string> &vec ) { return ProtobufExtractField_T( strProtobuf.data(), strProtobuf.data() + strProtobuf.size(), PROTOBUF_FIELDTAG_STRING( uFieldNumber ), vec, &ProtobufReadRepeatedString ); }
+
+
 

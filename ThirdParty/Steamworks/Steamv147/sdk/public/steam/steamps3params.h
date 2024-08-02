@@ -1,4 +1,4 @@
-//====== Copyright 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -110,3 +110,5 @@ struct SteamPS3Memory_t
 
 
 #endif // STEAMPS3PARAMS_H
+
+

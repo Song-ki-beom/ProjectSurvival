@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class to define the main game menu
 //
@@ -28,3 +28,4 @@ private:
 };
 
 #endif // MAINMENU_H
+

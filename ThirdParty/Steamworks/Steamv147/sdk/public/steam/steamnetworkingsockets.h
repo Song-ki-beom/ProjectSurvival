@@ -1,4 +1,4 @@
-//====== Copyright Valve Corporation, All rights reserved. ====================
+﻿//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Kludge adapter that's used for the transition standalone library.
 // This is not the opensource code, or the one in the Steamworks SDK.
@@ -111,3 +111,5 @@ protected:
 };
 
 #endif // ISTEAMNETWORKINGSOCKETS
+
+

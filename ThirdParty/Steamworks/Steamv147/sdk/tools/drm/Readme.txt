@@ -1,4 +1,4 @@
-==================================================
+ï»¿==================================================
 Using the DRM tool
 ==================================================
 
@@ -25,9 +25,9 @@ Steam Guard
 Steam Guard may block you from authenticating.  If so, do the following.
 
 1.	Log into the partner site using the build account to force a steamguard code to be sent 
-2.	Take the steam guard code from email and paste it in place of “code” in the cfg file after “auth:”
+2.	Take the steam guard code from email and paste it in place of ë°¹ode?in the cfg file after ë°¶uth:?
 3.	Run the DRM tool
-4.	Once you’ve successfully signed in and drm’ed an exe, remove the auth line from the cfg file
+4.	Once youë­­e successfully signed in and drmë­™d an exe, remove the auth line from the cfg file
 
 ==================================================
 Example usage
@@ -52,3 +52,5 @@ If you are applying another DRM technology to the executable, wrap the exe with 
 Note on .Net executables
 ==================================================
 Note: The DRM tool breaks most .net executables.  If you are building a .Net executable, you can skip the DRM wrapper, but please put in your own Steam check using SteamAPI_RestartAppIfNecessary( unOwnAppID ).  
+
+

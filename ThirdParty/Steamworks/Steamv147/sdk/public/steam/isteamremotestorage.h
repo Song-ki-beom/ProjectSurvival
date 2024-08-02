@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 占?1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: public interface to user remote file storage in Steam
 //
@@ -685,3 +685,5 @@ struct RemoteStorageFileReadAsyncComplete_t
 
 
 #endif // ISTEAMREMOTESTORAGE_H
+
+

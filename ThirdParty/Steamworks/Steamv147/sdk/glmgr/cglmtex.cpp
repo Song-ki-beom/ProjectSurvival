@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // cglmtex.cpp
 //
@@ -1805,3 +1805,5 @@ void	CGLMTex::ResetSRGB( bool srgb, bool noDataWrite )
 		m_ctx->BindTexToTMU( tmu0save, 0, true );
 	}
 }
+
+

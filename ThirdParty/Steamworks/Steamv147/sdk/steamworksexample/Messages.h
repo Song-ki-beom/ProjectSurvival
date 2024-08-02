@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Defines the wire protocol for the game
 //
@@ -244,3 +244,4 @@ private:
 #pragma pack( pop )
 
 #endif // MESSAGES_H
+

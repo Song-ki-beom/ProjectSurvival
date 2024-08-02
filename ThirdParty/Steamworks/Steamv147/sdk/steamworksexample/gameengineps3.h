@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the game engine -- ps3 implementation
 //
@@ -233,3 +233,5 @@ private:
 };
 
 #endif // GAMEENGINEPS3_H
+
+

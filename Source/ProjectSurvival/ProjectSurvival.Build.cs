@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 using System.IO;
@@ -13,7 +13,7 @@ public class ProjectSurvival : ModuleRules
         PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystemUtils" });
         PrivateIncludePaths.Add("ProjectSurvival");
 
-        // Steam SDK °æ·Î ¼³Á¤
+        // Steam SDK ê²½ë¡œ ì„¤ì •
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
             string SteamLibPath = Path.Combine(ModuleDirectory, "../../ThirdParty/Steamworks/Steamv147/sdk/redistributable_bin/win64");

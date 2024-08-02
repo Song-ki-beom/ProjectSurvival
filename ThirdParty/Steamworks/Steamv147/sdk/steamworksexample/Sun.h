@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for rendering the sun
 //
@@ -25,3 +25,4 @@ public:
 };
 
 #endif // SUN_H
+

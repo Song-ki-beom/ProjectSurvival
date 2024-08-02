@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 占?1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to utility functions in Steam
 //
@@ -287,3 +287,5 @@ struct GamepadTextInputDismissed_t
 #pragma pack( pop )
 
 #endif // ISTEAMUTILS_H
+
+

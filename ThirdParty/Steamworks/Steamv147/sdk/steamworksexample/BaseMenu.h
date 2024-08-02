@@ -1,4 +1,4 @@
-//========= Copyright (c) 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright (c) 1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Base class for various game menu screens
 //
@@ -246,3 +246,5 @@ private:
 };
 
 #endif // MAINMENU_H
+
+

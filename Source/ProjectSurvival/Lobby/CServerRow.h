@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -15,6 +15,9 @@ protected:
 public:
 	void SetUpWidget(class UCLobbyWidget* InParent, uint32 InIndex);
 
+	UFUNCTION()
+		void SelectServer();
+
 public:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* ServerRowButton;
@@ -27,9 +30,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		bool bSelected = false;
 
-	UFUNCTION()
-		void SelectServer();
-
 private:
 	UPROPERTY()
 		class UCLobbyWidget* Parent;
@@ -37,3 +37,4 @@ private:
 		class UPanelWidget* ParentScrollBox;
 	uint32 Index;
 };
+

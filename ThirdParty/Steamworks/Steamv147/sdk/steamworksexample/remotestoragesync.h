@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright 占?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking stats and achievements
 //
@@ -87,3 +87,5 @@ private:
 #endif // !_PS3
 
 #endif
+
+

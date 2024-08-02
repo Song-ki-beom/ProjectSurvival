@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // glmgrext.h
 // helper file for extension testing and runtime importing of entry points
@@ -98,4 +98,6 @@ extern PFNglUniformBufferEXT pfnglUniformBufferEXT;
 
 typedef void (*PFNglGetFramebufferAttachmentParameteriv)(GLenum target, GLenum attachment, GLenum pname, GLint *params);
 extern PFNglGetFramebufferAttachmentParameteriv pfnglGetFramebufferAttachmentParameteriv;
+
+
 

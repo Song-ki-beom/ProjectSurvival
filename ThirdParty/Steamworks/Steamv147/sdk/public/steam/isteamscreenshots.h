@@ -1,4 +1,4 @@
-//====== Copyright � 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 占?1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: public interface to user remote file storage in Steam
 //
@@ -117,4 +117,6 @@ struct ScreenshotRequested_t
 #pragma pack( pop )
 
 #endif // ISTEAMSCREENSHOTS_H
+
+
 

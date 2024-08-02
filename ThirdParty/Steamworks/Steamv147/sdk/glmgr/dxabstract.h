@@ -1,4 +1,4 @@
-//================ Copyright (c) 1996-2009 Valve Corporation. All Rights Reserved. =================
+﻿//================ Copyright (c) 1996-2009 Valve Corporation. All Rights Reserved. =================
 //
 //
 //
@@ -2417,4 +2417,6 @@ HRESULT D3DXCompileShader(
 #define D3DUSAGE_TEXTURE_SRGB (0x80000000L)
 
 #endif // DXABSTRACT_H
+
+
 

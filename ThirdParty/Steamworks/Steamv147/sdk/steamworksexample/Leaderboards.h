@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2009, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2009, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking leaderboards
 //
@@ -62,3 +62,4 @@ private:
 };
 
 #endif // LEADERBOARDS_H
+

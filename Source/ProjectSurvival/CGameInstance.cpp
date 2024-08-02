@@ -1,11 +1,12 @@
-#include "CGameInstance.h"
+ï»¿#include "CGameInstance.h"
 #include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Lobby/CLobbyWidget.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
-//Test
+
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
@@ -106,6 +107,20 @@ void UCGameInstance::RenewServerList()
 	}
 }
 
+void UCGameInstance::RemoveAllWidgets()
+{
+	TArray<UUserWidget*> allWidgets;
+	UWidgetBlueprintLibrary::GetAllWidgetsOfClass(this, allWidgets, UUserWidget::StaticClass(), true);
+
+	for (UUserWidget* widget : allWidgets)
+	{
+		if (widget && widget->IsInViewport())
+		{
+			widget->RemoveFromParent();
+		}
+	}
+}
+
 void UCGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 {
 	if (!Success)
@@ -115,7 +130,7 @@ void UCGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	}
 	LobbyWidget->TearDownWidget();
 	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Waiting?listen");
-	// ÀÏÁ¤ ½Ã°£ Áö¿¬ ÈÄ NetDriver¸¦ È®ÀÎÇÏ´Â Å¸ÀÌ¸Ó ¼³Á¤
+	// ì¼ì • ì‹œê°„ ì§€ì—° í›„ NetDriverë¥¼ í™•ì¸í•˜ëŠ” íƒ€ì´ë¨¸ ì„¤ì •
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UCGameInstance::CheckNetDriver, 1.0f, false);
 
@@ -215,4 +230,5 @@ void UCGameInstance::CheckNetDriver()
 		UE_LOG(LogTemp, Warning, TEXT("NetDriver is valid"));
 	}
 }
+
 

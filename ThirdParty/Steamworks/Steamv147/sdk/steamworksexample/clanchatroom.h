@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2009, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2009, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for joining and showing clan chat rooms
 //
@@ -40,3 +40,4 @@ private:
 };
 
 #endif // CLANCHATROOM_H
+

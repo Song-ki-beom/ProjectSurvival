@@ -1,4 +1,4 @@
-#include "CMainGameMode.h"
+﻿#include "CMainGameMode.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 
@@ -26,3 +26,4 @@ ACMainGameMode::ACMainGameMode()
 		UE_LOG(LogTemp, Warning, TEXT("playerControllerClassFinder failed - ACMainGameMode"));
 	}
 }
+

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for rendering the player ships
 //
@@ -225,3 +225,4 @@ private:
 };
 
 #endif // SHIP_H
+

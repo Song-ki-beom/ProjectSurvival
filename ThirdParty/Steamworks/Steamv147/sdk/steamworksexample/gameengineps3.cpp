@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the game engine -- win32 implementation
 //
@@ -1838,3 +1838,5 @@ void CGameEnginePS3::DeleteAllTextures()
 
 	// Don't really know how to delete textures in the engine, lol.
 }
+
+

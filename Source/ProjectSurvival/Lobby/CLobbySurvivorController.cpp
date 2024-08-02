@@ -1,8 +1,9 @@
-#include "Lobby/CLobbySurvivorController.h"
+﻿#include "Lobby/CLobbySurvivorController.h"
 #include "Lobby/CCustomizeWidget.h"
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbySurvivor.h"
+#include "Net/UnrealNetwork.h"
 
 ACLobbySurvivorController::ACLobbySurvivorController()
 {
@@ -19,7 +20,6 @@ ACLobbySurvivorController::ACLobbySurvivorController()
 		WaitingClass = waitingWidgetFinder.Class;
 	else
 		UE_LOG(LogTemp, Warning, TEXT("waitingWidgetFinder Failed - ACLobbySurvivorController"));
-
 }
 
 void ACLobbySurvivorController::BeginPlay()

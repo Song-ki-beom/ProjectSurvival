@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking stats and achievements
 //
@@ -226,3 +226,4 @@ void CRemoteStorageSync::OnMenuSelection( ERemoteStorageSyncMenuCommand selectio
 }
 
 #endif
+

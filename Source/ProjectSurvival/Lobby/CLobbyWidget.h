@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -33,11 +33,27 @@ public:
 	void SetLobbyInterface(ICLobbyInterface* InLobbyInterface);
 	void SetServerList(TArray<FServerData> InServerName);
 	void SelectIndex(uint32 InIndex);
-private:
-	void UpdateChildren();
 
 private:
-	//¹öÆ° ¸â¹ö º¯¼ö¸íÀº ºí·çÇÁ¸°Æ® À§Á¬¿¡ ÀÖ´Â ¹öÆ° ÀÌ¸§°ú °°¾Æ¾ßÇÔ. ÀÌ¸§ÀÌ °°À¸¸é meta = (BindWidget)¸¦ ÅëÇØ ¹ÙÀÎµå µÊ
+	void UpdateChildren();
+	//ë²„íŠ¼ì— ë°”ì¸ë“œì‹œí‚¬ í•¨ìˆ˜ë“¤
+	UFUNCTION()
+		void SetHostServerName();
+	UFUNCTION()
+		void CreateServer();
+	UFUNCTION()
+		void FindServer();
+	UFUNCTION()
+		void ExitGame();
+	UFUNCTION()
+		void JoinServer();
+	UFUNCTION()
+		void RenewServer();
+	UFUNCTION()
+		void Cancle();
+
+private:
+	//ë²„íŠ¼ ë©¤ë²„ ë³€ìˆ˜ëª…ì€ ë¸”ë£¨í”„ë¦°íŠ¸ ìœ„ì ¯ì— ìˆëŠ” ë²„íŠ¼ ì´ë¦„ê³¼ ê°™ì•„ì•¼í•¨. ì´ë¦„ì´ ê°™ìœ¼ë©´ meta = (BindWidget)ë¥¼ í†µí•´ ë°”ì¸ë“œ ë¨
 	UPROPERTY(meta = (BindWidget))
 		class UButton* CreateButton;
 	UPROPERTY(meta = (BindWidget))
@@ -55,13 +71,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* CreateCancleButton;
 	UPROPERTY(meta = (BindWidget))
-		class UWidget* MainMenu; //À§Á¬ ½ºÀ§Ä¡¸¦ À§ÇÑ ÀÚ·áÇüÀ¸·Î UWidgetÀÌ °¡Àå ¹«³­ÇÏ´Ù. (ÇÑ À§Á¬È­¸éÀÇ ÃÖ»óÀ§ º¯¼ö·Î, ÀÌ¸§ °°¾Æ¾ßÇÔ)
+		class UWidget* MainMenu; //ìœ„ì ¯ ìŠ¤ìœ„ì¹˜ë¥¼ ìœ„í•œ ìë£Œí˜•ìœ¼ë¡œ UWidgetì´ ê°€ì¥ ë¬´ë‚œí•˜ë‹¤. (í•œ ìœ„ì ¯í™”ë©´ì˜ ìµœìƒìœ„ ë³€ìˆ˜ë¡œ, ì´ë¦„ ê°™ì•„ì•¼í•¨)
 	UPROPERTY(meta = (BindWidget))
 		class UWidget* JoinMenu;
 	UPROPERTY(meta = (BindWidget))
 		class UWidget* CreateMenu;
 	UPROPERTY(meta = (BindWidget))
-		class UWidgetSwitcher* MenuSwitcher; //ÇÑ À§Á¬ ¾È¿¡¼­ È­¸é ÀüÈ¯ÇÒ ¶§ ÇÊ¿äÇÔ (½½¶óÀÌµå ¼îÀÇ ½½¶óÀÌµå ¹Ù²Ù±â °°Àº °³³ä)
+		class UWidgetSwitcher* MenuSwitcher; //í•œ ìœ„ì ¯ ì•ˆì—ì„œ í™”ë©´ ì „í™˜í•  ë•Œ í•„ìš”í•¨ (ìŠ¬ë¼ì´ë“œ ì‡¼ì˜ ìŠ¬ë¼ì´ë“œ ë°”ê¾¸ê¸° ê°™ì€ ê°œë…)
 	UPROPERTY(meta = (BindWidget))
 		class UPanelWidget* ServerList;
 	UPROPERTY(meta = (BindWidget))
@@ -71,23 +87,7 @@ private:
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> ServerRowClass;
 
-	//¹öÆ°¿¡ ¹ÙÀÎµå½ÃÅ³ ÇÔ¼öµé
-	UFUNCTION()
-		void SetHostServerName();
-	UFUNCTION()
-		void CreateServer();
-	UFUNCTION()
-		void FindServer();
-	UFUNCTION()
-		void ExitGame();
-	UFUNCTION()
-		void JoinServer();
-	UFUNCTION()
-		void RenewServer();
-	UFUNCTION()
-		void Cancle();
-
-
 	ICLobbyInterface* LobbyInterface;
 	TOptional<uint32> SelectedIndex;
 };
+

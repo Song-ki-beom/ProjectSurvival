@@ -1,4 +1,4 @@
-//============ Copyright (c) Valve Corporation, All rights reserved. ============
+﻿//============ Copyright (c) Valve Corporation, All rights reserved. ============
 //
 // cglmbuffer.cpp
 //
@@ -360,3 +360,5 @@ void	CGLMBuffer::Unlock( void )
 
 	m_mapped = false;
 }
+
+

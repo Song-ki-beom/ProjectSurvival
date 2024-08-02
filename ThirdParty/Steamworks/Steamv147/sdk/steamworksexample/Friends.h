@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2009, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2009, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class for tracking friends list
 //
@@ -38,3 +38,4 @@ private:
 };
 
 #endif // FRIENDS_H
+

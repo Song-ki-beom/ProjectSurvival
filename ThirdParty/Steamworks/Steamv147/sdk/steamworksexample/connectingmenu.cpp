@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve LLC, All rights reserved. ============
+ï»¿//========= Copyright ?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Class to define the connecting game menu
 //
@@ -36,3 +36,4 @@ void CConnectingMenu::OnConnectFailure()
 	AddMenuItem( MenuItem_t( "Link Existing Account", k_EClientLinkSteamAccount ) );
 	AddMenuItem( MenuItem_t( "Autocreate Account", k_EClientAutoCreateAccount ) );
 }
+

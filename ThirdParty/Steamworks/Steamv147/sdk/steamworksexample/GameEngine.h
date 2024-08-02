@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright 占?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the game engine
 //
@@ -221,3 +221,5 @@ public:
 };
 
 #endif // GAMEENGINE_H
+
+

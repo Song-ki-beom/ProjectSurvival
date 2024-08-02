@@ -1,4 +1,4 @@
-//====== Copyright Valve Corporation, All rights reserved. ====================
+﻿//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Internal implementation details of the steamworks SDK.
 //
@@ -389,5 +389,7 @@ private:
 	ISteamUGC					*m_pSteamUGC;
 	ISteamApps					*m_pSteamApps;
 };
+
+
 
 

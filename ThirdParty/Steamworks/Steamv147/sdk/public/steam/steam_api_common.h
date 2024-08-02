@@ -1,4 +1,4 @@
-//====== Copyright Valve Corporation, All rights reserved. ====================
+﻿//====== Copyright Valve Corporation, All rights reserved. ====================
 //
 // Steamworks SDK minimal include
 //
@@ -229,3 +229,5 @@ public:
 #include "steam_api_internal.h"
 
 #endif // STEAM_API_COMMON_H
+
+

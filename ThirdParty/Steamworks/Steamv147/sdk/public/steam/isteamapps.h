@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 짤 1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to app data in Steam
 //
@@ -200,3 +200,5 @@ struct FileDetailsResult_t
 
 #pragma pack( pop )
 #endif // ISTEAMAPPS_H
+
+

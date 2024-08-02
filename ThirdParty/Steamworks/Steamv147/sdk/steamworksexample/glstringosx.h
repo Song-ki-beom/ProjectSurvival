@@ -1,4 +1,4 @@
-
+﻿
 #ifdef __OBJC__		// this declaration only appears for files compiling with objc enabled
 
 #import <Cocoa/Cocoa.h>
@@ -44,3 +44,4 @@
 @end
 
 #endif
+

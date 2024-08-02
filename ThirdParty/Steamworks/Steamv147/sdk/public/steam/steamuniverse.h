@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright 占?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose:
 //
@@ -25,3 +25,5 @@ enum EUniverse
 
 
 #endif // STEAMUNIVERSE_H
+
+

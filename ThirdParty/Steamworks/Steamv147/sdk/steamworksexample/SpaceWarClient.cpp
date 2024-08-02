@@ -1,4 +1,4 @@
-//========= Copyright � 1996-2008, Valve LLC, All rights reserved. ============
+﻿//========= Copyright 占?1996-2008, Valve LLC, All rights reserved. ============
 //
 // Purpose: Main class for the space war game client
 //
@@ -2642,3 +2642,5 @@ void CSpaceWarClient::DrawInGameStore()
 	sprintf_safe(rgchBuffer, "Press ESC to return to the Main Menu");
 	m_pGameEngine->BDrawString(m_hInstructionsFont, rect, D3DCOLOR_ARGB(255, 25, 200, 25), TEXTPOS_CENTER | TEXTPOS_TOP, rgchBuffer);
 }
+
+

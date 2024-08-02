@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2008, Valve Corporation, All rights reserved. =======
+﻿//====== Copyright 짤 1996-2008, Valve Corporation, All rights reserved. =======
 //
 // Purpose: interface to steam managing game server/client match making
 //
@@ -1086,3 +1086,5 @@ struct ActiveBeaconsUpdated_t
 
 
 #endif // ISTEAMMATCHMAKING
+
+

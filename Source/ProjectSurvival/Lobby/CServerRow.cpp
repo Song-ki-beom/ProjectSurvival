@@ -1,4 +1,4 @@
-#include "Lobby/CServerRow.h"
+﻿#include "Lobby/CServerRow.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
