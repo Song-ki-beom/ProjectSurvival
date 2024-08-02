@@ -137,7 +137,7 @@ void ACSurvivor::SlashTree()
 	if (bHit)
 	{
 		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-		if(HitComponent)
+		//if (HitComponent);
 	}
 	
 
