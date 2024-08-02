@@ -44,3 +44,4 @@ void ACLobbySurvivorController::LoadWaitingWidget()
 	else
 		UE_LOG(LogTemp, Warning, TEXT("WaitingWidget is not valid"));
 }
+

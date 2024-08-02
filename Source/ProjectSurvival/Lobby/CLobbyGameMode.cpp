@@ -69,3 +69,4 @@ void ACLobbyGameMode::StartGame()
 	bUseSeamlessTravel = true;
 	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
 }
+

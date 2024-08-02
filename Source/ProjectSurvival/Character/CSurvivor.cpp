@@ -8,7 +8,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InputCoreTypes.h"
+#include "DrawDebugHelpers.h"
 
+
+//한글 테스트
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -45,8 +49,8 @@ ACSurvivor::ACSurvivor()
 	//}
 
 	bUseControllerRotationYaw = true;
-	// true일 경우 컨트롤러의 회전 방향으로 캐릭터가 회전한다.
-	// false일 경우 캐릭터의 이동 방향으로 캐릭터가 회전한다.
+	// true�� ��� ��Ʈ�ѷ��� ȸ�� �������� ĳ���Ͱ� ȸ���Ѵ�.
+	// false�� ��� ĳ������ �̵� �������� ĳ���Ͱ� ȸ���Ѵ�.
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
 
@@ -64,10 +68,12 @@ void ACSurvivor::BeginPlay()
 	//SpringArm->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 }
 
+
+
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateWidgetVisibility();
+
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -78,6 +84,8 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACSurvivor::OnMoveRight);
 	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
+	//PlayerInputComponent->BindAction("Slash", this, &ACSurvivor::OnVerticalLook);
+
 }
 
 void ACSurvivor::OnMoveForward(float InAxisValue)
@@ -106,24 +114,33 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
-void ACSurvivor::UpdateWidgetVisibility()
+void ACSurvivor::SlashTree()
 {
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!PlayerController) return;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing !"));
+	
+	FVector StartLocation = GetActorLocation();
+	FVector ForwardVector = GetActorForwardVector();
+	FVector EndLocation = StartLocation + (ForwardVector * TraceDistance);
 
-	APawn* PlayerPawn = PlayerController->GetPawn();
-	if (!PlayerPawn) return;
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 
-	float Distance = FVector::Dist(PlayerPawn->GetActorLocation(), GetActorLocation());
+	bool bHit = GetWorld()-> LineTraceSingleByChannel (
+		HitResult,
+		StartLocation,
+		EndLocation,
+		ECC_Visibility,
+		CollisionParams
+			);
 
-	if (Distance > HideDistance)
+	if (bHit)
 	{
-		//SurvivorNameWidgetComponent->SetVisibility(false);
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		//if (HitComponent);
 	}
-	else
-	{
-		//SurvivorNameWidgetComponent->SetVisibility(true);
-	}
+	
+
 }
 
 
