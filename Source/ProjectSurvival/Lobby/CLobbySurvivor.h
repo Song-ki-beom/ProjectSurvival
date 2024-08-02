@@ -36,7 +36,7 @@ public:
 		void RequestReady();
 
 	UFUNCTION(NetMulticast, Reliable)
-		void BroadcastSetText();
+		void BroadcastSetText(int InIndex);
 
 private:
 	void OnMoveForward(float InAxisValue);

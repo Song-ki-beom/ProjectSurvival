@@ -24,6 +24,8 @@ public:
 		void LoadCustomizeWidget();
 	UFUNCTION()
 		void LoadWaitingWidget();
+	
+	void UpdateDifficultyWidget(int InIndex);
 
 private:
 	UPROPERTY()

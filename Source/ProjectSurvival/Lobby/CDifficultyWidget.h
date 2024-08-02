@@ -45,6 +45,7 @@ public:
 	void ActivateStartButton();
 	void DeactivateStartButton();
 	void SetClientStartButton();
+	void UpdateDifficultyInfo(int InIndex);
 
 private:
 	UFUNCTION()
@@ -86,5 +87,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* StartSwitcher;
+
+	class UDataTable* DifficultyData;
 };
 

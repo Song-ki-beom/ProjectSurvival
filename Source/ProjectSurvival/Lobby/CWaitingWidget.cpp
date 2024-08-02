@@ -59,3 +59,15 @@ void UCWaitingWidget::SetUpWidget()
 		LobbySurvivor->RequestReady();
 	}
 }
+
+void UCWaitingWidget::UpdateDifficultyWidget(int InIndex)
+{
+	if (IsValid(DifficultyWidget))
+	{
+		DifficultyWidget->UpdateDifficultyInfo(InIndex);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("DifficultyWidget is not valid - UCWaitingWidget"));
+	}
+}

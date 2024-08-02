@@ -2,6 +2,7 @@
 #include "Lobby/CLobbyGamemode.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbySurvivorController.h"
+#include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
@@ -29,6 +30,8 @@ bool UCDifficultyWidget::Initialize()
 	if (!IsValid(StartButton)) { UE_LOG(LogTemp, Warning, TEXT("StartButton is invalid")); return false; }
 	StartButton->OnClicked.AddDynamic(this, &UCDifficultyWidget::OnStart);
 
+	DifficultyData = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_Difficulty.DT_Difficulty'")));
+
 	return true;
 }
 
@@ -47,28 +50,87 @@ void UCDifficultyWidget::SetClientStartButton()
 	StartSwitcher->SetActiveWidgetIndex(2);
 }
 
+void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
+{
+	switch (InIndex)
+	{
+		case 0:
+		{
+			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Easy")), TEXT("Find Easy"), true);
+			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
+			DifficultyText->SetText(difficultyInfo->DifficultySummary);
+			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
+			DifficultyDesc_2->SetText(difficultyInfo->DifficultyDetail_2);
+			DifficultyDesc_3->SetText(difficultyInfo->DifficultyDetail_3);
+			DifficultyDesc_4->SetText(difficultyInfo->DifficultyDetail_4);
+			break;
+		}
+		case 1:
+		{
+			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Normal")), TEXT("Find Normal"), true);
+			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
+			DifficultyText->SetText(difficultyInfo->DifficultySummary);
+			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
+			DifficultyDesc_2->SetText(difficultyInfo->DifficultyDetail_2);
+			DifficultyDesc_3->SetText(difficultyInfo->DifficultyDetail_3);
+			DifficultyDesc_4->SetText(difficultyInfo->DifficultyDetail_4);
+			break;
+		}
+		case 2:
+		{
+			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Hard")), TEXT("Find Normal"), true);
+			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
+			DifficultyText->SetText(difficultyInfo->DifficultySummary);
+			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
+			DifficultyDesc_2->SetText(difficultyInfo->DifficultyDetail_2);
+			DifficultyDesc_3->SetText(difficultyInfo->DifficultyDetail_3);
+			DifficultyDesc_4->SetText(difficultyInfo->DifficultyDetail_4);
+			break;
+		}
+		case 3:
+		{
+			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Extreme")), TEXT("Find Normal"), true);
+			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
+			DifficultyText->SetText(difficultyInfo->DifficultySummary);
+			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
+			DifficultyDesc_2->SetText(difficultyInfo->DifficultyDetail_2);
+			DifficultyDesc_3->SetText(difficultyInfo->DifficultyDetail_3);
+			DifficultyDesc_4->SetText(difficultyInfo->DifficultyDetail_4);
+			break;
+		}
+	}
+}
+
 void UCDifficultyWidget::OnEasy()
 {
-	DifficultyDesc_1->SetText(FText::FromString(TEXT("이지")));
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
-		lobbySurvivor->BroadcastSetText();
+		lobbySurvivor->BroadcastSetText(0);
 }
 
 void UCDifficultyWidget::OnNormal()
 {
-	DifficultyDesc_1->SetText(FText::FromString(TEXT("노말")));
+	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
+	if (lobbySurvivor->HasAuthority())
+		lobbySurvivor->BroadcastSetText(1);
 }
 
 void UCDifficultyWidget::OnHard()
 {
-	DifficultyDesc_1->SetText(FText::FromString(TEXT("하드")));
+	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
+	if (lobbySurvivor->HasAuthority())
+		lobbySurvivor->BroadcastSetText(2);
 }
 
 void UCDifficultyWidget::OnExtreme()
 {
-	DifficultyDesc_1->SetText(FText::FromString(TEXT("익스")));
+	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
+	if (lobbySurvivor->HasAuthority())
+		lobbySurvivor->BroadcastSetText(3);
 }
 
 void UCDifficultyWidget::OnStart()

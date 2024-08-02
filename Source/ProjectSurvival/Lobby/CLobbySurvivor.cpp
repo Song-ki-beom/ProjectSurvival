@@ -168,9 +168,17 @@ bool ACLobbySurvivor::RequestReady_Validate()
 	return true;
 }
 
-void ACLobbySurvivor::BroadcastSetText_Implementation()
+void ACLobbySurvivor::BroadcastSetText_Implementation(int InIndex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("TEST"));
+	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	if (IsValid(lobbySurvivorController))
+	{
+		lobbySurvivorController->UpdateDifficultyWidget(InIndex);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("lobbySurvivorController is not valid - ACLobbySurvivor"));
+	}
 }
 
 void ACLobbySurvivor::OnMoveForward(float InAxisValue)

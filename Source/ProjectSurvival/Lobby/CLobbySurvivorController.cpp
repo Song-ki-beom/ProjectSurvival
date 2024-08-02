@@ -45,3 +45,15 @@ void ACLobbySurvivorController::LoadWaitingWidget()
 		UE_LOG(LogTemp, Warning, TEXT("WaitingWidget is not valid"));
 }
 
+void ACLobbySurvivorController::UpdateDifficultyWidget(int InIndex)
+{
+	if (IsValid(WaitingWidget))
+	{
+		WaitingWidget->UpdateDifficultyWidget(InIndex);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("WaitingWidget is not valid ACLobbySurvivorController"));
+	}
+}
+

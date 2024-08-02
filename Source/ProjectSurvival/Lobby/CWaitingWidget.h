@@ -22,6 +22,7 @@ protected:
 
 public:
 	void SetUpWidget();
+	void UpdateDifficultyWidget(int InIndex);
 
 private:
 	class ACLobbySurvivor* LobbySurvivor;
