@@ -4,29 +4,58 @@
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CDifficultyWidget.h"
+#include "Lobby/CLobbyGamemode.h"
+#include "Kismet/GameplayStatics.h"
 
 UCWaitingWidget::UCWaitingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // 위젯 생성자
 {
 
 }
 
-
-
 bool UCWaitingWidget::Initialize()
 {
 	bool Sucess = Super::Initialize();
+
 	return Sucess;
+}
+
+void UCWaitingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (IsValid(LobbyGameMode) && IsValid(LobbySurvivor) && IsValid(DifficultyWidget))
+	{
+		if (LobbySurvivor->HasAuthority())
+		{
+			if (LobbyGameMode->CheckPlayer())
+			{
+				DifficultyWidget->ActivateStartButton();
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("TRUE"));
+			}
+			else
+			{
+				DifficultyWidget->DeactivateStartButton();
+				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("FALSE"));
+			}
+		}
+	}
+
 }
 
 void UCWaitingWidget::SetUpWidget()
 {
 	this->AddToViewport();
 	LobbySurvivor = Cast<ACLobbySurvivor>(GetWorld()->GetFirstPlayerController()->GetPawn());
-
+	
+	if (LobbySurvivor->HasAuthority())
+	{
+		LobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
+	}
+	else
+	{
+		APlayerController* controller = Cast<APlayerController>(LobbySurvivor->GetController());
+		controller->bShowMouseCursor = false;
+		DifficultyWidget->SetClientStartButton();
+		LobbySurvivor->RequestReady();
+	}
 }
-
-void UCWaitingWidget::TearDownWidget()
-{
-	this->RemoveFromViewport();
-}
-// 커스터마이징 정보 전달하는 코드

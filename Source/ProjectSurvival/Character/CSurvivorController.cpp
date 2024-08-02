@@ -3,3 +3,12 @@
 
 #include "Character/CSurvivorController.h"
 
+ACSurvivorController::ACSurvivorController()
+{
+
+}
+
+void ACSurvivorController::BeginPlay()
+{
+	SetInputMode(FInputModeGameOnly());
+}

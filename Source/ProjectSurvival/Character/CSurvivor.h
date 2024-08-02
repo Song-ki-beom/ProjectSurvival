@@ -27,10 +27,14 @@ private:
 	void OnHorizontalLook(float InAxisValue);
 	void OnVerticalLook(float InAxisValue);
 
+	void UpdateWidgetVisibility();
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
+
+	UPROPERTY()
+		float HideDistance = 3000.0f;
 
 };

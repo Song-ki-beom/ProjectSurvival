@@ -33,8 +33,24 @@ public:
 	void SetLobbyInterface(ICLobbyInterface* InLobbyInterface);
 	void SetServerList(TArray<FServerData> InServerName);
 	void SelectIndex(uint32 InIndex);
+
 private:
 	void UpdateChildren();
+	//버튼에 바인드시킬 함수들
+	UFUNCTION()
+		void SetHostServerName();
+	UFUNCTION()
+		void CreateServer();
+	UFUNCTION()
+		void FindServer();
+	UFUNCTION()
+		void ExitGame();
+	UFUNCTION()
+		void JoinServer();
+	UFUNCTION()
+		void RenewServer();
+	UFUNCTION()
+		void Cancle();
 
 private:
 	//버튼 멤버 변수명은 블루프린트 위젯에 있는 버튼 이름과 같아야함. 이름이 같으면 meta = (BindWidget)를 통해 바인드 됨
@@ -70,23 +86,6 @@ private:
 		class UCServerRow* ServerRow;
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> ServerRowClass;
-
-	//버튼에 바인드시킬 함수들
-	UFUNCTION()
-		void SetHostServerName();
-	UFUNCTION()
-		void CreateServer();
-	UFUNCTION()
-		void FindServer();
-	UFUNCTION()
-		void ExitGame();
-	UFUNCTION()
-		void JoinServer();
-	UFUNCTION()
-		void RenewServer();
-	UFUNCTION()
-		void Cancle();
-
 
 	ICLobbyInterface* LobbyInterface;
 	TOptional<uint32> SelectedIndex;

@@ -15,6 +15,9 @@ protected:
 public:
 	void SetUpWidget(class UCLobbyWidget* InParent, uint32 InIndex);
 
+	UFUNCTION()
+		void SelectServer();
+
 public:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* ServerRowButton;
@@ -26,9 +29,6 @@ public:
 		class UTextBlock* Connection;
 	UPROPERTY(BlueprintReadOnly)
 		bool bSelected = false;
-
-	UFUNCTION()
-		void SelectServer();
 
 private:
 	UPROPERTY()

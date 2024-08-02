@@ -67,7 +67,7 @@ void ACSurvivor::BeginPlay()
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UpdateWidgetVisibility();
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -106,5 +106,23 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
+void ACSurvivor::UpdateWidgetVisibility()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController) return;
 
+	APawn* PlayerPawn = PlayerController->GetPawn();
+	if (!PlayerPawn) return;
+
+	float Distance = FVector::Dist(PlayerPawn->GetActorLocation(), GetActorLocation());
+
+	if (Distance > HideDistance)
+	{
+		//SurvivorNameWidgetComponent->SetVisibility(false);
+	}
+	else
+	{
+		//SurvivorNameWidgetComponent->SetVisibility(true);
+	}
+}
 
