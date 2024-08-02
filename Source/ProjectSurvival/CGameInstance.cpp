@@ -115,7 +115,7 @@ void UCGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
 	}
 	LobbyWidget->TearDownWidget();
 	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Waiting?listen");
-	// ÀÏÁ¤ ½Ã°£ Áö¿¬ ÈÄ NetDriver¸¦ È®ÀÎÇÏ´Â Å¸ÀÌ¸Ó ¼³Á¤
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ NetDriverï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ Å¸ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UCGameInstance::CheckNetDriver, 1.0f, false);
 

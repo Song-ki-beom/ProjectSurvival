@@ -18,7 +18,7 @@ public:
 
 	virtual void Init() override;
 
-	//·¹º§ ºí·çÇÁ¸°Æ®¿¡¼­ È£ÃâÇÏ´Â ÇÔ¼ö
+	//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
 	UFUNCTION(BlueprintCallable)
 		void LoadLobbyWidget();
 
