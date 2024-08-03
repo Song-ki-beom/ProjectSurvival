@@ -1,25 +1,25 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 
 /**
-* ÆÄÀÏ¸í, ÇÔ¼ö¸í, ÁÙ ¼ø¼­´ë·Î Ãâ·ÂÇÏ´Â ¸ÅÅ©·Î
-* LogLine - ·Î±× Ãâ·Â
-* PrintLine - ±âº» ¸Þ½ÃÁö Ãâ·Â (±âº» »ö»ó ³ë¶õ»ö, ±âº» Ãâ·Â ½Ã°£ 10ÃÊ)
-* PrintLine_Detail(Color, Duration) - Ä¿½ºÅÒ ¸Þ½ÃÁö Ãâ·Â (»ö»ó FColor, ½Ã°£ float)
+* íŒŒì¼ëª…, í•¨ìˆ˜ëª…, ì¤„ ìˆœì„œëŒ€ë¡œ ì¶œë ¥í•˜ëŠ” ë§¤í¬ë¡œ
+* LogLine - ë¡œê·¸ ì¶œë ¥
+* PrintLine - ê¸°ë³¸ ë©”ì‹œì§€ ì¶œë ¥ (ê¸°ë³¸ ìƒ‰ìƒ ë…¸ëž€ìƒ‰, ê¸°ë³¸ ì¶œë ¥ ì‹œê°„ 10ì´ˆ)
+* PrintLine_Detail(Color, Duration) - ì»¤ìŠ¤í…€ ë©”ì‹œì§€ ì¶œë ¥ (ìƒ‰ìƒ FColor, ì‹œê°„ float)
 * 
-* Log ÇÔ¼ö : int32, float, bool, FVector, FRotator, FQuat, UObject °ª ·Î±× Ãâ·Â
-* Log(Value) -> °ª¸¸ Ãâ·Â
-* Log("Text", Value) -> °ª ¾Õ¿¡ ÅØ½ºÆ® ºÙ¿©¼­ Ãâ·Â
-* Log(Value, "Text") -> °ª µÚ¿¡ ÅØ½ºÆ® ºÙ¿©¼­ Ãâ·Â
+* Log í•¨ìˆ˜ : int32, float, bool, FVector, FRotator, FQuat, UObject ê°’ ë¡œê·¸ ì¶œë ¥
+* Log(Value) -> ê°’ë§Œ ì¶œë ¥
+* Log("Text", Value) -> ê°’ ì•žì— í…ìŠ¤íŠ¸ ë¶™ì—¬ì„œ ì¶œë ¥
+* Log(Value, "Text") -> ê°’ ë’¤ì— í…ìŠ¤íŠ¸ ë¶™ì—¬ì„œ ì¶œë ¥
 * 
-* Print ÇÔ¼ö : int32, float, bool, FVector, FRotator, FQuat, UObject °ª ¸Þ½ÃÁö Ãâ·Â (±âº» »ö»ó ³ë¶õ»ö, ±âº» Ãâ·Â ½Ã°£ 10ÃÊ)
-* Print(Value) -> °ª¸¸ Ãâ·Â (±âº» »ö»ó ³ë¶õ»ö, ±âº» Ãâ·Â ½Ã°£ 10ÃÊ)
-* Print("Text", Value) -> °ª ¾Õ¿¡ ÅØ½ºÆ® ºÙ¿©¼­ Ãâ·Â (±âº» »ö»ó ³ë¶õ»ö, ±âº» Ãâ·Â ½Ã°£ 10ÃÊ)
-* Print(Value, "Text") -> °ª µÚ¿¡ ÅØ½ºÆ® ºÙ¿©¼­ Ãâ·Â (±âº» »ö»ó ³ë¶õ»ö, ±âº» Ãâ·Â ½Ã°£ 10ÃÊ)
-* Print(Value, Color, Duration) -> °ª¸¸ Ãâ·Â (ÁöÁ¤ »ö»ó, ÁöÁ¤ Ãâ·Â ½Ã°£)
-* Print("Text", Value, Color, Duration) -> °ª ¾Õ¿¡ ÅØ½ºÆ® ºÙ¿©¼­ Ãâ·Â (ÁöÁ¤ »ö»ó, ÁöÁ¤ Ãâ·Â ½Ã°£)
-* Print(Value, "Text", Color, Duration) -> °ª µÚ¿¡ ÅØ½ºÆ® ºÙ¿©¼­ Ãâ·Â (ÁöÁ¤ »ö»ó, ÁöÁ¤ Ãâ·Â ½Ã°£)
+* Print í•¨ìˆ˜ : int32, float, bool, FVector, FRotator, FQuat, UObject ê°’ ë©”ì‹œì§€ ì¶œë ¥ (ê¸°ë³¸ ìƒ‰ìƒ ë…¸ëž€ìƒ‰, ê¸°ë³¸ ì¶œë ¥ ì‹œê°„ 10ì´ˆ)
+* Print(Value) -> ê°’ë§Œ ì¶œë ¥ (ê¸°ë³¸ ìƒ‰ìƒ ë…¸ëž€ìƒ‰, ê¸°ë³¸ ì¶œë ¥ ì‹œê°„ 10ì´ˆ)
+* Print("Text", Value) -> ê°’ ì•žì— í…ìŠ¤íŠ¸ ë¶™ì—¬ì„œ ì¶œë ¥ (ê¸°ë³¸ ìƒ‰ìƒ ë…¸ëž€ìƒ‰, ê¸°ë³¸ ì¶œë ¥ ì‹œê°„ 10ì´ˆ)
+* Print(Value, "Text") -> ê°’ ë’¤ì— í…ìŠ¤íŠ¸ ë¶™ì—¬ì„œ ì¶œë ¥ (ê¸°ë³¸ ìƒ‰ìƒ ë…¸ëž€ìƒ‰, ê¸°ë³¸ ì¶œë ¥ ì‹œê°„ 10ì´ˆ)
+* Print(Value, Color, Duration) -> ê°’ë§Œ ì¶œë ¥ (ì§€ì • ìƒ‰ìƒ, ì§€ì • ì¶œë ¥ ì‹œê°„)
+* Print("Text", Value, Color, Duration) -> ê°’ ì•žì— í…ìŠ¤íŠ¸ ë¶™ì—¬ì„œ ì¶œë ¥ (ì§€ì • ìƒ‰ìƒ, ì§€ì • ì¶œë ¥ ì‹œê°„)
+* Print(Value, "Text", Color, Duration) -> ê°’ ë’¤ì— í…ìŠ¤íŠ¸ ë¶™ì—¬ì„œ ì¶œë ¥ (ì§€ì • ìƒ‰ìƒ, ì§€ì • ì¶œë ¥ ì‹œê°„)
 */
 
 DECLARE_LOG_CATEGORY_EXTERN(UserDebug, Log, All);
