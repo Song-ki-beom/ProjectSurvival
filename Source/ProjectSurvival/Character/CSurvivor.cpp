@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputCoreTypes.h"
 #include "DrawDebugHelpers.h"
+#include "Utility/CDebug.h"
 
 ACSurvivor::ACSurvivor()
 {
@@ -111,6 +112,77 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 
 void ACSurvivor::SlashTree()
 {
+	int myint = 32;
+	float myfloat = 10.0f;
+	bool mybool = true;
+	FVector myVector = GetActorLocation();
+	FRotator myRotator = GetActorRotation();
+	FQuat myQuat = GetActorQuat();
+	UObject* myObject = GetWorld()->GetFirstPlayerController();
+	UClass* myClass = GetWorld()->GetFirstPlayerController()->StaticClass();
+	
+	// 디버그 테스트 시작 //
+	LogLine;
+	PrintLine;
+	PrintLine_Detail(FColor::Green, 5);
+
+	CDebug::Log(myint);
+	CDebug::Log(myint, "Test int");
+	CDebug::Log("Test int", myint);
+	CDebug::Print(myint);
+	CDebug::Print(myint, "Test int");
+	CDebug::Print("Test int", myint);
+
+	CDebug::Log(myfloat);
+	CDebug::Log(myfloat, "Test float");
+	CDebug::Log("Test float", myfloat);
+	CDebug::Print(myfloat);
+	CDebug::Print(myfloat, "Test float");
+	CDebug::Print("Test float", myfloat);
+
+	CDebug::Log(mybool);
+	CDebug::Log(mybool, "Test bool");
+	CDebug::Log("Test bool", mybool);
+	CDebug::Print(mybool);
+	CDebug::Print(mybool, "Test bool");
+	CDebug::Print("Test bool", mybool);
+
+	CDebug::Log(myVector);
+	CDebug::Log(myVector, "Test Vector");
+	CDebug::Log("Test Vector", myVector);
+	CDebug::Print(myVector);
+	CDebug::Print(myVector, "Test Vector");
+	CDebug::Print("Test Vector", myVector);
+
+	CDebug::Log(myRotator);
+	CDebug::Log(myRotator, "Test Rotator");
+	CDebug::Log("Test Rotator", myRotator);
+	CDebug::Print(myRotator);
+	CDebug::Print(myRotator, "Test Rotator");
+	CDebug::Print("Test Rotator", myRotator);
+
+	CDebug::Log(myQuat);
+	CDebug::Log(myQuat, "Test Quat");
+	CDebug::Log("Test Quat", myQuat);
+	CDebug::Print(myQuat);
+	CDebug::Print(myQuat, "Test Quat");
+	CDebug::Print("Test Quat", myQuat);
+
+	CDebug::Log(myObject);
+	CDebug::Log(myObject, "Test Object");
+	CDebug::Log("Test Object", myObject);
+	CDebug::Print(myObject);
+	CDebug::Print(myObject, "Test Object");
+	CDebug::Print("Test Object", myObject);
+
+	CDebug::Log(myClass);
+	CDebug::Log(myClass, "Test Class");
+	CDebug::Log("Test Class", myClass);
+	CDebug::Print(myClass);
+	CDebug::Print(myClass, "Test Class");
+	CDebug::Print("Test Class", myClass);
+	// 디버그 테스트 끝//
+
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing !"));
 	
 	FVector StartLocation = GetActorLocation();

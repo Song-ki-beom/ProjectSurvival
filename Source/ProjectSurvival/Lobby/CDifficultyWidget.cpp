@@ -52,8 +52,10 @@ void UCDifficultyWidget::SetClientStartButton()
 
 void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 {
-	switch (InIndex)
+	if (IsValid(DifficultyData))
 	{
+		switch (InIndex)
+		{
 		case 0:
 		{
 			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Easy")), TEXT("Find Easy"), true);
@@ -98,6 +100,11 @@ void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 			DifficultyDesc_4->SetText(difficultyInfo->DifficultyDetail_4);
 			break;
 		}
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("DifficultyData is not valid - UCDifficultyWidget"));
 	}
 }
 
