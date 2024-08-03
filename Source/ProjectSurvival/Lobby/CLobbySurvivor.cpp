@@ -13,17 +13,67 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Utility/CDebug.h"
 
 ACLobbySurvivor::ACLobbySurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
+	Boots = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Boots"));
+	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
+	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
+	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
+	//class UDataTable* CustomizePantsData;
+	//class UDataTable* CustomizeSingleData;
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeHead.DT_CustomizeHead'"));
+	if (customizeHeadDataFinder.Succeeded())
+	{
+		CustomizeHeadData = customizeHeadDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("customizeHeadDataFinder Failed");
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizePantsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizePants.DT_CustomizePants'"));
+	if (customizePantsDataFinder.Succeeded())
+	{
+		CustomizePantsData = customizePantsDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("customizePantsDataFinder Failed");
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeBootsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeBoots.DT_CustomizeBoots'"));
+	if (customizeBootsDataFinder.Succeeded())
+	{
+		CustomizeBootsData = customizeBootsDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("customizeBootsDataFinder Failed");
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSingleDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeSingle.DT_CustomizeSingle'"));
+	if (customizeSingleDataFinder.Succeeded())
+	{
+		CustomizeSingleData = customizeSingleDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("customizeSingleDataFinder Failed");
+	}
+	
 	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
 	if (survivorNameClassFinder.Succeeded())
 	{
@@ -42,19 +92,31 @@ ACLobbySurvivor::ACLobbySurvivor()
 	SurvivorNameWidgetComponent->SetWidgetClass(SurvivorNameClass);
 	SurvivorNameWidgetComponent->InitWidget();
 
-	USkeletalMesh* skeletalMesh = nullptr;
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor.SK_Survivor'"));
-	if (skeletalMeshFinder.Succeeded())
+	USkeletalMesh* skeletalHeadMesh = nullptr;
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalHeadMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor_Hair_01.SK_Survivor_Hair_01'"));
+	if (skeletalHeadMeshFinder.Succeeded())
 	{
-		skeletalMesh = skeletalMeshFinder.Object;
-		GetMesh()->SetSkeletalMesh(skeletalMesh);
+		
+		skeletalHeadMesh = skeletalHeadMeshFinder.Object;
+		GetMesh()->SetSkeletalMesh(skeletalHeadMesh);
 		GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 		GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("skeletalMeshFinder Failed - ACLobbySurvivor"));
+		CDebug::Log("skeletalHeadMeshFinder is not valid.");
 	}
+
+	//UPROPERTY()
+	//	class USkeletalMeshComponent* AccessoryMesh;
+	//UPROPERTY()
+	//	class USkeletalMeshComponent* BodyMesh;
+	//UPROPERTY()
+	//	class USkeletalMeshComponent* HandMesh;
+	//UPROPERTY()
+	//	class USkeletalMeshComponent* PantsMesh;
+	//UPROPERTY()
+	//	class USkeletalMeshComponent* BootsMesh;
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -71,6 +133,8 @@ ACLobbySurvivor::ACLobbySurvivor()
 void ACLobbySurvivor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitCustomize();
 }
 
 void ACLobbySurvivor::Tick(float DeltaTime)
@@ -83,6 +147,40 @@ void ACLobbySurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACLobbySurvivor::OnMoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACLobbySurvivor::OnMoveRight);
+}
+
+void ACLobbySurvivor::InitCustomize()
+{
+	FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(FName("Head_01"), TEXT("HeadMeshRowFind"));
+	USkeletalMesh* headMesh = headMeshRow->HeadMesh;
+	GetMesh()->SetSkeletalMesh(headMesh);
+
+	FSkeletalPantsMeshRow* pantsMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(FName("Pants_01"), TEXT("PantsMeshRowFind"));
+	USkeletalMesh* pantsMesh = pantsMeshRow->PantsMesh;
+	Pants->SetSkeletalMesh(pantsMesh);
+	Pants->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+
+	FSkeletalBootsMeshRow* bootsMeshRow = CustomizeBootsData->FindRow<FSkeletalBootsMeshRow>(FName("Boots_01"), TEXT("BootsMeshRowFind"));
+	USkeletalMesh* bootsMesh = bootsMeshRow->BootsMesh;
+	Boots->SetSkeletalMesh(bootsMesh);
+	Boots->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+
+	FSkeletalSingleMeshRow* singleMeshRow = CustomizeSingleData->FindRow<FSkeletalSingleMeshRow>(FName("Single"), TEXT("SingleMeshRowFind"));
+	USkeletalMesh* accessoryMesh = singleMeshRow->AccessoryMesh;
+	Accessory->SetSkeletalMesh(accessoryMesh);
+	Accessory->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	USkeletalMesh* bodyMesh = singleMeshRow->BodyMesh;
+	Body->SetSkeletalMesh(bodyMesh);
+	Body->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	USkeletalMesh* handsMesh = singleMeshRow->HandsMesh;
+	Hands->SetSkeletalMesh(handsMesh);
+	Hands->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+
+	Pants->SetMasterPoseComponent(GetMesh());
+	Boots->SetMasterPoseComponent(GetMesh());
+	Accessory->SetMasterPoseComponent(GetMesh());
+	Body->SetMasterPoseComponent(GetMesh());
+	Hands->SetMasterPoseComponent(GetMesh());
 }
 
 void ACLobbySurvivor::SetLocalValue()

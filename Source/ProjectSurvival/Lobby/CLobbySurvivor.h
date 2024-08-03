@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Engine/DataTable.h"
 #include "CLobbySurvivor.generated.h"
 
 /**
@@ -11,6 +12,50 @@
 * OnRep_ReplicatedSurvivorName() - ReplicatedSurvivorName 변수가 바뀔때 호출되는 함수
 */
 
+USTRUCT(BlueprintType)
+struct FSkeletalHeadMeshRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* HeadMesh;
+};
+
+USTRUCT(BlueprintType)
+struct FSkeletalPantsMeshRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* PantsMesh;
+};
+
+USTRUCT(BlueprintType)
+struct FSkeletalBootsMeshRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* BootsMesh;
+};
+
+USTRUCT (BlueprintType)
+struct FSkeletalSingleMeshRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* AccessoryMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* BodyMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USkeletalMesh* HandsMesh;
+
+};
 UCLASS()
 class PROJECTSURVIVAL_API ACLobbySurvivor : public ACharacter
 {
@@ -25,6 +70,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	void InitCustomize();
 	void SetLocalValue();
 	void SetSurvivorName(const FText& InText);
 	void PerformSetSurvivorName(const FText& InText);
@@ -47,6 +93,22 @@ private:
 		class USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
+
+	UPROPERTY()
+		class USkeletalMeshComponent* Pants;
+	UPROPERTY()
+		class USkeletalMeshComponent* Boots;
+	UPROPERTY()
+		class USkeletalMeshComponent* Accessory;
+	UPROPERTY()
+		class USkeletalMeshComponent* Body;
+	UPROPERTY()
+		class USkeletalMeshComponent* Hands;
+
+	class UDataTable* CustomizeHeadData;
+	class UDataTable* CustomizePantsData;
+	class UDataTable* CustomizeBootsData;
+	class UDataTable* CustomizeSingleData;
 
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<class UUserWidget> SurvivorNameClass;
