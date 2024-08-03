@@ -8,7 +8,7 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Engine/TextureRenderTarget2D.h"
-#include "Materials/MaterialInstanceDynamic.h"
+#include "CGameInstance.h"
 
 UCCustomizeWidget::UCCustomizeWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // 위젯 생성자
 {
@@ -73,6 +73,8 @@ void UCCustomizeWidget::CreateSurvivor()
 	{
 		lobbySurvivorController->LoadWaitingWidget();
 	}
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	gameInstance->SaveSurvivorName(SurvivorName->GetText());
 }
 
 void UCCustomizeWidget::ExitGame()

@@ -7,6 +7,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "CGameInstance.h"
 
 bool UCDifficultyWidget::Initialize()
 {
@@ -114,6 +115,8 @@ void UCDifficultyWidget::OnEasy()
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
 		lobbySurvivor->BroadcastSetText(0);
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	gameInstance->SetDifficultyCoeff(0.75f);
 }
 
 void UCDifficultyWidget::OnNormal()
@@ -122,6 +125,8 @@ void UCDifficultyWidget::OnNormal()
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
 		lobbySurvivor->BroadcastSetText(1);
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	gameInstance->SetDifficultyCoeff(1.0f);
 }
 
 void UCDifficultyWidget::OnHard()
@@ -130,6 +135,8 @@ void UCDifficultyWidget::OnHard()
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
 		lobbySurvivor->BroadcastSetText(2);
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	gameInstance->SetDifficultyCoeff(1.5f);
 }
 
 void UCDifficultyWidget::OnExtreme()
@@ -138,6 +145,8 @@ void UCDifficultyWidget::OnExtreme()
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
 		lobbySurvivor->BroadcastSetText(3);
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	gameInstance->SetDifficultyCoeff(2.5f);
 }
 
 void UCDifficultyWidget::OnStart()

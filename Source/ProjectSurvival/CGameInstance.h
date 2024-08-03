@@ -31,6 +31,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RemoveAllWidgets();
 
+	void SaveSurvivorName(FText InText) { SurvivorName = InText; }
+	FText GetLobbySurvivorName() { return SurvivorName; }
+
+	float GetDifficultyCoeff() { return DifficultyCoeff; }
+	void SetDifficultyCoeff(float InCoeff) { DifficultyCoeff = InCoeff; }
+
 private:
 	void OnCreateSessionComplete(FName SessionName, bool Success);
 	void OnDestroySessionComplete(FName SessionName, bool Success);
@@ -45,6 +51,7 @@ public:
 	UPROPERTY()
 		FName currentSessionName;
 
+
 private:
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> LobbyClass;
@@ -56,6 +63,12 @@ private:
 	IOnlineIdentityPtr IdentityInterface;
 	TSharedPtr<const FUniqueNetId> playerNetId;
 	FString DesiredServerName;
+
+	UPROPERTY()
+		FText SurvivorName;
+
+	UPROPERTY()
+		float DifficultyCoeff;
 };
 
 

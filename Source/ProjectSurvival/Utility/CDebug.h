@@ -20,6 +20,8 @@
 * Print(Value, Color, Duration) -> 값만 출력 (지정 색상, 지정 출력 시간)
 * Print("Text", Value, Color, Duration) -> 값 앞에 텍스트 붙여서 출력 (지정 색상, 지정 출력 시간)
 * Print(Value, "Text", Color, Duration) -> 값 뒤에 텍스트 붙여서 출력 (지정 색상, 지정 출력 시간)
+* 
+* bool 디버그의 경우 bool이 앞에 나오는 경우 암시적 변환 때문에 구현을 하지않음. Print("Text", bIsLive) 이런식으로만 쓸 것
 */
 
 DECLARE_LOG_CATEGORY_EXTERN(UserDebug, Log, All);
@@ -37,7 +39,6 @@ public:
 
 	static void Log(int Value, const FString& Message = "");
 	static void Log(float Value, const FString& Message = "");
-	static void Log(bool Value, const FString& Message = "");
 	static void Log(const FVector& Value, const FString& Message = "");
 	static void Log(const FRotator& Value, const FString& Message = "");
 	static void Log(const FQuat& Value, const FString& Message = "");
@@ -56,7 +57,6 @@ public:
 	
 	static void Print(int32 Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(float Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	static void Print(bool Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FVector& Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FRotator& Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FQuat& Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);

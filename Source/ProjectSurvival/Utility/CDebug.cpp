@@ -2,6 +2,7 @@
 
 DEFINE_LOG_CATEGORY(UserDebug)
 
+
 void CDebug::Log(const FString& FileName, const FString& FunctionName, int32 LineNumber)
 {
 	FString cleanFileName = FPaths::GetCleanFilename(FileName);
@@ -25,12 +26,6 @@ void CDebug::Log(int Value, const FString& Message)
 void CDebug::Log(float Value, const FString& Message)
 {
 	UE_LOG(UserDebug, Warning, TEXT("%f %s"), Value, *Message);
-}
-
-void CDebug::Log(bool Value, const FString& Message)
-{
-	FString boolValue = Value ? "TRUE" : "FALSE";
-	UE_LOG(UserDebug, Warning, TEXT("%s %s"), *boolValue, *Message);
 }
 
 void CDebug::Log(const FVector& Value, const FString& Message)
@@ -99,6 +94,11 @@ void CDebug::Print(const FString& FileName, const FString& FunctionName, int32 L
 	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("[%s - %s - %d]"), *cleanFileName, *cleanFunctionName, LineNumber));
 }
 
+void CDebug::Print(const FString& Message, FColor Color, float Duration, int32 Key)
+{
+	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("%s"), *Message));
+}
+
 void CDebug::Print(int32 Value, const FString& Message, FColor Color, float Duration, int32 Key)
 {
 	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("%d %s"), Value, *Message));
@@ -107,12 +107,6 @@ void CDebug::Print(int32 Value, const FString& Message, FColor Color, float Dura
 void CDebug::Print(float Value, const FString& Message, FColor Color, float Duration, int32 Key)
 {
 	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("%f %s"), Value, *Message));
-}
-
-void CDebug::Print(bool Value, const FString& Message, FColor Color, float Duration, int32 Key)
-{
-	FString boolValue = Value ? "TRUE" : "FALSE";
-	GEngine->AddOnScreenDebugMessage(Key, Duration, Color, FString::Printf(TEXT("%s %s"), *boolValue, *Message));
 }
 
 void CDebug::Print(const FVector& Value, const FString& Message, FColor Color, float Duration, int32 Key)

@@ -2,12 +2,17 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputCoreTypes.h"
 #include "DrawDebugHelpers.h"
+#include "Net/UnrealNetwork.h"
+#include "CGameInstance.h"
 #include "Utility/CDebug.h"
+
 
 ACSurvivor::ACSurvivor()
 {
@@ -55,16 +60,44 @@ ACSurvivor::ACSurvivor()
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
 
-	
+	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
+	if (survivorNameClassFinder.Succeeded())
+	{
+		SurvivorNameClass = survivorNameClassFinder.Class;
+	}
+	else
+	{
+		CDebug::Print("survivorNameClassFinder Failed");
+	}
+
+	SurvivorNameWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("SurvivorName"));
+	SurvivorNameWidgetComponent->SetupAttachment(GetRootComponent());
+	SurvivorNameWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 25.0f));
+	SurvivorNameWidgetComponent->SetDrawSize(FVector2D(200.f, 50.f));
+	SurvivorNameWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	SurvivorNameWidgetComponent->SetWidgetClass(SurvivorNameClass);
+	SurvivorNameWidgetComponent->InitWidget();
 }
 
 void ACSurvivor::BeginPlay()
 {
 	Super::BeginPlay();
-	//SpringArm->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	FText tempName = gameInstance->GetLobbySurvivorName();
+	FString stringName = tempName.ToString();
+	CDebug::Print(stringName);
+	//CDebug::Print(gameInstance->GetLobbySurvivorName().ToString());
+
+	if (HasAuthority())
+	{
+		PerformSetSurvivorName(gameInstance->GetLobbySurvivorName());
+	}
+	else
+	{
+		RequestSetSurvivorName(gameInstance->GetLobbySurvivorName());
+	}
 }
-
-
 
 void ACSurvivor::Tick(float DeltaTime)
 {
@@ -81,7 +114,6 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
 	//PlayerInputComponent->BindAction("Slash", this, &ACSurvivor::OnVerticalLook);
-
 }
 
 void ACSurvivor::OnMoveForward(float InAxisValue)
@@ -120,7 +152,7 @@ void ACSurvivor::SlashTree()
 	FQuat myQuat = GetActorQuat();
 	UObject* myObject = GetWorld()->GetFirstPlayerController();
 	UClass* myClass = GetWorld()->GetFirstPlayerController()->StaticClass();
-	
+
 	// 디버그 테스트 시작 //
 	LogLine;
 	PrintLine;
@@ -140,10 +172,10 @@ void ACSurvivor::SlashTree()
 	CDebug::Print(myfloat, "Test float");
 	CDebug::Print("Test float", myfloat);
 
-	CDebug::Log(mybool);
+	//CDebug::Log(mybool); 쓰지않음
 	CDebug::Log(mybool, "Test bool");
 	CDebug::Log("Test bool", mybool);
-	CDebug::Print(mybool);
+	//CDebug::Print(mybool); 쓰지않음
 	CDebug::Print(mybool, "Test bool");
 	CDebug::Print("Test bool", mybool);
 
@@ -184,7 +216,7 @@ void ACSurvivor::SlashTree()
 	// 디버그 테스트 끝//
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing !"));
-	
+
 	FVector StartLocation = GetActorLocation();
 	FVector ForwardVector = GetActorForwardVector();
 	FVector EndLocation = StartLocation + (ForwardVector * TraceDistance);
@@ -193,21 +225,74 @@ void ACSurvivor::SlashTree()
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
-	bool bHit = GetWorld()-> LineTraceSingleByChannel (
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		StartLocation,
 		EndLocation,
 		ECC_Visibility,
 		CollisionParams
-			);
+	);
 
 	if (bHit)
 	{
 		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
 		//if (HitComponent);
 	}
-	
+}
+
+void ACSurvivor::PerformSetSurvivorName(const FText& InText)
+{
+	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
+	UpdateSurvivorNameWidget();
+}
+
+void ACSurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
+{
+	PerformSetSurvivorName(InText);
+}
+
+bool ACSurvivor::RequestSetSurvivorName_Validate(const FText& InText)
+{
+	return true;
+}
+
+void ACSurvivor::UpdateSurvivorNameWidget()
+{
+	CDebug::Print("Update Called");
+	if (SurvivorNameWidgetComponent)
+	{
+		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
+		{
+			UTextBlock* TextBlock = Cast<UTextBlock>(SurvivorNameWidgetComponent->GetUserWidgetObject()->GetWidgetFromName(TEXT("SurvivorName")));
+			if (TextBlock)
+			{
+				TextBlock->SetText(ReplicatedSurvivorName);
+				CDebug::Print("SetText Called");
+			}
+			else
+			{
+				CDebug::Print("TextBlock is not valid");
+			}
+		}
+		else
+		{
+			CDebug::Print("UserWidgetObject is not valid");
+		}
+	}
+	else
+	{
+		CDebug::Print("SurvivorNameWidgetComponent is not valid");
+	}
 
 }
 
+void ACSurvivor::OnRep_ReplicatedSurvivorName()
+{
+	UpdateSurvivorNameWidget();
+}
 
+void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACSurvivor, ReplicatedSurvivorName);
+}
