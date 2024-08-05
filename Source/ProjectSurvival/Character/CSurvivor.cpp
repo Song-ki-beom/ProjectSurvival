@@ -1,6 +1,7 @@
 ﻿#include "CSurvivor.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
@@ -141,43 +142,128 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
-void ACSurvivor::SlashHitTrace()
+void ACSurvivor::SlashBoxTrace()
 {
-	FVector StartLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 90.0f);
-	FVector ForwardVector = GetActorForwardVector();
-	FVector EndLocation = StartLocation + (ForwardVector * TraceDistance);
-
+	//Trace 관련 세팅
+	FVector Start = FVector(GetActorLocation().X, GetActorLocation().Y, 90.0f);
+	FVector End = Start+ GetActorForwardVector()*TraceDistance;
+	FQuat Rot = FQuat::Identity;
+	FVector HalfSize = FVector(100.0f, 100.0f, 100.0f);
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(
+	
+	//BoxTrace 
+	bool bHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		StartLocation,
-		EndLocation,
-		ECC_Visibility,
+		Start,
+		End,
+		Rot,
+		ECC_WorldStatic,
+		FCollisionShape::MakeBox(HalfSize),
 		CollisionParams
 	);
 
 	if (bHit)
 	{
-		AActor* hitActor = HitResult.GetActor();
-		if (!ensure(hitActor != nullptr)) return;
-		//FString hitName = 
-		CDebug::Print(hitActor->GetName());
-		
+		FString InstanceIndex;
+		if (CheckIsFoliageInstance(HitResult, InstanceIndex))
+		{
+			CDebug::Print(HitResult.Component->GetName());
+			//CDebug::Print(InstanceIndex);
 
-		
-		//UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-		
+		}
+
 	}
+
+}
+
+bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit, FString& OutInstanceName)
+{
+	if (UInstancedStaticMeshComponent* InstancedMesh = Cast<UInstancedStaticMeshComponent>(Hit.Component))
+	{
+		int32 InstanceIndex = Hit.Item;
+
+		if (InstanceIndex != -1) return true;
+	}
+	else
+	{
+		CDebug::Print(TEXT("Cannot Convert to FOlige Mesh"));
+	}
+	return false;
 
 }
 
 void ACSurvivor::Slash()
 {
-	SlashHitTrace();
-	//int myint = 32;
+	SlashBoxTrace();
+	
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing!"));
+
+	
+}
+
+void ACSurvivor::PerformSetSurvivorName(const FText& InText)
+{
+	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
+	UpdateSurvivorNameWidget();
+}
+
+void ACSurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
+{
+	PerformSetSurvivorName(InText);
+}
+
+bool ACSurvivor::RequestSetSurvivorName_Validate(const FText& InText)
+{
+	return true;
+}
+
+void ACSurvivor::UpdateSurvivorNameWidget()
+{
+	CDebug::Print("Update Called");
+	if (SurvivorNameWidgetComponent)
+	{
+		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
+		{
+			UTextBlock* TextBlock = Cast<UTextBlock>(SurvivorNameWidgetComponent->GetUserWidgetObject()->GetWidgetFromName(TEXT("SurvivorName")));
+			if (TextBlock)
+			{
+				TextBlock->SetText(ReplicatedSurvivorName);
+				CDebug::Print("SetText Called");
+			}
+			else
+			{
+				CDebug::Print("TextBlock is not valid");
+			}
+		}
+		else
+		{
+			CDebug::Print("UserWidgetObject is not valid");
+		}
+	}
+	else
+	{
+		CDebug::Print("SurvivorNameWidgetComponent is not valid");
+	}
+
+}
+
+void ACSurvivor::OnRep_ReplicatedSurvivorName()
+{
+	UpdateSurvivorNameWidget();
+}
+
+void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACSurvivor, ReplicatedSurvivorName);
+}
+
+
+
+//int myint = 32;
 	//float myfloat = 10.0f;
 	//bool mybool = true;
 	//FVector myVector = GetActorLocation();
@@ -247,65 +333,3 @@ void ACSurvivor::Slash()
 	//CDebug::Print(myClass, "Test Class");
 	//CDebug::Print("Test Class", myClass);
 	//// 디버그 테스트 끝//
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing!"));
-
-	
-}
-
-void ACSurvivor::PerformSetSurvivorName(const FText& InText)
-{
-	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
-	UpdateSurvivorNameWidget();
-}
-
-void ACSurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
-{
-	PerformSetSurvivorName(InText);
-}
-
-bool ACSurvivor::RequestSetSurvivorName_Validate(const FText& InText)
-{
-	return true;
-}
-
-void ACSurvivor::UpdateSurvivorNameWidget()
-{
-	CDebug::Print("Update Called");
-	if (SurvivorNameWidgetComponent)
-	{
-		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
-		{
-			UTextBlock* TextBlock = Cast<UTextBlock>(SurvivorNameWidgetComponent->GetUserWidgetObject()->GetWidgetFromName(TEXT("SurvivorName")));
-			if (TextBlock)
-			{
-				TextBlock->SetText(ReplicatedSurvivorName);
-				CDebug::Print("SetText Called");
-			}
-			else
-			{
-				CDebug::Print("TextBlock is not valid");
-			}
-		}
-		else
-		{
-			CDebug::Print("UserWidgetObject is not valid");
-		}
-	}
-	else
-	{
-		CDebug::Print("SurvivorNameWidgetComponent is not valid");
-	}
-
-}
-
-void ACSurvivor::OnRep_ReplicatedSurvivorName()
-{
-	UpdateSurvivorNameWidget();
-}
-
-void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ACSurvivor, ReplicatedSurvivorName);
-}

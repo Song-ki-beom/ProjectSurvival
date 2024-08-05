@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
 #include "CSurvivor.generated.h"
+#define NO_INDEX -1
 
 UCLASS()
 class PROJECTSURVIVAL_API ACSurvivor : public ACharacter 
@@ -39,7 +40,8 @@ private:
 	void UpdateSurvivorNameWidget();
 
 	//Slash 
-	void SlashHitTrace();
+	void SlashBoxTrace();
+	bool CheckIsFoliageInstance(const FHitResult& Hit, FString& OutInstanceName);
 	
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -55,8 +57,9 @@ private:
 private:
 	//Slash
 	UPROPERTY(EditAnywhere)
-	float TraceDistance = 1000.0f;
+	float TraceDistance = 50.0f;
 	TSubclassOf<AActor> ActorToSpawn;
+
 	//Name
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSurvivorName)
 		FText ReplicatedSurvivorName;
