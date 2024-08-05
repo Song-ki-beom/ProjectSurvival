@@ -23,17 +23,17 @@ void ACSurvivorController::SetupInputComponent()
 
 	if (InputComponent)
 	{
-		InputComponent->BindKey(EKeys::R, IE_Pressed , this , &ACSurvivorController::SlashTree);
+		InputComponent->BindKey(EKeys::R, IE_Pressed , this , &ACSurvivorController::Slash);
 	}
 }
 
-void ACSurvivorController::SlashTree()
+void ACSurvivorController::Slash()
 {
 	ACSurvivor* controlledCharacter = Cast<ACSurvivor>(GetCharacter());
 
 	if (controlledCharacter)
 	{
-		controlledCharacter->SlashTree();
+		controlledCharacter->Slash();
 	}
 
 }

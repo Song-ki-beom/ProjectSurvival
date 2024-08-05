@@ -113,7 +113,6 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACSurvivor::OnMoveRight);
 	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
-	//PlayerInputComponent->BindAction("Slash", this, &ACSurvivor::OnVerticalLook);
 }
 
 void ACSurvivor::OnMoveForward(float InAxisValue)
@@ -142,82 +141,9 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
-void ACSurvivor::SlashTree()
+void ACSurvivor::SlashHitTrace()
 {
-	int myint = 32;
-	float myfloat = 10.0f;
-	bool mybool = true;
-	FVector myVector = GetActorLocation();
-	FRotator myRotator = GetActorRotation();
-	FQuat myQuat = GetActorQuat();
-	UObject* myObject = GetWorld()->GetFirstPlayerController();
-	UClass* myClass = GetWorld()->GetFirstPlayerController()->StaticClass();
-
-	// 디버그 테스트 시작 //
-	LogLine;
-	PrintLine;
-	PrintLine_Detail(FColor::Green, 5);
-
-	CDebug::Log(myint);
-	CDebug::Log(myint, "Test int");
-	CDebug::Log("Test int", myint);
-	CDebug::Print(myint);
-	CDebug::Print(myint, "Test int");
-	CDebug::Print("Test int", myint);
-
-	CDebug::Log(myfloat);
-	CDebug::Log(myfloat, "Test float");
-	CDebug::Log("Test float", myfloat);
-	CDebug::Print(myfloat);
-	CDebug::Print(myfloat, "Test float");
-	CDebug::Print("Test float", myfloat);
-
-	//CDebug::Log(mybool); 쓰지않음
-	CDebug::Log(mybool, "Test bool");
-	CDebug::Log("Test bool", mybool);
-	//CDebug::Print(mybool); 쓰지않음
-	CDebug::Print(mybool, "Test bool");
-	CDebug::Print("Test bool", mybool);
-
-	CDebug::Log(myVector);
-	CDebug::Log(myVector, "Test Vector");
-	CDebug::Log("Test Vector", myVector);
-	CDebug::Print(myVector);
-	CDebug::Print(myVector, "Test Vector");
-	CDebug::Print("Test Vector", myVector);
-
-	CDebug::Log(myRotator);
-	CDebug::Log(myRotator, "Test Rotator");
-	CDebug::Log("Test Rotator", myRotator);
-	CDebug::Print(myRotator);
-	CDebug::Print(myRotator, "Test Rotator");
-	CDebug::Print("Test Rotator", myRotator);
-
-	CDebug::Log(myQuat);
-	CDebug::Log(myQuat, "Test Quat");
-	CDebug::Log("Test Quat", myQuat);
-	CDebug::Print(myQuat);
-	CDebug::Print(myQuat, "Test Quat");
-	CDebug::Print("Test Quat", myQuat);
-
-	CDebug::Log(myObject);
-	CDebug::Log(myObject, "Test Object");
-	CDebug::Log("Test Object", myObject);
-	CDebug::Print(myObject);
-	CDebug::Print(myObject, "Test Object");
-	CDebug::Print("Test Object", myObject);
-
-	CDebug::Log(myClass);
-	CDebug::Log(myClass, "Test Class");
-	CDebug::Log("Test Class", myClass);
-	CDebug::Print(myClass);
-	CDebug::Print(myClass, "Test Class");
-	CDebug::Print("Test Class", myClass);
-	// 디버그 테스트 끝//
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing !"));
-
-	FVector StartLocation = GetActorLocation();
+	FVector StartLocation = FVector(GetActorLocation().X, GetActorLocation().Y, 90.0f);
 	FVector ForwardVector = GetActorForwardVector();
 	FVector EndLocation = StartLocation + (ForwardVector * TraceDistance);
 
@@ -235,9 +161,96 @@ void ACSurvivor::SlashTree()
 
 	if (bHit)
 	{
-		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-		//if (HitComponent);
+		AActor* hitActor = HitResult.GetActor();
+		if (!ensure(hitActor != nullptr)) return;
+		//FString hitName = 
+		CDebug::Print(hitActor->GetName());
+		
+
+		
+		//UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		
 	}
+
+}
+
+void ACSurvivor::Slash()
+{
+	SlashHitTrace();
+	//int myint = 32;
+	//float myfloat = 10.0f;
+	//bool mybool = true;
+	//FVector myVector = GetActorLocation();
+	//FRotator myRotator = GetActorRotation();
+	//FQuat myQuat = GetActorQuat();
+	//UObject* myObject = GetWorld()->GetFirstPlayerController();
+	//UClass* myClass = GetWorld()->GetFirstPlayerController()->StaticClass();
+
+	//// 디버그 테스트 시작 //
+	//LogLine;
+	//PrintLine;
+	//PrintLine_Detail(FColor::Green, 5);
+
+	//CDebug::Log(myint);
+	//CDebug::Log(myint, "Test int");
+	//CDebug::Log("Test int", myint);
+	//CDebug::Print(myint);
+	//CDebug::Print(myint, "Test int");
+	//CDebug::Print("Test int", myint);
+
+	//CDebug::Log(myfloat);
+	//CDebug::Log(myfloat, "Test float");
+	//CDebug::Log("Test float", myfloat);
+	//CDebug::Print(myfloat);
+	//CDebug::Print(myfloat, "Test float");
+	//CDebug::Print("Test float", myfloat);
+
+	////CDebug::Log(mybool); 쓰지않음
+	//CDebug::Log(mybool, "Test bool");
+	//CDebug::Log("Test bool", mybool);
+	////CDebug::Print(mybool); 쓰지않음
+	//CDebug::Print(mybool, "Test bool");
+	//CDebug::Print("Test bool", mybool);
+
+	//CDebug::Log(myVector);
+	//CDebug::Log(myVector, "Test Vector");
+	//CDebug::Log("Test Vector", myVector);
+	//CDebug::Print(myVector);
+	//CDebug::Print(myVector, "Test Vector");
+	//CDebug::Print("Test Vector", myVector);
+
+	//CDebug::Log(myRotator);
+	//CDebug::Log(myRotator, "Test Rotator");
+	//CDebug::Log("Test Rotator", myRotator);
+	//CDebug::Print(myRotator);
+	//CDebug::Print(myRotator, "Test Rotator");
+	//CDebug::Print("Test Rotator", myRotator);
+
+	//CDebug::Log(myQuat);
+	//CDebug::Log(myQuat, "Test Quat");
+	//CDebug::Log("Test Quat", myQuat);
+	//CDebug::Print(myQuat);
+	//CDebug::Print(myQuat, "Test Quat");
+	//CDebug::Print("Test Quat", myQuat);
+
+	//CDebug::Log(myObject);
+	//CDebug::Log(myObject, "Test Object");
+	//CDebug::Log("Test Object", myObject);
+	//CDebug::Print(myObject);
+	//CDebug::Print(myObject, "Test Object");
+	//CDebug::Print("Test Object", myObject);
+
+	//CDebug::Log(myClass);
+	//CDebug::Log(myClass, "Test Class");
+	//CDebug::Log("Test Class", myClass);
+	//CDebug::Print(myClass);
+	//CDebug::Print(myClass, "Test Class");
+	//CDebug::Print("Test Class", myClass);
+	//// 디버그 테스트 끝//
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing!"));
+
+	
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
