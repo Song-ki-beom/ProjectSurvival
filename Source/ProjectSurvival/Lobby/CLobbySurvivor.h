@@ -171,6 +171,15 @@ private:
 	UFUNCTION()
 		void OnRep_ReplicatedSkinColorName();
 
+//	// 기타 메쉬
+//	void PerformSetSingleMesh();
+//	UFUNCTION(Server, Reliable, WithValidation)
+//		void RequestSetSingleMesh();
+//	UFUNCTION()
+//		void UpdateSingleMesh();
+//	UFUNCTION()
+//		void OnRep_ReplicatedSingleMeshName();
+
 	UFUNCTION()
 		void OnRep_ReplicatedSurvivorName();
 
@@ -221,9 +230,11 @@ private:
 		FName ReplicatedHeadColorName = "HeadColor_01";
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedPantsName)
 		FName ReplicatedPantsName = "Pants_01";
+//	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSingleMeshName)
+//		FName ReplicatedSingleMeshName = "Single";
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSkinColorName)
 		FName ReplicatedSkinColorName = "SkinColor_01";
-
+	
 
 	UPROPERTY()
 		class USkeletalMeshComponent* Head;

@@ -27,7 +27,9 @@ ACLobbySurvivor::ACLobbySurvivor()
 	Boots->SetIsReplicated(true);
 	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
+	Body->SetIsReplicated(true);
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
+	Hands->SetIsReplicated(true);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
@@ -343,6 +345,18 @@ void ACLobbySurvivor::SetSkinColor(int32 InIndex)
 	}
 }
 
+//void ACLobbySurvivor::SetSingleMesh()
+//{
+//	if (HasAuthority())
+//	{
+//		PerformSetSingleMesh();
+//	}
+//	else
+//	{
+//		RequestSetSingleMesh();
+//	}
+//}
+
 void ACLobbySurvivor::RequestReady_Implementation()
 {
 	ACLobbyGameMode* lobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
@@ -587,40 +601,25 @@ void ACLobbySurvivor::UpdateSkinColor()
 		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
 	}
 
-	//UMaterialInstanceDynamic* dynamicBodyMaterial = Cast<UMaterialInstanceDynamic>(Body->GetMaterial(0));
-	//if (IsValid(dynamicBodyMaterial))
-	//{
-	//
-	//	DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
-	//}
-	//else
-	//{
-	//	UMaterialInstanceDynamic* dynamic2BodyMaterial = Cast<UMaterialInstanceDynamic>(Body->GetMaterial(0));
-	//	if (IsValid(dynamic2BodyMaterial))
-	//	{
-	//		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
-	//	}
-	//	else
-	//	{
-	//		MeshColorMaterial = Body->GetMaterial(0);
-	//		//CDebug::Print("Material", MeshColorMaterial, FColor::Emerald);
-	//		DynamicBodyMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
-	//		//CDebug::Print("DynamicMaterial", DynamicBodyMeshColorMaterial, FColor::Emerald);
-	//		Body->SetMaterial(0, DynamicBodyMeshColorMaterial);
-	//		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
-	//	}
-	//}
-
-	if (IsValid(DynamicHandsMeshColorMaterial))
+	if(IsValid(DynamicBodyMeshColorMaterial))
 	{
+		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
 		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
 	}
 	else
 	{
+		FSkeletalSingleMeshRow* singleMeshRow = CustomizeSingleData->FindRow<FSkeletalSingleMeshRow>(("Single"), TEXT("SkinMeshColorRowFind"));
+		Body->SetSkeletalMesh(singleMeshRow->BodyMesh);
+		MeshColorMaterial = Body->GetMaterial(0);
+		DynamicBodyMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		Body->SetMaterial(0, DynamicBodyMeshColorMaterial);
+		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+
+		Hands->SetSkeletalMesh(singleMeshRow->HandsMesh);
 		MeshColorMaterial = Hands->GetMaterial(0);
 		DynamicHandsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
-		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
 		Hands->SetMaterial(0, DynamicHandsMeshColorMaterial);
+		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
 	}
 }
 
