@@ -2,6 +2,7 @@
 #include "Lobby/CLobbyGamemode.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbySurvivorController.h"
+#include "Lobby/CLobbySurvivorState.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -109,14 +110,37 @@ void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 	}
 }
 
+void UCDifficultyWidget::UpdateClientDifficulty()
+{
+	switch (ServerDifficultyIndex)
+	{
+	case 0:
+		OnEasy();
+		break;
+	case 1:
+		OnNormal();
+		break;
+	case 2:
+		OnHard();
+		break;
+	case 4:
+		OnExtreme();
+		break;
+	}
+}
+
 void UCDifficultyWidget::OnEasy()
 {
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
+	{
 		lobbySurvivor->BroadcastSetText(0);
+		ServerDifficultyIndex = 0;
+	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(0.75f);
+
 }
 
 void UCDifficultyWidget::OnNormal()
@@ -124,7 +148,10 @@ void UCDifficultyWidget::OnNormal()
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
+	{
 		lobbySurvivor->BroadcastSetText(1);
+		ServerDifficultyIndex = 1;
+	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(1.0f);
 }
@@ -134,7 +161,10 @@ void UCDifficultyWidget::OnHard()
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
+	{
 		lobbySurvivor->BroadcastSetText(2);
+		ServerDifficultyIndex = 2;
+	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(1.5f);
 }
@@ -144,7 +174,10 @@ void UCDifficultyWidget::OnExtreme()
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(lobbySurvivorController->GetPawn());
 	if (lobbySurvivor->HasAuthority())
+	{
 		lobbySurvivor->BroadcastSetText(3);
+		ServerDifficultyIndex = 3;
+	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(2.5f);
 }

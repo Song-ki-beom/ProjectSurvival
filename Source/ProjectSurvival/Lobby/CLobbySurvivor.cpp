@@ -1,14 +1,13 @@
 ﻿#include "Lobby/CLobbySurvivor.h"
-#include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbySurvivorController.h"
+#include "Lobby/CLobbySurvivorState.h"
+#include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbyGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
-#include "Components/SceneCaptureComponent2D.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
-#include "Engine/TextureRenderTarget2D.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -20,8 +19,12 @@ ACLobbySurvivor::ACLobbySurvivor()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	Head = GetMesh();
+	Head->SetIsReplicated(true);
 	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
+	Pants->SetIsReplicated(true);
 	Boots = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Boots"));
+	Boots->SetIsReplicated(true);
 	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
@@ -31,9 +34,6 @@ ACLobbySurvivor::ACLobbySurvivor()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	//class UDataTable* CustomizePantsData;
-	//class UDataTable* CustomizeSingleData;
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeHead.DT_CustomizeHead'"));
 	if (customizeHeadDataFinder.Succeeded())
 	{
@@ -42,6 +42,16 @@ ACLobbySurvivor::ACLobbySurvivor()
 	else
 	{
 		CDebug::Log("customizeHeadDataFinder Failed");
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadColorDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeHeadColor.DT_CustomizeHeadColor'"));
+	if (customizeHeadColorDataFinder.Succeeded())
+	{
+		CustomizeHeadColorData = customizeHeadColorDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("customizeHeadColorDataFinder Failed");
 	}
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> customizePantsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizePants.DT_CustomizePants'"));
@@ -64,6 +74,16 @@ ACLobbySurvivor::ACLobbySurvivor()
 		CDebug::Log("customizeBootsDataFinder Failed");
 	}
 
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSkinColorDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeSkinColor.DT_CustomizeSkinColor'"));
+	if (customizeSkinColorDataFinder.Succeeded())
+	{
+		CustomizeSkinColorData = customizeSkinColorDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("customizeSkinColorDataFinder Failed");
+	}
+
 	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSingleDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeSingle.DT_CustomizeSingle'"));
 	if (customizeSingleDataFinder.Succeeded())
 	{
@@ -73,7 +93,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 	{
 		CDebug::Log("customizeSingleDataFinder Failed");
 	}
-	
+
 	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
 	if (survivorNameClassFinder.Succeeded())
 	{
@@ -92,13 +112,12 @@ ACLobbySurvivor::ACLobbySurvivor()
 	SurvivorNameWidgetComponent->SetWidgetClass(SurvivorNameClass);
 	SurvivorNameWidgetComponent->InitWidget();
 
-	USkeletalMesh* skeletalHeadMesh = nullptr;
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalHeadMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor_Hair_01.SK_Survivor_Hair_01'"));
-	if (skeletalHeadMeshFinder.Succeeded())
+	USkeletalMesh* skeletalMesh = nullptr;
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor.SK_Survivor'"));
+	if (skeletalMeshFinder.Succeeded())
 	{
-		
-		skeletalHeadMesh = skeletalHeadMeshFinder.Object;
-		GetMesh()->SetSkeletalMesh(skeletalHeadMesh);
+		skeletalMesh = skeletalMeshFinder.Object;
+		GetMesh()->SetSkeletalMesh(skeletalMesh);
 		GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 		GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	}
@@ -106,17 +125,6 @@ ACLobbySurvivor::ACLobbySurvivor()
 	{
 		CDebug::Log("skeletalHeadMeshFinder is not valid.");
 	}
-
-	//UPROPERTY()
-	//	class USkeletalMeshComponent* AccessoryMesh;
-	//UPROPERTY()
-	//	class USkeletalMeshComponent* BodyMesh;
-	//UPROPERTY()
-	//	class USkeletalMeshComponent* HandMesh;
-	//UPROPERTY()
-	//	class USkeletalMeshComponent* PantsMesh;
-	//UPROPERTY()
-	//	class USkeletalMeshComponent* BootsMesh;
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -133,8 +141,17 @@ ACLobbySurvivor::ACLobbySurvivor()
 void ACLobbySurvivor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	CDebug::Print("BeginPlay Called");
 	InitCustomize();
+	if (!HasAuthority())
+	{
+		UpdateSkeletalHeadMesh();
+		UpdateSkeletalHeadMeshColor();
+		UpdateSkinColor();
+//		UpdateSkeletalPantsMesh();
+//		RequestDifficultyUpdate();
+////		UpdateSkeletalPantsMeshColor();
+	}
 }
 
 void ACLobbySurvivor::Tick(float DeltaTime)
@@ -153,7 +170,7 @@ void ACLobbySurvivor::InitCustomize()
 {
 	FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(FName("Head_01"), TEXT("HeadMeshRowFind"));
 	USkeletalMesh* headMesh = headMeshRow->HeadMesh;
-	GetMesh()->SetSkeletalMesh(headMesh);
+	Head->SetSkeletalMesh(headMesh);
 
 	FSkeletalPantsMeshRow* pantsMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(FName("Pants_01"), TEXT("PantsMeshRowFind"));
 	USkeletalMesh* pantsMesh = pantsMeshRow->PantsMesh;
@@ -181,6 +198,25 @@ void ACLobbySurvivor::InitCustomize()
 	Accessory->SetMasterPoseComponent(GetMesh());
 	Body->SetMasterPoseComponent(GetMesh());
 	Hands->SetMasterPoseComponent(GetMesh());
+
+	TArray<FName> hairRowNames = CustomizeHeadData->GetRowNames();
+	ValidHairRowNumber = hairRowNames.Num();
+	TArray<FName> hairColorRowNames = CustomizeHeadColorData->GetRowNames();
+	ValidHairColorRowNumber = hairColorRowNames.Num();
+	TArray<FName> pantsRowNames = CustomizePantsData->GetRowNames();
+	ValidPantsRowNumber = pantsRowNames.Num();
+	TArray<FName> bootsRowNames = CustomizeBootsData->GetRowNames();
+	ValidBootsRowNumber = bootsRowNames.Num();
+	TArray<FName> skinColorRowNames = CustomizeSkinColorData->GetRowNames();
+	ValidSkinColorRowNumber = skinColorRowNames.Num();
+
+	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	if (lobbySurvivorController)
+	{
+		lobbySurvivorController->GetCustomizeInfo();
+	}
+	else
+		CDebug::Print("Failed to Cast Controller");
 }
 
 void ACLobbySurvivor::SetLocalValue()
@@ -255,6 +291,58 @@ void ACLobbySurvivor::UpdateSurvivorNameWidget()
 	}
 }
 
+void ACLobbySurvivor::SetHeadMesh(int32 InIndex)
+{
+	if (HasAuthority())
+	{
+		CDebug::Print("Server - SetHeadMesh Call", FColor::Red);
+		PerformSetHeadMesh(InIndex);
+	}
+	else
+	{
+		CDebug::Print("Client - SetHeadMesh Call", FColor::Blue);
+		RequestSetHeadMesh(InIndex);
+	}
+}
+
+void ACLobbySurvivor::SetHeadMeshColor(int32 InIndex)
+{
+	if (HasAuthority())
+	{
+		CDebug::Print("Server - SetHeadMeshColor Call", FColor::Red);
+		PerformSetHeadMeshColor(InIndex);
+	}
+	else
+	{
+		CDebug::Print("Client - SetHeadMeshColor Call", FColor::Blue);
+		RequestSetHeadMeshColor(InIndex);
+	}
+}
+
+void ACLobbySurvivor::SetPantsMesh(int32 InIndex)
+{
+	if (HasAuthority())
+	{
+		PerformSetPantsMesh(InIndex);
+	}
+	else
+	{
+		RequestSetPantsMesh(InIndex);
+	}
+}
+
+void ACLobbySurvivor::SetSkinColor(int32 InIndex)
+{
+	if (HasAuthority())
+	{
+		PerformSetSkinColor(InIndex);
+	}
+	else
+	{
+		RequestSetSkinColor(InIndex);
+	}
+}
+
 void ACLobbySurvivor::RequestReady_Implementation()
 {
 	ACLobbyGameMode* lobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
@@ -293,16 +381,283 @@ void ACLobbySurvivor::OnMoveRight(float InAxisValue)
 	AddMovementInput(direction, -InAxisValue);
 }
 
+void ACLobbySurvivor::PerformSetHeadMesh(int32 InIndex)
+{
+	CDebug::Print("PerformSetHeadMesh Called");
+	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
+	FString headString = "Head_";
+	FString combinedString = headString.Append(indexString);
+	FName index(*combinedString);
+	ReplicatedHeadName = index;
+	FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(ReplicatedHeadName, TEXT("HeadMeshRowFind"));
+	Head->SetSkeletalMesh(headMeshRow->HeadMesh);
+}
+
+void ACLobbySurvivor::RequestSetHeadMesh_Implementation(int32 InIndex)
+{
+	CDebug::Print("RequestSetHeadMesh_Implementation Called");
+	PerformSetHeadMesh(InIndex);
+}
+
+bool ACLobbySurvivor::RequestSetHeadMesh_Validate(int32 InIndex)
+{
+	return true;
+}
+
+void ACLobbySurvivor::UpdateSkeletalHeadMesh()
+{
+	CDebug::Print("UpdateSkeletalHeadMesh Called");
+	FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(ReplicatedHeadName, TEXT("HeadMeshRowFind"));
+	if (headMeshRow)
+		Head->SetSkeletalMesh(headMeshRow->HeadMesh);
+}
+
+void ACLobbySurvivor::OnRep_ReplicatedHeadName()
+{
+	CDebug::Print("OnRep_ReplicatedHeadName Called");
+	UpdateSkeletalHeadMesh();
+}
+
+void ACLobbySurvivor::PerformSetHeadMeshColor(int32 InIndex)
+{
+	CDebug::Print("PerformSetHeadMeshColor Called");
+	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
+	FString headColorString = "HeadColor_";
+	FString combinedString = headColorString.Append(indexString);
+	FName index(*combinedString);
+	ReplicatedHeadColorName = index;
+	CDebug::Print(ReplicatedHeadColorName.ToString());
+	FSkeletalHeadMeshColorRow* headMeshColorRow = CustomizeHeadColorData->FindRow<FSkeletalHeadMeshColorRow>(ReplicatedHeadColorName, TEXT("HeadMeshColorRowFind"));
+	MeshColorMaterial = Head->GetMaterial(0);
+	if (IsValid(DynamicHeadMeshColorMaterial))
+	{
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Hair Tint", headMeshColorRow->HeadMeshColor);
+		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+	else
+	{
+		DynamicHeadMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Hair Tint", headMeshColorRow->HeadMeshColor);
+		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+}
+
+void ACLobbySurvivor::RequestSetHeadMeshColor_Implementation(int32 InIndex)
+{
+	PerformSetHeadMeshColor(InIndex);
+}
+
+bool ACLobbySurvivor::RequestSetHeadMeshColor_Validate(int32 InIndex)
+{
+	return true;
+}
+
+void ACLobbySurvivor::UpdateSkeletalHeadMeshColor()
+{
+	FSkeletalHeadMeshColorRow* headMeshColorRow = CustomizeHeadColorData->FindRow<FSkeletalHeadMeshColorRow>(ReplicatedHeadColorName, TEXT("HeadMeshColorRowFind"));
+	
+	if (IsValid(DynamicHeadMeshColorMaterial))
+	{
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Hair Tint", headMeshColorRow->HeadMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Head->GetMaterial(0);
+		DynamicHeadMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Hair Tint", headMeshColorRow->HeadMeshColor);
+		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+
+}
+
+void ACLobbySurvivor::OnRep_ReplicatedHeadColorName()
+{
+	UpdateSkeletalHeadMeshColor();
+}
+
+void ACLobbySurvivor::PerformSetPantsMesh(int32 InIndex)
+{
+	CDebug::Print("PerformSetPantsMesh Called");
+	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
+	FString headString = "Pants_";
+	FString combinedString = headString.Append(indexString);
+	FName index(*combinedString);
+	ReplicatedPantsName = index;
+	FSkeletalPantsMeshRow* pantsMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(ReplicatedPantsName, TEXT("PantsMeshRowFind"));
+	Pants->SetSkeletalMesh(pantsMeshRow->PantsMesh);
+}
+
+void ACLobbySurvivor::RequestSetPantsMesh_Implementation(int32 InIndex)
+{
+	PerformSetPantsMesh(InIndex);
+}
+
+bool ACLobbySurvivor::RequestSetPantsMesh_Validate(int32 InIndex)
+{
+	return true;
+}
+
+void ACLobbySurvivor::UpdateSkeletalPantsMesh()
+{
+	FSkeletalPantsMeshRow* pantsMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(ReplicatedPantsName, TEXT("PantsMeshRowFind"));
+	Pants->SetSkeletalMesh(pantsMeshRow->PantsMesh);
+}
+
+void ACLobbySurvivor::OnRep_ReplicatedPantsName()
+{
+	UpdateSkeletalPantsMesh();
+}
+
+void ACLobbySurvivor::PerformSetSkinColor(int32 InIndex)
+{
+	CDebug::Print("PerformSetSkinColorColor Called");
+	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
+	FString headColorString = "SkinColor_";
+	FString combinedString = headColorString.Append(indexString);
+	FName index(*combinedString);
+
+	ReplicatedSkinColorName = index;
+	CDebug::Print(ReplicatedSkinColorName.ToString());
+
+	FSkeletalSkinMeshColorRow* skinColorRow = CustomizeSkinColorData->FindRow<FSkeletalSkinMeshColorRow>(ReplicatedSkinColorName, TEXT("SkinMeshColorRowFind"));
+	
+	UMaterialInstanceDynamic* dynamicHeadMaterial = Cast<UMaterialInstanceDynamic>(Head->GetMaterial(0));
+	if (IsValid(dynamicHeadMaterial))
+	{
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Head->GetMaterial(0);
+		DynamicHeadMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+
+	UMaterialInstanceDynamic* dynamicBodyMaterial = Cast<UMaterialInstanceDynamic>(Body->GetMaterial(0));
+	if (IsValid(dynamicBodyMaterial))
+	{
+		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Body->GetMaterial(0);
+		DynamicBodyMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Body->SetMaterial(0, DynamicBodyMeshColorMaterial);
+	}
+
+	if (IsValid(DynamicHandsMeshColorMaterial))
+	{
+		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Hands->GetMaterial(0);
+		DynamicHandsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Hands->SetMaterial(0, DynamicHandsMeshColorMaterial);
+	}
+}
+
+void ACLobbySurvivor::RequestSetSkinColor_Implementation(int32 InIndex)
+{
+	PerformSetSkinColor(InIndex);
+}
+
+bool ACLobbySurvivor::RequestSetSkinColor_Validate(int32 InIndex)
+{
+	return true;
+}
+
+void ACLobbySurvivor::UpdateSkinColor()
+{
+	FSkeletalSkinMeshColorRow* skinColorRow = CustomizeSkinColorData->FindRow<FSkeletalSkinMeshColorRow>(ReplicatedSkinColorName, TEXT("SkinMeshColorRowFind"));
+
+	UMaterialInstanceDynamic* dynamicHeadMaterial = Cast<UMaterialInstanceDynamic>(Head->GetMaterial(0));
+	if (IsValid(dynamicHeadMaterial))
+	{
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Head->GetMaterial(0);
+		DynamicHeadMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+
+	//UMaterialInstanceDynamic* dynamicBodyMaterial = Cast<UMaterialInstanceDynamic>(Body->GetMaterial(0));
+	//if (IsValid(dynamicBodyMaterial))
+	//{
+	//
+	//	DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	//}
+	//else
+	//{
+	//	UMaterialInstanceDynamic* dynamic2BodyMaterial = Cast<UMaterialInstanceDynamic>(Body->GetMaterial(0));
+	//	if (IsValid(dynamic2BodyMaterial))
+	//	{
+	//		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	//	}
+	//	else
+	//	{
+	//		MeshColorMaterial = Body->GetMaterial(0);
+	//		//CDebug::Print("Material", MeshColorMaterial, FColor::Emerald);
+	//		DynamicBodyMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+	//		//CDebug::Print("DynamicMaterial", DynamicBodyMeshColorMaterial, FColor::Emerald);
+	//		Body->SetMaterial(0, DynamicBodyMeshColorMaterial);
+	//		DynamicBodyMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	//	}
+	//}
+
+	if (IsValid(DynamicHandsMeshColorMaterial))
+	{
+		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Hands->GetMaterial(0);
+		DynamicHandsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicHandsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Hands->SetMaterial(0, DynamicHandsMeshColorMaterial);
+	}
+}
+
+void ACLobbySurvivor::OnRep_ReplicatedSkinColorName()
+{
+	UpdateSkinColor();
+}
+
 // 이 함수는 클라이언트가 서버로부터 변수 변경 사항을 수신한 후 호출되므로, 약간의 지연이 있을 수 있다.
 void ACLobbySurvivor::OnRep_ReplicatedSurvivorName()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnRep_ReplicatedSurvivorName Called"));
-
 	UpdateSurvivorNameWidget(); // 리플리케이트 완료되었으니 클라 입장에서 서버의 값으로 위젯을 모두 업데이트 한다. 이 부분을 주석처리하면 클라 입장에선 모두 텍스트 기본값으로 보임
+}
+
+void ACLobbySurvivor::RequestDifficultyUpdate_Implementation()
+{
+	ClientDifficultyUpdate();
+}
+
+bool ACLobbySurvivor::RequestDifficultyUpdate_Validate()
+{
+	return true;
+}
+
+void ACLobbySurvivor::ClientDifficultyUpdate()
+{
+	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	lobbySurvivorController->UpdateClientDifficulty();
 }
 
 void ACLobbySurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ACLobbySurvivor, ReplicatedSurvivorName);
+	DOREPLIFETIME(ACLobbySurvivor, ReplicatedSurvivorName); 
+	DOREPLIFETIME(ACLobbySurvivor, ReplicatedHeadName); 
+	DOREPLIFETIME(ACLobbySurvivor, ReplicatedHeadColorName); 
+	DOREPLIFETIME(ACLobbySurvivor, ReplicatedPantsName); 
+	DOREPLIFETIME(ACLobbySurvivor, ReplicatedSkinColorName);
 }

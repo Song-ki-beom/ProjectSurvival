@@ -14,7 +14,7 @@ ACSurvivorController::ACSurvivorController()
 
 void ACSurvivorController::BeginPlay()
 {
-	SetInputMode(FInputModeGameOnly());
+	this->SetInputMode(FInputModeGameOnly());
 }
 
 void ACSurvivorController::SetupInputComponent()

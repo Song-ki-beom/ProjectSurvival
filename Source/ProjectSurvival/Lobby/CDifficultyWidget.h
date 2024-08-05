@@ -46,6 +46,7 @@ public:
 	void DeactivateStartButton();
 	void SetClientStartButton();
 	void UpdateDifficultyInfo(int InIndex);
+	void UpdateClientDifficulty();
 
 private:
 	UFUNCTION()
@@ -89,5 +90,6 @@ private:
 		class UWidgetSwitcher* StartSwitcher;
 
 	class UDataTable* DifficultyData;
+	int32 ServerDifficultyIndex = 0;
 };
 

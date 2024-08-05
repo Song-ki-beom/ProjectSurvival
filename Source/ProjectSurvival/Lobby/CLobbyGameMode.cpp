@@ -3,10 +3,12 @@
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CLobbySurvivorController.h"
+#include "Utility/CDebug.h"
 
 ACLobbyGameMode::ACLobbyGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
 	static ConstructorHelpers::FClassFinder<APawn> defaultPawnClassFinder(TEXT("/Game/PirateIsland/Include/Blueprints/Character/Survivor/BP_CLobbySurvivor.BP_CLobbySurvivor_C"));
 	if (defaultPawnClassFinder.Succeeded())
 	{
@@ -37,7 +39,6 @@ ACLobbyGameMode::ACLobbyGameMode()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("playerStateClassFinder failed - ACLobbyGameMode"));
 	}
-	
 }
 
 void ACLobbyGameMode::PostLogin(APlayerController* NewPlayer)
@@ -59,6 +60,8 @@ void ACLobbyGameMode::ReadyPlayer()
 
 bool ACLobbyGameMode::CheckPlayer()
 {
+	//CDebug::Print("Total Survivor:", NumberOfSurvivors);
+	//CDebug::Print("Ready Survivor:", NumberOfReadySurvivors);
 	bool result = (NumberOfSurvivors == NumberOfReadySurvivors) ? true : false;
 	return result;
 }

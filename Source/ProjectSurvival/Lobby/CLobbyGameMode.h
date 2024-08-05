@@ -26,9 +26,8 @@ public:
 	void StartGame();
 
 private:
-	uint32 NumberOfSurvivors = 0;
-	uint32 NumberOfReadySurvivors = 1;
-
+	int32 NumberOfSurvivors = 0;
+	int32 NumberOfReadySurvivors = 0;
 
 };
 

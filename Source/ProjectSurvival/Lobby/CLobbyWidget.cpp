@@ -69,8 +69,6 @@ void UCLobbyWidget::TearDownWidget()
 	if (!IsValid(playerController)) { UE_LOG(LogTemp, Warning, TEXT("playerController is invalid")); return; }
 	else
 	{
-		playerController->SetInputMode(FInputModeGameOnly());
-		playerController->bShowMouseCursor = false;
 		this->bIsFocusable = false;
 	}
 }
