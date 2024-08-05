@@ -39,11 +39,6 @@ bool UCCustomizeWidget::Initialize()
 	if (!IsValid(PantsRightButton)) { UE_LOG(LogTemp, Warning, TEXT("PantsRightButton is invalid")); return false; }
 	PantsRightButton->OnClicked.AddDynamic(this, &UCCustomizeWidget::AddPantsIndex);
 
-	if (!IsValid(PantsColorLeftButton)) { UE_LOG(LogTemp, Warning, TEXT("PantsColorLeftButton is invalid")); return false; }
-	PantsColorLeftButton->OnClicked.AddDynamic(this, &UCCustomizeWidget::SubPantsColorIndex);
-	if (!IsValid(PantsColorRightButton)) { UE_LOG(LogTemp, Warning, TEXT("PantsColorRightButton is invalid")); return false; }
-	PantsColorRightButton->OnClicked.AddDynamic(this, &UCCustomizeWidget::AddPantsColorIndex);
-
 	if (!IsValid(BootsLeftButton)) { UE_LOG(LogTemp, Warning, TEXT("BootsLeftButton is invalid")); return false; }
 	BootsLeftButton->OnClicked.AddDynamic(this, &UCCustomizeWidget::SubBootsIndex);
 	if (!IsValid(BootsRightButton)) { UE_LOG(LogTemp, Warning, TEXT("BootsRightButton is invalid")); return false; }
@@ -205,47 +200,28 @@ void UCCustomizeWidget::SetPantsIndexText()
 	LobbySurvivor->SetPantsMesh(PantsIndex + 1);
 }
 
-void UCCustomizeWidget::SubPantsColorIndex()
-{
-////	if (PantsColorIndex > 0)
-////	{
-////		--PantsColorIndex;
-////		SetPantsColorIndexText();
-////	}
-}
-
-void UCCustomizeWidget::AddPantsColorIndex()
-{
-////	if (PantsColorIndex < MaxPantsColorIndex - 1)
-////	{
-////		++PantsColorIndex;
-////		SetPantsColorIndexText();
-////	}
-}
-
-void UCCustomizeWidget::SetPantsColorIndexText()
-{
-////	PantsColorIndexText->SetText(FText::AsNumber(PantsColorIndex + 1));
-////	LobbySurvivor->SetPantsMeshColor(PantsColorIndex + 1);
-}
-
 void UCCustomizeWidget::SubBootsIndex()
 {
 	if (BootsIndex > 0)
+	{
 		--BootsIndex;
-	SetBootsIndexText();
+		SetBootsIndexText();
+	}
 }
 
 void UCCustomizeWidget::AddBootsIndex()
 {
 	if (BootsIndex < MaxBootsIndex - 1)
+	{
 		++BootsIndex;
-	SetBootsIndexText();
+		SetBootsIndexText();
+	}
 }
 
 void UCCustomizeWidget::SetBootsIndexText()
 {
 	BootsIndexText->SetText(FText::AsNumber(BootsIndex + 1));
+	LobbySurvivor->SetBootsMesh(BootsIndex + 1);
 }
 
 void UCCustomizeWidget::SubSkinColorIndex()

@@ -27,9 +27,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 	Boots->SetIsReplicated(true);
 	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
-	Body->SetIsReplicated(true);
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
-	Hands->SetIsReplicated(true);
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
@@ -147,12 +145,18 @@ void ACLobbySurvivor::BeginPlay()
 	InitCustomize();
 	if (!HasAuthority())
 	{
-		UpdateSkeletalHeadMesh();
-		UpdateSkeletalHeadMeshColor();
-		UpdateSkinColor();
-//		UpdateSkeletalPantsMesh();
-//		RequestDifficultyUpdate();
-////		UpdateSkeletalPantsMeshColor();
+		if (!ReplicatedHeadName.IsNone())
+			UpdateSkeletalHeadMesh();
+		if (!ReplicatedHeadColorName.IsNone())
+			UpdateSkeletalHeadMeshColor();
+		if (!ReplicatedPantsName.IsNone())
+			UpdateSkeletalPantsMesh();
+		if (!ReplicatedBootsName.IsNone())
+			UpdateSkeletalBootsMesh();
+		if (!ReplicatedSkinColorName.IsNone())
+			UpdateSkinColor();
+
+		RequestDifficultyUpdate();
 	}
 }
 
@@ -333,6 +337,18 @@ void ACLobbySurvivor::SetPantsMesh(int32 InIndex)
 	}
 }
 
+void ACLobbySurvivor::SetBootsMesh(int32 InIndex)
+{
+	if (HasAuthority())
+	{
+		PerformSetBootsMesh(InIndex);
+	}
+	else
+	{
+		RequestSetBootsMesh(InIndex);
+	}
+}
+
 void ACLobbySurvivor::SetSkinColor(int32 InIndex)
 {
 	if (HasAuthority())
@@ -344,18 +360,6 @@ void ACLobbySurvivor::SetSkinColor(int32 InIndex)
 		RequestSetSkinColor(InIndex);
 	}
 }
-
-//void ACLobbySurvivor::SetSingleMesh()
-//{
-//	if (HasAuthority())
-//	{
-//		PerformSetSingleMesh();
-//	}
-//	else
-//	{
-//		RequestSetSingleMesh();
-//	}
-//}
 
 void ACLobbySurvivor::RequestReady_Implementation()
 {
@@ -522,6 +526,39 @@ void ACLobbySurvivor::OnRep_ReplicatedPantsName()
 	UpdateSkeletalPantsMesh();
 }
 
+void ACLobbySurvivor::PerformSetBootsMesh(int32 InIndex)
+{
+	CDebug::Print("PerformSetBootsMesh Called");
+	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
+	FString headString = "Boots_";
+	FString combinedString = headString.Append(indexString);
+	FName index(*combinedString);
+	ReplicatedBootsName = index;
+	FSkeletalBootsMeshRow* bootsMeshRow = CustomizeBootsData->FindRow<FSkeletalBootsMeshRow>(ReplicatedBootsName, TEXT("BootsMeshRowFind"));
+	Boots->SetSkeletalMesh(bootsMeshRow->BootsMesh);
+}
+
+void ACLobbySurvivor::RequestSetBootsMesh_Implementation(int32 InIndex)
+{
+	PerformSetBootsMesh(InIndex);
+}
+
+bool ACLobbySurvivor::RequestSetBootsMesh_Validate(int32 InIndex)
+{
+	return true;
+}
+
+void ACLobbySurvivor::UpdateSkeletalBootsMesh()
+{
+	FSkeletalBootsMeshRow* bootsMeshRow = CustomizeBootsData->FindRow<FSkeletalBootsMeshRow>(ReplicatedBootsName, TEXT("BootsMeshRowFind"));
+	Boots->SetSkeletalMesh(bootsMeshRow->BootsMesh);
+}
+
+void ACLobbySurvivor::OnRep_ReplicatedBootsName()
+{
+	UpdateSkeletalBootsMesh();
+}
+
 void ACLobbySurvivor::PerformSetSkinColor(int32 InIndex)
 {
 	CDebug::Print("PerformSetSkinColorColor Called");
@@ -546,6 +583,32 @@ void ACLobbySurvivor::PerformSetSkinColor(int32 InIndex)
 		DynamicHeadMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
 		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
 		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+
+	UMaterialInstanceDynamic* dynamicPantsMaterial = Cast<UMaterialInstanceDynamic>(Pants->GetMaterial(0));
+	if (IsValid(dynamicPantsMaterial))
+	{
+		DynamicPantsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Pants->GetMaterial(0);
+		DynamicPantsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicPantsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Pants->SetMaterial(0, DynamicPantsMeshColorMaterial);
+	}
+
+	UMaterialInstanceDynamic* dynamicBootsMaterial = Cast<UMaterialInstanceDynamic>(Boots->GetMaterial(0));
+	if (IsValid(dynamicBootsMaterial))
+	{
+		DynamicBootsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		MeshColorMaterial = Boots->GetMaterial(0);
+		DynamicBootsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicBootsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Boots->SetMaterial(0, DynamicBootsMeshColorMaterial);
 	}
 
 	UMaterialInstanceDynamic* dynamicBodyMaterial = Cast<UMaterialInstanceDynamic>(Body->GetMaterial(0));
@@ -599,6 +662,36 @@ void ACLobbySurvivor::UpdateSkinColor()
 		DynamicHeadMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
 		DynamicHeadMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
 		Head->SetMaterial(0, DynamicHeadMeshColorMaterial);
+	}
+
+	UMaterialInstanceDynamic* dynamicPantsMaterial = Cast<UMaterialInstanceDynamic>(Pants->GetMaterial(0));
+	if (IsValid(dynamicPantsMaterial))
+	{
+		DynamicPantsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		FSkeletalPantsMeshRow* singleMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(("Pants_01"), TEXT("PantsMeshColorRowFind"));
+		Pants->SetSkeletalMesh(singleMeshRow->PantsMesh);
+		MeshColorMaterial = Pants->GetMaterial(0);
+		DynamicPantsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicPantsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Pants->SetMaterial(0, DynamicPantsMeshColorMaterial);
+	}
+
+	UMaterialInstanceDynamic* dynamicBootsMaterial = Cast<UMaterialInstanceDynamic>(Boots->GetMaterial(0));
+	if (IsValid(dynamicBootsMaterial))
+	{
+		DynamicBootsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+	}
+	else
+	{
+		FSkeletalBootsMeshRow* singleMeshRow = CustomizeBootsData->FindRow<FSkeletalBootsMeshRow>(("Boots_01"), TEXT("BootsMeshColorRowFind"));
+		Boots->SetSkeletalMesh(singleMeshRow->BootsMesh);
+		MeshColorMaterial = Boots->GetMaterial(0);
+		DynamicBootsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
+		DynamicBootsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
+		Boots->SetMaterial(0, DynamicBootsMeshColorMaterial);
 	}
 
 	if(IsValid(DynamicBodyMeshColorMaterial))
@@ -658,5 +751,6 @@ void ACLobbySurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ACLobbySurvivor, ReplicatedHeadName); 
 	DOREPLIFETIME(ACLobbySurvivor, ReplicatedHeadColorName); 
 	DOREPLIFETIME(ACLobbySurvivor, ReplicatedPantsName); 
+	DOREPLIFETIME(ACLobbySurvivor, ReplicatedBootsName);
 	DOREPLIFETIME(ACLobbySurvivor, ReplicatedSkinColorName);
 }

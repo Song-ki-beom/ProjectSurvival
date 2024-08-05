@@ -42,16 +42,6 @@ public:
 		USkeletalMesh* PantsMesh;
 };
 
-////USTRUCT(BlueprintType)
-////struct FSkeletalPantsMeshColorRow : public FTableRowBase
-////{
-////	GENERATED_BODY()
-////
-////public:
-////	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-////		FLinearColor PantsMeshColor;
-////};
-
 USTRUCT(BlueprintType)
 struct FSkeletalBootsMeshRow : public FTableRowBase
 {
@@ -121,6 +111,8 @@ public:
 	UFUNCTION()
 		void SetPantsMesh(int32 InIndex);
 	UFUNCTION()
+		void SetBootsMesh(int32 InIndex);
+	UFUNCTION()
 		void SetSkinColor(int32 InIndex);
 
 
@@ -162,7 +154,16 @@ private:
 	UFUNCTION()
 		void OnRep_ReplicatedPantsName();
 
-	// 피부색 커스터마이징
+	// 신발 리플리케이트
+	void PerformSetBootsMesh(int32 InIndex);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void RequestSetBootsMesh(int32 InIndex);
+	UFUNCTION()
+		void UpdateSkeletalBootsMesh();
+	UFUNCTION()
+		void OnRep_ReplicatedBootsName();
+
+	// 피부색 리플리케이트
 	void PerformSetSkinColor(int32 InIndex);
 	UFUNCTION(Server, Reliable, WithValidation)
 		void RequestSetSkinColor(int32 InIndex);
@@ -225,15 +226,15 @@ private:
 
 
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedHeadName)
-		FName ReplicatedHeadName = "Head_01";
+		FName ReplicatedHeadName;
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedHeadColorName)
-		FName ReplicatedHeadColorName = "HeadColor_01";
+		FName ReplicatedHeadColorName;
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedPantsName)
-		FName ReplicatedPantsName = "Pants_01";
-//	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSingleMeshName)
-//		FName ReplicatedSingleMeshName = "Single";
+		FName ReplicatedPantsName;
+	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedBootsName)
+		FName ReplicatedBootsName;
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSkinColorName)
-		FName ReplicatedSkinColorName = "SkinColor_01";
+		FName ReplicatedSkinColorName;
 	
 
 	UPROPERTY()
@@ -251,6 +252,8 @@ private:
 
 	UMaterialInterface* MeshColorMaterial;
 	UMaterialInstanceDynamic* DynamicHeadMeshColorMaterial;
+	UMaterialInstanceDynamic* DynamicBootsMeshColorMaterial;
+	UMaterialInstanceDynamic* DynamicPantsMeshColorMaterial;
 	UMaterialInstanceDynamic* DynamicBodyMeshColorMaterial;
 	UMaterialInstanceDynamic* DynamicHandsMeshColorMaterial;
 

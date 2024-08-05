@@ -48,13 +48,6 @@ private:
 		void SetPantsIndexText();
 
 	UFUNCTION()
-		void SubPantsColorIndex();
-	UFUNCTION()
-		void AddPantsColorIndex();
-	UFUNCTION()
-		void SetPantsColorIndexText();
-
-	UFUNCTION()
 		void SubBootsIndex();
 	UFUNCTION()
 		void AddBootsIndex();
@@ -103,15 +96,6 @@ private:
 		class UTextBlock* PantsIndexText;
 	int32 PantsIndex;
 	int32 MaxPantsIndex;
-
-	UPROPERTY(meta = (BindWidget))
-		class UButton* PantsColorLeftButton;
-	UPROPERTY(meta = (BindWidget))
-		class UButton* PantsColorRightButton;
-	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* PantsColorIndexText;
-	int32 PantsColorIndex;
-	int32 MaxPantsColorIndex;
 
 	UPROPERTY(meta = (BindWidget))
 		class UButton* BootsLeftButton;
