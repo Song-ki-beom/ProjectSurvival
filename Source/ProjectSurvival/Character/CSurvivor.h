@@ -35,6 +35,12 @@ private:
 public:
 	//Slash
 	void Slash();
+	USkeletalMeshComponent* GetHeadMeshComponent() { return Head; }
+	USkeletalMeshComponent* GetPantsMeshComponent() { return Pants; }
+	USkeletalMeshComponent* GetBootsMeshComponent() { return Boots; }
+	USkeletalMeshComponent* GetBodyMeshComponent() { return Body; }
+	USkeletalMeshComponent* GetHandsMeshComponent() { return Hands; }
+	USkeletalMeshComponent* GetAccessoryMeshComponent() { return Accessory; }
 
 private:
 	//Name  
@@ -55,6 +61,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
 
+	UPROPERTY()
+		class USkeletalMeshComponent* Head;
+	UPROPERTY()
+		class USkeletalMeshComponent* Pants;
+	UPROPERTY()
+		class USkeletalMeshComponent* Boots;
+	UPROPERTY()
+		class USkeletalMeshComponent* Accessory;
+	UPROPERTY()
+		class USkeletalMeshComponent* Body;
+	UPROPERTY()
+		class USkeletalMeshComponent* Hands;
+
+
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<class UUserWidget> SurvivorNameClass;
 	UPROPERTY(VisibleAnywhere)
@@ -67,9 +87,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Slash")
 		UDataTable* DestructibleDataTable;
 	FTransform SpawnTransform;
-//	class UInstancedStaticMeshComponent* InstancedMesh;
 	int32 InstanceIndex=NO_INDEX;
-	//class UDestructibleMesh* DestructibleMesh;
 
 
 	//Name 
@@ -77,5 +95,9 @@ private:
 		FText ReplicatedSurvivorName;
 	UFUNCTION()
 		void OnRep_ReplicatedSurvivorName();
+
+	//Customize
+	UPROPERTY(VisibleAnywhere)
+		class UCCustomizeComponent* CustomizeComponent;
 };
 

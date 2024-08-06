@@ -87,7 +87,11 @@ void UCCustomizeComponent::BeginPlay()
 //	ReplicatedBootsName = CustomizeRowNames[3];
 //	ReplicatedSkinColorName = CustomizeRowNames[4];
 	FTimerHandle handle;
-	GetWorld()->GetTimerManager().SetTimer(handle, this, &UCCustomizeComponent::DoSkeletalMeshReplicate, 0.1f, false);
+
+	//Test하기 위해 임시 주석 처리
+	//GetWorld()->GetTimerManager().SetTimer(handle, this, &UCCustomizeComponent::DoSkeletalMeshReplicate, 0.1f, false); 
+	
+	
 	//DoSkeletalMeshReplicate();
 }
 
