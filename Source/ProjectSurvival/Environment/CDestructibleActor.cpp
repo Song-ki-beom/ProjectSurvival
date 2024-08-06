@@ -1,0 +1,50 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Environment/CDestructibleActor.h"
+#include "DestructibleComponent.h"
+#include "Struct/DestructibleStruct.h"
+
+// Sets default values
+ACDestructibleActor::ACDestructibleActor()
+{
+	bReplicates = true;
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = false;
+	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
+	DestructibleComponent->SetupAttachment(GetRootComponent());
+	DestructibleComponent->RegisterComponent();
+	DestructibleComponent->AddToRoot(); // 가비지 컬렉션 삭제 방지
+}
+
+
+
+void ACDestructibleActor::SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh,FTransform InstanceTransform )
+{
+	DestructibleComponent->SetDestructibleMesh(InDestructibleMesh);
+	DestructibleComponent->SetWorldTransform(InstanceTransform);
+}
+
+
+
+// Called when the game starts or when spawned
+void ACDestructibleActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+void ACDestructibleActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (DestructibleComponent)
+	{
+		DestructibleComponent->RemoveFromRoot();
+		DestructibleComponent->DestroyComponent();
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
+
+
+

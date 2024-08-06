@@ -1,6 +1,6 @@
-﻿//#pragma warning(push)
-//#pragma warning(disable : 4996)
-//#pragma warning(disable : 4706)
+﻿#pragma warning(push)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4706)
 
 
 #include "CSurvivor.h"
@@ -15,7 +15,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputCoreTypes.h"
-#include "DestructibleStruct.h"
+#include "Struct/DestructibleStruct.h"
+#include "Environment/CDestructibleActor.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "CGameInstance.h"
@@ -107,7 +108,7 @@ ACSurvivor::ACSurvivor()
 
 
 	// Slash DataTable Load
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Blueprints/DT_Destructible.DT_Destructible'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_Destructible.DT_Destructible'"));
 	if (DataTable_BP.Succeeded())
 	{
 		DestructibleDataTable = DataTable_BP.Object;
@@ -185,7 +186,7 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 void ACSurvivor::SlashBoxTrace()
 {
 	//Trace 관련 세팅
-	FVector Start = FVector(GetActorLocation().X+45, GetActorLocation().Y, 180.0f);
+	FVector Start = FVector(GetActorLocation().X+180, GetActorLocation().Y, 180.0f);
 	FVector End = Start+ GetActorForwardVector()* TraceDistance;
 	FQuat Rot = FQuat::Identity;
 	FVector HalfSize = FVector(150.0f, 150.0f, 150.0f);
@@ -212,13 +213,14 @@ void ACSurvivor::SlashBoxTrace()
 	if (bHit)
 	{
 		FString hitIndex = *HitResult.Component->GetName().Right(1);
-		CDebug::Print(hitIndex,FColor::Blue);
+		FString debugText = TEXT("Hitted Polige Mesh Type") + hitIndex;
+		CDebug::Print(debugText, FColor::Blue);
+
 		if (CheckIsFoliageInstance(HitResult))
 		{
-			
-			
 
 			SwitchFoligeToDestructible(&hitIndex);
+
 		}
 
 	}
@@ -231,7 +233,8 @@ bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit)
 	if (UInstancedStaticMeshComponent* InstancedMesh = Cast<UInstancedStaticMeshComponent>(Hit.Component))
 	{
 		InstanceIndex = Hit.Item;
-		CDebug::Print(Hit.Item);
+		FString debugText = TEXT("Hitted Polige Mesh Index") + FString::FromInt(InstanceIndex);
+		CDebug::Print(debugText);
 		InstancedMesh->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
 		InstancedMesh->RemoveInstance(InstanceIndex);
 		if (InstanceIndex != NO_INDEX) return true;
@@ -247,6 +250,7 @@ bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit)
 
 void ACSurvivor::Slash()
 {
+
 	SlashBoxTrace();
 	
 	
@@ -262,15 +266,11 @@ void ACSurvivor::SwitchFoligeToDestructible(FString* hitIndex)
 		{
 			FVector SpawnLocation = SpawnTransform.GetLocation();
 			FRotator SpawnRotation = FRotator(SpawnTransform.GetRotation());
-
-			// 새로운 파괴 가능한 액터 스폰
-			UDestructibleComponent* DestructibleComponent = NewObject<UDestructibleComponent>(this);
-			DestructibleComponent->SetupAttachment(RootComponent);
-			DestructibleComponent->RegisterComponent();
-			DestructibleComponent->SetDestructibleMesh(Row->DestructibleMesh);
-			DestructibleComponent->SetWorldLocationAndRotation(SpawnLocation, SpawnRotation);
-			DestructibleComponent->AddToRoot(); // 가비지 컬렉션 삭제 방지
-			//GetWorld()->SpawnActor<UDestructibleActor>(AMyDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+			FActorSpawnParameters SpawnParams;
+			
+			// Spawn ADestructibleActor
+			ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+			destructibleActor->SetDestructibleMesh(Row->DestructibleMesh,SpawnTransform);
 		}
 		else
 		{
