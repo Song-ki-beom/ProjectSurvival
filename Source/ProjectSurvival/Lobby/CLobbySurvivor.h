@@ -74,8 +74,8 @@ public:
 		USkeletalMesh* BodyMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USkeletalMesh* HandsMesh;
-
 };
+
 UCLASS()
 class PROJECTSURVIVAL_API ACLobbySurvivor : public ACharacter
 {
@@ -122,6 +122,8 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastSetText(int InIndex);
+
+	TArray<FName> GetCustomizeRowNames();
 
 private:
 	void OnMoveForward(float InAxisValue);
@@ -172,15 +174,6 @@ private:
 	UFUNCTION()
 		void OnRep_ReplicatedSkinColorName();
 
-//	// 기타 메쉬
-//	void PerformSetSingleMesh();
-//	UFUNCTION(Server, Reliable, WithValidation)
-//		void RequestSetSingleMesh();
-//	UFUNCTION()
-//		void UpdateSingleMesh();
-//	UFUNCTION()
-//		void OnRep_ReplicatedSingleMeshName();
-
 	UFUNCTION()
 		void OnRep_ReplicatedSurvivorName();
 
@@ -224,7 +217,6 @@ private:
 	UPROPERTY()
 		int32 ValidSkinColorRowNumber;
 
-
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedHeadName)
 		FName ReplicatedHeadName;
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedHeadColorName)
@@ -236,7 +228,6 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSkinColorName)
 		FName ReplicatedSkinColorName;
 	
-
 	UPROPERTY()
 		class USkeletalMeshComponent* Head;
 	UPROPERTY()
@@ -256,6 +247,8 @@ private:
 	UMaterialInstanceDynamic* DynamicPantsMeshColorMaterial;
 	UMaterialInstanceDynamic* DynamicBodyMeshColorMaterial;
 	UMaterialInstanceDynamic* DynamicHandsMeshColorMaterial;
+
+	TArray<FName> CustomizeRowNames;
 
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSurvivorName)
 		FText ReplicatedSurvivorName;

@@ -261,6 +261,7 @@ void UCCustomizeWidget::CreateSurvivor()
 	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SaveSurvivorName(SurvivorName->GetText());
+	gameInstance->SaveCustomizeRowNames(LobbySurvivor->GetCustomizeRowNames());
 }
 
 void UCCustomizeWidget::ExitGame()

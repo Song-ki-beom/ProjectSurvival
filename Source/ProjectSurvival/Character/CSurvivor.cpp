@@ -1,4 +1,5 @@
 ﻿#include "CSurvivor.h"
+#include "ActorComponents/Disposable/CCustomizeComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -17,12 +18,26 @@
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+
+	Head = GetMesh();
+	Head->SetIsReplicated(true);
+	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
+	Pants->SetIsReplicated(true);
+	Boots = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Boots"));
+	Boots->SetIsReplicated(true);
+	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
+	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
+	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
+
+	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
+	CustomizeComponent->SetIsReplicated(true);
 
 	SpringArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera = this->CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-
+	//ReplicateComponent = this->CreateDefaultSubobject<UCReplicateComponent>(TEXT("Replicate"));
 	// Skeletal Mesh
 	USkeletalMesh* skeletalMesh = nullptr;
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor.SK_Survivor'"));
@@ -82,6 +97,12 @@ ACSurvivor::ACSurvivor()
 void ACSurvivor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Pants->SetMasterPoseComponent(GetMesh());
+	Boots->SetMasterPoseComponent(GetMesh());
+	Accessory->SetMasterPoseComponent(GetMesh());
+	Body->SetMasterPoseComponent(GetMesh());
+	Hands->SetMasterPoseComponent(GetMesh());
 
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	FText tempName = gameInstance->GetLobbySurvivorName();

@@ -28,6 +28,13 @@ private:
 
 public:
 	void SlashTree();
+	USkeletalMeshComponent* GetHeadMeshComponent() { return Head; }
+	USkeletalMeshComponent* GetPantsMeshComponent() { return Pants; }
+	USkeletalMeshComponent* GetBootsMeshComponent() { return Boots; }
+	USkeletalMeshComponent* GetBodyMeshComponent() { return Body; }
+	USkeletalMeshComponent* GetHandsMeshComponent() { return Hands; }
+	USkeletalMeshComponent* GetAccessoryMeshComponent() { return Accessory; }
+	
 
 private:
 	void PerformSetSurvivorName(const FText& InText);
@@ -41,11 +48,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* Camera;
 
+	UPROPERTY()
+		class USkeletalMeshComponent* Head;
+	UPROPERTY()
+		class USkeletalMeshComponent* Pants;
+	UPROPERTY()
+		class USkeletalMeshComponent* Boots;
+	UPROPERTY()
+		class USkeletalMeshComponent* Accessory;
+	UPROPERTY()
+		class USkeletalMeshComponent* Body;
+	UPROPERTY()
+		class USkeletalMeshComponent* Hands;
+
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<class UUserWidget> SurvivorNameClass;
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* SurvivorNameWidgetComponent;
-	
+
+	UPROPERTY(VisibleAnywhere)
+		class UCCustomizeComponent* CustomizeComponent;
 private:
 	UPROPERTY(EditAnywhere)
 	float TraceDistance = 1000.0f;

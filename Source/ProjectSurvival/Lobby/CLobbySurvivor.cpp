@@ -385,6 +385,36 @@ void ACLobbySurvivor::BroadcastSetText_Implementation(int InIndex)
 	}
 }
 
+TArray<FName> ACLobbySurvivor::GetCustomizeRowNames()
+{
+	if (ReplicatedHeadName.IsNone())
+		CustomizeRowNames.Add("Head_01");
+	else
+		CustomizeRowNames.Add(ReplicatedHeadName);
+
+	if (ReplicatedHeadColorName.IsNone())
+		CustomizeRowNames.Add("HeadColor_01");
+	else
+		CustomizeRowNames.Add(ReplicatedHeadColorName);
+
+	if (ReplicatedPantsName.IsNone())
+		CustomizeRowNames.Add("Pants_01");
+	else
+		CustomizeRowNames.Add(ReplicatedPantsName);
+
+	if (ReplicatedBootsName.IsNone())
+		CustomizeRowNames.Add("Boots_01");
+	else
+		CustomizeRowNames.Add(ReplicatedBootsName);
+
+	if (ReplicatedSkinColorName.IsNone())
+		CustomizeRowNames.Add("SkinColor_01");
+	else
+		CustomizeRowNames.Add(ReplicatedSkinColorName);
+
+	return CustomizeRowNames;
+}
+
 void ACLobbySurvivor::OnMoveForward(float InAxisValue)
 {
 	FRotator rotator = FRotator(0, GetControlRotation().Yaw, 0);
@@ -671,8 +701,8 @@ void ACLobbySurvivor::UpdateSkinColor()
 	}
 	else
 	{
-		FSkeletalPantsMeshRow* singleMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(("Pants_01"), TEXT("PantsMeshColorRowFind"));
-		Pants->SetSkeletalMesh(singleMeshRow->PantsMesh);
+		//FSkeletalPantsMeshRow* singleMeshRow = CustomizePantsData->FindRow<FSkeletalPantsMeshRow>(("Pants_01"), TEXT("PantsMeshColorRowFind"));
+		//Pants->SetSkeletalMesh(singleMeshRow->PantsMesh);
 		MeshColorMaterial = Pants->GetMaterial(0);
 		DynamicPantsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
 		DynamicPantsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
@@ -686,8 +716,8 @@ void ACLobbySurvivor::UpdateSkinColor()
 	}
 	else
 	{
-		FSkeletalBootsMeshRow* singleMeshRow = CustomizeBootsData->FindRow<FSkeletalBootsMeshRow>(("Boots_01"), TEXT("BootsMeshColorRowFind"));
-		Boots->SetSkeletalMesh(singleMeshRow->BootsMesh);
+		//FSkeletalBootsMeshRow* singleMeshRow = CustomizeBootsData->FindRow<FSkeletalBootsMeshRow>(("Boots_01"), TEXT("BootsMeshColorRowFind"));
+		//Boots->SetSkeletalMesh(singleMeshRow->BootsMesh);
 		MeshColorMaterial = Boots->GetMaterial(0);
 		DynamicBootsMeshColorMaterial = UMaterialInstanceDynamic::Create(MeshColorMaterial, this);
 		DynamicBootsMeshColorMaterial->SetVectorParameterValue("Skin Tint", skinColorRow->SkinMeshColor);
