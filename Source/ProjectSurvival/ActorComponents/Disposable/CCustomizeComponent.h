@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -24,7 +24,7 @@ public:
 private:
 	void DoSkeletalMeshReplicate();
 
-	// ∏”∏Æ
+	// Î®∏Î¶¨
 	void PerformSetHeadMesh(FName InHeadName, FName InHeadColorName, FName InPantsName, FName InBootsName, FName InSingleName, FName InSkinColorName);
 	UFUNCTION(Server, Reliable, WithValidation)
 		void RequestSetHeadMesh(FName InHeadName, FName InHeadColorName, FName InPantsName, FName InBootsName, FName InSingleName, FName InSkinColorName);
@@ -51,7 +51,7 @@ private:
 	class ACSurvivor* Survivor;
 	TArray<FName> CustomizeRowNames;
 
-	// ƒøΩ∫≈Õ∏∂¿Ã¬° ∞¸∑√
+	// Ïª§Ïä§ÌÑ∞ÎßàÏù¥Ïßï Í¥ÄÎ†®
 	class UDataTable* CustomizeHeadData;
 	class UDataTable* CustomizeHeadColorData;
 	class UDataTable* CustomizePantsData;
