@@ -1,10 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#pragma warning(push)
+#pragma warning(disable : 4996)
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
+#include "Engine/DataTable.h"
+#include "DestructibleComponent.h"
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
 
@@ -33,7 +37,7 @@ public:
 	void Slash();
 
 private:
-	//Name Widget 
+	//Name  
 	void PerformSetSurvivorName(const FText& InText);
 	UFUNCTION(Server, Reliable, WithValidation)
 		void RequestSetSurvivorName(const FText& InText);
@@ -41,7 +45,9 @@ private:
 
 	//Slash 
 	void SlashBoxTrace();
-	bool CheckIsFoliageInstance(const FHitResult& Hit, FString& OutInstanceName);
+	bool CheckIsFoliageInstance(const FHitResult& Hit);
+	void SwitchFoligeToDestructible(FString* hitIndex);
+	void DestroyDestructible(class UDestructibleComponent* DestructibleComponent);
 	
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -58,9 +64,15 @@ private:
 	//Slash
 	UPROPERTY(EditAnywhere)
 	float TraceDistance = 50.0f;
-	TSubclassOf<AActor> ActorToSpawn;
+	UPROPERTY(EditAnywhere, Category = "Slash")
+		UDataTable* DestructibleDataTable;
+	FTransform SpawnTransform;
+//	class UInstancedStaticMeshComponent* InstancedMesh;
+	int32 InstanceIndex=NO_INDEX;
+	//class UDestructibleMesh* DestructibleMesh;
 
-	//Name
+
+	//Name 
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSurvivorName)
 		FText ReplicatedSurvivorName;
 	UFUNCTION()

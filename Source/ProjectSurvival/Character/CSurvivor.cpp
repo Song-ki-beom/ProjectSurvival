@@ -1,4 +1,9 @@
-﻿#include "CSurvivor.h"
+﻿//#pragma warning(push)
+//#pragma warning(disable : 4996)
+//#pragma warning(disable : 4706)
+
+
+#include "CSurvivor.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -9,6 +14,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputCoreTypes.h"
+#include "DestructibleStruct.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "CGameInstance.h"
@@ -78,6 +84,15 @@ ACSurvivor::ACSurvivor()
 	SurvivorNameWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	SurvivorNameWidgetComponent->SetWidgetClass(SurvivorNameClass);
 	SurvivorNameWidgetComponent->InitWidget();
+
+
+
+	// Slash DataTable Load
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Blueprints/DT_Destructible.DT_Destructible'"));
+	if (DataTable_BP.Succeeded())
+	{
+		DestructibleDataTable = DataTable_BP.Object;
+	}
 }
 
 void ACSurvivor::BeginPlay()
@@ -145,10 +160,10 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 void ACSurvivor::SlashBoxTrace()
 {
 	//Trace 관련 세팅
-	FVector Start = FVector(GetActorLocation().X, GetActorLocation().Y, 90.0f);
-	FVector End = Start+ GetActorForwardVector()*TraceDistance;
+	FVector Start = FVector(GetActorLocation().X+45, GetActorLocation().Y, 180.0f);
+	FVector End = Start+ GetActorForwardVector()* TraceDistance;
 	FQuat Rot = FQuat::Identity;
-	FVector HalfSize = FVector(100.0f, 100.0f, 100.0f);
+	FVector HalfSize = FVector(150.0f, 150.0f, 150.0f);
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -164,27 +179,38 @@ void ACSurvivor::SlashBoxTrace()
 		CollisionParams
 	);
 
+	DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
+	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+
+
+
 	if (bHit)
 	{
-		FString InstanceIndex;
-		if (CheckIsFoliageInstance(HitResult, InstanceIndex))
+		FString hitIndex = *HitResult.Component->GetName().Right(1);
+		CDebug::Print(hitIndex,FColor::Blue);
+		if (CheckIsFoliageInstance(HitResult))
 		{
-			CDebug::Print(HitResult.Component->GetName());
-			//CDebug::Print(InstanceIndex);
+			
+			
 
+			SwitchFoligeToDestructible(&hitIndex);
 		}
 
 	}
 
 }
 
-bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit, FString& OutInstanceName)
+bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit)
 {
+	
 	if (UInstancedStaticMeshComponent* InstancedMesh = Cast<UInstancedStaticMeshComponent>(Hit.Component))
 	{
-		int32 InstanceIndex = Hit.Item;
+		InstanceIndex = Hit.Item;
+		CDebug::Print(Hit.Item);
+		InstancedMesh->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
+		InstancedMesh->RemoveInstance(InstanceIndex);
+		if (InstanceIndex != NO_INDEX) return true;
 
-		if (InstanceIndex != -1) return true;
 	}
 	else
 	{
@@ -198,10 +224,43 @@ void ACSurvivor::Slash()
 {
 	SlashBoxTrace();
 	
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Character Slashing!"));
-
 	
+}
+
+void ACSurvivor::SwitchFoligeToDestructible(FString* hitIndex)
+{
+	if (DestructibleDataTable)
+	{
+		
+		FDestructibleStruct* Row = DestructibleDataTable->FindRow<FDestructibleStruct>(FName(*hitIndex), FString(""));
+		if (Row && Row->DestructibleMesh)
+		{
+			FVector SpawnLocation = SpawnTransform.GetLocation();
+			FRotator SpawnRotation = FRotator(SpawnTransform.GetRotation());
+
+			// 새로운 파괴 가능한 액터 스폰
+			UDestructibleComponent* DestructibleComponent = NewObject<UDestructibleComponent>(this);
+			DestructibleComponent->SetupAttachment(RootComponent);
+			DestructibleComponent->RegisterComponent();
+			DestructibleComponent->SetDestructibleMesh(Row->DestructibleMesh);
+			DestructibleComponent->SetWorldLocationAndRotation(SpawnLocation, SpawnRotation);
+			DestructibleComponent->AddToRoot(); // 가비지 컬렉션 삭제 방지
+			//GetWorld()->SpawnActor<UDestructibleActor>(AMyDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+		}
+		else
+		{
+			CDebug::Print(TEXT("Spawn Failed"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Data Table is null"));
+	}
+}
+
+void ACSurvivor::DestroyDestructible(UDestructibleComponent* DestructibleComponent)
+{
+
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
