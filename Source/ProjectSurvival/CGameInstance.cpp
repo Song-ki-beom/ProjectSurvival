@@ -1,6 +1,7 @@
 ﻿#include "CGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbyWidget.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
@@ -119,6 +120,11 @@ void UCGameInstance::RemoveAllWidgets()
 			widget->RemoveFromParent();
 		}
 	}
+}
+
+void UCGameInstance::SetDifficultyCoeff(float InCoeff)
+{
+	DifficultyCoeff = InCoeff;
 }
 
 void UCGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)

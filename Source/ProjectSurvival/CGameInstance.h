@@ -31,11 +31,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void RemoveAllWidgets();
 
+	void SaveCustomizeRowNames(TArray<FName> InRowNames) { CustomizeRowNames = InRowNames; }
+	TArray<FName> GetCustomizeRowNames() { return CustomizeRowNames; }
+
 	void SaveSurvivorName(FText InText) { SurvivorName = InText; }
 	FText GetLobbySurvivorName() { return SurvivorName; }
 
 	float GetDifficultyCoeff() { return DifficultyCoeff; }
-	void SetDifficultyCoeff(float InCoeff) { DifficultyCoeff = InCoeff; }
+	void SetDifficultyCoeff(float InCoeff);
 
 private:
 	void OnCreateSessionComplete(FName SessionName, bool Success);
@@ -63,6 +66,9 @@ private:
 	IOnlineIdentityPtr IdentityInterface;
 	TSharedPtr<const FUniqueNetId> playerNetId;
 	FString DesiredServerName;
+
+	UPROPERTY()
+		TArray<FName> CustomizeRowNames;
 
 	UPROPERTY()
 		FText SurvivorName;

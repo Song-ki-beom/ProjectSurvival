@@ -4,6 +4,7 @@
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Net/UnrealNetwork.h"
+#include "Utility/CDebug.h"
 
 ACLobbySurvivorController::ACLobbySurvivorController()
 {
@@ -36,13 +37,38 @@ void ACLobbySurvivorController::LoadCustomizeWidget()
 		UE_LOG(LogTemp, Warning, TEXT("CustomizeWidget is not valid"));
 }
 
+void ACLobbySurvivorController::GetCustomizeInfo()
+{
+	PrintLine;
+	CDebug::Print("Send Customize Info Received - 3");
+	if (CustomizeWidget)
+	{
+		PrintLine;
+		CDebug::Print("CustomizeWidget is Valid and Call GetCustomizeInfo() - 4");
+		CustomizeWidget->GetCustomizeInfo();
+	}
+	else
+	{
+		CDebug::Print("CustomizeWidget is not Valid");
+	}
+
+}
+
 void ACLobbySurvivorController::LoadWaitingWidget()
 {
 	WaitingWidget = CreateWidget<UCWaitingWidget>(this, WaitingClass);
 	if (IsValid(WaitingWidget))
+	{
 		WaitingWidget->SetUpWidget();
+		WaitingWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("WaitingWidget is not valid"));
+}
+
+void ACLobbySurvivorController::SetVisibleWaitingWidget()
+{
+	WaitingWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ACLobbySurvivorController::UpdateDifficultyWidget(int InIndex)
@@ -55,5 +81,10 @@ void ACLobbySurvivorController::UpdateDifficultyWidget(int InIndex)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("WaitingWidget is not valid ACLobbySurvivorController"));
 	}
+}
+
+void ACLobbySurvivorController::UpdateClientDifficulty()
+{
+	WaitingWidget->UpdateClientDifficulty();
 }
 

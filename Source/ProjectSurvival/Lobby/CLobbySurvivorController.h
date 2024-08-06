@@ -22,10 +22,16 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 		void LoadCustomizeWidget();
+	void GetCustomizeInfo();
+
 	UFUNCTION()
 		void LoadWaitingWidget();
-	
+	UFUNCTION()
+		void SetVisibleWaitingWidget();
+
 	void UpdateDifficultyWidget(int InIndex);
+
+	void UpdateClientDifficulty();
 
 private:
 	UPROPERTY()

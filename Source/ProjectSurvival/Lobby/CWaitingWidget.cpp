@@ -6,6 +6,7 @@
 #include "Lobby/CDifficultyWidget.h"
 #include "Lobby/CLobbyGamemode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Utility/CDebug.h"
 
 UCWaitingWidget::UCWaitingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) // 위젯 생성자
 {
@@ -30,12 +31,10 @@ void UCWaitingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			if (LobbyGameMode->CheckPlayer())
 			{
 				DifficultyWidget->ActivateStartButton();
-				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("TRUE"));
 			}
 			else
 			{
 				DifficultyWidget->DeactivateStartButton();
-				//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("FALSE"));
 			}
 		}
 	}
@@ -56,11 +55,11 @@ void UCWaitingWidget::SetUpWidget()
 		APlayerController* controller = Cast<APlayerController>(LobbySurvivor->GetController());
 		controller->bShowMouseCursor = false;
 		DifficultyWidget->SetClientStartButton();
-		LobbySurvivor->RequestReady();
 	}
+	UpdateDifficultyWidget(0);
 }
 
-void UCWaitingWidget::UpdateDifficultyWidget(int InIndex)
+void UCWaitingWidget::UpdateDifficultyWidget(int32 InIndex)
 {
 	if (IsValid(DifficultyWidget))
 	{
@@ -70,4 +69,9 @@ void UCWaitingWidget::UpdateDifficultyWidget(int InIndex)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("DifficultyWidget is not valid - UCWaitingWidget"));
 	}
+}
+
+void UCWaitingWidget::UpdateClientDifficulty()
+{
+	DifficultyWidget->UpdateClientDifficulty();
 }
