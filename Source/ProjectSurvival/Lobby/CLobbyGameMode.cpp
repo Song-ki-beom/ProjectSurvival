@@ -29,16 +29,6 @@ ACLobbyGameMode::ACLobbyGameMode()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("playerControllerClassFinder failed - ACLobbyGameMode"));
 	}
-
-	static ConstructorHelpers::FClassFinder<APlayerState> playerStateClassFinder(TEXT("/Game/PirateIsland/Include/Blueprints/Character/Survivor/BP_CLobbySurvivorState.BP_CLobbySurvivorState_C"));
-	if (playerStateClassFinder.Succeeded())
-	{
-		this->PlayerStateClass = playerStateClassFinder.Class;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("playerStateClassFinder failed - ACLobbyGameMode"));
-	}
 }
 
 void ACLobbyGameMode::PostLogin(APlayerController* NewPlayer)
@@ -60,8 +50,6 @@ void ACLobbyGameMode::ReadyPlayer()
 
 bool ACLobbyGameMode::CheckPlayer()
 {
-	//CDebug::Print("Total Survivor:", NumberOfSurvivors);
-	//CDebug::Print("Ready Survivor:", NumberOfReadySurvivors);
 	bool result = (NumberOfSurvivors == NumberOfReadySurvivors) ? true : false;
 	return result;
 }

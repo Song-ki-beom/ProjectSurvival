@@ -2,7 +2,6 @@
 #include "Lobby/CLobbyGamemode.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbySurvivorController.h"
-#include "Lobby/CLobbySurvivorState.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"

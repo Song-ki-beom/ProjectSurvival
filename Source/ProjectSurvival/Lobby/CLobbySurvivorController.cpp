@@ -33,23 +33,13 @@ void ACLobbySurvivorController::LoadCustomizeWidget()
 	CustomizeWidget = CreateWidget<UCCustomizeWidget>(this, CustomizeClass);
 	if (IsValid(CustomizeWidget))
 		CustomizeWidget->SetUpWidget();
-	else
-		UE_LOG(LogTemp, Warning, TEXT("CustomizeWidget is not valid"));
 }
 
 void ACLobbySurvivorController::GetCustomizeInfo()
 {
-	PrintLine;
-	CDebug::Print("Send Customize Info Received - 3");
 	if (CustomizeWidget)
 	{
-		PrintLine;
-		CDebug::Print("CustomizeWidget is Valid and Call GetCustomizeInfo() - 4");
 		CustomizeWidget->GetCustomizeInfo();
-	}
-	else
-	{
-		CDebug::Print("CustomizeWidget is not Valid");
 	}
 
 }

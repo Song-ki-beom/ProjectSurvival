@@ -26,23 +26,16 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(UserDebug, Log, All);
 
-#define LogLine CDebug::Log(__FILE__,__FUNCTION__,__LINE__);
+#define LOGLINE CDebug::Log(__FILE__,__FUNCTION__,__LINE__);
 
-#define PrintLine CDebug::Print(__FILE__,__FUNCTION__, __LINE__);
-#define PrintLine_Detail(Color, Duration) CDebug::Print(__FILE__,__FUNCTION__, __LINE__, Color, Duration);
+#define PRINTLINE CDebug::Print(__FILE__,__FUNCTION__, __LINE__);
+#define PRINTLINE_DETAIL (Color, Duration) CDebug::Print(__FILE__,__FUNCTION__, __LINE__, Color, Duration);
 
 class PROJECTSURVIVAL_API CDebug
 {
 public:
 	static void Log(const FString& FileName, const FString& FunctionName, int32 LineNumber);
 	static void Log(const FString& Message);
-
-	static void Log(int Value, const FString& Message = "");
-	static void Log(float Value, const FString& Message = "");
-	static void Log(const FVector& Value, const FString& Message = "");
-	static void Log(const FRotator& Value, const FString& Message = "");
-	static void Log(const FQuat& Value, const FString& Message = "");
-	static void Log(const UObject* Value, const FString& Message = "");
 
 	static void Log(const FString& Message, int32 Value);
 	static void Log(const FString& Message, float Value);
@@ -51,16 +44,12 @@ public:
 	static void Log(const FString& Message, const FRotator& Value);
 	static void Log(const FString& Message, const FQuat& Value);
 	static void Log(const FString& Message, const UObject* Value);
+	static void Log(const FString& Message, const FString& Value);
+	static void Log(const FString& Message, const FName& Value);
+	static void Log(const FString& Message, const FText& Value);
 
 	static void Print(const FString& FileName, const FString& FunctionName, int32 LineNumber, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FString& Message, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	
-	static void Print(int32 Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	static void Print(float Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	static void Print(const FVector& Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	static void Print(const FRotator& Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	static void Print(const FQuat& Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
-	static void Print(const UObject* Value, const FString& Message = "", FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 
 	static void Print(const FString& Message, int32 Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FString& Message, float Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
@@ -69,4 +58,7 @@ public:
 	static void Print(const FString& Message, const FRotator& Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FString& Message, const FQuat& Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 	static void Print(const FString& Message, const UObject* Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
+	static void Print(const FString& Message, const FString& Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
+	static void Print(const FString& Message, const FName& Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
+	static void Print(const FString& Message, const FText& Value, FColor Color = FColor::Yellow, float Duration = 10.0f, int32 Key = -1);
 };

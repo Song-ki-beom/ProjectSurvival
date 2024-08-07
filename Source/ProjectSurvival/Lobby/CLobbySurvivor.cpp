@@ -1,6 +1,5 @@
 ﻿#include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbySurvivorController.h"
-#include "Lobby/CLobbySurvivorState.h"
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbyGameMode.h"
 #include "Components/CapsuleComponent.h"
@@ -141,7 +140,6 @@ ACLobbySurvivor::ACLobbySurvivor()
 void ACLobbySurvivor::BeginPlay()
 {
 	Super::BeginPlay();
-	CDebug::Print("BeginPlay Called");
 	InitCustomize();
 	if (!HasAuthority())
 	{
@@ -244,7 +242,6 @@ void ACLobbySurvivor::SetSurvivorName(const FText& InText)
 
 void ACLobbySurvivor::PerformSetSurvivorName(const FText& InText)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ServerSetSurvivorName_Implementation Called"));
 	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
 	
 	int32 randomX = FMath::RandRange(10793, 11281);
@@ -270,7 +267,6 @@ bool ACLobbySurvivor::RequestSetSurvivorName_Validate(const FText& InText)
 
 void ACLobbySurvivor::UpdateSurvivorNameWidget()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UpdateSurvivorNameWidget Called"));
 	if (SurvivorNameWidgetComponent)
 	{
 		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
@@ -279,7 +275,6 @@ void ACLobbySurvivor::UpdateSurvivorNameWidget()
 			if (TextBlock)
 			{
 				TextBlock->SetText(ReplicatedSurvivorName);
-				UE_LOG(LogTemp, Warning, TEXT("SurvivorName updated to: %s"), *ReplicatedSurvivorName.ToString());
 			}
 			else
 			{
@@ -301,12 +296,10 @@ void ACLobbySurvivor::SetHeadMesh(int32 InIndex)
 {
 	if (HasAuthority())
 	{
-		CDebug::Print("Server - SetHeadMesh Call", FColor::Red);
 		PerformSetHeadMesh(InIndex);
 	}
 	else
 	{
-		CDebug::Print("Client - SetHeadMesh Call", FColor::Blue);
 		RequestSetHeadMesh(InIndex);
 	}
 }
@@ -315,12 +308,10 @@ void ACLobbySurvivor::SetHeadMeshColor(int32 InIndex)
 {
 	if (HasAuthority())
 	{
-		CDebug::Print("Server - SetHeadMeshColor Call", FColor::Red);
 		PerformSetHeadMeshColor(InIndex);
 	}
 	else
 	{
-		CDebug::Print("Client - SetHeadMeshColor Call", FColor::Blue);
 		RequestSetHeadMeshColor(InIndex);
 	}
 }
@@ -431,7 +422,6 @@ void ACLobbySurvivor::OnMoveRight(float InAxisValue)
 
 void ACLobbySurvivor::PerformSetHeadMesh(int32 InIndex)
 {
-	CDebug::Print("PerformSetHeadMesh Called");
 	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
 	FString headString = "Head_";
 	FString combinedString = headString.Append(indexString);
@@ -443,7 +433,6 @@ void ACLobbySurvivor::PerformSetHeadMesh(int32 InIndex)
 
 void ACLobbySurvivor::RequestSetHeadMesh_Implementation(int32 InIndex)
 {
-	CDebug::Print("RequestSetHeadMesh_Implementation Called");
 	PerformSetHeadMesh(InIndex);
 }
 
@@ -454,7 +443,6 @@ bool ACLobbySurvivor::RequestSetHeadMesh_Validate(int32 InIndex)
 
 void ACLobbySurvivor::UpdateSkeletalHeadMesh()
 {
-	CDebug::Print("UpdateSkeletalHeadMesh Called");
 	FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(ReplicatedHeadName, TEXT("HeadMeshRowFind"));
 	if (headMeshRow)
 		Head->SetSkeletalMesh(headMeshRow->HeadMesh);
@@ -462,19 +450,16 @@ void ACLobbySurvivor::UpdateSkeletalHeadMesh()
 
 void ACLobbySurvivor::OnRep_ReplicatedHeadName()
 {
-	CDebug::Print("OnRep_ReplicatedHeadName Called");
 	UpdateSkeletalHeadMesh();
 }
 
 void ACLobbySurvivor::PerformSetHeadMeshColor(int32 InIndex)
 {
-	CDebug::Print("PerformSetHeadMeshColor Called");
 	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
 	FString headColorString = "HeadColor_";
 	FString combinedString = headColorString.Append(indexString);
 	FName index(*combinedString);
 	ReplicatedHeadColorName = index;
-	CDebug::Print(ReplicatedHeadColorName.ToString());
 	FSkeletalHeadMeshColorRow* headMeshColorRow = CustomizeHeadColorData->FindRow<FSkeletalHeadMeshColorRow>(ReplicatedHeadColorName, TEXT("HeadMeshColorRowFind"));
 	MeshColorMaterial = Head->GetMaterial(0);
 	if (IsValid(DynamicHeadMeshColorMaterial))
@@ -525,7 +510,6 @@ void ACLobbySurvivor::OnRep_ReplicatedHeadColorName()
 
 void ACLobbySurvivor::PerformSetPantsMesh(int32 InIndex)
 {
-	CDebug::Print("PerformSetPantsMesh Called");
 	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
 	FString headString = "Pants_";
 	FString combinedString = headString.Append(indexString);
@@ -558,7 +542,6 @@ void ACLobbySurvivor::OnRep_ReplicatedPantsName()
 
 void ACLobbySurvivor::PerformSetBootsMesh(int32 InIndex)
 {
-	CDebug::Print("PerformSetBootsMesh Called");
 	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
 	FString headString = "Boots_";
 	FString combinedString = headString.Append(indexString);
@@ -591,14 +574,12 @@ void ACLobbySurvivor::OnRep_ReplicatedBootsName()
 
 void ACLobbySurvivor::PerformSetSkinColor(int32 InIndex)
 {
-	CDebug::Print("PerformSetSkinColorColor Called");
 	FString indexString = FString::Printf(TEXT("%02d"), InIndex);
 	FString headColorString = "SkinColor_";
 	FString combinedString = headColorString.Append(indexString);
 	FName index(*combinedString);
 
 	ReplicatedSkinColorName = index;
-	CDebug::Print(ReplicatedSkinColorName.ToString());
 
 	FSkeletalSkinMeshColorRow* skinColorRow = CustomizeSkinColorData->FindRow<FSkeletalSkinMeshColorRow>(ReplicatedSkinColorName, TEXT("SkinMeshColorRowFind"));
 	
