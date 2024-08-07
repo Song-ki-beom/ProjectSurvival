@@ -131,7 +131,6 @@ void UCCustomizeWidget::SubHairIndex()
 	{
 		--HairIndex;
 		SetHairIndexText();
-		CDebug::Print("HairIndex--");
 	}
 }
 
@@ -141,13 +140,11 @@ void UCCustomizeWidget::AddHairIndex()
 	{
 		++HairIndex;
 		SetHairIndexText();
-		CDebug::Print("HairIndex++");
 	}
 }
 
 void UCCustomizeWidget::SetHairIndexText()
 {
-	CDebug::Print("SetHair Called");
 	HairIndexText->SetText(FText::AsNumber(HairIndex + 1));
 	LobbySurvivor->SetHeadMesh(HairIndex + 1);
 }

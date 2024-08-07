@@ -88,11 +88,8 @@ void UCCustomizeComponent::BeginPlay()
 //	ReplicatedSkinColorName = CustomizeRowNames[4];
 	FTimerHandle handle;
 
-	//Test하기 위해 임시 주석 처리
-	//GetWorld()->GetTimerManager().SetTimer(handle, this, &UCCustomizeComponent::DoSkeletalMeshReplicate, 0.1f, false); 
-	
-	
-	//DoSkeletalMeshReplicate();
+	// 커스터마이징 시작, GameInstance의 변수값이 Null 일 경우 실행되지 않음
+	GetWorld()->GetTimerManager().SetTimer(handle, this, &UCCustomizeComponent::DoSkeletalMeshReplicate, 0.1f, false); 
 }
 
 void UCCustomizeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -104,13 +101,20 @@ void UCCustomizeComponent::DoSkeletalMeshReplicate()
 {
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	CustomizeRowNames = gameInstance->GetCustomizeRowNames();
-	if (Survivor->HasAuthority())
+	if (CustomizeRowNames.Num() == 5)
 	{
-		PerformSetHeadMesh(CustomizeRowNames[0], CustomizeRowNames[1], CustomizeRowNames[2], CustomizeRowNames[3], "Single", CustomizeRowNames[4]);
+		if (Survivor->HasAuthority())
+		{
+			PerformSetHeadMesh(CustomizeRowNames[0], CustomizeRowNames[1], CustomizeRowNames[2], CustomizeRowNames[3], "Single", CustomizeRowNames[4]);
+		}
+		else
+		{
+			RequestSetHeadMesh(CustomizeRowNames[0], CustomizeRowNames[1], CustomizeRowNames[2], CustomizeRowNames[3], "Single", CustomizeRowNames[4]);
+		}
 	}
 	else
 	{
-		RequestSetHeadMesh(CustomizeRowNames[0], CustomizeRowNames[1], CustomizeRowNames[2], CustomizeRowNames[3], "Single", CustomizeRowNames[4]);
+		CDebug::Print(TEXT("Can't Find Customize Info. Check GameInstance"));
 	}
 }
 
