@@ -33,7 +33,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeHead.DT_CustomizeHead'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Customize/DT_CustomizeHead.DT_CustomizeHead'"));
 	if (customizeHeadDataFinder.Succeeded())
 	{
 		CustomizeHeadData = customizeHeadDataFinder.Object;
@@ -43,7 +43,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 		CDebug::Log("customizeHeadDataFinder Failed");
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadColorDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeHeadColor.DT_CustomizeHeadColor'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeHeadColorDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Customize/DT_CustomizeHeadColor.DT_CustomizeHeadColor'"));
 	if (customizeHeadColorDataFinder.Succeeded())
 	{
 		CustomizeHeadColorData = customizeHeadColorDataFinder.Object;
@@ -53,7 +53,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 		CDebug::Log("customizeHeadColorDataFinder Failed");
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> customizePantsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizePants.DT_CustomizePants'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizePantsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Customize/DT_CustomizePants.DT_CustomizePants'"));
 	if (customizePantsDataFinder.Succeeded())
 	{
 		CustomizePantsData = customizePantsDataFinder.Object;
@@ -63,7 +63,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 		CDebug::Log("customizePantsDataFinder Failed");
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> customizeBootsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeBoots.DT_CustomizeBoots'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeBootsDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Customize/DT_CustomizeBoots.DT_CustomizeBoots'"));
 	if (customizeBootsDataFinder.Succeeded())
 	{
 		CustomizeBootsData = customizeBootsDataFinder.Object;
@@ -73,7 +73,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 		CDebug::Log("customizeBootsDataFinder Failed");
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSkinColorDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeSkinColor.DT_CustomizeSkinColor'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSkinColorDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Customize/DT_CustomizeSkinColor.DT_CustomizeSkinColor'"));
 	if (customizeSkinColorDataFinder.Succeeded())
 	{
 		CustomizeSkinColorData = customizeSkinColorDataFinder.Object;
@@ -83,7 +83,7 @@ ACLobbySurvivor::ACLobbySurvivor()
 		CDebug::Log("customizeSkinColorDataFinder Failed");
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSingleDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_CustomizeSingle.DT_CustomizeSingle'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> customizeSingleDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Customize/DT_CustomizeSingle.DT_CustomizeSingle'"));
 	if (customizeSingleDataFinder.Succeeded())
 	{
 		CustomizeSingleData = customizeSingleDataFinder.Object;

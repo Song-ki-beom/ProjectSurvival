@@ -1,15 +1,36 @@
 ﻿#include "ActorComponents/CBuildComponent.h"
 #include "Character/CSurvivorController_BuildTest.h"
+#include "Widget/Build/CBuildWidget.h"
 #include "Utility/CDebug.h"
 
 UCBuildComponent::UCBuildComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> buildStructureDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Build/DT_BuildStructureInfo.DT_BuildStructureInfo'"));
+	if (buildStructureDataFinder.Succeeded())
+	{
+		BuildStructureData = buildStructureDataFinder.Object;
+	}
+	else
+	{
+		CDebug::Log("buildStructureDataFinder Failed");
+	}
+
+	bIsBuildWidgetOn = false;
+
+
 }
 
 void UCBuildComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
+	BuildWidget = survivorController->GetBuildWidget();
+	if (survivorController)
+		CDebug::Print("Build Widget Valid");
+	else
+		CDebug::Print("Build Widget is not Vaild");
 }
 
 void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -17,155 +38,101 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UCBuildComponent::SelectQ()
+void UCBuildComponent::ToggleBuildWidget()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	CDebug::Print("Call");
+
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectQ");
-			survivorController->ToggleBuildWidget();
-		}
+		CDebug::Print("Off Build");
+		bIsBuildWidgetOn = false;
+		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	else
 	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("On Build");
+		bIsBuildWidgetOn = true;
+		BuildWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void UCBuildComponent::SelectQ()
+{
+	if (bIsBuildWidgetOn)
+	{
+		CDebug::Print("SelectQ");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectW()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectW");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectW");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectE()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectE");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectE");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectA()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectA");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectA");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectS()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectS");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectS");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectD()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectD");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectD");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectZ()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectZ");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectZ");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectX()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectX");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectX");
+		ToggleBuildWidget();
 	}
 }
 
 void UCBuildComponent::SelectC()
 {
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController))
+	if (bIsBuildWidgetOn)
 	{
-		if (survivorController->GetIsBuildWidgetOn())
-		{
-			CDebug::Print("SelectC");
-			survivorController->ToggleBuildWidget();
-		}
-	}
-	else
-	{
-		CDebug::Print("survivorController is not valid");
+		CDebug::Print("SelectC");
+		ToggleBuildWidget();
 	}
 }

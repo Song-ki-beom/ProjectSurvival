@@ -16,8 +16,6 @@ ACSurvivorController_BuildTest::ACSurvivorController_BuildTest()
 	}
 	else
 		CDebug::Log("buildWidgetFinder Failed");
-
-	bIsBuildWidgetOn = false;
 }
 
 void ACSurvivorController_BuildTest::BeginPlay()
@@ -31,16 +29,6 @@ void ACSurvivorController_BuildTest::BeginPlay()
 void ACSurvivorController_BuildTest::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
-	if (IsValid(InputComponent))
-	{
-		////////////////////////////////////////////////////
-		InputComponent->BindAction("Build", IE_Pressed, this, &ACSurvivorController_BuildTest::ToggleBuildWidget);
-	}
-	else
-	{
-		CDebug::Print("InputComponent is not valid");
-	}
 }
 
 void ACSurvivorController_BuildTest::GetSurvivor()
@@ -55,22 +43,6 @@ void ACSurvivorController_BuildTest::SetupBuildWidget()
 	BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void ACSurvivorController_BuildTest::ToggleBuildWidget()
-{
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("Off Build");
-		bIsBuildWidgetOn = false;
-		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	else
-	{
-		CDebug::Print("On Build");
-		bIsBuildWidgetOn = true;
-		BuildWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-}
-
 void ACSurvivorController_BuildTest::SetupBuildComponentFunction()
 {
 	if (IsValid(CSurvivor_BuildTest))
@@ -79,15 +51,16 @@ void ACSurvivorController_BuildTest::SetupBuildComponentFunction()
 		if (IsValid(buildComponent))
 		{
 			CDebug::Print("buildComponent is valid");
-			InputComponent->BindAction("SelectQ", IE_Pressed, buildComponent, &UCBuildComponent::SelectQ);
-			InputComponent->BindAction("SelectW", IE_Pressed, buildComponent, &UCBuildComponent::SelectW);
-			InputComponent->BindAction("SelectE", IE_Pressed, buildComponent, &UCBuildComponent::SelectE);
-			InputComponent->BindAction("SelectA", IE_Pressed, buildComponent, &UCBuildComponent::SelectA);
-			InputComponent->BindAction("SelectS", IE_Pressed, buildComponent, &UCBuildComponent::SelectS);
-			InputComponent->BindAction("SelectD", IE_Pressed, buildComponent, &UCBuildComponent::SelectD);
-			InputComponent->BindAction("SelectZ", IE_Pressed, buildComponent, &UCBuildComponent::SelectZ);
-			InputComponent->BindAction("SelectX", IE_Pressed, buildComponent, &UCBuildComponent::SelectX);
-			InputComponent->BindAction("SelectC", IE_Pressed, buildComponent, &UCBuildComponent::SelectC);
+			CSurvivor_BuildTest->InputComponent->BindAction("Build", IE_Pressed, buildComponent, &UCBuildComponent::ToggleBuildWidget);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectQ", IE_Pressed, buildComponent, &UCBuildComponent::SelectQ);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectW", IE_Pressed, buildComponent, &UCBuildComponent::SelectW);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectE", IE_Pressed, buildComponent, &UCBuildComponent::SelectE);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectA", IE_Pressed, buildComponent, &UCBuildComponent::SelectA);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectS", IE_Pressed, buildComponent, &UCBuildComponent::SelectS);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectD", IE_Pressed, buildComponent, &UCBuildComponent::SelectD);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectZ", IE_Pressed, buildComponent, &UCBuildComponent::SelectZ);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectX", IE_Pressed, buildComponent, &UCBuildComponent::SelectX);
+			CSurvivor_BuildTest->InputComponent->BindAction("SelectC", IE_Pressed, buildComponent, &UCBuildComponent::SelectC);
 		}
 		else
 		{

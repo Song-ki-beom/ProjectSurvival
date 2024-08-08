@@ -20,10 +20,9 @@ public:
 	////////////////////////////////////////////////////
 	void GetSurvivor();
 	void SetupBuildWidget();
-	void ToggleBuildWidget();
 	void SetupBuildComponentFunction();
 	
-	bool GetIsBuildWidgetOn() { return bIsBuildWidgetOn; }
+	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 
 private:
 	class ACSurvivor_BuildTest* CSurvivor_BuildTest;
@@ -32,5 +31,4 @@ private:
 		TSubclassOf<class UUserWidget> BuildWidgetClass;
 	UPROPERTY()
 		class UCBuildWidget* BuildWidget;
-	bool bIsBuildWidgetOn;
 };
