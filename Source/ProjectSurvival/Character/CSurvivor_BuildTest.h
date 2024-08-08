@@ -17,6 +17,8 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	class UCBuildComponent* GetBuildComponent() { return BuildComponent; }
 
 private:
 	UPROPERTY(VisibleAnywhere)

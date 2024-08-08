@@ -7,6 +7,8 @@ ACSurvivor_BuildTest::ACSurvivor_BuildTest()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
+
+	BuildComponent = CreateDefaultSubobject<UCBuildComponent>("BuildComponent");
 }
 
 void ACSurvivor_BuildTest::BeginPlay()

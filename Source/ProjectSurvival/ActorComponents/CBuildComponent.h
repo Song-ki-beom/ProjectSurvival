@@ -17,4 +17,15 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+public:
+	void SelectQ();
+	void SelectW();
+	void SelectE();
+	void SelectA();
+	void SelectS();
+	void SelectD();
+	void SelectZ();
+	void SelectX();
+	void SelectC();
 };

@@ -18,10 +18,16 @@ protected:
 
 public:
 	////////////////////////////////////////////////////
+	void GetSurvivor();
 	void SetupBuildWidget();
 	void ToggleBuildWidget();
+	void SetupBuildComponentFunction();
+	
+	bool GetIsBuildWidgetOn() { return bIsBuildWidgetOn; }
 
 private:
+	class ACSurvivor_BuildTest* CSurvivor_BuildTest;
+
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> BuildWidgetClass;
 	UPROPERTY()
