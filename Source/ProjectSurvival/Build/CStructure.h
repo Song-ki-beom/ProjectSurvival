@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -16,8 +14,16 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	void SaveOriginMaterial();
+
+protected:
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* StaticMesh;
+
+	UMaterialInterface* OriginMaterial;
+	UMaterialInstance* RedMaterial;
+	UMaterialInstance* GreenMaterial;
 };

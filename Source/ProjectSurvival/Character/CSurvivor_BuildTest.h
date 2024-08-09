@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Character/CSurvivor.h"
+#include "CSurvivorController_BuildTest.h"
+#include "CustomDataType/BuildStructureDataType.h"
 #include "CSurvivor_BuildTest.generated.h"
 
 UCLASS()
@@ -19,6 +21,8 @@ protected:
 
 public:
 	class UCBuildComponent* GetBuildComponent() { return BuildComponent; }
+
+	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass);
 
 private:
 	UPROPERTY(VisibleAnywhere)

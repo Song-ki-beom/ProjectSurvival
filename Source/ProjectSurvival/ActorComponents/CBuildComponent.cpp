@@ -6,20 +6,6 @@
 UCBuildComponent::UCBuildComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	static ConstructorHelpers::FObjectFinder<UDataTable> buildStructureDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Build/DT_BuildStructureInfo.DT_BuildStructureInfo'"));
-	if (buildStructureDataFinder.Succeeded())
-	{
-		BuildStructureData = buildStructureDataFinder.Object;
-	}
-	else
-	{
-		CDebug::Log("buildStructureDataFinder Failed");
-	}
-
-	bIsBuildWidgetOn = false;
-
-
 }
 
 void UCBuildComponent::BeginPlay()
@@ -38,101 +24,47 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UCBuildComponent::ToggleBuildWidget()
-{
-	CDebug::Print("Call");
-
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("Off Build");
-		bIsBuildWidgetOn = false;
-		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	else
-	{
-		CDebug::Print("On Build");
-		bIsBuildWidgetOn = true;
-		BuildWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-}
-
 void UCBuildComponent::SelectQ()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectQ");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectQ");
 }
 
 void UCBuildComponent::SelectW()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectW");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectW");
 }
 
 void UCBuildComponent::SelectE()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectE");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectE");
 }
 
 void UCBuildComponent::SelectA()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectA");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectA");
 }
 
 void UCBuildComponent::SelectS()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectS");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectS");
 }
 
 void UCBuildComponent::SelectD()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectD");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectD");
 }
 
 void UCBuildComponent::SelectZ()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectZ");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectZ");
 }
 
 void UCBuildComponent::SelectX()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectX");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectX");
 }
 
 void UCBuildComponent::SelectC()
 {
-	if (bIsBuildWidgetOn)
-	{
-		CDebug::Print("SelectC");
-		ToggleBuildWidget();
-	}
+	CDebug::Print("SelectC");
 }

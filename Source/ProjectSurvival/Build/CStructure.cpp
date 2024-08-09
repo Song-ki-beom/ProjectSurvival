@@ -1,27 +1,35 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "Build/CStructure.h"
 
-
-#include "Build/CStructure.h"
-
-// Sets default values
 ACStructure::ACStructure()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> redMaterialFinder(TEXT("MaterialInstanceConstant'/Game/PirateIsland/Include/Materials/Builds/MI_Build_Red.MI_Build_Red'"));
+	if (redMaterialFinder.Succeeded())
+	{
+		RedMaterial = redMaterialFinder.Object;
+	}
 
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> greenMaterialFinder(TEXT("MaterialInstanceConstant'/Game/PirateIsland/Include/Materials/Builds/MI_Build_Green.MI_Build_Green'"));
+	if (greenMaterialFinder.Succeeded())
+	{
+		GreenMaterial = greenMaterialFinder.Object;
+	}
+
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 }
 
-// Called when the game starts or when spawned
 void ACStructure::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
 void ACStructure::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void ACStructure::SaveOriginMaterial()
+{
+	if (IsValid(StaticMesh->GetStaticMesh()))
+		OriginMaterial = StaticMesh->GetStaticMesh()->GetMaterial(0);
 }
 

@@ -8,5 +8,14 @@ UCLASS()
 class PROJECTSURVIVAL_API ACStructure_Foundation : public ACStructure
 {
 	GENERATED_BODY()
+
+public:
+	ACStructure_Foundation();
+
+protected:
+	virtual void Tick(float DeltaTime) override;
+
+private:
+
 	
 };
