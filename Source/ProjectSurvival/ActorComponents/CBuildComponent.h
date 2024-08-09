@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
-#include "Build/CBuildStructure.h"
+#include "Build/CStructure.h"
 #include "CBuildComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -13,9 +13,9 @@ struct FBuildStructureInfo : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UTexture2D* BuildStructureTexture;
+		class UTexture2D* StructureTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class TSubclassOf<ACBuildStructure> BuildStructureClass;
+		class TSubclassOf<ACStructure> StructureClass;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CBuildStructure.generated.h"
+#include "CStructure.generated.h"
 
 UCLASS()
-class PROJECTSURVIVAL_API ACBuildStructure : public AActor
+class PROJECTSURVIVAL_API ACStructure : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ACBuildStructure();
+	ACStructure();
 
 protected:
 	virtual void BeginPlay() override;
