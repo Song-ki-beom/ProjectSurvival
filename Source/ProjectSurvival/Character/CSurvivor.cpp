@@ -1,10 +1,11 @@
-﻿#pragma warning(push)
+#pragma warning(push)
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4706)
 
 
 #include "CSurvivor.h"
 #include "ActorComponents/Disposable/CCustomizeComponent.h"
+#include "ActorComponents/CWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -29,6 +30,15 @@ ACSurvivor::ACSurvivor()
 
 	bReplicates = true;
 
+
+	//컴포넌트 세팅
+	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
+	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
+	CustomizeComponent->SetIsReplicated(true);
+
+
+
+	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
 	Head->SetIsReplicated(true);
 	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
@@ -39,10 +49,9 @@ ACSurvivor::ACSurvivor()
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
 
-	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
-	CustomizeComponent->SetIsReplicated(true);
+	
 
-
+	//카메라 세팅 
 	SpringArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera = this->CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -50,7 +59,7 @@ ACSurvivor::ACSurvivor()
 
 	//ReplicateComponent = this->CreateDefaultSubobject<UCReplicateComponent>(TEXT("Replicate"));
 
-	// Skeletal Mesh
+	//스켈레탈 메시
 	USkeletalMesh* skeletalMesh = nullptr;
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor.SK_Survivor'"));
 	if (skeletalMeshFinder.Succeeded())
@@ -181,6 +190,11 @@ void ACSurvivor::OnHorizontalLook(float InAxisValue)
 void ACSurvivor::OnVerticalLook(float InAxisValue)
 {
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
+}
+
+void ACSurvivor::HoldAxe()
+{
+	WeaponComponent->SetAxeMode();
 }
 
 void ACSurvivor::SlashBoxTrace()

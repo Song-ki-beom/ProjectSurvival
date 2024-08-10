@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 #pragma warning(push)
@@ -31,10 +31,12 @@ private:
 	void OnMoveRight(float InAxisValue);
 	void OnHorizontalLook(float InAxisValue);
 	void OnVerticalLook(float InAxisValue);
-
 public:
-	//Slash
+	//Weapon
 	void Slash();
+	void HoldAxe();
+
+	//Customize
 	USkeletalMeshComponent* GetHeadMeshComponent() { return Head; }
 	USkeletalMeshComponent* GetPantsMeshComponent() { return Pants; }
 	USkeletalMeshComponent* GetBootsMeshComponent() { return Boots; }
@@ -99,5 +101,7 @@ private:
 	//Customize
 	UPROPERTY(VisibleAnywhere)
 		class UCCustomizeComponent* CustomizeComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCWeaponComponent* WeaponComponent;
 };
 

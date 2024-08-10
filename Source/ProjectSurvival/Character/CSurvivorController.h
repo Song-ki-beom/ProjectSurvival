@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
@@ -17,7 +17,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	void Slash();
-
+	void HoldAxe();
 
 	
 };

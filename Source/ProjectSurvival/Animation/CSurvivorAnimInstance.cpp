@@ -1,7 +1,8 @@
-﻿#include "CSurvivorAnimInstance.h"
+#include "CSurvivorAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Utility/CDebug.h"
 #include "Character/CSurvivor.h"
 
 void UCSurvivorAnimInstance::NativeBeginPlay()
@@ -9,7 +10,16 @@ void UCSurvivorAnimInstance::NativeBeginPlay()
 	Super::NativeBeginPlay();
 
 	OwnerCharacter = Cast<ACharacter>(TryGetPawnOwner());
+	if (OwnerCharacter == nullptr) 
+	{
+		CDebug::Print(TEXT("No Character Found In ABP"));
+		return;
+	}
 	bCastEnded = true;
+
+	Weapon = Cast<UCWeaponComponent>(OwnerCharacter->GetComponentByClass(UCWeaponComponent::StaticClass()));
+	if (!!Weapon)
+		Weapon->OnWeaponTypeChanged.AddDynamic(this, &UCSurvivorAnimInstance::OnWeaponTypeChanged);
 }
 
 void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -32,5 +42,10 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OwnerCharacter is not valid - UCSurvivorAnimInstance"));
 	}
+}
+
+void UCSurvivorAnimInstance::OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType)
+{
+	WeaponType = InNewType;
 }
 
