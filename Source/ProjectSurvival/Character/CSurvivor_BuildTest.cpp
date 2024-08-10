@@ -33,7 +33,7 @@ void ACSurvivor_BuildTest::SelectStructure(ESelectedStructure InKey, TSubclassOf
 	{
 	case ESelectedStructure::Q:
 	{
-		BuildComponent->SelectQ();
+		BuildComponent->SelectQ(InClass);
 		break;
 	}
 

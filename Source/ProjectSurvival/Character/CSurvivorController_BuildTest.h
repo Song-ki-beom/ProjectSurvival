@@ -22,6 +22,7 @@ public:
 	void GetSurvivor();
 	void SetupBuildWidget();
 	void SetupBuildComponentFunction();
+
 	
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 

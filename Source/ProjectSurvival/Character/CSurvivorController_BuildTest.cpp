@@ -109,8 +109,12 @@ void ACSurvivorController_BuildTest::SelectQ()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::Q);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::Q)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::Q);
+			CSurvivor_BuildTest->SelectStructure(ESelectedStructure::Q, structureClass);
+			ToggleBuildWidget();
+		}
 	}
 }
 
@@ -190,6 +194,7 @@ void ACSurvivorController_BuildTest::TestP()
 {
 	// 빌드 위젯 이미지변경하는 임시함수
 	// 우클릭해서 등록할때 구조물 이름 및 저장위치 정보 가져와야함
+	CDebug::Print("Test Called");
 	FBuildStructureInfo* structureInfo = BuildStructureData->FindRow<FBuildStructureInfo>("WoodFoundation", TEXT("WoodFoundation"));
 	UTexture2D* texture = structureInfo->StructureTexture;
 	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;

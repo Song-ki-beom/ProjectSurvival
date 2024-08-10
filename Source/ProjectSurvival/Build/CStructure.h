@@ -11,6 +11,8 @@ class PROJECTSURVIVAL_API ACStructure : public AActor
 	
 public:	
 	ACStructure();
+	UStaticMeshComponent* GetStaticMesh() { return StaticMesh; }
+	UMaterialInterface* GetOriginMaterial() { return OriginMaterial; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -24,6 +26,5 @@ protected:
 		class UStaticMeshComponent* StaticMesh;
 
 	UMaterialInterface* OriginMaterial;
-	UMaterialInstance* RedMaterial;
-	UMaterialInstance* GreenMaterial;
+
 };
