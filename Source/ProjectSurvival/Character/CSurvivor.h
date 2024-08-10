@@ -33,7 +33,7 @@ private:
 	void OnVerticalLook(float InAxisValue);
 public:
 	//Weapon
-	void Slash();
+	void DoAction();
 	void HoldAxe();
 
 	//Customize

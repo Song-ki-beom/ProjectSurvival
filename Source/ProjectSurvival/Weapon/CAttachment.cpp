@@ -28,11 +28,9 @@ void ACAttachment::BeginPlay()
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Root->GetChildrenComponents(true, children);
 
-	
-		
-
-	
-
+	AttachTo("socket_backpack");
+	SetActorEnableCollision(false);
+	SetActorHiddenInGame(true);
 	Super::BeginPlay();
 }
 

@@ -197,6 +197,14 @@ void ACSurvivor::HoldAxe()
 	WeaponComponent->SetAxeMode();
 }
 
+
+void ACSurvivor::DoAction()
+{
+	WeaponComponent->DoAction();
+	SlashBoxTrace();
+}
+
+
 void ACSurvivor::SlashBoxTrace()
 {
 	//Trace 관련 세팅
@@ -262,13 +270,6 @@ bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit)
 
 }
 
-void ACSurvivor::Slash()
-{
-
-	SlashBoxTrace();
-	
-	
-}
 
 void ACSurvivor::SwitchFoligeToDestructible(FString* hitIndex)
 {
