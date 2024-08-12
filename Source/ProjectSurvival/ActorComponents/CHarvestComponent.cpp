@@ -177,11 +177,11 @@ void UCHarvestComponent::AddForceToDestructible(float damageAmount)
 		bool bAccelChange
 	)*/
 
-		if (DestructibleActor->GetDestructibleComponent()->GetDamage >= DestructibleComponent->GetFractureThreshold())
-		{
-			UE_LOG(LogTemp, Log, TEXT("Fracture occurred!"));
-			// 추가적인 로직을 이곳에 작성
-		}
+		//if (DestructibleActor->GetDestructibleComponent()->GetDamage >= DestructibleComponent->GetFractureThreshold())
+		//{
+		//	UE_LOG(LogTemp, Log, TEXT("Fracture occurred!"));
+		//	// 추가적인 로직을 이곳에 작성
+		//}
 	
 
 
