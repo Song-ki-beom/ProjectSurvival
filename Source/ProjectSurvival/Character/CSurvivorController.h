@@ -22,11 +22,8 @@ public:
 	void SetupBuildComponentFunction();
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 
-protected:
-	void DoAction();
-	void HoldAxe();
-
 private:
+	// Build
 	void ToggleBuildWidget();
 	void SelectQ();
 	void SelectW();
@@ -37,8 +34,12 @@ private:
 	void SelectZ();
 	void SelectX();
 	void SelectC();
-
+	// Build TempFunction
 	void TestP();
+
+	// DoAction + Harvest
+	void DoAction();
+	void HoldAxe();
 
 private:
 	class ACSurvivor* CSurvivor;

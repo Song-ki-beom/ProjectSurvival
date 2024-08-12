@@ -57,31 +57,9 @@ void ACSurvivorController::SetupInputComponent()
 	}
 }
 
-void ACSurvivorController::DoAction()
-{
-	ACSurvivor* controlledCharacter = Cast<ACSurvivor>(GetCharacter());
-
-	if (controlledCharacter)
-	{
-		controlledCharacter->DoAction();
-	}
-
-}
-
-void ACSurvivorController::HoldAxe()
-{
-	ACSurvivor* controlledCharacter = Cast<ACSurvivor>(GetCharacter());
-
-	if (controlledCharacter)
-	{
-		controlledCharacter->HoldAxe();
-	}
-
-}
-
 void ACSurvivorController::GetSurvivor()
 {
-	CSurvivor = Cast<ACSurvivor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	CSurvivor = Cast<ACSurvivor>(this->GetCharacter());
 }
 
 void ACSurvivorController::SetupBuildWidget()
@@ -236,4 +214,34 @@ void ACSurvivorController::TestP()
 	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;
 	EBuildStructureElement structureElem = structureInfo->StructureElement;
 	BuildWidget->SaveStructureInfo(ESelectedStructure::Q, texture, structureClass, structureElem);
+}
+
+void ACSurvivorController::DoAction()
+{
+	//ACSurvivor* controlledCharacter = Cast<ACSurvivor>(this->GetCharacter());
+
+	//if (controlledCharacter)
+	//{
+	//	controlledCharacter->DoAction();
+	//}
+
+	if (CSurvivor)
+	{
+		CSurvivor->DoAction();
+	}
+}
+
+void ACSurvivorController::HoldAxe()
+{
+	//ACSurvivor* controlledCharacter = Cast<ACSurvivor>(this->GetCharacter());
+
+	//if (controlledCharacter)
+	//{
+	//	controlledCharacter->HoldAxe();
+	//}
+
+	if (CSurvivor)
+	{
+		CSurvivor->HoldAxe();
+	}
 }

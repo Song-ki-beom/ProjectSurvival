@@ -250,7 +250,7 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 void ACSurvivor::DoAction()
 {
 	if (WeaponComponent->IsUnarmedMode()) return;
-	WeaponComponent->DoAction();
+		WeaponComponent->DoAction();
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
