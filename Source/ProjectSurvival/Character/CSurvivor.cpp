@@ -184,9 +184,30 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 //	this->AddControllerPitchInput(InAxisValue * 0.75f);
 //}
 
+void ACSurvivor::DoAction()
+{
+	if (WeaponComponent->IsUnarmedMode()) return;
+	WeaponComponent->DoAction();
+}
+
+void ACSurvivor::SubAction()
+{
+
+}
+
 void ACSurvivor::HoldAxe()
 {
 	WeaponComponent->SetAxeMode();
+}
+
+void ACSurvivor::Build()
+{
+}
+
+void ACSurvivor::CancleBuild()
+{
+	if (IsValid(BuildComponent))
+		BuildComponent->ClearSpawnedStructure();
 }
 
 void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
@@ -247,12 +268,6 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 		break;
 	}
 	}
-}
-
-void ACSurvivor::DoAction()
-{
-	if (WeaponComponent->IsUnarmedMode()) return;
-		WeaponComponent->DoAction();
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)

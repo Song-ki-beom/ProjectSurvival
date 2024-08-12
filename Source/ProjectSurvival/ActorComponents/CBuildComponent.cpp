@@ -39,6 +39,23 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (IsValid(SpawnedStructure))
+	{
+		if (!bIsBuilding)
+		{
+			bIsBuilding = true;
+			CDebug::Print("Set bIsBuilding : ", bIsBuilding, FColor::Red);
+		}
+	}
+	else
+	{
+		if (bIsBuilding)
+		{
+			bIsBuilding = false;
+			CDebug::Print("Set bIsBuilding : ", bIsBuilding, FColor::Red);
+		}
+	}
+
 	switch (StructureElement)
 	{
 	case EBuildStructureElement::Foundation:
@@ -86,7 +103,6 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
 	CDebug::Print("SelectQ");
-	
 
 	SpawnBuildStructureElement(InClass, InElement);
 	//bIsBuildable = true;
@@ -136,6 +152,12 @@ void UCBuildComponent::SelectC()
 	CDebug::Print("SelectC");
 }
 
+void UCBuildComponent::ClearSpawnedStructure()
+{
+	if (SpawnedStructure)
+		SpawnedStructure->Destroy();
+}
+
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
 	StructureElement = InElement;
@@ -146,7 +168,6 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 	{
 		if (IsValid(SpawnedFoundation))
 			SpawnedFoundation->Destroy();
-		bIsBuildMode = true;
 		FVector spawnLocation = Survivor->GetActorLocation();
 		FRotator spawnRotation = Survivor->GetActorRotation();
 		FActorSpawnParameters spawnParams;
@@ -154,6 +175,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		spawnParams.Instigator = Survivor->GetInstigator();
 		SpawnedFoundation = GetWorld()->SpawnActor<ACStructure_Foundation>(InClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedFoundation->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SpawnedStructure = Cast<ACStructure>(SpawnedFoundation);
 		break;
 	}
 	case EBuildStructureElement::TriFoundation:

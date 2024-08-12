@@ -30,6 +30,8 @@ public:
 	void SelectZ();
 	void SelectX();
 	void SelectC();
+	void ClearSpawnedStructure();
+	bool CheckIsBuilding() { return bIsBuilding; }
 
 private:
 	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
@@ -50,5 +52,5 @@ private:
 
 	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
-	bool bIsBuildMode;
+	bool bIsBuilding;
 };

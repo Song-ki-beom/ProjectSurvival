@@ -39,6 +39,7 @@ private:
 
 	// DoAction + Harvest
 	void DoAction();
+	void SubAction();
 	void HoldAxe();
 
 private:

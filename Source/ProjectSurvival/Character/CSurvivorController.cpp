@@ -62,6 +62,7 @@ void ACSurvivorController::SetupInputFunction()
 	{
 		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::HoldAxe);
 		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
+		InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ACSurvivorController::SubAction);
 		InputComponent->BindAction("Build", IE_Pressed, this, &ACSurvivorController::ToggleBuildWidget);
 		InputComponent->BindAction("SelectQ", IE_Pressed, this, &ACSurvivorController::SelectQ);
 		InputComponent->BindAction("SelectW", IE_Pressed, this, &ACSurvivorController::SelectW);
@@ -117,6 +118,10 @@ void ACSurvivorController::SelectQ()
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::Q);
 			CSurvivor->SelectStructure(ESelectedStructure::Q, structureClass, structureElement);
 			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
 		}
 	}
 }
@@ -207,16 +212,27 @@ void ACSurvivorController::TestP()
 
 void ACSurvivorController::DoAction()
 {
-	//ACSurvivor* controlledCharacter = Cast<ACSurvivor>(this->GetCharacter());
-
-	//if (controlledCharacter)
-	//{
-	//	controlledCharacter->DoAction();
-	//}
-
 	if (CSurvivor)
 	{
+		if (CSurvivor->GetBuildComponent()->CheckIsBuilding())
+		{
+			CSurvivor->Build();
+			return;
+		}
 		CSurvivor->DoAction();
+	}
+}
+
+void ACSurvivorController::SubAction()
+{
+	if (CSurvivor)
+	{
+		if (CSurvivor->GetBuildComponent()->CheckIsBuilding())
+		{
+			CSurvivor->CancleBuild();
+			return;
+		}
+		CSurvivor->SubAction();
 	}
 }
 
