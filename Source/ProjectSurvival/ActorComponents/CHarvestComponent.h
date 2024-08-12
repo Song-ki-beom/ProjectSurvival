@@ -29,12 +29,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void HarvestBoxTrace();
+	void HarvestBoxTrace(float DamageAmount);
 
 private:
 	bool CheckIsFoliageInstance(const FHitResult& Hit);
 	bool CheckIsDestructInstance(const FHitResult& Hit);
-	void SwitchFoligeToDestructible(FString* hitIndex);
+	void SwitchFoligeToDestructible(FString* hitIndex, float damageAmount);
 	void AddForceToDestructible(float damageAmount);
 
 private:

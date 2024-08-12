@@ -20,6 +20,7 @@ public:
 	//void OnUnEquip()		override;
 	void Slash();
 	
-
+private:
+	float HarvestDamage = 50.0f;
 
 };

@@ -6,16 +6,17 @@
 
 #include "ActorComponents/CHarvestComponent.h"
 #include "GameFramework/Character.h"
-
 #include "DrawDebugHelpers.h"
 #include "Utility/CDebug.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
-#include "Struct/DestructibleStruct.h"
+#include "Struct/CDestructibleStructures.h"
 #include "Environment/CDestructibleActor.h"
 #include "DestructibleComponent.h"
 #include "CGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+
+
 UCHarvestComponent::UCHarvestComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -34,7 +35,6 @@ void UCHarvestComponent::BeginPlay()
 }
 
 
-// Called every frame
 void UCHarvestComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -43,7 +43,7 @@ void UCHarvestComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 
 
-void UCHarvestComponent::HarvestBoxTrace()
+void UCHarvestComponent::HarvestBoxTrace(float DamageAmount)
 {
 	if (!OwnerCharacter) return;
 
@@ -85,12 +85,12 @@ void UCHarvestComponent::HarvestBoxTrace()
 		if (CheckIsFoliageInstance(HitResult))
 		{
 
-			SwitchFoligeToDestructible(&hitIndex);
+			SwitchFoligeToDestructible(&hitIndex, DamageAmount);
 
 		}
 		else if (CheckIsDestructInstance(HitResult))
 		{
-			AddForceToDestructible(20.0f);
+			AddForceToDestructible(DamageAmount);
 		}
 
 	}
@@ -124,12 +124,16 @@ bool UCHarvestComponent::CheckIsDestructInstance(const FHitResult& Hit)
 	{
 		return true;
 	}
+	else
+	{
+		CDebug::Print(TEXT("Cannot cast To DestructibleActor"));
 
+	}
 
 	return false;
 }
 
-void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex)
+void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex, float damageAmount)
 {
 	UDataTable* DestructibleDataTable = nullptr;
 	if (GameInstance)
@@ -149,7 +153,8 @@ void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex)
 
 			// Spawn ADestructibleActor
 			ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
-			destructibleActor->SetDestructibleMesh(Row->DestructibleMesh, SpawnTransform);
+			destructibleActor->SetUp(Row->MaxDamageThreshold,Row->DestructibleMesh, SpawnTransform);
+			destructibleActor->GetDestructibleComponent()->ApplyRadiusDamage(damageAmount, destructibleActor->GetActorLocation(), 1.0f, 1.0f, true);;
 		}
 		else
 		{
@@ -165,24 +170,13 @@ void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex)
 void UCHarvestComponent::AddForceToDestructible(float damageAmount)
 {
 	
-	if(DestructibleActor)
-		DestructibleActor->GetDestructibleComponent()->ApplyDamage(damageAmount, DestructibleActor->GetActorLocation(), FVector::ZeroVector, 0.02f);
-
-
-
-	/*AddRadialForce(FVector Origin,
-		float Radius,
-		float Strength,
-		ERadialImpulseFalloff Falloff,
-		bool bAccelChange
-	)*/
-
-		//if (DestructibleActor->GetDestructibleComponent()->GetDamage >= DestructibleComponent->GetFractureThreshold())
-		//{
-		//	UE_LOG(LogTemp, Log, TEXT("Fracture occurred!"));
-		//	// 추가적인 로직을 이곳에 작성
-		//}
 	
 
+	if (DestructibleActor) 
+	{
+		DestructibleActor->GetDestructibleComponent()->ApplyRadiusDamage(damageAmount, DestructibleActor->GetActorLocation(), 1.0f, 1.0f, true);
+		DestructibleActor->AccumulateDamage(damageAmount);
+	}
+	DestructibleActor = nullptr;
 
 }

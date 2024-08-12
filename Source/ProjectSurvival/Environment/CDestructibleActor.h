@@ -26,9 +26,12 @@ protected:
 
 
 public:
+	void SetUp(float MaxDamage, UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform);
 	class UDestructibleComponent* GetDestructibleComponent();
-	void SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh, FTransform  InstanceTransform);
-
+	//void SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh, FTransform  InstanceTransform);
+	float GetAccumulatedDamage();
+	void AccumulateDamage(float DamageAmount);
+	
 
 
 	
@@ -36,5 +39,8 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere)
 		class UDestructibleComponent* DestructibleComponent;
-
+	UPROPERTY(VisibleAnywhere)
+		float AccumulatedDamage=0.0f;
+	UPROPERTY(VisibleAnywhere)
+		float MaxDamageThreshold = 0.0f;
 };

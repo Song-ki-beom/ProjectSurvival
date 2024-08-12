@@ -3,7 +3,7 @@
 
 #include "Environment/CDestructibleActor.h"
 #include "DestructibleComponent.h"
-#include "Struct/DestructibleStruct.h"
+#include "Struct/CDestructibleStructures.h"
 
 // Sets default values
 ACDestructibleActor::ACDestructibleActor()
@@ -17,15 +17,32 @@ ACDestructibleActor::ACDestructibleActor()
 
 
 
+void ACDestructibleActor::SetUp(float InMaxDamageThreshold, UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform)
+{
+	DestructibleComponent->SetDestructibleMesh(InDestructibleMesh);
+	DestructibleComponent->SetWorldTransform(InstanceTransform);
+	MaxDamageThreshold = InMaxDamageThreshold;
+}
+
 class UDestructibleComponent* ACDestructibleActor::GetDestructibleComponent()
 {
 	return DestructibleComponent;
 }
 
-void ACDestructibleActor::SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh,FTransform InstanceTransform )
+
+
+float ACDestructibleActor::GetAccumulatedDamage()
 {
-	DestructibleComponent->SetDestructibleMesh(InDestructibleMesh);
-	DestructibleComponent->SetWorldTransform(InstanceTransform);
+	return AccumulatedDamage;
+}
+
+void ACDestructibleActor::AccumulateDamage(float DamageAmount)
+{
+	AccumulatedDamage += DamageAmount;
+	if (AccumulatedDamage >= MaxDamageThreshold)
+	{
+		//
+	}
 }
 
 

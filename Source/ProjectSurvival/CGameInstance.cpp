@@ -11,7 +11,7 @@
 #include "DrawDebugHelpers.h"
 #include "Utility/CDebug.h"
 #include "Components/InstancedStaticMeshComponent.h"
-#include "Struct/DestructibleStruct.h"
+#include "Struct/CDestructibleStructures.h"
 #include "Environment/CDestructibleActor.h"
 #include "DestructibleComponent.h"
 

@@ -26,7 +26,7 @@ void UCDoAction_Axe::Slash()
 	if (!OwnerCharacter) return;
 	ACSurvivor* survivor = Cast<ACSurvivor>(OwnerCharacter);
 	if(survivor!= nullptr) 
-		survivor->GetHarvestComponent()->HarvestBoxTrace();
+		survivor->GetHarvestComponent()->HarvestBoxTrace(HarvestDamage);
 	
 }
 
