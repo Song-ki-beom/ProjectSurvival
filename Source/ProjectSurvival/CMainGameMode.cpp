@@ -1,4 +1,4 @@
-﻿#include "CMainGameMode.h"
+#include "CMainGameMode.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 
