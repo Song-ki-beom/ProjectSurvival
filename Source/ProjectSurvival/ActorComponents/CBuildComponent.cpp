@@ -1,7 +1,7 @@
-﻿#include "ActorComponents/CBuildComponent.h"
+#include "ActorComponents/CBuildComponent.h"
 #include "Build/CStructure_Foundation.h"
-#include "Character/CSurvivor_BuildTest.h"
-#include "Character/CSurvivorController_BuildTest.h"
+#include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Utility/CDebug.h"
 
@@ -25,14 +25,14 @@ UCBuildComponent::UCBuildComponent()
 void UCBuildComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	ACSurvivorController_BuildTest* survivorController = Cast<ACSurvivorController_BuildTest>(GetWorld()->GetFirstPlayerController());
+	ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
 	BuildWidget = survivorController->GetBuildWidget();
 	if (survivorController)
 		CDebug::Print("Build Widget Valid");
 	else
 		CDebug::Print("Build Widget is not Vaild");
 
-	Survivor = Cast<ACSurvivor_BuildTest>(this->GetOwner());
+	Survivor = Cast<ACSurvivor>(this->GetOwner());
 }
 
 void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -87,6 +87,7 @@ void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructure
 {
 	CDebug::Print("SelectQ");
 	
+
 	SpawnBuildStructureElement(InClass, InElement);
 	//bIsBuildable = true;
 	//SpawnedStructure->AttachToComponent(Survivor->GetCameraComponent(), FAttachmentTransformRules::KeepWorldTransform);
@@ -143,6 +144,9 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 	{
 	case EBuildStructureElement::Foundation:
 	{
+		if (IsValid(SpawnedFoundation))
+			SpawnedFoundation->Destroy();
+		bIsBuildMode = true;
 		FVector spawnLocation = Survivor->GetActorLocation();
 		FRotator spawnRotation = Survivor->GetActorRotation();
 		FActorSpawnParameters spawnParams;

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
@@ -36,7 +36,7 @@ private:
 	void BuildStartFoundation();
 
 private:
-	class ACSurvivor_BuildTest* Survivor;
+	class ACSurvivor* Survivor;
 
 	UPROPERTY()
 		class UCBuildWidget* BuildWidget;
@@ -50,4 +50,5 @@ private:
 
 	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
+	bool bIsBuildMode;
 };

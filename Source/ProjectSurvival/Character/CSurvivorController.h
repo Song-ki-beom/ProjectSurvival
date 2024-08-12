@@ -14,14 +14,43 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
 
+public:
+	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 
-	
+private:
+	// Init
+	void GetSurvivor();
+	void SetupBuildWidget();
+	void SetupInputFunction();
+	// Build
+	void ToggleBuildWidget();
+	void SelectQ();
+	void SelectW();
+	void SelectE();
+	void SelectA();
+	void SelectS();
+	void SelectD();
+	void SelectZ();
+	void SelectX();
+	void SelectC();
+	// Build TempFunction
+	void TestP();
+
+	// DoAction + Harvest
 	void DoAction();
 	void HoldAxe();
 
+private:
+	class ACSurvivor* CSurvivor;
 
-	
+	UPROPERTY()
+		TSubclassOf<class UUserWidget> BuildWidgetClass;
+	UPROPERTY()
+		class UCBuildWidget* BuildWidget;
+
+	class UDataTable* BuildStructureData;
+
+	bool bIsBuildWidgetOn;
 };
 
