@@ -11,8 +11,9 @@ class PROJECTSURVIVAL_API UCBuildWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void SaveStructureInfo(ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass);
+	void SaveStructureInfo(ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	TSubclassOf<ACStructure> GetStructureClass(ESelectedStructure InKey);
+	EBuildStructureElement GetStructureElement(ESelectedStructure InKey);
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -43,4 +44,14 @@ private:
 	TSubclassOf<ACStructure> StructureZ;
 	TSubclassOf<ACStructure> StructureX;
 	TSubclassOf<ACStructure> StructureC;
+
+	EBuildStructureElement ElementQ;
+	EBuildStructureElement ElementW;
+	EBuildStructureElement ElementE;
+	EBuildStructureElement ElementA;
+	EBuildStructureElement ElementS;
+	EBuildStructureElement ElementD;
+	EBuildStructureElement ElementZ;
+	EBuildStructureElement ElementX;
+	EBuildStructureElement ElementC;
 };

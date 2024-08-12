@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BoxComponent.h"
 #include "CStructure.generated.h"
 
 UCLASS()
@@ -26,5 +27,4 @@ protected:
 		class UStaticMeshComponent* StaticMesh;
 
 	UMaterialInterface* OriginMaterial;
-
 };

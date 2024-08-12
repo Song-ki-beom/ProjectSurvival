@@ -1,4 +1,5 @@
 ﻿#include "Build/CStructure.h"
+#include "Components/BoxComponent.h"
 
 ACStructure::ACStructure()
 {

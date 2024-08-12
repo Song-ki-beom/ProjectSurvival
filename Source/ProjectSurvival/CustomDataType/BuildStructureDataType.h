@@ -11,6 +11,12 @@ enum class ESelectedStructure : uint8
 	Q, W, E, A, S, D, Z, X, C
 };
 
+UENUM()
+enum class EBuildStructureElement : uint8
+{
+	Foundation, TriFoundation, Wall, WindowWall, TriLeftWall, TriRightWall, TriTopWall, Ceiling, TriCeiling, Roof, HalfRoof, DoorFrame, Door, Fence, Ramp, Stair, None
+};
+
 USTRUCT(BlueprintType)
 struct FBuildStructureInfo : public FTableRowBase
 {
@@ -21,4 +27,6 @@ public:
 		class UTexture2D* StructureTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<ACStructure> StructureClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		EBuildStructureElement StructureElement;
 };

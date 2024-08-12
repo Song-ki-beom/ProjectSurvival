@@ -112,7 +112,8 @@ void ACSurvivorController_BuildTest::SelectQ()
 		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::Q)))
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::Q);
-			CSurvivor_BuildTest->SelectStructure(ESelectedStructure::Q, structureClass);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::Q);
+			CSurvivor_BuildTest->SelectStructure(ESelectedStructure::Q, structureClass, structureElement);
 			ToggleBuildWidget();
 		}
 	}
@@ -198,5 +199,6 @@ void ACSurvivorController_BuildTest::TestP()
 	FBuildStructureInfo* structureInfo = BuildStructureData->FindRow<FBuildStructureInfo>("WoodFoundation", TEXT("WoodFoundation"));
 	UTexture2D* texture = structureInfo->StructureTexture;
 	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::Q, texture, structureClass);
+	EBuildStructureElement structureElem = structureInfo->StructureElement;
+	BuildWidget->SaveStructureInfo(ESelectedStructure::Q, texture, structureClass, structureElem);
 }

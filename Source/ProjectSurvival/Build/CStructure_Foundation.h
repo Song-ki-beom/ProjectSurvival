@@ -12,10 +12,26 @@ class PROJECTSURVIVAL_API ACStructure_Foundation : public ACStructure
 public:
 	ACStructure_Foundation();
 
+
+
 protected:
 	virtual void Tick(float DeltaTime) override;
 
-private:
+public:
+	UBoxComponent* GetFloorBox() { return FloorCheckBox; }
+	void GetFloorHeight(float& OutHeightValue, bool& OutHitResult);
+
+protected:
+	UFUNCTION()
+		virtual void FloorCheckBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void FloorCheckBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+protected:
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* FloorCheckBox;
+
+	TArray<AActor*> FloorCheckBoxOverlapActors;
 
 	
 };

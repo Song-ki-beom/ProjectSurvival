@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Build/CStructure.h"
+#include "CustomDataType/BuildStructureDataType.h"
 #include "CBuildComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -20,7 +21,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void SelectQ(TSubclassOf<ACStructure> InClass);
+	void SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void SelectW();
 	void SelectE();
 	void SelectA();
@@ -31,15 +32,22 @@ public:
 	void SelectC();
 
 private:
+	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void BuildStartFoundation();
+
+private:
 	class ACSurvivor_BuildTest* Survivor;
 
 	UPROPERTY()
 		class UCBuildWidget* BuildWidget;
 	UPROPERTY()
 		class ACStructure* SpawnedStructure;
+	UPROPERTY()
+		class ACStructure_Foundation* SpawnedFoundation;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;
 
+	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
 };

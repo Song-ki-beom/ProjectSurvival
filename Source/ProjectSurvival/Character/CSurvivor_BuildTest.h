@@ -22,7 +22,7 @@ protected:
 public:
 	class UCBuildComponent* GetBuildComponent() { return BuildComponent; }
 
-	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass);
+	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 
 private:
 	UPROPERTY(VisibleAnywhere)

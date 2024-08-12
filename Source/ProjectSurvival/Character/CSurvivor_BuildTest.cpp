@@ -27,13 +27,13 @@ void ACSurvivor_BuildTest::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ACSurvivor_BuildTest::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass)
+void ACSurvivor_BuildTest::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
 	switch (InKey)
 	{
 	case ESelectedStructure::Q:
 	{
-		BuildComponent->SelectQ(InClass);
+		BuildComponent->SelectQ(InClass, InElement);
 		break;
 	}
 
