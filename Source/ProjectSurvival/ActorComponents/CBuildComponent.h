@@ -50,4 +50,5 @@ private:
 
 	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
+	bool bIsBuildMode;
 };

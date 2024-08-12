@@ -7,6 +7,7 @@
 #include "InputCoreTypes.h"
 #include "GameFramework/Actor.h"
 #include "ActorComponents/CBuildComponent.h"
+#include "ActorComponents/CMovingComponent.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Utility/CDebug.h"
 
@@ -40,21 +41,7 @@ void ACSurvivorController::BeginPlay()
 	this->SetInputMode(FInputModeGameOnly());
 	GetSurvivor();
 	SetupBuildWidget();
-	SetupBuildComponentFunction();
-}
-
-void ACSurvivorController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-
-	if (InputComponent)
-	{
-		/*InputComponent->BindKey(EKeys::R, IE_Pressed , this , &ACSurvivorController::Slash);*/
-		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::HoldAxe);
-		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
-
-
-	}
+	SetupInputFunction();
 }
 
 void ACSurvivorController::GetSurvivor()
@@ -69,29 +56,31 @@ void ACSurvivorController::SetupBuildWidget()
 	BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void ACSurvivorController::SetupBuildComponentFunction()
+void ACSurvivorController::SetupInputFunction()
 {
 	if (IsValid(CSurvivor))
 	{
-		UCBuildComponent* buildComponent = CSurvivor->GetBuildComponent();
-		if (IsValid(buildComponent))
+		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::HoldAxe);
+		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
+		InputComponent->BindAction("Build", IE_Pressed, this, &ACSurvivorController::ToggleBuildWidget);
+		InputComponent->BindAction("SelectQ", IE_Pressed, this, &ACSurvivorController::SelectQ);
+		InputComponent->BindAction("SelectW", IE_Pressed, this, &ACSurvivorController::SelectW);
+		InputComponent->BindAction("SelectE", IE_Pressed, this, &ACSurvivorController::SelectE);
+		InputComponent->BindAction("SelectA", IE_Pressed, this, &ACSurvivorController::SelectA);
+		InputComponent->BindAction("SelectS", IE_Pressed, this, &ACSurvivorController::SelectS);
+		InputComponent->BindAction("SelectD", IE_Pressed, this, &ACSurvivorController::SelectD);
+		InputComponent->BindAction("SelectZ", IE_Pressed, this, &ACSurvivorController::SelectZ);
+		InputComponent->BindAction("SelectX", IE_Pressed, this, &ACSurvivorController::SelectX);
+		InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
+		InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
+
+		UCMovingComponent* movingComponent = CSurvivor->GetMovingComponent();
+		if (IsValid(movingComponent))
 		{
-			CDebug::Print("buildComponent is valid");
-			CSurvivor->InputComponent->BindAction("Build", IE_Pressed, this, &ACSurvivorController::ToggleBuildWidget);
-			CSurvivor->InputComponent->BindAction("SelectQ", IE_Pressed, this, &ACSurvivorController::SelectQ);
-			CSurvivor->InputComponent->BindAction("SelectW", IE_Pressed, this, &ACSurvivorController::SelectW);
-			CSurvivor->InputComponent->BindAction("SelectE", IE_Pressed, this, &ACSurvivorController::SelectE);
-			CSurvivor->InputComponent->BindAction("SelectA", IE_Pressed, this, &ACSurvivorController::SelectA);
-			CSurvivor->InputComponent->BindAction("SelectS", IE_Pressed, this, &ACSurvivorController::SelectS);
-			CSurvivor->InputComponent->BindAction("SelectD", IE_Pressed, this, &ACSurvivorController::SelectD);
-			CSurvivor->InputComponent->BindAction("SelectZ", IE_Pressed, this, &ACSurvivorController::SelectZ);
-			CSurvivor->InputComponent->BindAction("SelectX", IE_Pressed, this, &ACSurvivorController::SelectX);
-			CSurvivor->InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
-			CSurvivor->InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
-		}
-		else
-		{
-			CDebug::Print("buildComponent is not valid");
+			InputComponent->BindAxis("MoveForward", movingComponent, &UCMovingComponent::OnMoveForward);
+			InputComponent->BindAxis("MoveRight", movingComponent, &UCMovingComponent::OnMoveRight);
+			InputComponent->BindAxis("VerticalLook", movingComponent, &UCMovingComponent::OnVerticalLook);
+			InputComponent->BindAxis("HorizontalLook", movingComponent, &UCMovingComponent::OnHorizontalLook);
 		}
 	}
 	else

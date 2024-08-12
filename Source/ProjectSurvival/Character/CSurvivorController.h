@@ -14,15 +14,15 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
 
 public:
-	void GetSurvivor();
-	void SetupBuildWidget();
-	void SetupBuildComponentFunction();
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 
 private:
+	// Init
+	void GetSurvivor();
+	void SetupBuildWidget();
+	void SetupInputFunction();
 	// Build
 	void ToggleBuildWidget();
 	void SelectQ();

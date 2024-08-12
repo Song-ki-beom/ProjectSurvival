@@ -87,6 +87,7 @@ void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructure
 {
 	CDebug::Print("SelectQ");
 	
+
 	SpawnBuildStructureElement(InClass, InElement);
 	//bIsBuildable = true;
 	//SpawnedStructure->AttachToComponent(Survivor->GetCameraComponent(), FAttachmentTransformRules::KeepWorldTransform);
@@ -143,6 +144,9 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 	{
 	case EBuildStructureElement::Foundation:
 	{
+		if (IsValid(SpawnedFoundation))
+			SpawnedFoundation->Destroy();
+		bIsBuildMode = true;
 		FVector spawnLocation = Survivor->GetActorLocation();
 		FRotator spawnRotation = Survivor->GetActorRotation();
 		FActorSpawnParameters spawnParams;

@@ -4,6 +4,7 @@
 #include "ActorComponents/CWeaponComponent.h"
 #include "ActorComponents/CHarvestComponent.h"
 #include "ActorComponents/CBuildComponent.h"
+#include "ActorComponents/CMovingComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -30,7 +31,8 @@ ACSurvivor::ACSurvivor()
 	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
 	HarvestComponent = CreateDefaultSubobject<UCHarvestComponent>(TEXT("Harvest"));
 	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
-	BuildComponent = CreateDefaultSubobject<UCBuildComponent>("BuildComponent");
+	BuildComponent = CreateDefaultSubobject<UCBuildComponent>(TEXT("Build"));
+	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("Moving"));
 	CustomizeComponent->SetIsReplicated(true);
 
 
@@ -150,37 +152,37 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ACSurvivor::OnMoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ACSurvivor::OnMoveRight);
-	PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
-	PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
+	//PlayerInputComponent->BindAxis("MoveForward", this, &ACSurvivor::OnMoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &ACSurvivor::OnMoveRight);
+	//PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
+	//PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
 }
 
-void ACSurvivor::OnMoveForward(float InAxisValue)
-{
-	FRotator rotator = FRotator(0, this->GetControlRotation().Yaw, 0);
-	FVector direction = FQuat(rotator).GetForwardVector();
-
-	this->AddMovementInput(direction, InAxisValue);
-}
-
-void ACSurvivor::OnMoveRight(float InAxisValue)
-{
-	FRotator rotator = FRotator(0, this->GetControlRotation().Yaw, 0);
-	FVector direction = FQuat(rotator).GetRightVector();
-
-	this->AddMovementInput(direction, InAxisValue);
-}
-
-void ACSurvivor::OnHorizontalLook(float InAxisValue)
-{
-	this->AddControllerYawInput(InAxisValue * 0.75f);
-}
-
-void ACSurvivor::OnVerticalLook(float InAxisValue)
-{
-	this->AddControllerPitchInput(InAxisValue * 0.75f);
-}
+//void ACSurvivor::OnMoveForward(float InAxisValue)
+//{
+//	FRotator rotator = FRotator(0, this->GetControlRotation().Yaw, 0);
+//	FVector direction = FQuat(rotator).GetForwardVector();
+//
+//	this->AddMovementInput(direction, InAxisValue);
+//}
+//
+//void ACSurvivor::OnMoveRight(float InAxisValue)
+//{
+//	FRotator rotator = FRotator(0, this->GetControlRotation().Yaw, 0);
+//	FVector direction = FQuat(rotator).GetRightVector();
+//
+//	this->AddMovementInput(direction, InAxisValue);
+//}
+//
+//void ACSurvivor::OnHorizontalLook(float InAxisValue)
+//{
+//	this->AddControllerYawInput(InAxisValue * 0.75f);
+//}
+//
+//void ACSurvivor::OnVerticalLook(float InAxisValue)
+//{
+//	this->AddControllerPitchInput(InAxisValue * 0.75f);
+//}
 
 void ACSurvivor::HoldAxe()
 {

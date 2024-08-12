@@ -24,12 +24,12 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-private:
-	//Move
-	void OnMoveForward(float InAxisValue);
-	void OnMoveRight(float InAxisValue);
-	void OnHorizontalLook(float InAxisValue);
-	void OnVerticalLook(float InAxisValue);
+//private:
+//	//Move
+//	void OnMoveForward(float InAxisValue);
+//	void OnMoveRight(float InAxisValue);
+//	void OnHorizontalLook(float InAxisValue);
+//	void OnVerticalLook(float InAxisValue);
 public:
 	//Weapon
 	void DoAction();
@@ -38,6 +38,7 @@ public:
 	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
 	class UCHarvestComponent* GetHarvestComponent() { return HarvestComponent; }
 	class UCBuildComponent* GetBuildComponent() { return BuildComponent; }
+	class UCMovingComponent* GetMovingComponent() { return MovingComponent; }
 
 	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 
@@ -102,5 +103,7 @@ private:
 		class UCHarvestComponent* HarvestComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCBuildComponent* BuildComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCMovingComponent* MovingComponent;
 };
 
