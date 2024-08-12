@@ -26,6 +26,7 @@ protected:
 
 
 public:
+	class UDestructibleComponent* GetDestructibleComponent();
 	void SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh, FTransform  InstanceTransform);
 
 

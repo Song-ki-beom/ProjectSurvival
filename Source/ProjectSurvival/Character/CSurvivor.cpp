@@ -1,13 +1,10 @@
-﻿#pragma warning(push)
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4706)
-
 
 #include "CSurvivor.h"
 #include "ActorComponents/Disposable/CCustomizeComponent.h"
+#include "ActorComponents/CWeaponComponent.h"
+#include "ActorComponents/CHarvestComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Components/InstancedStaticMeshComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
@@ -15,8 +12,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputCoreTypes.h"
-#include "Struct/DestructibleStruct.h"
-#include "Environment/CDestructibleActor.h"
 #include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "CGameInstance.h"
@@ -29,6 +24,16 @@ ACSurvivor::ACSurvivor()
 
 	bReplicates = true;
 
+
+	//컴포넌트 세팅
+	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
+	HarvestComponent = CreateDefaultSubobject<UCHarvestComponent>(TEXT("Harvest"));
+	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
+	CustomizeComponent->SetIsReplicated(true);
+
+
+
+	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
 	Head->SetIsReplicated(true);
 	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
@@ -39,18 +44,16 @@ ACSurvivor::ACSurvivor()
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
 
-	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
-	CustomizeComponent->SetIsReplicated(true);
+	
 
-
+	//카메라 세팅 
 	SpringArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera = this->CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-
 	//ReplicateComponent = this->CreateDefaultSubobject<UCReplicateComponent>(TEXT("Replicate"));
 
-	// Skeletal Mesh
+	//스켈레탈 메시
 	USkeletalMesh* skeletalMesh = nullptr;
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshFinder(TEXT("SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Character/Survivor/SK_Survivor.SK_Survivor'"));
 	if (skeletalMeshFinder.Succeeded())
@@ -107,12 +110,6 @@ ACSurvivor::ACSurvivor()
 
 
 
-	// Slash DataTable Load
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_Destructible.DT_Destructible'"));
-	if (DataTable_BP.Succeeded())
-	{
-		DestructibleDataTable = DataTable_BP.Object;
-	}
 }
 
 void ACSurvivor::BeginPlay()
@@ -183,110 +180,20 @@ void ACSurvivor::OnVerticalLook(float InAxisValue)
 	this->AddControllerPitchInput(InAxisValue * 0.75f);
 }
 
-void ACSurvivor::SlashBoxTrace()
+void ACSurvivor::HoldAxe()
 {
-	//Trace 관련 세팅
-	FVector Start = FVector(GetActorLocation().X+180, GetActorLocation().Y, 180.0f);
-	FVector End = Start+ GetActorForwardVector()* TraceDistance;
-	FQuat Rot = FQuat::Identity;
-	FVector HalfSize = FVector(150.0f, 150.0f, 150.0f);
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-	
-	//BoxTrace 
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
-		Start,
-		End,
-		Rot,
-		ECC_WorldStatic,
-		FCollisionShape::MakeBox(HalfSize),
-		CollisionParams
-	);
-
-	DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
-	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
-
-
-
-	if (bHit)
-	{
-		FString hitIndex = *HitResult.Component->GetName().Right(1);
-		FString debugText = TEXT("Hitted Polige Mesh Type") + hitIndex;
-		CDebug::Print(debugText, FColor::Blue);
-
-		if (CheckIsFoliageInstance(HitResult))
-		{
-
-			SwitchFoligeToDestructible(&hitIndex);
-
-		}
-
-	}
-
+	WeaponComponent->SetAxeMode();
 }
 
-bool ACSurvivor::CheckIsFoliageInstance(const FHitResult& Hit)
+
+void ACSurvivor::DoAction()
 {
-	
-	if (UInstancedStaticMeshComponent* InstancedMesh = Cast<UInstancedStaticMeshComponent>(Hit.Component))
-	{
-		InstanceIndex = Hit.Item;
-		FString debugText = TEXT("Hitted Polige Mesh Index") + FString::FromInt(InstanceIndex);
-		CDebug::Print(debugText);
-		InstancedMesh->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
-		InstancedMesh->RemoveInstance(InstanceIndex);
-		if (InstanceIndex != NO_INDEX) return true;
-
-	}
-	else
-	{
-		CDebug::Print(TEXT("Cannot Convert to FOlige Mesh"));
-	}
-	return false;
-
+	if (WeaponComponent->IsUnarmedMode()) return;
+	WeaponComponent->DoAction();
 }
 
-void ACSurvivor::Slash()
-{
 
-	SlashBoxTrace();
-	
-	
-}
 
-void ACSurvivor::SwitchFoligeToDestructible(FString* hitIndex)
-{
-	if (DestructibleDataTable)
-	{
-		
-		FDestructibleStruct* Row = DestructibleDataTable->FindRow<FDestructibleStruct>(FName(*hitIndex), FString(""));
-		if (Row && Row->DestructibleMesh)
-		{
-			FVector SpawnLocation = SpawnTransform.GetLocation();
-			FRotator SpawnRotation = FRotator(SpawnTransform.GetRotation());
-			FActorSpawnParameters SpawnParams;
-			
-			// Spawn ADestructibleActor
-			ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
-			destructibleActor->SetDestructibleMesh(Row->DestructibleMesh,SpawnTransform);
-		}
-		else
-		{
-			CDebug::Print(TEXT("Spawn Failed"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Data Table is null"));
-	}
-}
-
-void ACSurvivor::DestroyDestructible(UDestructibleComponent* DestructibleComponent)
-{
-
-}
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {

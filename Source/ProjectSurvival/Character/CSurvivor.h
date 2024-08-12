@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 #pragma warning(push)
@@ -7,8 +7,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
-#include "Engine/DataTable.h"
-#include "DestructibleComponent.h"
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
 
@@ -31,10 +29,16 @@ private:
 	void OnMoveRight(float InAxisValue);
 	void OnHorizontalLook(float InAxisValue);
 	void OnVerticalLook(float InAxisValue);
-
 public:
-	//Slash
-	void Slash();
+	//Weapon
+	void DoAction();
+	void HoldAxe();
+
+	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
+	class UCHarvestComponent* GetHarvestComponent() { return HarvestComponent; }
+
+
+	//Customize
 	USkeletalMeshComponent* GetHeadMeshComponent() { return Head; }
 	USkeletalMeshComponent* GetPantsMeshComponent() { return Pants; }
 	USkeletalMeshComponent* GetBootsMeshComponent() { return Boots; }
@@ -49,11 +53,7 @@ private:
 		void RequestSetSurvivorName(const FText& InText);
 	void UpdateSurvivorNameWidget();
 
-	//Slash 
-	void SlashBoxTrace();
-	bool CheckIsFoliageInstance(const FHitResult& Hit);
-	void SwitchFoligeToDestructible(FString* hitIndex);
-	void DestroyDestructible(class UDestructibleComponent* DestructibleComponent);
+	
 	
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -80,14 +80,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* SurvivorNameWidgetComponent;
 	
-private:
-	//Slash
-	UPROPERTY(EditAnywhere)
-	float TraceDistance = 50.0f;
-	UPROPERTY(EditAnywhere, Category = "Slash")
-		UDataTable* DestructibleDataTable;
-	FTransform SpawnTransform;
-	int32 InstanceIndex=NO_INDEX;
+
 
 
 	//Name 
@@ -99,5 +92,9 @@ private:
 	//Customize
 	UPROPERTY(VisibleAnywhere)
 		class UCCustomizeComponent* CustomizeComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCWeaponComponent* WeaponComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCHarvestComponent* HarvestComponent;
 };
 

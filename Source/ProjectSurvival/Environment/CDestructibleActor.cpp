@@ -13,11 +13,14 @@ ACDestructibleActor::ACDestructibleActor()
 	PrimaryActorTick.bCanEverTick = false;
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
 	DestructibleComponent->SetupAttachment(GetRootComponent());
-	DestructibleComponent->RegisterComponent();
-	DestructibleComponent->AddToRoot(); // 가비지 컬렉션 삭제 방지
 }
 
 
+
+class UDestructibleComponent* ACDestructibleActor::GetDestructibleComponent()
+{
+	return DestructibleComponent;
+}
 
 void ACDestructibleActor::SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh,FTransform InstanceTransform )
 {
@@ -31,14 +34,15 @@ void ACDestructibleActor::SetDestructibleMesh(UDestructibleMesh* InDestructibleM
 void ACDestructibleActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	DestructibleComponent->RegisterComponent();
+	DestructibleComponent->AddToRoot(); // Root Set 등록 ->가비지 컬렉션 삭제 방지
 }
 
 void ACDestructibleActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (DestructibleComponent)
 	{
-		DestructibleComponent->RemoveFromRoot();
+		DestructibleComponent->RemoveFromRoot(); // Root Set 등록 해제
 		DestructibleComponent->DestroyComponent();
 	}
 

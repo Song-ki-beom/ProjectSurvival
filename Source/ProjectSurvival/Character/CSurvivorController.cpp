@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CSurvivorController.h"
@@ -23,17 +23,32 @@ void ACSurvivorController::SetupInputComponent()
 
 	if (InputComponent)
 	{
-		InputComponent->BindKey(EKeys::R, IE_Pressed , this , &ACSurvivorController::Slash);
+		/*InputComponent->BindKey(EKeys::R, IE_Pressed , this , &ACSurvivorController::Slash);*/
+		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::HoldAxe);
+		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
+
+
 	}
 }
 
-void ACSurvivorController::Slash()
+void ACSurvivorController::DoAction()
 {
 	ACSurvivor* controlledCharacter = Cast<ACSurvivor>(GetCharacter());
 
 	if (controlledCharacter)
 	{
-		controlledCharacter->Slash();
+		controlledCharacter->DoAction();
+	}
+
+}
+
+void ACSurvivorController::HoldAxe()
+{
+	ACSurvivor* controlledCharacter = Cast<ACSurvivor>(GetCharacter());
+
+	if (controlledCharacter)
+	{
+		controlledCharacter->HoldAxe();
 	}
 
 }
