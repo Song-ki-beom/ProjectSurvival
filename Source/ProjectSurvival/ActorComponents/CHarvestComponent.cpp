@@ -16,7 +16,6 @@
 #include "DestructibleComponent.h"
 #include "CGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-
 UCHarvestComponent::UCHarvestComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -77,8 +76,10 @@ void UCHarvestComponent::HarvestBoxTrace()
 
 	if (bHit)
 	{
-		FString hitIndex = *HitResult.Component->GetName().Right(1);
-		FString debugText = TEXT("Hitted Polige Mesh Type") + hitIndex;
+		FString hitIndex = *HitResult.Component->GetName().Right(2);
+		//FString hitIndex = *HitResult.Component->GetName();
+
+		FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
 		CDebug::Print(debugText, FColor::Blue);
 
 		if (CheckIsFoliageInstance(HitResult))
@@ -86,6 +87,10 @@ void UCHarvestComponent::HarvestBoxTrace()
 
 			SwitchFoligeToDestructible(&hitIndex);
 
+		}
+		else if (CheckIsDestructInstance(HitResult))
+		{
+			AddForceToDestructible(20.0f);
 		}
 
 	}
@@ -111,6 +116,17 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 	}
 	return false;
 
+}
+
+bool UCHarvestComponent::CheckIsDestructInstance(const FHitResult& Hit)
+{
+	if (DestructibleActor = Cast<ACDestructibleActor>(Hit.Actor))
+	{
+		return true;
+	}
+
+
+	return false;
 }
 
 void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex)
@@ -144,4 +160,29 @@ void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Data Table is null"));
 	}
+}
+
+void UCHarvestComponent::AddForceToDestructible(float damageAmount)
+{
+	
+	if(DestructibleActor)
+		DestructibleActor->GetDestructibleComponent()->ApplyDamage(damageAmount, DestructibleActor->GetActorLocation(), FVector::ZeroVector, 0.02f);
+
+
+
+	/*AddRadialForce(FVector Origin,
+		float Radius,
+		float Strength,
+		ERadialImpulseFalloff Falloff,
+		bool bAccelChange
+	)*/
+
+		if (DestructibleActor->GetDestructibleComponent()->GetDamage >= DestructibleComponent->GetFractureThreshold())
+		{
+			UE_LOG(LogTemp, Log, TEXT("Fracture occurred!"));
+			// 추가적인 로직을 이곳에 작성
+		}
+	
+
+
 }

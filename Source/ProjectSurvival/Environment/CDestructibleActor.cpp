@@ -13,10 +13,14 @@ ACDestructibleActor::ACDestructibleActor()
 	PrimaryActorTick.bCanEverTick = false;
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
 	DestructibleComponent->SetupAttachment(GetRootComponent());
-	
 }
 
 
+
+class UDestructibleComponent* ACDestructibleActor::GetDestructibleComponent()
+{
+	return DestructibleComponent;
+}
 
 void ACDestructibleActor::SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh,FTransform InstanceTransform )
 {

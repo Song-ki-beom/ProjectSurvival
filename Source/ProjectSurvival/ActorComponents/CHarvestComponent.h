@@ -33,14 +33,19 @@ public:
 
 private:
 	bool CheckIsFoliageInstance(const FHitResult& Hit);
+	bool CheckIsDestructInstance(const FHitResult& Hit);
 	void SwitchFoligeToDestructible(FString* hitIndex);
+	void AddForceToDestructible(float damageAmount);
 
 private:
-	class ACharacter* OwnerCharacter;
 	float TraceDistance = 45.0f;
 	float TraceOffset = 100.0f;
 	FTransform SpawnTransform;
 	int32 InstanceIndex = NO_INDEX;
+
 	class UCGameInstance* GameInstance;
+	class ACharacter* OwnerCharacter;
+	class ACDestructibleActor* DestructibleActor;
+	
 
 };

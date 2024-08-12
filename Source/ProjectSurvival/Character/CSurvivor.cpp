@@ -51,7 +51,6 @@ ACSurvivor::ACSurvivor()
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera = this->CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
-
 	//ReplicateComponent = this->CreateDefaultSubobject<UCReplicateComponent>(TEXT("Replicate"));
 
 	//스켈레탈 메시
