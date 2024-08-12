@@ -1,4 +1,4 @@
-﻿#include "Widget/Build/CBuildWidget.h"
+#include "Widget/Build/CBuildWidget.h"
 #include "Components/Image.h"
 
 void UCBuildWidget::SaveStructureInfo(ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)

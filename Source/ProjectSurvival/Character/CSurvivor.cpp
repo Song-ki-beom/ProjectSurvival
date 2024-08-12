@@ -3,6 +3,7 @@
 #include "ActorComponents/Disposable/CCustomizeComponent.h"
 #include "ActorComponents/CWeaponComponent.h"
 #include "ActorComponents/CHarvestComponent.h"
+#include "ActorComponents/CBuildComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -29,6 +30,7 @@ ACSurvivor::ACSurvivor()
 	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
 	HarvestComponent = CreateDefaultSubobject<UCHarvestComponent>(TEXT("Harvest"));
 	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
+	BuildComponent = CreateDefaultSubobject<UCBuildComponent>("BuildComponent");
 	CustomizeComponent->SetIsReplicated(true);
 
 
@@ -185,15 +187,71 @@ void ACSurvivor::HoldAxe()
 	WeaponComponent->SetAxeMode();
 }
 
+void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+{
+	switch (InKey)
+	{
+	case ESelectedStructure::Q:
+	{
+		BuildComponent->SelectQ(InClass, InElement);
+		break;
+	}
+
+	case ESelectedStructure::W:
+	{
+		BuildComponent->SelectW();
+		break;
+	}
+
+	case ESelectedStructure::E:
+	{
+		BuildComponent->SelectE();
+		break;
+	}
+
+	case ESelectedStructure::A:
+	{
+		BuildComponent->SelectA();
+		break;
+	}
+
+	case ESelectedStructure::S:
+	{
+		BuildComponent->SelectS();
+		break;
+	}
+
+	case ESelectedStructure::D:
+	{
+		BuildComponent->SelectD();
+		break;
+	}
+
+	case ESelectedStructure::Z:
+	{
+		BuildComponent->SelectZ();
+		break;
+	}
+
+	case ESelectedStructure::X:
+	{
+		BuildComponent->SelectX();
+		break;
+	}
+
+	case ESelectedStructure::C:
+	{
+		BuildComponent->SelectC();
+		break;
+	}
+	}
+}
 
 void ACSurvivor::DoAction()
 {
 	if (WeaponComponent->IsUnarmedMode()) return;
 	WeaponComponent->DoAction();
 }
-
-
-
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {

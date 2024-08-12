@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
+#include "CustomDataType/BuildStructureDataType.h"
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
 
@@ -36,6 +37,9 @@ public:
 
 	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
 	class UCHarvestComponent* GetHarvestComponent() { return HarvestComponent; }
+	class UCBuildComponent* GetBuildComponent() { return BuildComponent; }
+
+	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 
 
 	//Customize
@@ -96,5 +100,7 @@ private:
 		class UCWeaponComponent* WeaponComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCHarvestComponent* HarvestComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCBuildComponent* BuildComponent;
 };
 
