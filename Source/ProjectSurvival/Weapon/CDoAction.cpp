@@ -21,7 +21,6 @@ void UCDoAction::BeginPlay
 void UCDoAction::DoAction()
 {
 	bInAction = true;
-	//State->SetActionMode();
 }
 
 void UCDoAction::Begin_DoAction()
@@ -34,7 +33,5 @@ void UCDoAction::End_DoAction()
 	bInAction = false;
 	bBeginAction = false;
 
-	//State->SetIdleMode();
-	//Movement->Move();
-	//Movement->DisableFixedCamera();
+	
 }

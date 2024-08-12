@@ -21,7 +21,7 @@ public:
 		, const TArray<FDoActionData>& InDoActionData
 		//,const TArray<FHitData>& InHitData
 	);
-	virtual void Tick(float InDeltaTime) {};
+	//virtual void Tick(float InDeltaTime) {};
 
 public:
 	bool GetBeginDoAction() { return bBeginAction; }
@@ -65,8 +65,8 @@ protected:
 	TArray<FDoActionData> DoActionDatas;
 	//TArray<FHitData>      HitDatas;
 protected:
-	bool  bInAction = false;   // AI에서 DoAction상태
-	bool  bBeginAction = false;   // AI에서 DoAction상태
+	bool  bInAction = false;   
+	bool  bBeginAction = false;   
 
 
 

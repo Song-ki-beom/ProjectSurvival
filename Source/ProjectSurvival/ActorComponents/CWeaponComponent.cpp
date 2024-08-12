@@ -1,5 +1,4 @@
 #include "ActorComponents/CWeaponComponent.h"
-//#include "Components/CStateComponent.h"
 #include "CWeaponComponent.h"
 #include "Weapon/CWeaponAsset.h"
 #include "Weapon/CWeaponData.h"
@@ -12,7 +11,7 @@
 
 UCWeaponComponent::UCWeaponComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
@@ -31,12 +30,11 @@ void UCWeaponComponent::BeginPlay()
 }
 
 
-// Called every frame
 void UCWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	/*
-	if (!!GetDoAction())
+	
+	/*if (!!GetDoAction())
 		GetDoAction()->Tick(DeltaTime);*/
 
 
@@ -136,7 +134,7 @@ UCEquipment* UCWeaponComponent::GetEquipment()
 
 UCDoAction* UCWeaponComponent::GetDoAction()
 {
-	if (!IsUnarmedMode()) return nullptr;
+	if (IsUnarmedMode()) return nullptr;
 	if (!Datas[(int32)Type]) return nullptr;
 	return Datas[(int32)Type]->GetDoAction();
 }

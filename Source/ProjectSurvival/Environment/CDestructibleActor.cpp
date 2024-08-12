@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Environment/CDestructibleActor.h"
@@ -13,8 +13,7 @@ ACDestructibleActor::ACDestructibleActor()
 	PrimaryActorTick.bCanEverTick = false;
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
 	DestructibleComponent->SetupAttachment(GetRootComponent());
-	DestructibleComponent->RegisterComponent();
-	DestructibleComponent->AddToRoot(); // Root Set 등록 ->가비지 컬렉션 삭제 방지
+	
 }
 
 
@@ -31,6 +30,8 @@ void ACDestructibleActor::SetDestructibleMesh(UDestructibleMesh* InDestructibleM
 void ACDestructibleActor::BeginPlay()
 {
 	Super::BeginPlay();
+	DestructibleComponent->RegisterComponent();
+	DestructibleComponent->AddToRoot(); // Root Set 등록 ->가비지 컬렉션 삭제 방지
 }
 
 void ACDestructibleActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
