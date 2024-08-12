@@ -1,4 +1,4 @@
-﻿#include "CGameInstance.h"
+#include "CGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Lobby/CLobbySurvivor.h"
@@ -7,6 +7,13 @@
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "DrawDebugHelpers.h"
+#include "Utility/CDebug.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "Struct/DestructibleStruct.h"
+#include "Environment/CDestructibleActor.h"
+#include "DestructibleComponent.h"
 
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
@@ -21,6 +28,15 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 	}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("userWidgetFinder Failed - UCGameInstance"));
+
+
+		// Slash DataTable Load
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_Destructible.DT_Destructible'"));
+	if (DataTable_BP.Succeeded())
+	{
+		DestructibleDataTable = DataTable_BP.Object;
+	}
+
 }
 
 void UCGameInstance::Init()

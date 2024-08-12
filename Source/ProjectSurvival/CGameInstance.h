@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
@@ -6,7 +6,11 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Interfaces/OnlineIdentityInterface.h"
+#include "Engine/DataTable.h"
 #include "CGameInstance.generated.h"
+
+
+
 
 UCLASS()
 class PROJECTSURVIVAL_API UCGameInstance : public UGameInstance, public ICLobbyInterface
@@ -53,7 +57,8 @@ public:
 		FString playerName;
 	UPROPERTY()
 		FName currentSessionName;
-
+	UPROPERTY()
+		UDataTable* DestructibleDataTable;
 
 private:
 	UPROPERTY()
@@ -75,6 +80,8 @@ private:
 
 	UPROPERTY()
 		float DifficultyCoeff;
+	
+	
 };
 
 
