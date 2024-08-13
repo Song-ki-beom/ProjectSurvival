@@ -54,7 +54,7 @@ void ACSurvivorController::SetupBuildWidget()
 	{
 		BuildWidget = CreateWidget<UCBuildWidget>(this, BuildWidgetClass);
 		BuildWidget->AddToViewport();
-		//BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
+		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -213,6 +213,7 @@ void ACSurvivorController::TestP()
 	// 빌드 위젯 이미지변경하는 임시함수
 	// 우클릭해서 등록할때 구조물 이름 및 저장위치 정보 가져와야함
 	CDebug::Print("Test Called");
+	SetupBuildWidget();
 	FBuildStructureInfo* structureInfo = BuildStructureData->FindRow<FBuildStructureInfo>("WoodFoundation", TEXT("WoodFoundation"));
 	UTexture2D* texture = structureInfo->StructureTexture;
 	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Build/CStructure.h"
@@ -18,14 +18,15 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	UBoxComponent* GetFloorBox() { return FloorCheckBox; }
-	void GetFloorHeight(float& OutHeightValue, bool& OutHitResult);
+	//UBoxComponent* GetFloorBox() { return FloorCheckBox; }
+	void DoTraceFoundation(float& OutHeightValue, bool& InIsBuildable);
 
 protected:
-	UFUNCTION()
-		virtual void FloorCheckBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-		virtual void FloorCheckBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+//	UFUNCTION()
+//		virtual void FloorCheckBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+//	UFUNCTION()
+//		virtual void FloorCheckBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 
 protected:
 	UPROPERTY(EditAnywhere)

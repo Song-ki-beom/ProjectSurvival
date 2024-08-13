@@ -154,8 +154,15 @@ void UCBuildComponent::SelectC()
 
 void UCBuildComponent::BuildSpawnedStructure()
 {
+	if (!bIsBuildable)
+	{
+		CDebug::Print("You Can't Build There", FColor::Cyan);
+		return;
+	}
 	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(SpawnedStructure->GetClass(), SpawnedStructure->GetActorLocation(), SpawnedStructure->GetActorRotation());
-	DestroyChildComponent(buildstructure, StructureElement);
+	UPrimitiveComponent* primitiveComponent = Cast<UPrimitiveComponent>(buildstructure->GetRootComponent());
+	primitiveComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
+	//DestroyChildComponent(buildstructure, StructureElement);
 }
 
 void UCBuildComponent::ClearSpawnedStructure()
@@ -229,7 +236,7 @@ void UCBuildComponent::BuildStartFoundation()
 		float structureLocationY = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
 		float structureLocationZ;
 
-		SpawnedFoundation->GetFloorHeight(structureLocationZ, bIsBuildable);
+		SpawnedFoundation->DoTraceFoundation(structureLocationZ, bIsBuildable);
 
 		SpawnedFoundation->SetActorLocation(FVector(structureLocationX, structureLocationY, structureLocationZ));
 		SpawnedFoundation->SetActorRelativeRotation(Survivor->GetActorRotation());
@@ -247,48 +254,48 @@ void UCBuildComponent::BuildStartFoundation()
 	}
 }
 
-void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement)
-{
-	switch (InElement)
-	{
-	case EBuildStructureElement::Foundation:
-	{
-		ACStructure_Foundation* structure_Foundation = Cast<ACStructure_Foundation>(InStructure);
-		structure_Foundation->GetFloorBox()->DestroyComponent();
-	}
-	case EBuildStructureElement::TriFoundation:
-		break;
-	case EBuildStructureElement::Wall:
-		break;
-	case EBuildStructureElement::WindowWall:
-		break;
-	case EBuildStructureElement::TriLeftWall:
-		break;
-	case EBuildStructureElement::TriRightWall:
-		break;
-	case EBuildStructureElement::TriTopWall:
-		break;
-	case EBuildStructureElement::Ceiling:
-		break;
-	case EBuildStructureElement::TriCeiling:
-		break;
-	case EBuildStructureElement::Roof:
-		break;
-	case EBuildStructureElement::HalfRoof:
-		break;
-	case EBuildStructureElement::DoorFrame:
-		break;
-	case EBuildStructureElement::Door:
-		break;
-	case EBuildStructureElement::Fence:
-		break;
-	case EBuildStructureElement::Ramp:
-		break;
-	case EBuildStructureElement::Stair:
-		break;
-	case EBuildStructureElement::None:
-		break;
-	default:
-		break;
-	}
-}
+//void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement)
+//{
+//	switch (InElement)
+//	{
+//	case EBuildStructureElement::Foundation:
+//	{
+//		//ACStructure_Foundation* structure_Foundation = Cast<ACStructure_Foundation>(InStructure);
+//		//structure_Foundation->GetFloorBox()->DestroyComponent();
+//	}
+//	case EBuildStructureElement::TriFoundation:
+//		break;
+//	case EBuildStructureElement::Wall:
+//		break;
+//	case EBuildStructureElement::WindowWall:
+//		break;
+//	case EBuildStructureElement::TriLeftWall:
+//		break;
+//	case EBuildStructureElement::TriRightWall:
+//		break;
+//	case EBuildStructureElement::TriTopWall:
+//		break;
+//	case EBuildStructureElement::Ceiling:
+//		break;
+//	case EBuildStructureElement::TriCeiling:
+//		break;
+//	case EBuildStructureElement::Roof:
+//		break;
+//	case EBuildStructureElement::HalfRoof:
+//		break;
+//	case EBuildStructureElement::DoorFrame:
+//		break;
+//	case EBuildStructureElement::Door:
+//		break;
+//	case EBuildStructureElement::Fence:
+//		break;
+//	case EBuildStructureElement::Ramp:
+//		break;
+//	case EBuildStructureElement::Stair:
+//		break;
+//	case EBuildStructureElement::None:
+//		break;
+//	default:
+//		break;
+//	}
+//}
