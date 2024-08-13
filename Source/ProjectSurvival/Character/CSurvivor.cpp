@@ -202,6 +202,7 @@ void ACSurvivor::HoldAxe()
 
 void ACSurvivor::Build()
 {
+	BuildComponent->BuildSpawnedStructure();
 }
 
 void ACSurvivor::CancleBuild()

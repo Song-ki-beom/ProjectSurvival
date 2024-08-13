@@ -43,7 +43,7 @@ private:
 	void HoldAxe();
 
 private:
-	class ACSurvivor* CSurvivor;
+	class ACSurvivor* Survivor;
 
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> BuildWidgetClass;
