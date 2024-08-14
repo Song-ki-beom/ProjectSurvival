@@ -25,14 +25,12 @@ UCBuildComponent::UCBuildComponent()
 void UCBuildComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
-	BuildWidget = survivorController->GetBuildWidget();
-	if (survivorController)
-		CDebug::Print("Build Widget Valid");
-	else
-		CDebug::Print("Build Widget is not Vaild");
-
 	Survivor = Cast<ACSurvivor>(this->GetOwner());
+	ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
+	if (IsValid(survivorController) && IsValid(BuildWidget))
+	{
+		BuildWidget = survivorController->GetBuildWidget();
+	}
 }
 
 void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
