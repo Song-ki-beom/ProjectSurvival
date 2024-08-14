@@ -30,10 +30,14 @@ public:
 	void SelectZ();
 	void SelectX();
 	void SelectC();
+	void BuildSpawnedStructure();
+	void ClearSpawnedStructure();
+	bool CheckIsBuilding() { return bIsBuilding; }
 
 private:
 	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void BuildStartFoundation();
+	//void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
 
 private:
 	class ACSurvivor* Survivor;
@@ -50,5 +54,5 @@ private:
 
 	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
-	bool bIsBuildMode;
+	bool bIsBuilding;
 };

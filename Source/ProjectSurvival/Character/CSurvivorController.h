@@ -39,10 +39,11 @@ private:
 
 	// DoAction + Harvest
 	void DoAction();
+	void SubAction();
 	void HoldAxe();
 
 private:
-	class ACSurvivor* CSurvivor;
+	class ACSurvivor* Survivor;
 
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> BuildWidgetClass;

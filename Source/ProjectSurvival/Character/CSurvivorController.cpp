@@ -17,20 +17,19 @@ ACSurvivorController::ACSurvivorController()
 	if (buildWidgetFinder.Succeeded())
 	{
 		BuildWidgetClass = buildWidgetFinder.Class;
-		CDebug::Log("buildWidgetFinder Succeeded");
+		//CDebug::Print("buildWidgetFinder Succeeded", FColor::Green);
 	}
 	else
-		CDebug::Log("buildWidgetFinder Failed");
+		CDebug::Print("buildWidgetFinder Failed", FColor::Red);
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> buildStructureDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Build/DT_BuildStructureInfo.DT_BuildStructureInfo'"));
 	if (buildStructureDataFinder.Succeeded())
 	{
 		BuildStructureData = buildStructureDataFinder.Object;
+		//CDebug::Print("buildStructureDataFinder Succeeded", FColor::Green);
 	}
 	else
-	{
-		CDebug::Log("buildStructureDataFinder Failed");
-	}
+		CDebug::Print("buildStructureDataFinder Failed", FColor::Red);
 
 	bIsBuildWidgetOn = false;
 }
@@ -38,30 +37,34 @@ ACSurvivorController::ACSurvivorController()
 void ACSurvivorController::BeginPlay()
 {
 	Super::BeginPlay();
+
 	this->SetInputMode(FInputModeGameOnly());
 	GetSurvivor();
-	SetupBuildWidget();
 	SetupInputFunction();
 }
 
 void ACSurvivorController::GetSurvivor()
 {
-	CSurvivor = Cast<ACSurvivor>(this->GetCharacter());
+	Survivor = Cast<ACSurvivor>(this->GetCharacter());
 }
 
 void ACSurvivorController::SetupBuildWidget()
 {
-	BuildWidget = CreateWidget<UCBuildWidget>(this, BuildWidgetClass);
-	BuildWidget->AddToViewport();
-	BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
+	if (!IsValid(BuildWidget))
+	{
+		BuildWidget = CreateWidget<UCBuildWidget>(this, BuildWidgetClass);
+		BuildWidget->AddToViewport();
+		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void ACSurvivorController::SetupInputFunction()
 {
-	if (IsValid(CSurvivor))
+	if (IsValid(Survivor))
 	{
 		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::HoldAxe);
 		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
+		InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ACSurvivorController::SubAction);
 		InputComponent->BindAction("Build", IE_Pressed, this, &ACSurvivorController::ToggleBuildWidget);
 		InputComponent->BindAction("SelectQ", IE_Pressed, this, &ACSurvivorController::SelectQ);
 		InputComponent->BindAction("SelectW", IE_Pressed, this, &ACSurvivorController::SelectW);
@@ -74,7 +77,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
 		InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
 
-		UCMovingComponent* movingComponent = CSurvivor->GetMovingComponent();
+		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
 		{
 			InputComponent->BindAxis("MoveForward", movingComponent, &UCMovingComponent::OnMoveForward);
@@ -91,19 +94,27 @@ void ACSurvivorController::SetupInputFunction()
 
 void ACSurvivorController::ToggleBuildWidget()
 {
-	CDebug::Print("Call");
-
-	if (bIsBuildWidgetOn)
+	if (IsValid(BuildWidget))
 	{
-		CDebug::Print("Off Build");
-		bIsBuildWidgetOn = false;
-		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+		if (bIsBuildWidgetOn)
+		{
+			CDebug::Print("Off Build");
+			bIsBuildWidgetOn = false;
+			BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else
+		{
+			CDebug::Print("On Build");
+			bIsBuildWidgetOn = true;
+			BuildWidget->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 	else
 	{
-		CDebug::Print("On Build");
+		BuildWidget = CreateWidget<UCBuildWidget>(this, BuildWidgetClass);
+		BuildWidget->AddToViewport();
 		bIsBuildWidgetOn = true;
-		BuildWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -115,8 +126,12 @@ void ACSurvivorController::SelectQ()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::Q);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::Q);
-			CSurvivor->SelectStructure(ESelectedStructure::Q, structureClass, structureElement);
+			Survivor->SelectStructure(ESelectedStructure::Q, structureClass, structureElement);
 			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
 		}
 	}
 }
@@ -198,6 +213,7 @@ void ACSurvivorController::TestP()
 	// 빌드 위젯 이미지변경하는 임시함수
 	// 우클릭해서 등록할때 구조물 이름 및 저장위치 정보 가져와야함
 	CDebug::Print("Test Called");
+	SetupBuildWidget();
 	FBuildStructureInfo* structureInfo = BuildStructureData->FindRow<FBuildStructureInfo>("WoodFoundation", TEXT("WoodFoundation"));
 	UTexture2D* texture = structureInfo->StructureTexture;
 	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;
@@ -207,16 +223,27 @@ void ACSurvivorController::TestP()
 
 void ACSurvivorController::DoAction()
 {
-	//ACSurvivor* controlledCharacter = Cast<ACSurvivor>(this->GetCharacter());
-
-	//if (controlledCharacter)
-	//{
-	//	controlledCharacter->DoAction();
-	//}
-
-	if (CSurvivor)
+	if (Survivor)
 	{
-		CSurvivor->DoAction();
+		if (Survivor->GetBuildComponent()->CheckIsBuilding())
+		{
+			Survivor->Build();
+			return;
+		}
+		Survivor->DoAction();
+	}
+}
+
+void ACSurvivorController::SubAction()
+{
+	if (Survivor)
+	{
+		if (Survivor->GetBuildComponent()->CheckIsBuilding())
+		{
+			Survivor->CancleBuild();
+			return;
+		}
+		Survivor->SubAction();
 	}
 }
 
@@ -229,8 +256,8 @@ void ACSurvivorController::HoldAxe()
 	//	controlledCharacter->HoldAxe();
 	//}
 
-	if (CSurvivor)
+	if (Survivor)
 	{
-		CSurvivor->HoldAxe();
+		Survivor->HoldAxe();
 	}
 }

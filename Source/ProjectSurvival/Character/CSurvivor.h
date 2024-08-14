@@ -33,7 +33,11 @@ protected:
 public:
 	//Weapon
 	void DoAction();
+	void SubAction();
 	void HoldAxe();
+
+	void Build();
+	void CancleBuild();
 
 	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
 	class UCHarvestComponent* GetHarvestComponent() { return HarvestComponent; }
