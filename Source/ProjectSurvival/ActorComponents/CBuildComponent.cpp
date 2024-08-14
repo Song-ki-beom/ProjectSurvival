@@ -103,11 +103,6 @@ void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructure
 	CDebug::Print("SelectQ");
 
 	SpawnBuildStructureElement(InClass, InElement);
-	//bIsBuildable = true;
-	//SpawnedStructure->AttachToComponent(Survivor->GetCameraComponent(), FAttachmentTransformRules::KeepWorldTransform);
-	//SpawnedStructure->GetStaticMesh()->SetMaterial(0, GreenMaterial);
-	//SpawnedStructure->SaveOrigin
-
 }
 
 void UCBuildComponent::SelectW()
@@ -159,7 +154,10 @@ void UCBuildComponent::BuildSpawnedStructure()
 	}
 	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(SpawnedStructure->GetClass(), SpawnedStructure->GetActorLocation(), SpawnedStructure->GetActorRotation());
 	UPrimitiveComponent* primitiveComponent = Cast<UPrimitiveComponent>(buildstructure->GetRootComponent());
-	primitiveComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
+	if (StructureElement == EBuildStructureElement::Foundation)
+	{
+		primitiveComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
+	}
 	//DestroyChildComponent(buildstructure, StructureElement);
 }
 
@@ -230,14 +228,18 @@ void UCBuildComponent::BuildStartFoundation()
 {
 	if (IsValid(SpawnedFoundation))
 	{
-		float structureLocationX = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-		float structureLocationY = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-		float structureLocationZ;
+		FVector structureLocation;
+		FRotator structureRotation = Survivor->GetActorRotation();
+		SpawnedFoundation->DoTraceFoundation(structureLocation, structureRotation, bIsBuildable, bIsSnapped);
 
-		SpawnedFoundation->DoTraceFoundation(structureLocationZ, bIsBuildable);
+		if (!bIsSnapped)
+		{
+			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+		}
 
-		SpawnedFoundation->SetActorLocation(FVector(structureLocationX, structureLocationY, structureLocationZ));
-		SpawnedFoundation->SetActorRelativeRotation(Survivor->GetActorRotation());
+		SpawnedFoundation->SetActorLocation(structureLocation);
+		SpawnedFoundation->SetActorRelativeRotation(structureRotation);
 
 		if (bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
 		{

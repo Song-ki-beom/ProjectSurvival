@@ -54,5 +54,6 @@ private:
 
 	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
+	bool bIsSnapped;
 	bool bIsBuilding;
 };

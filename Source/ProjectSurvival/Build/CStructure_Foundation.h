@@ -19,7 +19,7 @@ protected:
 
 public:
 	//UBoxComponent* GetFloorBox() { return FloorCheckBox; }
-	void DoTraceFoundation(float& OutHeightValue, bool& InIsBuildable);
+	void DoTraceFoundation(FVector& InLocation, FRotator& InRotation, bool& InIsBuildable, bool& InIsSnapped);
 
 protected:
 //	UFUNCTION()
@@ -33,6 +33,8 @@ protected:
 		class UBoxComponent* FloorCheckBox;
 
 	TArray<AActor*> FloorCheckBoxOverlapActors;
+
+	AActor* RightFoundation;
 
 	
 };

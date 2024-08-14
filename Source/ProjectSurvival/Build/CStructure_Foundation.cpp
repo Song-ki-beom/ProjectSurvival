@@ -21,7 +21,7 @@ void ACStructure_Foundation::Tick(float DeltaTime)
 
 }
 
-void ACStructure_Foundation::DoTraceFoundation(float& OutHeightValue, bool& InIsBuildable)
+void ACStructure_Foundation::DoTraceFoundation(FVector& InLocation, FRotator& InRotation, bool& InIsBuildable, bool& InIsSnapped)
 {
 	// 높이 체크
 	FHitResult floorHitResult;
@@ -41,46 +41,96 @@ void ACStructure_Foundation::DoTraceFoundation(float& OutHeightValue, bool& InIs
 	{
 		if (heightHitActor->IsA(ALandscape::StaticClass()))
 		{
-			OutHeightValue = floorHitResult.ImpactPoint.Z + 50.0f;
+			InLocation.Z = floorHitResult.ImpactPoint.Z + 50.0f;
 			bHeightHit = true;
 		}
 		else
 		{
-			OutHeightValue = GetOwner()->GetActorLocation().Z;
+			InLocation.Z = GetOwner()->GetActorLocation().Z;
 			bHeightHit = false;
 		}
 	}
 	else
 	{
-		OutHeightValue = GetOwner()->GetActorLocation().Z;
+		InLocation.Z = GetOwner()->GetActorLocation().Z;
 		bHeightHit = false;
 	}
 
-	FHitResult boxHitResult;
-	FVector boxLocation = this->GetActorLocation() + FVector(0, 0, 50);
-	FVector boxSize = FVector(150, 150, 10);
-	FRotator orientation = GetOwner()->GetActorRotation();
-	ETraceTypeQuery traceTypeQuery = ETraceTypeQuery::TraceTypeQuery2; // 구체적으로 뭔지? TraceTypeQuery1하면 캐릭터를 감지안함
-	bool bTraceComplex = false;
-	TArray<AActor*> actorsToIgnore;
-	bool bShowDebug = true;
-	TArray<FHitResult> centerHitResults;
+	// 가운데 체크
+	FHitResult centerBoxHitResult;
+	FVector centerBoxLocation = this->GetActorLocation() + FVector(0, 0, 50);
+	FVector centerBoxSize = FVector(150, 150, 50);
+	FRotator centerBoxOrientation = GetOwner()->GetActorRotation();
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2; // 구체적으로 뭔지? TraceTypeQuery1하면 캐릭터를 감지안함
+	bool bCenterBoxTraceComplex = false;
+	TArray<AActor*> centerBoxActorsToIgnore;
+	TArray<FHitResult> centerBoxHitResults;
 	bool bCenterHit = UKismetSystemLibrary::BoxTraceSingle(
 		GetWorld(),
-		boxLocation,
-		boxLocation,
-		boxSize,
-		orientation,
-		traceTypeQuery,
-		bTraceComplex,
-		actorsToIgnore,
+		centerBoxLocation,
+		centerBoxLocation,
+		centerBoxSize,
+		centerBoxOrientation,
+		centerBoxTraceTypeQuery,
+		bCenterBoxTraceComplex,
+		centerBoxActorsToIgnore,
 		EDrawDebugTrace::ForOneFrame,
-		boxHitResult,
+		centerBoxHitResult,
 		true,
 		FLinearColor::Green,
 		FLinearColor::Red
 	);
 		
+	// 오른쪽 체크
+	FHitResult rightBoxHitResult;
+	FVector rightBoxOffset = FVector(0, 200, 0);
+	FVector rightBoxLocation = centerBoxLocation + centerBoxOrientation.RotateVector(rightBoxOffset);
+	FVector rightBoxSize = FVector(50, 50, 50);
+	FRotator rightBoxOrientation = FRotator::ZeroRotator;
+	if (IsValid(RightFoundation))
+	{
+		rightBoxOrientation = RightFoundation->GetActorRotation();
+	}
+	else
+	{
+		rightBoxOrientation = centerBoxOrientation;
+	}
+	TArray<TEnumAsByte<EObjectTypeQuery>> offsetBoxObjectTypes;
+	offsetBoxObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+	bool bOffsetBoxTraceComplex = false;
+	TArray<AActor*> rightBoxActorsToIgnore;
+	bool bRightHit = UKismetSystemLibrary::BoxTraceSingleForObjects(
+		GetWorld(),
+		rightBoxLocation,
+		rightBoxLocation,
+		rightBoxSize,
+		rightBoxOrientation,
+		offsetBoxObjectTypes,
+		bOffsetBoxTraceComplex,
+		rightBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		rightBoxHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+
+	if (bRightHit)
+	{
+		RightFoundation = rightBoxHitResult.Actor.Get();
+		InIsSnapped = true;
+		FVector actorLocation = rightBoxHitResult.Actor->GetActorLocation();
+		InRotation = rightBoxHitResult.Actor->GetActorRotation();
+		FVector offsetLocation = rightBoxHitResult.Actor->GetActorTransform().TransformPosition(FVector(-300,0,0));
+		InLocation = offsetLocation;
+	}
+	else
+	{
+		RightFoundation = nullptr;
+		InIsSnapped = false;
+	}
+
+
 	// 최종 결과
 	InIsBuildable = (bHeightHit && !bCenterHit);
 }
