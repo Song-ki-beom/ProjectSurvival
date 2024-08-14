@@ -21,10 +21,11 @@ struct FDestructibleStruct : public FTableRowBase
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-            UDestructibleMesh* DestructibleMesh;
+        UDestructibleMesh* DestructibleMesh;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         float MaxDamageThreshold;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 DropItemRatio = 3;
 
 };
 

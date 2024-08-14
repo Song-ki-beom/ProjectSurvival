@@ -1,4 +1,4 @@
-﻿#include "CDebug.h"
+#include "CDebug.h"
 
 DEFINE_LOG_CATEGORY(UserDebug)
 

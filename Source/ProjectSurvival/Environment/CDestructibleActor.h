@@ -19,28 +19,44 @@ public:
 	// Sets default values for this actor's properties
 	ACDestructibleActor();
 
+
 protected:
-	// Called when the game starts or when spawned
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 
 public:
-	void SetUp(float MaxDamage, UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform);
+	void SetUp(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio);
 	class UDestructibleComponent* GetDestructibleComponent();
-	//void SetDestructibleMesh(UDestructibleMesh* InDestructibleMesh, FTransform  InstanceTransform);
 	float GetAccumulatedDamage();
-	void AccumulateDamage(float DamageAmount);
+	UFUNCTION()
+		void AccumulateDamage(float DamageAmount);
+	//UFUNCTION(Server, Reliable) //클라이언트 -> 서버  
+	UFUNCTION()
+		void OnServer_AccumulateDamage(float NewAccumulatedDamage);
+	//UFUNCTION(NetMulticast, Reliable) // 서버와 클라이언트 모두 
+	UFUNCTION()
+		void OnRep_AccumulateDamage(float NewAccumulatedDamage);
 	
 
+private:
+	void DestroyDestructibleActor();
+
+private:
+	FTimerHandle TimerHandle;
 
 	
 	
 private:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Replicated)
 		class UDestructibleComponent* DestructibleComponent;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;
+	UPROPERTY(VisibleAnywhere)
+		int32 DropItemRatio = 3;
 	UPROPERTY(VisibleAnywhere)
 		float MaxDamageThreshold = 0.0f;
 };

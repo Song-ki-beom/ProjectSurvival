@@ -153,8 +153,9 @@ void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex, float dam
 
 			// Spawn ADestructibleActor
 			ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
-			destructibleActor->SetUp(Row->MaxDamageThreshold,Row->DestructibleMesh, SpawnTransform);
-			destructibleActor->GetDestructibleComponent()->ApplyRadiusDamage(damageAmount, destructibleActor->GetActorLocation(), 1.0f, 1.0f, true);;
+			destructibleActor->SetUp(Row->DestructibleMesh, SpawnTransform, Row->MaxDamageThreshold, Row->DropItemRatio);
+			destructibleActor->GetDestructibleComponent()->ApplyRadiusDamage(damageAmount, destructibleActor->GetActorLocation(), 1.0f, 1.0f, true);
+			destructibleActor->AccumulateDamage(damageAmount);
 		}
 		else
 		{
