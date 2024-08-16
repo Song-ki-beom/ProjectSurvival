@@ -1,4 +1,5 @@
 #include "Build/CStructure_Foundation.h"
+#include "Character/CSurvivor.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "LandScape.h"
 #include "DrawDebugHelpers.h"
@@ -7,11 +8,13 @@
 ACStructure_Foundation::ACStructure_Foundation()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
 	TopBox = CreateDefaultSubobject<UBoxComponent>("TopBox");
 	BottomBox = CreateDefaultSubobject<UBoxComponent>("BottomBox");
 	LeftBox = CreateDefaultSubobject<UBoxComponent>("LeftBox");
 	RightBox = CreateDefaultSubobject<UBoxComponent>("RightBox");
-
+	
+	PreviewBox->SetupAttachment(StaticMesh);
 	TopBox->SetupAttachment(StaticMesh);
 	BottomBox->SetupAttachment(StaticMesh);
 	LeftBox->SetupAttachment(StaticMesh);
@@ -33,12 +36,27 @@ void ACStructure_Foundation::CheckHeight()
 	float startLocationY = this->GetActorLocation().Y;
 	float startLocationZ = GetOwner()->GetActorLocation().Z;
 	FVector startLocation = FVector(startLocationX, startLocationY, startLocationZ);
-	FVector endLocation = startLocation - FVector(0, 0, 150);
-	DrawDebugLine(GetWorld(), startLocation, endLocation, FColor::Red, false, 10.0f, 0, 1.0f);
+	FVector endLocation = startLocation - FVector(0, 0, 300);
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypeQuery;
+	objectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+	TArray<AActor*> ignores;
 	FCollisionObjectQueryParams objectQueryParams;
 	objectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel1); // 에디터 상에서 LandSacpe > Custom > ObjectType Landscape로 변경할것
 	FCollisionQueryParams collisionParams;
-	bHeightHit = GetWorld()->LineTraceSingleByObjectType(floorHitResult, startLocation, endLocation, objectQueryParams);
+	bHeightHit = UKismetSystemLibrary::LineTraceSingleForObjects
+	(
+		GetWorld(),
+		startLocation,
+		endLocation,
+		objectTypeQuery,
+		false,
+		ignores,
+		EDrawDebugTrace::ForDuration,
+		floorHitResult,
+		true,
+		FLinearColor::Yellow,
+		FLinearColor::Red
+	);
 
 	AActor* heightHitActor = floorHitResult.GetActor();
 	if (IsValid(heightHitActor))
@@ -59,6 +77,8 @@ void ACStructure_Foundation::CheckHeight()
 		FoundationHeight = GetOwner()->GetActorLocation().Z;
 		bHeightHit = false;
 	}
+
+	//CDebug::Print("bHeightHit : ", bHeightHit);
 }
 
 void ACStructure_Foundation::CheckCenter()
@@ -98,7 +118,7 @@ void ACStructure_Foundation::CheckRight()
 	FVector rightStartLocation = this->GetActorLocation();
 	FVector rightEndLocation = this->GetActorLocation() + this->GetActorRightVector() * 250.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> rightObjectTypeQuery;
-	rightObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+	rightObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
 	TArray<AActor*> rightBoxActorsToIgnore;
 	rightBoxActorsToIgnore.Add(this);
 
@@ -119,17 +139,23 @@ void ACStructure_Foundation::CheckRight()
 	if (bRightHit)
 	{
 		DrawDebugLine(GetWorld(), rightHitResult.GetComponent()->GetComponentLocation(), rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 300.0f, FColor::Blue);
-		this->SetActorLocation(rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 175.0f);
+		this->SetActorLocation(rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 171.0f);
 		CenterRotation = rightHitResult.ImpactNormal.GetSafeNormal().Rotation() + FRotator(0,90,0);
 		this->SetActorRotation(CenterRotation);
-		CDebug::Print("bRightHit : ", bRightHit);
-		CDebug::Print("HitComponent", rightHitResult.GetComponent());
+		//CDebug::Print("bRightHit : ", bRightHit);
+		//CDebug::Print("HitComponent", rightHitResult.GetComponent());
 	}
 	else
 	{
-		CDebug::Print("bRightHit : ", bRightHit);
+		//CDebug::Print("bRightHit : ", bRightHit);
 	}
 }
+
+void ACStructure_Foundation::DestroyPreviewBox()
+{
+	PreviewBox->DestroyComponent();
+}
+
 
 //void ACStructure_Foundation::FloorCheckBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 //{

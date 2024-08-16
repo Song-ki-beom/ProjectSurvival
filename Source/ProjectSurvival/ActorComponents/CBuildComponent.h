@@ -37,7 +37,7 @@ public:
 private:
 	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void BuildStartFoundation();
-	//void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
+	void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
 
 private:
 	class ACSurvivor* Survivor;
