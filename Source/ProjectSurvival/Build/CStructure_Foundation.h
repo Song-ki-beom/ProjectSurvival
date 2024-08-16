@@ -18,8 +18,15 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	//UBoxComponent* GetFloorBox() { return FloorCheckBox; }
-	void DoTraceFoundation(FVector& InLocation, FRotator& InRotation, bool& InIsBuildable, bool& InIsSnapped);
+	void CheckHeight();
+	bool GetFoundationHeightHit() { return bHeightHit; }
+	float GetFoundationHeight() { return FoundationHeight; }
+
+	void CheckCenter();
+	bool GetFoundationCenterHit() { return bCenterHit; }
+
+	void CheckRight();
+	bool GetFoundationRightHit() { return bRightHit; }
 
 protected:
 //	UFUNCTION()
@@ -30,11 +37,22 @@ protected:
 
 protected:
 	UPROPERTY(EditAnywhere)
-		class UBoxComponent* FloorCheckBox;
+		class UBoxComponent* TopBox;
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* BottomBox;
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* LeftBox;
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* RightBox;
+	UPROPERTY()
+		UPrimitiveComponent* RightComponent;
 
 	TArray<AActor*> FloorCheckBoxOverlapActors;
 
-	AActor* RightFoundation;
+	float FoundationHeight;
+	bool bHeightHit;
+	bool bCenterHit;
+	bool bRightHit;
 
-	
+	FRotator CenterRotation;
 };

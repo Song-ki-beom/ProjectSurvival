@@ -3,6 +3,7 @@
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
+#include "DrawDebugHelpers.h"
 #include "Utility/CDebug.h"
 
 UCBuildComponent::UCBuildComponent()
@@ -153,11 +154,11 @@ void UCBuildComponent::BuildSpawnedStructure()
 		return;
 	}
 	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(SpawnedStructure->GetClass(), SpawnedStructure->GetActorLocation(), SpawnedStructure->GetActorRotation());
-	UPrimitiveComponent* primitiveComponent = Cast<UPrimitiveComponent>(buildstructure->GetRootComponent());
-	if (StructureElement == EBuildStructureElement::Foundation)
-	{
-		primitiveComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
-	}
+	//UPrimitiveComponent* primitiveComponent = Cast<UPrimitiveComponent>(buildstructure->GetRootComponent());
+	//if (StructureElement == EBuildStructureElement::Foundation)
+	//{
+	//	primitiveComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
+	//}
 	//DestroyChildComponent(buildstructure, StructureElement);
 }
 
@@ -165,6 +166,7 @@ void UCBuildComponent::ClearSpawnedStructure()
 {
 	if (SpawnedStructure)
 		SpawnedStructure->Destroy();
+	bIsSnapped = false;
 }
 
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
@@ -229,26 +231,68 @@ void UCBuildComponent::BuildStartFoundation()
 	if (IsValid(SpawnedFoundation))
 	{
 		FVector structureLocation;
-		FRotator structureRotation = Survivor->GetActorRotation();
-		SpawnedFoundation->DoTraceFoundation(structureLocation, structureRotation, bIsBuildable, bIsSnapped);
+		FRotator structureRotation;
 
-		if (!bIsSnapped)
+		SpawnedFoundation->CheckHeight();
+		SpawnedFoundation->CheckCenter();
+
+		bIsBuildable = ((SpawnedFoundation->GetFoundationHeightHit()) && (!SpawnedFoundation->GetFoundationCenterHit()));
+		if (bIsBuildable)
+			SpawnedFoundation->CheckRight();
+		bIsSnapped = SpawnedFoundation->GetFoundationRightHit();
+		
+		if (bIsSnapped)
 		{
+			TArray<FHitResult> tempHitResult;
+			FVector tempStartLocation = Survivor->GetActorLocation();
+			FVector tempEndLocation = Survivor->GetActorLocation() + Survivor->GetControlRotation().Vector() * 500.0f;
+			FCollisionObjectQueryParams tempObjectQueryParams;
+			tempObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel2);
+			FCollisionQueryParams tempQueryParams;
+			bool tempBool = GetWorld()->LineTraceMultiByObjectType(
+				tempHitResult,
+				tempStartLocation,
+				tempEndLocation,
+				tempObjectQueryParams,
+				tempQueryParams
+			);
+
+			DrawDebugLine(GetWorld(), tempStartLocation, tempEndLocation, FColor::Cyan, true);
+
+			if (!tempBool)
+			{
+				CDebug::Print("tempBool : ", tempBool);
+				bIsSnapped = false;
+				CDebug::Print("bIsSnapped : ", bIsSnapped);
+
+				CDebug::Print("FreeMove : ", FColor::Cyan);
+				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+				structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
+				SpawnedFoundation->SetActorLocation(structureLocation);
+				structureRotation = Survivor->GetActorRotation();
+				SpawnedFoundation->SetActorRotation(structureRotation);
+			}
+		}
+		else
+		{
+			CDebug::Print("FreeMove : ", FColor::Cyan);
 			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+			structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
+			SpawnedFoundation->SetActorLocation(structureLocation);
+			structureRotation = Survivor->GetActorRotation();
+			SpawnedFoundation->SetActorRotation(structureRotation);
 		}
-
-		SpawnedFoundation->SetActorLocation(structureLocation);
-		SpawnedFoundation->SetActorRelativeRotation(structureRotation);
 
 		if (bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
 		{
-			CDebug::Print("Change To GreenMaterial");
+			//CDebug::Print("Change To GreenMaterial");
 			SpawnedFoundation->GetStaticMesh()->SetMaterial(0, GreenMaterial);
 		}
 		if (!bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != RedMaterial)
 		{
-			CDebug::Print("Change To RedMaterial");
+			//CDebug::Print("Change To RedMaterial");
 			SpawnedFoundation->GetStaticMesh()->SetMaterial(0, RedMaterial);
 		}
 	}
