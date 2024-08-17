@@ -15,6 +15,7 @@
 #include "DestructibleComponent.h"
 #include "CGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 
 UCHarvestComponent::UCHarvestComponent()
@@ -42,71 +43,104 @@ void UCHarvestComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 }
 
 
+void UCHarvestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCHarvestComponent, HitIndex);
+	DOREPLIFETIME(UCHarvestComponent, DamageAmount);
+	DOREPLIFETIME(UCHarvestComponent, SpawnTransform);
+	DOREPLIFETIME(UCHarvestComponent, InstanceIndex);
+	DOREPLIFETIME(UCHarvestComponent, InstanceToRemove);
 
-void UCHarvestComponent::HarvestBoxTrace(float DamageAmount)
+
+}
+
+
+void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
 {
 	if (!OwnerCharacter) return;
 
-	//Trace 관련 세팅
-	FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
-	FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z+45.0f)+ ForwardVector.GetSafeNormal() * TraceOffset;
-	FVector End = Start + ForwardVector.GetSafeNormal()* TraceDistance;
-	FQuat Rot = FQuat(OwnerCharacter->GetActorRotation());
+	
+	
+		//Trace 관련 세팅
+		FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
+		FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
+		FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
+		FQuat Rot = FQuat(OwnerCharacter->GetActorRotation());
 
-	FVector HalfSize = FVector(TraceDistance/2.0f, TraceDistance/ 2.0f, TraceDistance/ 2.0f);
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(OwnerCharacter);
+		FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 2.0f, TraceDistance / 2.0f);
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(OwnerCharacter);
 
-	//BoxTrace 
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
-		Start,
-		End,
-		Rot,
-		ECC_WorldStatic,
-		FCollisionShape::MakeBox(HalfSize),
-		CollisionParams
-	);
+		//BoxTrace 
+		bool bHit = GetWorld()->SweepSingleByChannel(
+			HitResult,
+			Start,
+			End,
+			Rot,
+			ECC_WorldStatic,
+			FCollisionShape::MakeBox(HalfSize),
+			CollisionParams
+		);
 
-	DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
-	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+		DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
+		DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
 
 
 
-	if (bHit)
-	{
-		FString hitIndex = *HitResult.Component->GetName().Right(2);
-		//FString hitIndex = *HitResult.Component->GetName();
-
-		FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
-		CDebug::Print(debugText, FColor::Blue);
-
-		if (CheckIsFoliageInstance(HitResult))
+		if (bHit)
 		{
+			FString hitIndex = *HitResult.Component->GetName().Right(2);
+			//FString hitIndex = *HitResult.Component->GetName();
 
-			SwitchFoligeToDestructible(&hitIndex, DamageAmount);
+			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
+			CDebug::Print(debugText, FColor::Blue);
+
+			if (CheckIsFoliageInstance(HitResult))
+			{
+				if (OwnerCharacter->HasAuthority()) 
+				{
+					SwitchFoligeToDestructible(hitIndex, InDamageAmount,SpawnTransform);
+				}
+				else
+				{
+					RequestSwitchFoligeToDestructible(hitIndex,InDamageAmount,SpawnTransform);
+				}
+
+			}
+			else if (CheckIsDestructInstance(HitResult))
+			{
+
+					AddForceToDestructible(InDamageAmount , DestructibleActor);
+			}
 
 		}
-		else if (CheckIsDestructInstance(HitResult))
-		{
-			AddForceToDestructible(DamageAmount);
-		}
 
-	}
+	
+	
 }
 
 
 bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 {
 
-	if (UInstancedStaticMeshComponent* InstancedMesh = Cast<UInstancedStaticMeshComponent>(Hit.Component))
+	if (InstanceToRemove = Cast<UInstancedStaticMeshComponent>(Hit.Component))
 	{
 		InstanceIndex = Hit.Item;
 		FString debugText = TEXT("Hitted Polige Mesh Index") + FString::FromInt(InstanceIndex);
 		CDebug::Print(debugText);
-		InstancedMesh->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
-		InstancedMesh->RemoveInstance(InstanceIndex);
+		InstanceToRemove->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
+		if (OwnerCharacter->HasAuthority())
+		{
+			RemoveFoliageInstance(InstanceToRemove,InstanceIndex);
+		}
+		else
+		{
+			RequestRemoveFoliageInstance(InstanceToRemove, InstanceIndex);
+		}
+			
+
 		if (InstanceIndex != NO_INDEX) return true;
 
 	}
@@ -117,6 +151,33 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 	return false;
 
 }
+
+void UCHarvestComponent::RemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
+{
+	
+	InInstanceToRemove->RemoveInstance(InInstanceIndex);
+	
+	if (OwnerCharacter->HasAuthority()) 
+	{
+		BroadCastRemoveFoliageInstance(InInstanceToRemove, InInstanceIndex);
+	}
+	
+	
+
+}
+
+void UCHarvestComponent::RequestRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
+{
+	
+	RemoveFoliageInstance(InInstanceToRemove, InInstanceIndex);
+}
+
+void UCHarvestComponent::BroadCastRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
+{
+	InInstanceToRemove->RemoveInstance(InInstanceIndex);
+
+}
+
 
 bool UCHarvestComponent::CheckIsDestructInstance(const FHitResult& Hit)
 {
@@ -133,51 +194,84 @@ bool UCHarvestComponent::CheckIsDestructInstance(const FHitResult& Hit)
 	return false;
 }
 
-void UCHarvestComponent::SwitchFoligeToDestructible(FString* hitIndex, float damageAmount)
+void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, float damageAmount, FTransform InSpawnTransform)
 {
-	UDataTable* DestructibleDataTable = nullptr;
-	if (GameInstance)
-	{
-		DestructibleDataTable = GameInstance->DestructibleDataTable;
-	}
+	
 
-	if (DestructibleDataTable != nullptr)
-	{
-
-		FDestructibleStruct* Row = DestructibleDataTable->FindRow<FDestructibleStruct>(FName(*hitIndex), FString(""));
-		if (Row && Row->DestructibleMesh)
+		UDataTable* DestructibleDataTable = nullptr;
+		if (GameInstance)
 		{
-			FVector SpawnLocation = SpawnTransform.GetLocation();
-			FRotator SpawnRotation = FRotator(SpawnTransform.GetRotation());
-			FActorSpawnParameters SpawnParams;
+			DestructibleDataTable = GameInstance->DestructibleDataTable;
+		}
 
-			// Spawn ADestructibleActor
-			ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
-			destructibleActor->SetUp(Row->DestructibleMesh, SpawnTransform, Row->MaxDamageThreshold, Row->DropItemRatio);
-			destructibleActor->GetDestructibleComponent()->ApplyRadiusDamage(damageAmount, destructibleActor->GetActorLocation(), 1.0f, 1.0f, true);
-			destructibleActor->AccumulateDamage(damageAmount);
+		if (DestructibleDataTable != nullptr)
+		{
+			FDestructibleStruct* Row = DestructibleDataTable->FindRow<FDestructibleStruct>(FName(*hitIndex), FString(""));
+			if (Row && Row->DestructibleMesh)
+			{
+				FVector SpawnLocation = InSpawnTransform.GetLocation();
+				FRotator SpawnRotation = FRotator(InSpawnTransform.GetRotation());
+				FActorSpawnParameters SpawnParams;
+
+				// Spawn ADestructibleActor
+				ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+				destructibleActor->SetUp(Row->DestructibleMesh, InSpawnTransform, Row->MaxDamageThreshold, Row->DropItemRatio);
+				destructibleActor->AccumulateDamage(damageAmount);
+				
+		
+
+			}
+			else
+			{
+				CDebug::Print(TEXT("Spawn Failed"));
+			}
 		}
 		else
 		{
-			CDebug::Print(TEXT("Spawn Failed"));
+			UE_LOG(LogTemp, Warning, TEXT("Data Table is null"));
 		}
+
+		
+	
+	
+}
+
+
+void UCHarvestComponent::RequestSwitchFoligeToDestructible_Implementation(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform)
+{
+	FString tempStr = FString::Printf(TEXT(" OnServer this Actor should apply  %f"), IndamageAmount);
+	CDebug::Print(tempStr);
+	SwitchFoligeToDestructible(InHitIndex, IndamageAmount, InSpawnTransform);
+
+}
+
+
+
+void UCHarvestComponent::BroadcastSwitchFoligeToDestructible_Implementation(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio, float InDamageAmount)
+{
+	//SwitchFoligeToDestructible(InHitIndex, IndamageAmount, InSpawnTransform);
+}
+
+
+
+
+
+void UCHarvestComponent::AddForceToDestructible(float IndamageAmount , class ACDestructibleActor* InDestructibleActor)
+{
+	if (OwnerCharacter->HasAuthority()&& InDestructibleActor)
+	{
+		InDestructibleActor->AccumulateDamage(IndamageAmount);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Data Table is null"));
-	}
-}
-
-void UCHarvestComponent::AddForceToDestructible(float damageAmount)
-{
-	
-	
-
-	if (DestructibleActor) 
-	{
-		DestructibleActor->GetDestructibleComponent()->ApplyRadiusDamage(damageAmount, DestructibleActor->GetActorLocation(), 1.0f, 1.0f, true);
-		DestructibleActor->AccumulateDamage(damageAmount);
+		RequestAddForceToDestructible(IndamageAmount , InDestructibleActor);
 	}
 	DestructibleActor = nullptr;
 
 }
+
+void UCHarvestComponent::RequestAddForceToDestructible_Implementation(float IndamageAmount, class ACDestructibleActor* InDestructibleActor)
+{
+	AddForceToDestructible(IndamageAmount , InDestructibleActor);
+}
+

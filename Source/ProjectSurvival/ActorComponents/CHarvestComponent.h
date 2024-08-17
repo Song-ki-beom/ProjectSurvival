@@ -29,23 +29,42 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void HarvestBoxTrace(float DamageAmount);
+	void HarvestBoxTrace(float InDamageAmount);
 
 private:
 	bool CheckIsFoliageInstance(const FHitResult& Hit);
+	void RemoveFoliageInstance(UInstancedStaticMeshComponent* InstanceToRemove, int32 InInstanceIndex);
 	bool CheckIsDestructInstance(const FHitResult& Hit);
-	void SwitchFoligeToDestructible(FString* hitIndex, float damageAmount);
-	void AddForceToDestructible(float damageAmount);
+	void SwitchFoligeToDestructible(const FString& hitIndex, float damageAmount, FTransform InSpawnTransform);
+	void AddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
 
 private:
 	float TraceDistance = 45.0f;
 	float TraceOffset = 100.0f;
-	FTransform SpawnTransform;
-	int32 InstanceIndex = NO_INDEX;
-
+	UPROPERTY(VisibleAnywhere, Replicated)
+		FString HitIndex;
+	UPROPERTY(VisibleAnywhere, Replicated)
+		float DamageAmount;
+	UPROPERTY(VisibleAnywhere, Replicated)
+		FTransform SpawnTransform;
+	UPROPERTY(VisibleAnyWhere, Replicated)
+		int32 InstanceIndex = NO_INDEX;
+	UPROPERTY(VisibleAnywhere, Replicated)
+		class  UInstancedStaticMeshComponent* InstanceToRemove;
+	
 	class UCGameInstance* GameInstance;
 	class ACharacter* OwnerCharacter;
 	class ACDestructibleActor* DestructibleActor;
-	
+	UFUNCTION(Server, Reliable)
+		void RequestSwitchFoligeToDestructible(const FString& InHitIndex,float IndamageAmount, FTransform InSpawnTransform);
+	UFUNCTION(Server, Reliable)
+		void RequestRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);
+	UFUNCTION(Server, Reliable)
+		void RequestAddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadCastRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSwitchFoligeToDestructible(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio, float InDamageAmount);
+
 
 };

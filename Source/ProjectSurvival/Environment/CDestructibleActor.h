@@ -34,29 +34,28 @@ public:
 	float GetAccumulatedDamage();
 	UFUNCTION()
 		void AccumulateDamage(float DamageAmount);
-	//UFUNCTION(Server, Reliable) //클라이언트 -> 서버  
-	UFUNCTION()
-		void OnServer_AccumulateDamage(float NewAccumulatedDamage);
-	//UFUNCTION(NetMulticast, Reliable) // 서버와 클라이언트 모두 
-	UFUNCTION()
-		void OnRep_AccumulateDamage(float NewAccumulatedDamage);
-	
 
 private:
 	void DestroyDestructibleActor();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastAccumulateDamage(float NewAccumulatedDamage);
+	UFUNCTION()
+		void OnRep_AccumulateDamage();
+	UFUNCTION()
+		void OnRef_DestructibleMeshSet();
 
+
+	
 private:
 	FTimerHandle TimerHandle;
-
-	
-	
-private:
 	UPROPERTY(VisibleAnywhere,Replicated)
 		class UDestructibleComponent* DestructibleComponent;
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRef_DestructibleMeshSet)
+		class UDestructibleMesh* DestructibleMesh;
 	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Replicated)
 		int32 DropItemRatio = 3;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Replicated)
 		float MaxDamageThreshold = 0.0f;
 };

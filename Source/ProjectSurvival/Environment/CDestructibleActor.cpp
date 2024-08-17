@@ -15,6 +15,8 @@ ACDestructibleActor::ACDestructibleActor()
 	PrimaryActorTick.bCanEverTick = false;
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
 	DestructibleComponent->SetupAttachment(GetRootComponent());
+
+	
 }
 
 void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -22,14 +24,22 @@ void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
 	DOREPLIFETIME(ACDestructibleActor, AccumulatedDamage);
+	DOREPLIFETIME(ACDestructibleActor, DropItemRatio);
+	DOREPLIFETIME(ACDestructibleActor, MaxDamageThreshold);
+	DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
+
 }
 
 void ACDestructibleActor::SetUp(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio)
 {
-	DestructibleComponent->SetDestructibleMesh(InDestructibleMesh);
+	DestructibleMesh = InDestructibleMesh;
+	DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
 	DestructibleComponent->SetWorldTransform(InstanceTransform);
 	MaxDamageThreshold = InMaxDamageThreshold;
 	DropItemRatio = InDropItemRatio;
+	FString debugText = TEXT("SetUp Finished");
+	CDebug::Print(debugText);
+
 }
 
 class UDestructibleComponent* ACDestructibleActor::GetDestructibleComponent()
@@ -46,46 +56,50 @@ float ACDestructibleActor::GetAccumulatedDamage()
 
 void ACDestructibleActor::AccumulateDamage(float DamageAmount)
 {
-	if (HasAuthority()) {
+	if (HasAuthority()) 
+	{
 		float prevAccumulatedDamage = AccumulatedDamage;
 		AccumulatedDamage += DamageAmount;
 		AccumulatedDamage = FMath::Clamp(AccumulatedDamage, 0.0f, MaxDamageThreshold);
-		FString tempStr = FString::Printf(TEXT(" OnServer this Actor Has AccumulatedDamage %f"), AccumulatedDamage);
-		CDebug::Print(tempStr);
 		int32 DropItemCount = (int32)((AccumulatedDamage - prevAccumulatedDamage) / DropItemRatio);
-		OnRep_AccumulateDamage(AccumulatedDamage);
 		if (DropItemCount > 0)
 		{
-			//Give Attacker Item by DropItemCount (인벤토리 구현하면)
+			//Give Attacker Item by DropItemCount (인벤토리 구현)
 		}
 
+
+		BroadcastAccumulateDamage(DamageAmount);
 
 
 		if (AccumulatedDamage >= MaxDamageThreshold)
 		{
 			DestructibleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			DestructibleComponent->SetEnableGravity(true);
-			DestructibleComponent->GetDestructibleMesh()->
-				GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACDestructibleActor::DestroyDestructibleActor, 3.0f, false);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACDestructibleActor::DestroyDestructibleActor, 3.0f, false);
 
 		}
 
 	}
-	else
-	{
-		OnServer_AccumulateDamage(AccumulatedDamage);
-	}
+	
 }
 
-void ACDestructibleActor::OnServer_AccumulateDamage(float NewAccumulatedDamage)
+void ACDestructibleActor::BroadcastAccumulateDamage_Implementation(float NewAccumulatedDamage)
 {
-	AccumulateDamage(NewAccumulatedDamage);
+	this->GetDestructibleComponent()->ApplyRadiusDamage(NewAccumulatedDamage, GetActorLocation(), 1.0f, 1.0f, true);
 }
 
-void ACDestructibleActor::OnRep_AccumulateDamage(float NewAccumulatedDamage)
+
+
+void ACDestructibleActor::OnRep_AccumulateDamage()
 {
-	FString tempStr = FString::Printf(TEXT(" OnClient Actor Has AccumulatedDamage %f"), NewAccumulatedDamage);
+	FString tempStr = FString::Printf(TEXT(" OnClient Destructible Actor Has AccumulatedDamage %f"), AccumulatedDamage);
 	CDebug::Print(tempStr);
+}
+
+void ACDestructibleActor::OnRef_DestructibleMeshSet()
+{
+	if (DestructibleComponent != nullptr)
+		DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
 }
 
 void ACDestructibleActor::DestroyDestructibleActor()
@@ -99,6 +113,8 @@ void ACDestructibleActor::DestroyDestructibleActor()
 void ACDestructibleActor::BeginPlay()
 {
 	Super::BeginPlay();
+	FString tempStr = FString::Printf(TEXT("DestrucibleActor Spawned!!!!!!!!!!!!!"));
+	CDebug::Print(tempStr);
 	DestructibleComponent->RegisterComponent();
 	DestructibleComponent->AddToRoot(); // Root Set 등록 ->가비지 컬렉션 삭제 방지
 }

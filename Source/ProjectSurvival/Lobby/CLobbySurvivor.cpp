@@ -1,4 +1,4 @@
-﻿#include "Lobby/CLobbySurvivor.h"
+#include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbySurvivorController.h"
 #include "Lobby/CSurvivorName.h"
 #include "Lobby/CLobbyGameMode.h"
