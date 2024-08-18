@@ -5,6 +5,8 @@
 #include "Weapon/CAttachment.h"
 #include "Weapon/CEquipment.h"
 #include "Weapon/CDoAction.h"
+#include "Net/UnrealNetwork.h"
+#include "Utility/CDebug.h"
 #include "GameFramework/Character.h"
 
 
@@ -40,13 +42,24 @@ void UCWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 }
 
+void UCWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCWeaponComponent, Type);
+	DOREPLIFETIME(UCWeaponComponent, PrevType);
+
+
+}
+
+
 void UCWeaponComponent::SetUnarmedMode()
 {
 	//if(!IsIdleMode()) return;   
-	if (GetEquipment() == nullptr) return;
+	/*if (GetEquipment() == nullptr) return;
 	
 	GetEquipment()->UnEquip();    
-	ChangeType(EWeaponType::Max); 
+	ChangeType(EWeaponType::Max); */
+	SetMode(EWeaponType::Max);
 }
 
 void UCWeaponComponent::SetAxeMode()
@@ -91,30 +104,64 @@ void UCWeaponComponent::DestroyWeapon()
 	}
 }
 
-void UCWeaponComponent::SetMode(EWeaponType InType)
+void UCWeaponComponent::SetMode(EWeaponType InNewType)
 {
-	if (Type == InType)  //같은 무기 두번 Press -> 무기 해제        
+	if (OwnerCharacter->HasAuthority()) 
 	{
-		SetUnarmedMode();
-		return;
+		
+		if (!Datas[(int32)InNewType]) return;
+		if (Datas[(int32)InNewType]->GetEquipment() == nullptr) return;
+
+
+		ChangeType(InNewType);
+		//Broadcast_Equip();
+
 	}
 
-	
-	if(!Datas[(int32)InType]) return;
-	if (Datas[(int32)InType]->GetEquipment() ==nullptr) return;
+	else
+	{
+		RequestSetMode(InNewType);
+	}
+}
 
-	Datas[(int32)InType]->GetEquipment()->Equip();   
-	ChangeType(InType);
-
+void UCWeaponComponent::RequestSetMode_Implementation(EWeaponType InType)
+{
+	SetMode(InType);
 }
 
 void UCWeaponComponent::ChangeType(EWeaponType InType)
 {
-	EWeaponType prevTYpe = Type;
+	PrevType = Type;
 	Type = InType;
 
 	if (OnWeaponTypeChanged.IsBound())
-		OnWeaponTypeChanged.Broadcast(prevTYpe, InType);
+		OnWeaponTypeChanged.Broadcast(PrevType, InType);
+
+}
+
+
+
+void UCWeaponComponent::Broadcast_Equip_Implementation()
+{
+	if (Type == PrevType || Type == EWeaponType::Max)  //무기해제       
+	{
+		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
+		return;
+	}
+
+		Datas[(int32)Type]->GetEquipment()->Equip();
+
+
+}
+
+void UCWeaponComponent::OnRef_PrevTypeChanged()
+{
+	CDebug::Print(TEXT("OnPrevTypeChanged"));
+}
+
+void UCWeaponComponent::OnRef_TypeChanged()
+{
+	CDebug::Print(TEXT("OnTypeChanged"));
 }
 
 ACAttachment* UCWeaponComponent::GetAttachment()

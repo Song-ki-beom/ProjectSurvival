@@ -22,13 +22,14 @@ public:
 private:
 	UFUNCTION()
 		void OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType);
-
+	UFUNCTION()
+		void OnRep_WeaponTypeChanged();
 protected: // ABP에서 사용할 변수
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		float Speed;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		float Direction;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Animation")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, ReplicatedUsing = OnRep_WeaponTypeChanged)
 		EWeaponType WeaponType = EWeaponType::Max;
 
 

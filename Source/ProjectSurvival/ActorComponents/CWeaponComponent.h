@@ -51,9 +51,16 @@ public:
 
 
 private:
-	void SetMode(EWeaponType InType);
+	void SetMode(EWeaponType InNewType);
 	void ChangeType(EWeaponType InType);
-
+	UFUNCTION(Server, Reliable)
+		void RequestSetMode(EWeaponType InType);
+	UFUNCTION(NetMulticast , Reliable)
+		void Broadcast_Equip();
+	UFUNCTION()
+		void OnRef_PrevTypeChanged();
+	UFUNCTION()
+		void OnRef_TypeChanged();
 public:
 	class ACAttachment* GetAttachment();
 	class UCEquipment* GetEquipment();
@@ -62,11 +69,12 @@ public:
 public:
 	FWeaponTypeChanged  OnWeaponTypeChanged;
 
-private: 
+private:  
 	class ACharacter* OwnerCharacter;
+	UPROPERTY(VisibleAnyWhere, Replicated , ReplicatedUsing = OnRef_PrevTypeChanged)
+	EWeaponType PrevType = EWeaponType::Max;
+	UPROPERTY(VisibleAnyWhere,Replicated , ReplicatedUsing = OnRef_TypeChanged)
 	EWeaponType Type = EWeaponType::Max;
-
-private:
 	UPROPERTY()
 		class UCWeaponData* Datas[(int32)EWeaponType::Max];
 

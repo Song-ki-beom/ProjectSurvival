@@ -3,12 +3,12 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Utility/CDebug.h"
+#include "Net/UnrealNetwork.h"
 #include "Character/CSurvivor.h"
 
 void UCSurvivorAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
-
 	OwnerCharacter = Cast<ACharacter>(TryGetPawnOwner());
 	if (OwnerCharacter == nullptr) 
 	{
@@ -44,8 +44,23 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
+void UCSurvivorAnimInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCSurvivorAnimInstance, WeaponType);
+
+
+}
+
+
 void UCSurvivorAnimInstance::OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType)
 {
 	WeaponType = InNewType;
+}
+
+void UCSurvivorAnimInstance::OnRep_WeaponTypeChanged()
+{
+	CDebug::Print(TEXT("On AnimInstance Weapon Changed"));
+
 }
 

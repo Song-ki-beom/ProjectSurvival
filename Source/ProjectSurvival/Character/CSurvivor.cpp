@@ -34,9 +34,8 @@ ACSurvivor::ACSurvivor()
 	BuildComponent = CreateDefaultSubobject<UCBuildComponent>(TEXT("Build"));
 	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("Moving"));
 	CustomizeComponent->SetIsReplicated(true);
-
-
-
+	WeaponComponent->SetIsReplicated(true);
+	
 	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
 	Head->SetIsReplicated(true);
