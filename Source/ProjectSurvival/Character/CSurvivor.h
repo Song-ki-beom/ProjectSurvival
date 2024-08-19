@@ -11,6 +11,8 @@
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
 
+
+
 UCLASS()
 class PROJECTSURVIVAL_API ACSurvivor : public ACharacter 
 {
@@ -54,6 +56,8 @@ public:
 	USkeletalMeshComponent* GetBodyMeshComponent() { return Body; }
 	USkeletalMeshComponent* GetHandsMeshComponent() { return Hands; }
 	USkeletalMeshComponent* GetAccessoryMeshComponent() { return Accessory; }
+
+
 
 private:
 	//Name  
@@ -109,5 +113,7 @@ private:
 		class UCBuildComponent* BuildComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCMovingComponent* MovingComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCInteractionComponent* InteractionComponent;
 };
 
