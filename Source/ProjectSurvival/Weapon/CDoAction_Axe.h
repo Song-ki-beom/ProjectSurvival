@@ -16,10 +16,13 @@ class PROJECTSURVIVAL_API UCDoAction_Axe : public UCDoAction
 public:
 	void DoAction()         override;
 	void Begin_DoAction()   override;
+
 	//void End_DoAction()     override;
 	//void OnUnEquip()		override;
 	void Slash();
 	
+
+
 private:
 	float HarvestDamage = 50.0f;
 

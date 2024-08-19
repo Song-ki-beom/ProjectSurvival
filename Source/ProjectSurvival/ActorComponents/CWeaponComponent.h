@@ -52,15 +52,21 @@ public:
 
 private:
 	void SetMode(EWeaponType InNewType);
+	void SetModeReplicate();
 	void ChangeType(EWeaponType InType);
 	UFUNCTION(Server, Reliable)
 		void RequestSetMode(EWeaponType InType);
 	UFUNCTION(NetMulticast , Reliable)
-		void Broadcast_Equip();
+		void Broadcast_Equip(const FString& InName);
+	UFUNCTION(Server, Reliable)
+		void RequestDoAction();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastPlayDoAction();
 	UFUNCTION()
 		void OnRef_PrevTypeChanged();
 	UFUNCTION()
 		void OnRef_TypeChanged();
+
 public:
 	class ACAttachment* GetAttachment();
 	class UCEquipment* GetEquipment();

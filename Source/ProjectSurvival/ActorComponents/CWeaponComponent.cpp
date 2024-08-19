@@ -29,6 +29,7 @@ void UCWeaponComponent::BeginPlay()
 			Datas[i] = nullptr;
 	}
 	
+
 }
 
 
@@ -55,10 +56,6 @@ void UCWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void UCWeaponComponent::SetUnarmedMode()
 {
 	//if(!IsIdleMode()) return;   
-	/*if (GetEquipment() == nullptr) return;
-	
-	GetEquipment()->UnEquip();    
-	ChangeType(EWeaponType::Max); */
 	SetMode(EWeaponType::Max);
 }
 
@@ -87,9 +84,33 @@ bool UCWeaponComponent::IsIdleMode()
 
 void UCWeaponComponent::DoAction()
 {
-	if (!!GetDoAction())
-		GetDoAction()->DoAction();
+
+	if (!!GetDoAction()) {
+		if (OwnerCharacter->HasAuthority())
+		{
+			BroadcastPlayDoAction();
+
+		}
+		else
+		{
+			RequestDoAction();
+		}
+
+	}
+
 }
+
+void UCWeaponComponent::RequestDoAction_Implementation()
+{
+	DoAction();
+
+}
+
+void UCWeaponComponent::BroadcastPlayDoAction_Implementation()
+{
+	GetDoAction()->DoAction();
+}
+
 
 void UCWeaponComponent::DestroyWeapon()
 {
@@ -106,6 +127,7 @@ void UCWeaponComponent::DestroyWeapon()
 
 void UCWeaponComponent::SetMode(EWeaponType InNewType)
 {
+
 	if (OwnerCharacter->HasAuthority()) 
 	{
 		
@@ -113,9 +135,24 @@ void UCWeaponComponent::SetMode(EWeaponType InNewType)
 		if (Datas[(int32)InNewType]->GetEquipment() == nullptr) return;
 
 
+		
+		
+		//FString Name = OwnerCharacter->GetName();
+		//Broadcast_Equip(Name);
+		
 		ChangeType(InNewType);
-		//Broadcast_Equip();
 
+		if (Type == EWeaponType::Max)  //무기해제       
+		{
+			Datas[(int32)PrevType]->GetEquipment()->UnEquip();
+			return;
+		}
+
+
+		if(PrevType != EWeaponType::Max)
+		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
+
+		Datas[(int32)Type]->GetEquipment()->Equip();
 	}
 
 	else
@@ -131,24 +168,38 @@ void UCWeaponComponent::RequestSetMode_Implementation(EWeaponType InType)
 
 void UCWeaponComponent::ChangeType(EWeaponType InType)
 {
-	PrevType = Type;
-	Type = InType;
+	if (Type == InType)
+	{
+		PrevType = Type;
+		Type = EWeaponType::Max;
+		if (OnWeaponTypeChanged.IsBound())
+			OnWeaponTypeChanged.Broadcast(PrevType, EWeaponType::Max);
+	}
+	else
+	{
+		PrevType = Type;
+		Type = InType;
+		if (OnWeaponTypeChanged.IsBound())
+			OnWeaponTypeChanged.Broadcast(PrevType, InType);
+	}
 
-	if (OnWeaponTypeChanged.IsBound())
-		OnWeaponTypeChanged.Broadcast(PrevType, InType);
+	
 
 }
 
 
 
-void UCWeaponComponent::Broadcast_Equip_Implementation()
+void UCWeaponComponent::Broadcast_Equip_Implementation(const FString& InName)
 {
+	FString Name = OwnerCharacter->GetName();
+	if (Name != InName) return;
 	if (Type == PrevType || Type == EWeaponType::Max)  //무기해제       
 	{
 		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
 		return;
 	}
 
+		
 		Datas[(int32)Type]->GetEquipment()->Equip();
 
 
@@ -161,8 +212,29 @@ void UCWeaponComponent::OnRef_PrevTypeChanged()
 
 void UCWeaponComponent::OnRef_TypeChanged()
 {
+	CDebug::Print(FString("NewWeaponType : %d",(int32)Type));
 	CDebug::Print(TEXT("OnTypeChanged"));
+	SetModeReplicate();
 }
+
+void UCWeaponComponent::SetModeReplicate() 
+{
+
+	if (OnWeaponTypeChanged.IsBound())
+		OnWeaponTypeChanged.Broadcast(PrevType, Type);
+	if (Type == EWeaponType::Max)  //무기해제       
+	{
+		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
+		return;
+	}
+	
+	if (PrevType != EWeaponType::Max)
+		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
+
+	Datas[(int32)Type]->GetEquipment()->Equip();
+	
+
+};
 
 ACAttachment* UCWeaponComponent::GetAttachment()
 {
