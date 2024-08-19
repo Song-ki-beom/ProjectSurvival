@@ -4,23 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interface/InteractionInterface.h"
 #include "CInterfaceTestActor.generated.h"
 
 UCLASS()
-class PROJECTSURVIVAL_API ACInterfaceTestActor : public AActor
+class PROJECTSURVIVAL_API ACInterfaceTestActor : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ACInterfaceTestActor();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void BeginFocus() override;
+	virtual void EndFocus()override;
+	virtual void BeginInteract() override; //인터렉션까지의 타이머 설정
+	virtual void EndInteract() override;
+	virtual void Interact() override; // 인터렉트가 준비되면 바로 Interact 시작
+
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "Test Actor")
+		class UStaticMeshComponent* Mesh;
 
 };

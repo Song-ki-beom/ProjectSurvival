@@ -20,14 +20,15 @@ public:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	bool IsInteracting() const;
+
 
 protected:
 	virtual void BeginPlay() override;
-
-
 	void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
+	void BeginInteract();
 	void EndInteract();
 	void Interact();
 

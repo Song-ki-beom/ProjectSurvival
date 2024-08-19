@@ -2,12 +2,17 @@
 
 
 #include "World/CInterfaceTestActor.h"
-
+#include "Utility/CDebug.h"
 // Sets default values
 ACInterfaceTestActor::ACInterfaceTestActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	
 	PrimaryActorTick.bCanEverTick = true;
+
+	Mesh = CreateAbstractDefaultSubobject<UStaticMeshComponent>("Mesh");
+
+	SetRootComponent(Mesh);
+
 
 }
 
@@ -22,6 +27,40 @@ void ACInterfaceTestActor::BeginPlay()
 void ACInterfaceTestActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+void ACInterfaceTestActor::BeginFocus()
+{
+	if (Mesh)
+	{
+		//깊이 버퍼에 메쉬를 등록 
+		Mesh->SetRenderCustomDepth(true);
+	}
+}
+
+void ACInterfaceTestActor::EndFocus()
+{
+	if (Mesh)
+	{
+		Mesh->SetRenderCustomDepth(false);
+	}
+}
+
+void ACInterfaceTestActor::BeginInteract()
+{
+	CDebug::Print("상호작용 시작됨");
+}
+
+void ACInterfaceTestActor::EndInteract()
+{
+	CDebug::Print("상호작용 끝남");
+
+}
+
+void ACInterfaceTestActor::Interact()
+{
+	CDebug::Print("상호작용!!");
 
 }
 

@@ -26,6 +26,9 @@ ACSurvivor::ACSurvivor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
+	//인터렉션 세팅
+	BaseEyeHeight = 75.0f; //Pawn의 Default 눈 높이 세팅
+
 
 
 	//컴포넌트 세팅

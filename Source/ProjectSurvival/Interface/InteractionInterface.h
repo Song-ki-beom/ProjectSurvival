@@ -27,7 +27,8 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 		InteractableType(EInteractableType::Pickup),
 		Name(FText::GetEmpty()),
 		Action(FText::GetEmpty()),
-		Quantity(0)
+		Quantity(0),
+		InteractionDuration(0.0f)
 		{
 		
 
@@ -46,6 +47,9 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 	UPROPERTY(EditInstanceOnly)
 	int8 Quantity;
 
+	UPROPERTY(EditInstanceOnly)
+	float InteractionDuration;
+
 };
 
 
@@ -61,7 +65,7 @@ struct FInteractionData // 상호작용 자체에 대한 정보
 	UPROPERTY()
 	AActor* CurrentInteractable; //최근에 발견한 상호작용 가능 액터
 
-	float LastInteractionCheckTime; // 인터렉션 Duration , frequency 
+	float LastInteractionCheckTime; // 인터렉션 검출 frequency 
 
 };
 
