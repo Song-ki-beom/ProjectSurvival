@@ -28,7 +28,7 @@ public:
 
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Test Actor")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Test Actor")
 		class UStaticMeshComponent* Mesh;
 
 };

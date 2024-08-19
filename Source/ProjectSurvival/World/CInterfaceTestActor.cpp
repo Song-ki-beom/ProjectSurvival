@@ -36,31 +36,41 @@ void ACInterfaceTestActor::BeginFocus()
 	{
 		//깊이 버퍼에 메쉬를 등록 
 		Mesh->SetRenderCustomDepth(true);
+		Mesh->bRenderCustomDepth = true;
+		Mesh->MarkRenderStateDirty();
+		Mesh->SetCustomDepthStencilValue(252);
+		CDebug::Print("SetRenderCustomDepth True");
+
 	}
+
 }
 
 void ACInterfaceTestActor::EndFocus()
 {
 	if (Mesh)
 	{
-		Mesh->SetRenderCustomDepth(false);
+		//Mesh->SetRenderCustomDepth(false);
+		//Mesh->SetCustomDepthStencilValue(0);
+		CDebug::Print("SetRenderCustomDepth False");
+
 	}
+
 }
 
 void ACInterfaceTestActor::BeginInteract()
 {
-	CDebug::Print("상호작용 시작됨");
+	CDebug::Print("Start InterAction");
 }
 
 void ACInterfaceTestActor::EndInteract()
 {
-	CDebug::Print("상호작용 끝남");
+	CDebug::Print("End InterAction");
 
 }
 
 void ACInterfaceTestActor::Interact()
 {
-	CDebug::Print("상호작용!!");
+	CDebug::Print("Do Interaction!!");
 
 }
 

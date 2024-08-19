@@ -40,6 +40,16 @@ bool UCInteractionComponent::IsInteracting() const
 	return OwnerCharacter->GetWorldTimerManager().IsTimerActive(TimerHandleInteraction); //상호작용 시작으로부터 타이머 설정 
 }
 
+void UCInteractionComponent::DoInteract()
+{
+	BeginInteract();
+}
+
+void UCInteractionComponent::FinishInteract()
+{
+	EndInteract();
+}
+
 //탐색 함수 
 void UCInteractionComponent::PerformInteractionCheck()
 {
@@ -168,7 +178,7 @@ void UCInteractionComponent::EndInteract()
 
 	if (IsValid(TargetInteractable.GetObject()))
 	{
-		TargetInteractable->EndFocus();
+		TargetInteractable->EndInteract();
 	}
 
 }

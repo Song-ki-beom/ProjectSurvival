@@ -204,6 +204,16 @@ void ACSurvivor::HoldAxe()
 	WeaponComponent->SetAxeMode();
 }
 
+void ACSurvivor::StartInteract()
+{
+	InteractionComponent->DoInteract();
+}
+
+void ACSurvivor::FinishInteract()
+{
+	InteractionComponent->FinishInteract();
+}
+
 void ACSurvivor::Build()
 {
 	BuildComponent->BuildSpawnedStructure();

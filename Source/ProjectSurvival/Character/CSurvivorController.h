@@ -28,6 +28,7 @@ private:
 	void SelectQ();
 	void SelectW();
 	void SelectE();
+	void ReleaseE();
 	void SelectA();
 	void SelectS();
 	void SelectD();

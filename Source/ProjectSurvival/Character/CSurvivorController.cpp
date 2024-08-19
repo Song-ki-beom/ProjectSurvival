@@ -69,6 +69,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("SelectQ", IE_Pressed, this, &ACSurvivorController::SelectQ);
 		InputComponent->BindAction("SelectW", IE_Pressed, this, &ACSurvivorController::SelectW);
 		InputComponent->BindAction("SelectE", IE_Pressed, this, &ACSurvivorController::SelectE);
+		InputComponent->BindAction("SelectE", IE_Released, this, &ACSurvivorController::ReleaseE);
 		InputComponent->BindAction("SelectA", IE_Pressed, this, &ACSurvivorController::SelectA);
 		InputComponent->BindAction("SelectS", IE_Pressed, this, &ACSurvivorController::SelectS);
 		InputComponent->BindAction("SelectD", IE_Pressed, this, &ACSurvivorController::SelectD);
@@ -152,6 +153,17 @@ void ACSurvivorController::SelectE()
 		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::E);
 		ToggleBuildWidget();
 	}
+	else 
+	{
+		Survivor->StartInteract();
+	}
+
+}
+
+void ACSurvivorController::ReleaseE()
+{
+	Survivor->FinishInteract();
+
 }
 
 void ACSurvivorController::SelectA()

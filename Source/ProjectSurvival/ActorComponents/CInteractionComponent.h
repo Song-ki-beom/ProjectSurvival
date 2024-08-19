@@ -21,8 +21,8 @@ public:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	bool IsInteracting() const;
-
-
+	void DoInteract();
+	void FinishInteract();
 protected:
 	virtual void BeginPlay() override;
 	void PerformInteractionCheck();

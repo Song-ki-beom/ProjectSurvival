@@ -38,6 +38,12 @@ public:
 	void SubAction();
 	void HoldAxe();
 
+	//Interact
+	void StartInteract();
+	void FinishInteract();
+
+
+	//Build
 	void Build();
 	void CancleBuild();
 
