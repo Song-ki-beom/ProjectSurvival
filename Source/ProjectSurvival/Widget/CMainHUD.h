@@ -23,7 +23,7 @@ public:
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
-
+	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCMainMenu> MainMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")

@@ -15,6 +15,14 @@ void ACMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	if (InteractionWidgetClass)
+	{
+		InteractionWidget = CreateWidget<UCInteractionWidget>(GetWorld(), InteractionWidgetClass);
+		InteractionWidget->AddToViewport(-1); //그보다 아래
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
 	//위젯들 등록 
 	if (MainMenuClass)
 	{
@@ -23,12 +31,7 @@ void ACMainHUD::BeginPlay()
 		MainMenuWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
-	if (InteractionWidget)
-	{
-		InteractionWidget = CreateWidget<UCInteractionWidget>(GetWorld(), InteractionWidgetClass);
-		InteractionWidget->AddToViewport(-1); //그보다 아래
-		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
+	
 
 
 

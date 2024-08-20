@@ -41,7 +41,7 @@ protected:
 	class UTextBlock* KeyPressText;
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
 	class UProgressBar* InteractionProgressBar;
-	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
+	UPROPERTY(VisibleAnywhere, Category = "Interaction widget | Interactable Data") //일시적으로 BindWidget 뺌 디버그를 위해
 	float CurrentInteractionDuration;
 
 
