@@ -24,11 +24,16 @@ public:
 	virtual void EndFocus()override;
 	virtual void BeginInteract() override; //인터렉션까지의 타이머 설정
 	virtual void EndInteract() override;
-	virtual void Interact() override; // 인터렉트가 준비되면 바로 Interact 시작
+	virtual void Interact(class UCInteractionComponent* InteractComponent) override; // 인터렉트가 준비되면 바로 Interact 시작
 
 
 protected:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Test Actor")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interface Actor")
 		class UStaticMeshComponent* Mesh;
+
+	//상위 인터페이스 정의 부분에 있는 FInteractableData InteractableData 에  할당할 변수 , 에디터에서 InstanceInteractableData를 세팅하고 BeginPlay에서  InteractableData에 재할당
+	UPROPERTY(EditInstanceOnly,Category = "Interface Actor")
+	FInteractableData InstanceInteractableData; 
+
 
 };

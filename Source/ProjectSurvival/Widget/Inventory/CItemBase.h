@@ -50,24 +50,24 @@ public:
 protected:
 	bool operator == (const FName& OtherID) const //연사잔 오버로딩
 	{
-		return ID == OtherID;
+		return this->ID == OtherID;
 	}
 
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = "Item Data" , meta =(UIMin=1 ,UIMax = 100))
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 	int32 Quantity; //같은 아이템 항목에서 개수를 분리하는 등의 액션을 취하기 위해 따로 수량 변수 사용 (ex.) 나무 뗄감 x3 에서 한개 떼어서 버릴때)
-	UPROPERTY(EditAnywhere, Category = "Item Data")
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 		FName ID;
-	UPROPERTY(EditAnywhere, Category = "Item Data")
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 		EItemType ItemType;
-	UPROPERTY(EditAnywhere, Category = "Item Data")
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 		FItemStats ItemStats;
-	UPROPERTY(EditAnywhere, Category = "Item Data")
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 		FItemTextData TextData;
-	UPROPERTY(EditAnywhere, Category = "Item Data")
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 		FItemNumericData NumericData;
-	UPROPERTY(EditAnywhere, Category = "Item Data")
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 		FItemAssetData AssetData;
 
 };

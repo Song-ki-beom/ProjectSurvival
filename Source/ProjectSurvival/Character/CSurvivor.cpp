@@ -124,6 +124,7 @@ void ACSurvivor::BeginPlay()
 {
 	Super::BeginPlay();
 
+
 	Pants->SetMasterPoseComponent(GetMesh());
 	Boots->SetMasterPoseComponent(GetMesh());
 	Accessory->SetMasterPoseComponent(GetMesh());

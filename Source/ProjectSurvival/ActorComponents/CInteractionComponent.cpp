@@ -2,6 +2,8 @@
 
 #include "ActorComponents/CInteractionComponent.h"
 #include "GameFramework/Character.h"
+#include "Character/CSurvivorController.h"
+#include "Widget/CMainHUD.h"
 #include "DrawDebugHelpers.h"
 
 UCInteractionComponent::UCInteractionComponent()
@@ -20,6 +22,14 @@ void UCInteractionComponent::BeginPlay()
 	Super::BeginPlay();
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 
+	if (OwnerCharacter) 
+	{
+		ACSurvivorController* playerController = Cast<ACSurvivorController>(OwnerCharacter->GetController());
+		if (playerController)
+		{
+			HUD = Cast<ACMainHUD>(playerController->GetHUD());
+		}
+	}
 }
 
 
@@ -77,9 +87,9 @@ void UCInteractionComponent::PerformInteractionCheck()
 			//UInteractionInterface 를 상속받고 있는지 검출(상호작용 가능한 액터인지)
 			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 			{
-				const float Distance = (TraceStart - TraceHit.ImpactPoint).Size();
+				
 
-				if (TraceHit.GetActor() != InteractionData.CurrentInteractable && Distance <= InteractionCheckDistance) //상호작용 범위면
+				if (TraceHit.GetActor() != InteractionData.CurrentInteractable) 
 				{
 
 					FoundInteractable(TraceHit.GetActor());
@@ -116,6 +126,7 @@ void UCInteractionComponent::FoundInteractable(AActor* NewInteractable)
 
 	InteractionData.CurrentInteractable = NewInteractable; //기록 갱신 
 	TargetInteractable = NewInteractable;
+	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData); //인터렉션 위젯 갱신 
 	TargetInteractable->BeginFocus(); //지금 검출해서 찾은 것으로 Focus 시작 
 
 
@@ -138,6 +149,7 @@ void UCInteractionComponent::NoInteractableFound()
 		}
 
 		//상호작용 위젯을 숨김 구현 부분
+		HUD->HideInteractionWidget(); 
 
 		//상호작용 관련 액터 초기화 (최근 액터 , 현재 타겟 액터)
 		InteractionData.CurrentInteractable = nullptr;
@@ -188,7 +200,7 @@ void UCInteractionComponent::Interact()
 	OwnerCharacter->GetWorldTimerManager().ClearTimer(TimerHandleInteraction);
 	if (IsValid(TargetInteractable.GetObject()))
 	{
-		TargetInteractable->Interact();
+		TargetInteractable->Interact(this);
 	}
 
 }

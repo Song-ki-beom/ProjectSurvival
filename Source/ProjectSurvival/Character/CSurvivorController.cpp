@@ -37,7 +37,7 @@ ACSurvivorController::ACSurvivorController()
 void ACSurvivorController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	//HUD =GetHUD();
 	this->SetInputMode(FInputModeGameOnly());
 	GetSurvivor();
 	SetupInputFunction();

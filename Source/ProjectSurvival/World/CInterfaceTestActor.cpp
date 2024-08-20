@@ -9,7 +9,7 @@ ACInterfaceTestActor::ACInterfaceTestActor()
  	
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh = CreateAbstractDefaultSubobject<UStaticMeshComponent>("Mesh");
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 
 	SetRootComponent(Mesh);
 
@@ -20,7 +20,9 @@ ACInterfaceTestActor::ACInterfaceTestActor()
 void ACInterfaceTestActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//인터페이스에서의 InteractableData 할당 
+	InteractableData = InstanceInteractableData;
+
 }
 
 // Called every frame
@@ -37,7 +39,7 @@ void ACInterfaceTestActor::BeginFocus()
 		//깊이 버퍼에 메쉬를 등록 
 		Mesh->SetRenderCustomDepth(true);
 		Mesh->bRenderCustomDepth = true;
-		Mesh->MarkRenderStateDirty();
+		//Mesh->MarkRenderStateDirty();
 		Mesh->SetCustomDepthStencilValue(252);
 		CDebug::Print("SetRenderCustomDepth True");
 
@@ -49,8 +51,8 @@ void ACInterfaceTestActor::EndFocus()
 {
 	if (Mesh)
 	{
-		//Mesh->SetRenderCustomDepth(false);
-		//Mesh->SetCustomDepthStencilValue(0);
+		Mesh->SetRenderCustomDepth(false);
+		Mesh->SetCustomDepthStencilValue(0);
 		CDebug::Print("SetRenderCustomDepth False");
 
 	}
@@ -68,7 +70,7 @@ void ACInterfaceTestActor::EndInteract()
 
 }
 
-void ACInterfaceTestActor::Interact()
+void ACInterfaceTestActor::Interact(class UCInteractionComponent* InteractComponent)
 {
 	CDebug::Print("Do Interaction!!");
 

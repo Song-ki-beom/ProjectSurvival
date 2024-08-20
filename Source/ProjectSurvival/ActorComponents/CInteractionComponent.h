@@ -46,6 +46,7 @@ protected:
 
 private:
 	class ACharacter* OwnerCharacter;
+	class ACMainHUD* HUD;
 
 		
 };

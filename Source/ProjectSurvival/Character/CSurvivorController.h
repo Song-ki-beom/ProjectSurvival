@@ -18,6 +18,7 @@ protected:
 public:
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 
+
 private:
 	// Init
 	void GetSurvivor();
@@ -43,8 +44,11 @@ private:
 	void SubAction();
 	void HoldAxe();
 
+
+
 private:
 	class ACSurvivor* Survivor;
+	class ACMainHUD* HUD;
 
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> BuildWidgetClass;
