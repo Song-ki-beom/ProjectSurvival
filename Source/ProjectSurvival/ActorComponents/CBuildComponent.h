@@ -22,7 +22,7 @@ public:
 
 public:
 	void SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectW();
+	void SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void SelectE();
 	void SelectA();
 	void SelectS();
@@ -37,6 +37,7 @@ public:
 private:
 	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void BuildStartFoundation();
+	void BuildStartWall();
 	void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
 
 private:
@@ -48,6 +49,8 @@ private:
 		class ACStructure* SpawnedStructure;
 	UPROPERTY()
 		class ACStructure_Foundation* SpawnedFoundation;
+	UPROPERTY()
+		class ACStructure_Wall* SpawnedWall;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;

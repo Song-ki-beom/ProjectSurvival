@@ -14,8 +14,8 @@ public:
 
 
 
-protected:
-	virtual void Tick(float DeltaTime) override;
+//protected:
+//	virtual void Tick(float DeltaTime) override;
 
 public:
 	void CheckHeight();
@@ -27,6 +27,15 @@ public:
 
 	void CheckRight();
 	bool GetFoundationRightHit() { return bRightHit; }
+
+	void CheckLeft();
+	bool GetFoundationLeftHit() { return bLeftHit; }
+
+	void CheckBackward();
+	bool GetFoundationBackwardHit() { return bBackwardHit; }
+
+	void CheckForward();
+	bool GetFoundationForwardHit() { return bForwardHit; }
 
 	void DestroyPreviewBox();
 
@@ -41,20 +50,23 @@ protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;
 	UPROPERTY(EditAnywhere)
-		class UBoxComponent* TopBox;
+		class UBoxComponent* ForwardBox;
 	UPROPERTY(EditAnywhere)
-		class UBoxComponent* BottomBox;
+		class UBoxComponent* BackwardBox;
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* LeftBox;
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* RightBox;
-	UPROPERTY()
-		UPrimitiveComponent* RightComponent;
+	//UPROPERTY()
+	//	UPrimitiveComponent* RightComponent;
 
 	float FoundationHeight;
 	bool bHeightHit;
 	bool bCenterHit;
 	bool bRightHit;
+	bool bLeftHit;
+	bool bBackwardHit;
+	bool bForwardHit;
 
 	FRotator CenterRotation;
 };

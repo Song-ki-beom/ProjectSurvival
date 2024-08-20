@@ -140,8 +140,17 @@ void ACSurvivorController::SelectW()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::W);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::W)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::W);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::W);
+			Survivor->SelectStructure(ESelectedStructure::W, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -219,6 +228,12 @@ void ACSurvivorController::TestP()
 	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;
 	EBuildStructureElement structureElem = structureInfo->StructureElement;
 	BuildWidget->SaveStructureInfo(ESelectedStructure::Q, texture, structureClass, structureElem);
+
+	FBuildStructureInfo* structureInfo2 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodWall", TEXT("WoodWall"));
+	UTexture2D* texture2 = structureInfo2->StructureTexture;
+	TSubclassOf<ACStructure> structureClass2 = structureInfo2->StructureClass;
+	EBuildStructureElement structureElem2 = structureInfo2->StructureElement;
+	BuildWidget->SaveStructureInfo(ESelectedStructure::W, texture2, structureClass2, structureElem2);
 }
 
 void ACSurvivorController::DoAction()
