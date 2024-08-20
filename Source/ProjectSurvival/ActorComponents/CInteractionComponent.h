@@ -46,6 +46,7 @@ protected:
 
 private:
 	class ACharacter* OwnerCharacter;
+	UPROPERTY(Replicated)
 	class ACMainHUD* HUD;
 
 		

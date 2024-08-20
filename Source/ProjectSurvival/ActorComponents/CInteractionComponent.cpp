@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/CMainHUD.h"
+#include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 
 UCInteractionComponent::UCInteractionComponent()
@@ -42,6 +43,14 @@ void UCInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		PerformInteractionCheck(); //검출 
 	}
+
+}
+
+void UCInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCInteractionComponent, HUD);
+	
 
 }
 
@@ -126,7 +135,8 @@ void UCInteractionComponent::FoundInteractable(AActor* NewInteractable)
 
 	InteractionData.CurrentInteractable = NewInteractable; //기록 갱신 
 	TargetInteractable = NewInteractable;
-	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData); //인터렉션 위젯 갱신 
+	if(HUD)
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData); //인터렉션 위젯 갱신 
 	TargetInteractable->BeginFocus(); //지금 검출해서 찾은 것으로 Focus 시작 
 
 
@@ -149,7 +159,8 @@ void UCInteractionComponent::NoInteractableFound()
 		}
 
 		//상호작용 위젯을 숨김 구현 부분
-		HUD->HideInteractionWidget(); 
+		if (HUD)
+			HUD->HideInteractionWidget(); 
 
 		//상호작용 관련 액터 초기화 (최근 액터 , 현재 타겟 액터)
 		InteractionData.CurrentInteractable = nullptr;

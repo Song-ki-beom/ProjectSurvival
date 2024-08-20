@@ -48,7 +48,7 @@ public:
 	virtual void Use(ACSurvivor* Character); //아이템 사용 
 
 protected:
-	bool operator == (const FName& OtherID) const //연사잔 오버로딩
+	bool operator == (const FName& OtherID) const //연산자 오버로딩
 	{
 		return this->ID == OtherID;
 	}

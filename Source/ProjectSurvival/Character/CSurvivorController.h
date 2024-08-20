@@ -48,7 +48,6 @@ private:
 
 private:
 	class ACSurvivor* Survivor;
-	class ACMainHUD* HUD;
 
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> BuildWidgetClass;
