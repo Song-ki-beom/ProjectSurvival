@@ -85,7 +85,7 @@ void UCInteractionComponent::PerformInteractionCheck()
 	if (LookDirection > 0)
 	{ // 같은 방향일때만 Trace 
 
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, 1.0f, 0, 3.0f);
+		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, 1.0f, 0, 3.0f);
 
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(OwnerCharacter);
