@@ -6,8 +6,10 @@
 ACStructure_Wall::ACStructure_Wall()
 {
 	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
+	UpBox = CreateDefaultSubobject<UBoxComponent>("UpBox");
 
 	PreviewBox->SetupAttachment(StaticMesh);
+	UpBox->SetupAttachment(StaticMesh);
 }
 
 void ACStructure_Wall::CheckCenter()
@@ -16,7 +18,7 @@ void ACStructure_Wall::CheckCenter()
 	FVector centerBoxLocation = this->GetActorLocation();
 	FVector centerBoxSize = FVector(135, 10, 135);
 	FRotator centerBoxOrientation;
-	if (!bDownHit)
+	if (!bDown_FoundationHit && !bDown_WallHit)
 		centerBoxOrientation = GetOwner()->GetActorRotation();
 	else
 		centerBoxOrientation = CenterRotation;
@@ -41,17 +43,18 @@ void ACStructure_Wall::CheckCenter()
 	);
 }
 
-void ACStructure_Wall::CheckDown()
+void ACStructure_Wall::CheckDown_Foundation()
 {
 	FHitResult downHitResult;
 	FVector downStartLocation = this->GetActorLocation();
 	FVector downEndLocation = this->GetActorLocation() + this->GetActorUpVector() * -250.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> downObjectTypeQuery;
 	downObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel3));
+
 	TArray<AActor*> downBoxActorsToIgnore;
 	downBoxActorsToIgnore.Add(this);
 
-	bDownHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+	bDown_FoundationHit = UKismetSystemLibrary::LineTraceSingleForObjects(
 		GetWorld(),
 		downStartLocation,
 		downEndLocation,
@@ -65,11 +68,45 @@ void ACStructure_Wall::CheckDown()
 		FLinearColor::Red
 	);
 
-	if (bDownHit)
+	if (bDown_FoundationHit)
 	{
 		DrawDebugLine(GetWorld(), downHitResult.GetComponent()->GetComponentLocation(), downHitResult.GetComponent()->GetComponentLocation() + downHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(downHitResult.GetComponent()->GetComponentLocation() + downHitResult.GetComponent()->GetForwardVector() * 15.0f + downHitResult.ImpactNormal * 225.0f);
 		CenterRotation = downHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
+		this->SetActorRotation(CenterRotation);
+	}
+}
+
+void ACStructure_Wall::CheckDown_Wall()
+{
+	FHitResult downHitResult;
+	FVector downStartLocation = this->GetActorLocation();
+	FVector downEndLocation = this->GetActorLocation() + this->GetActorUpVector() * -250.0f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> downObjectTypeQuery;
+	downObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+
+	TArray<AActor*> downBoxActorsToIgnore;
+	downBoxActorsToIgnore.Add(this);
+
+	bDown_WallHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		downStartLocation,
+		downEndLocation,
+		downObjectTypeQuery,
+		false,
+		downBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		downHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+
+	if (bDown_WallHit)
+	{
+		DrawDebugLine(GetWorld(), downHitResult.GetComponent()->GetComponentLocation(), downHitResult.GetComponent()->GetComponentLocation() + downHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		this->SetActorLocation(downHitResult.GetComponent()->GetComponentLocation() + downHitResult.GetComponent()->GetForwardVector() + downHitResult.ImpactNormal * 170.0f);
+		CenterRotation = downHitResult.GetComponent()->GetComponentRotation();
 		this->SetActorRotation(CenterRotation);
 	}
 }

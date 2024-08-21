@@ -16,16 +16,22 @@ public:
 	void CheckCenter();
 	bool GetWallCenterHit() { return bCenterHit; }
 
-	void CheckDown();
-	bool GetWallDownHit() { return bDownHit; }
+	void CheckDown_Foundation();
+	bool GetWallDown_FoundationHit() { return bDown_FoundationHit; }
+
+	void CheckDown_Wall();
+	bool GetWallDown_WallHit() { return bDown_WallHit; }
 
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* UpBox;
 
 private:
 	bool bCenterHit;
-	bool bDownHit;
+	bool bDown_FoundationHit;
+	bool bDown_WallHit;
 
 	FRotator CenterRotation;
 };

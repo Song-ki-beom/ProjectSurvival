@@ -244,43 +244,43 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 
 	case ESelectedStructure::E:
 	{
-		BuildComponent->SelectE();
+		BuildComponent->SelectE(InClass, InElement);
 		break;
 	}
 
 	case ESelectedStructure::A:
 	{
-		BuildComponent->SelectA();
+		BuildComponent->SelectA(InClass, InElement);
 		break;
 	}
 
 	case ESelectedStructure::S:
 	{
-		BuildComponent->SelectS();
+		BuildComponent->SelectS(InClass, InElement);
 		break;
 	}
 
 	case ESelectedStructure::D:
 	{
-		BuildComponent->SelectD();
+		BuildComponent->SelectD(InClass, InElement);
 		break;
 	}
 
 	case ESelectedStructure::Z:
 	{
-		BuildComponent->SelectZ();
+		BuildComponent->SelectZ(InClass, InElement);
 		break;
 	}
 
 	case ESelectedStructure::X:
 	{
-		BuildComponent->SelectX();
+		BuildComponent->SelectX(InClass, InElement);
 		break;
 	}
 
 	case ESelectedStructure::C:
 	{
-		BuildComponent->SelectC();
+		BuildComponent->SelectC(InClass, InElement);
 		break;
 	}
 	}

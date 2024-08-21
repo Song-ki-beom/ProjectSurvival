@@ -23,13 +23,13 @@ public:
 public:
 	void SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectE();
-	void SelectA();
-	void SelectS();
-	void SelectD();
-	void SelectZ();
-	void SelectX();
-	void SelectC();
+	void SelectE(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectA(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectS(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectD(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectZ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectX(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectC(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void BuildSpawnedStructure();
 	void ClearSpawnedStructure();
 	bool CheckIsBuilding() { return bIsBuilding; }
@@ -38,6 +38,7 @@ private:
 	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void BuildStartFoundation();
 	void BuildStartWall();
+	void BuildStartCeiling();
 	void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
 
 private:
@@ -51,6 +52,8 @@ private:
 		class ACStructure_Foundation* SpawnedFoundation;
 	UPROPERTY()
 		class ACStructure_Wall* SpawnedWall;
+	UPROPERTY()
+		class ACStructure_Ceiling* SpawnedCeiling;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;
