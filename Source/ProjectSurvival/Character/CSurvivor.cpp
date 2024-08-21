@@ -238,7 +238,7 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 
 	case ESelectedStructure::W:
 	{
-		BuildComponent->SelectW();
+		BuildComponent->SelectW(InClass, InElement);
 		break;
 	}
 

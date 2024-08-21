@@ -1,8 +1,11 @@
 #include "ActorComponents/CBuildComponent.h"
 #include "Build/CStructure_Foundation.h"
+#include "Build/CStructure_Wall.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "DrawDebugHelpers.h"
 #include "Utility/CDebug.h"
 
 UCBuildComponent::UCBuildComponent()
@@ -64,7 +67,10 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	case EBuildStructureElement::TriFoundation:
 		break;
 	case EBuildStructureElement::Wall:
+	{
+		BuildStartWall();
 		break;
+	}
 	case EBuildStructureElement::WindowWall:
 		break;
 	case EBuildStructureElement::TriLeftWall:
@@ -103,16 +109,13 @@ void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructure
 	CDebug::Print("SelectQ");
 
 	SpawnBuildStructureElement(InClass, InElement);
-	//bIsBuildable = true;
-	//SpawnedStructure->AttachToComponent(Survivor->GetCameraComponent(), FAttachmentTransformRules::KeepWorldTransform);
-	//SpawnedStructure->GetStaticMesh()->SetMaterial(0, GreenMaterial);
-	//SpawnedStructure->SaveOrigin
-
 }
 
-void UCBuildComponent::SelectW()
+void UCBuildComponent::SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
 	CDebug::Print("SelectW");
+
+	SpawnBuildStructureElement(InClass, InElement);
 }
 
 void UCBuildComponent::SelectE()
@@ -158,15 +161,15 @@ void UCBuildComponent::BuildSpawnedStructure()
 		return;
 	}
 	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(SpawnedStructure->GetClass(), SpawnedStructure->GetActorLocation(), SpawnedStructure->GetActorRotation());
-	UPrimitiveComponent* primitiveComponent = Cast<UPrimitiveComponent>(buildstructure->GetRootComponent());
-	primitiveComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
-	//DestroyChildComponent(buildstructure, StructureElement);
+	DestroyChildComponent(buildstructure, StructureElement);
+	bIsSnapped = false;
 }
 
 void UCBuildComponent::ClearSpawnedStructure()
 {
 	if (SpawnedStructure)
 		SpawnedStructure->Destroy();
+	bIsSnapped = false;
 }
 
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
@@ -177,8 +180,8 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 	{
 	case EBuildStructureElement::Foundation:
 	{
-		if (IsValid(SpawnedFoundation))
-			SpawnedFoundation->Destroy();
+		if (IsValid(SpawnedStructure))
+			SpawnedStructure->Destroy();
 		FVector spawnLocation = Survivor->GetActorLocation();
 		FRotator spawnRotation = Survivor->GetActorRotation();
 		FActorSpawnParameters spawnParams;
@@ -192,7 +195,19 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 	case EBuildStructureElement::TriFoundation:
 		break;
 	case EBuildStructureElement::Wall:
+	{
+		if (IsValid(SpawnedStructure))
+			SpawnedStructure->Destroy();
+		FVector spawnLocation = Survivor->GetActorLocation();
+		FRotator spawnRotation = Survivor->GetActorRotation();
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = Survivor;
+		spawnParams.Instigator = Survivor->GetInstigator();
+		SpawnedWall = GetWorld()->SpawnActor<ACStructure_Wall>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedWall->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SpawnedStructure = Cast<ACStructure>(SpawnedWall);
 		break;
+	}
 	case EBuildStructureElement::WindowWall:
 		break;
 	case EBuildStructureElement::TriLeftWall:
@@ -230,70 +245,229 @@ void UCBuildComponent::BuildStartFoundation()
 {
 	if (IsValid(SpawnedFoundation))
 	{
-		float structureLocationX = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-		float structureLocationY = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-		float structureLocationZ;
+		FVector structureLocation;
+		FRotator structureRotation;
 
-		SpawnedFoundation->DoTraceFoundation(structureLocationZ, bIsBuildable);
+		SpawnedFoundation->CheckHeight();
+		SpawnedFoundation->CheckCenter();
 
-		SpawnedFoundation->SetActorLocation(FVector(structureLocationX, structureLocationY, structureLocationZ));
-		SpawnedFoundation->SetActorRelativeRotation(Survivor->GetActorRotation());
+		bIsBuildable = ((SpawnedFoundation->GetFoundationHeightHit()) && (!SpawnedFoundation->GetFoundationCenterHit()));
+		if (bIsBuildable)
+		{
+			SpawnedFoundation->CheckRight();
+			if (SpawnedFoundation->GetFoundationRightHit())
+				bIsSnapped = SpawnedFoundation->GetFoundationRightHit();
+			else
+			{
+				SpawnedFoundation->CheckLeft();
+				if (SpawnedFoundation->GetFoundationLeftHit())
+					bIsSnapped = SpawnedFoundation->GetFoundationLeftHit();
+				else
+				{
+					SpawnedFoundation->CheckBackward();
+					if (SpawnedFoundation->GetFoundationBackwardHit())
+						bIsSnapped = SpawnedFoundation->GetFoundationBackwardHit();
+					else
+					{
+						SpawnedFoundation->CheckForward();
+						if (SpawnedFoundation->GetFoundationForwardHit())
+							bIsSnapped = SpawnedFoundation->GetFoundationForwardHit();
+					}
+				}
+			}
+		}
+
+		if (bIsSnapped)
+		{
+			TArray<FHitResult> tempHitResults;
+			FVector tempStartLocation = Survivor->GetActorLocation();
+			FVector tempEndLocation = Survivor->GetActorLocation() + Survivor->GetControlRotation().Vector() * 750.0f;
+			TArray<TEnumAsByte<EObjectTypeQuery>> tempObjectTypeQuery;
+			tempObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+			TArray<AActor*> tempActorsIgnore;
+			FCollisionObjectQueryParams tempObjectQueryParams;
+			FCollisionQueryParams tempQueryParams;
+			
+			bool tempBool = UKismetSystemLibrary::LineTraceMultiForObjects(
+				GetWorld(),
+				tempStartLocation,
+				tempEndLocation,
+				tempObjectTypeQuery,
+				false,
+				tempActorsIgnore,
+				EDrawDebugTrace::Persistent,
+				tempHitResults,
+				true,
+				FLinearColor::Green,
+				FLinearColor::Red
+			);
+
+			if (!tempBool)
+			{
+				bIsSnapped = false;
+				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+				structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
+				SpawnedFoundation->SetActorLocation(structureLocation);
+				structureRotation = Survivor->GetActorRotation();
+				SpawnedFoundation->SetActorRotation(structureRotation);
+			}
+		}
+		else
+		{
+			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+			structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
+			SpawnedFoundation->SetActorLocation(structureLocation);
+			structureRotation = Survivor->GetActorRotation();
+			SpawnedFoundation->SetActorRotation(structureRotation);
+		}
 
 		if (bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
 		{
-			CDebug::Print("Change To GreenMaterial");
+			//CDebug::Print("Change To GreenMaterial");
 			SpawnedFoundation->GetStaticMesh()->SetMaterial(0, GreenMaterial);
 		}
 		if (!bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != RedMaterial)
 		{
-			CDebug::Print("Change To RedMaterial");
+			//CDebug::Print("Change To RedMaterial");
 			SpawnedFoundation->GetStaticMesh()->SetMaterial(0, RedMaterial);
 		}
 	}
 }
 
-//void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement)
-//{
-//	switch (InElement)
-//	{
-//	case EBuildStructureElement::Foundation:
-//	{
-//		//ACStructure_Foundation* structure_Foundation = Cast<ACStructure_Foundation>(InStructure);
-//		//structure_Foundation->GetFloorBox()->DestroyComponent();
-//	}
-//	case EBuildStructureElement::TriFoundation:
-//		break;
-//	case EBuildStructureElement::Wall:
-//		break;
-//	case EBuildStructureElement::WindowWall:
-//		break;
-//	case EBuildStructureElement::TriLeftWall:
-//		break;
-//	case EBuildStructureElement::TriRightWall:
-//		break;
-//	case EBuildStructureElement::TriTopWall:
-//		break;
-//	case EBuildStructureElement::Ceiling:
-//		break;
-//	case EBuildStructureElement::TriCeiling:
-//		break;
-//	case EBuildStructureElement::Roof:
-//		break;
-//	case EBuildStructureElement::HalfRoof:
-//		break;
-//	case EBuildStructureElement::DoorFrame:
-//		break;
-//	case EBuildStructureElement::Door:
-//		break;
-//	case EBuildStructureElement::Fence:
-//		break;
-//	case EBuildStructureElement::Ramp:
-//		break;
-//	case EBuildStructureElement::Stair:
-//		break;
-//	case EBuildStructureElement::None:
-//		break;
-//	default:
-//		break;
-//	}
-//}
+void UCBuildComponent::BuildStartWall()
+{
+	if (IsValid(SpawnedWall))
+	{
+		FVector structureLocation;
+		FRotator structureRotation;
+
+		if (!bIsSnapped)
+		{
+			SpawnedWall->CheckDown();
+			if (SpawnedWall->GetWallDownHit())
+				bIsSnapped = SpawnedWall->GetWallDownHit();
+		}
+
+		if (bIsSnapped)
+		{
+			SpawnedWall->CheckCenter();
+			if (!SpawnedWall->GetWallCenterHit())
+				bIsBuildable = (!SpawnedWall->GetWallCenterHit());
+			else
+			{
+				// DownHit로 Foundation을 찾았지만 이미 다른구조물이나 무언가가있을때
+				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
+				SpawnedWall->SetActorLocation(structureLocation);
+				structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+				SpawnedWall->SetActorRotation(structureRotation);
+				bIsSnapped = false;
+				bIsBuildable = false;
+			}
+
+			TArray<FHitResult> tempHitResults;
+			FVector tempStartLocation = Survivor->GetActorLocation();
+			FVector tempEndLocation = Survivor->GetActorLocation() + Survivor->GetControlRotation().Vector() * 750.0f;
+			TArray<TEnumAsByte<EObjectTypeQuery>> tempObjectTypeQuery;
+			tempObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+			TArray<AActor*> tempActorsIgnore;
+			FCollisionObjectQueryParams tempObjectQueryParams;
+			FCollisionQueryParams tempQueryParams;
+			
+			bool tempBool = UKismetSystemLibrary::LineTraceMultiForObjects(
+				GetWorld(),
+				tempStartLocation,
+				tempEndLocation,
+				tempObjectTypeQuery,
+				false,
+				tempActorsIgnore,
+				EDrawDebugTrace::Persistent,
+				tempHitResults,
+				true,
+				FLinearColor::Green,
+				FLinearColor::Red
+			);
+
+			if (!tempBool)
+			{
+				// Preview Box를 벗어났을 때
+				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
+				SpawnedWall->SetActorLocation(structureLocation);
+				structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+				SpawnedWall->SetActorRotation(structureRotation);
+				bIsSnapped = false;
+				bIsBuildable = false;
+			}
+		}
+		else
+		{
+			// DownHit로 Foundation을 못 찾았을 때
+			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+			structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
+			SpawnedWall->SetActorLocation(structureLocation);
+			structureRotation = Survivor->GetActorRotation() + FRotator(0,90,0);
+			SpawnedWall->SetActorRotation(structureRotation);
+		}
+	
+		if (bIsBuildable && SpawnedWall->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
+		{
+			SpawnedWall->GetStaticMesh()->SetMaterial(0, GreenMaterial);
+		}
+		if (!bIsBuildable && SpawnedWall->GetStaticMesh()->GetMaterial(0) != RedMaterial)
+		{
+			SpawnedWall->GetStaticMesh()->SetMaterial(0, RedMaterial);
+		}
+	}
+}
+
+void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement)
+{
+	switch (InElement)
+	{
+	case EBuildStructureElement::Foundation:
+	{
+		ACStructure_Foundation* structure_Foundation = Cast<ACStructure_Foundation>(InStructure);
+		structure_Foundation->DestroyPreviewBox();
+	}
+	case EBuildStructureElement::TriFoundation:
+		break;
+	case EBuildStructureElement::Wall:
+		break;
+	case EBuildStructureElement::WindowWall:
+		break;
+	case EBuildStructureElement::TriLeftWall:
+		break;
+	case EBuildStructureElement::TriRightWall:
+		break;
+	case EBuildStructureElement::TriTopWall:
+		break;
+	case EBuildStructureElement::Ceiling:
+		break;
+	case EBuildStructureElement::TriCeiling:
+		break;
+	case EBuildStructureElement::Roof:
+		break;
+	case EBuildStructureElement::HalfRoof:
+		break;
+	case EBuildStructureElement::DoorFrame:
+		break;
+	case EBuildStructureElement::Door:
+		break;
+	case EBuildStructureElement::Fence:
+		break;
+	case EBuildStructureElement::Ramp:
+		break;
+	case EBuildStructureElement::Stair:
+		break;
+	case EBuildStructureElement::None:
+		break;
+	default:
+		break;
+	}
+}
