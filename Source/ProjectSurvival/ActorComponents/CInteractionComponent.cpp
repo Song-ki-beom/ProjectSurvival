@@ -211,9 +211,10 @@ void UCInteractionComponent::Interact()
 	OwnerCharacter->GetWorldTimerManager().ClearTimer(TimerHandleInteraction);
 	if (IsValid(TargetInteractable.GetObject()))
 	{
-		TargetInteractable->Interact(this);
+		ACSurvivor* playerCharacter = Cast<ACSurvivor>(OwnerCharacter);
+		if(playerCharacter)
+			TargetInteractable->Interact(playerCharacter);
 	}
-
 }
 
 

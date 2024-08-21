@@ -1,4 +1,4 @@
-﻿#include "Lobby/CDifficultyWidget.h"
+#include "Lobby/CDifficultyWidget.h"
 #include "Lobby/CLobbyGamemode.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CLobbySurvivorController.h"

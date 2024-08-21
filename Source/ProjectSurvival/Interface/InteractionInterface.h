@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Character/CSurvivor.h"
 #include "InteractionInterface.generated.h"
 
 
@@ -91,7 +92,7 @@ public:
 	virtual void EndFocus()=0;
 	virtual void BeginInteract()=0; //인터렉션까지의 타이머 설정
 	virtual void EndInteract()=0;
-	virtual void Interact(class UCInteractionComponent* InteractComponent)=0; // 인터렉트가 준비되면 바로 Interact 시작 
+	virtual void Interact(class ACSurvivor* PlayerCharacter)=0; // 인터렉트가 준비되면 바로 Interact 시작 
 
 	FInteractableData InteractableData;
 

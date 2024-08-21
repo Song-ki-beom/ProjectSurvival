@@ -70,7 +70,7 @@ void ACInterfaceTestActor::EndInteract()
 
 }
 
-void ACInterfaceTestActor::Interact(class UCInteractionComponent* InteractComponent)
+void ACInterfaceTestActor::Interact(class ACSurvivor* PlayerCharacter)
 {
 	CDebug::Print("Do Interaction!!");
 
