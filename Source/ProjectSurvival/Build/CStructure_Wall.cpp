@@ -105,8 +105,8 @@ void ACStructure_Wall::CheckDown_Wall()
 	if (bDown_WallHit)
 	{
 		DrawDebugLine(GetWorld(), downHitResult.GetComponent()->GetComponentLocation(), downHitResult.GetComponent()->GetComponentLocation() + downHitResult.ImpactNormal * 300.0f, FColor::Blue);
-		this->SetActorLocation(downHitResult.GetComponent()->GetComponentLocation() + downHitResult.GetComponent()->GetForwardVector() + downHitResult.ImpactNormal * 170.0f);
-		CenterRotation = downHitResult.GetComponent()->GetComponentRotation();
+		this->SetActorLocation(downHitResult.GetComponent()->GetComponentLocation() + downHitResult.GetComponent()->GetForwardVector() * 15.0f + downHitResult.ImpactNormal * 170.0f);
+		CenterRotation = downHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
 }

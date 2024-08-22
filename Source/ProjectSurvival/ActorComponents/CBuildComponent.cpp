@@ -554,12 +554,17 @@ void UCBuildComponent::BuildStartCeiling()
 		}
 		else
 		{
-			// DownHit로 Foundation을 못 찾았을 때
+			// Wall을 못 찾았을 때
 			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-			structureLocation.Z = Survivor->GetActorLocation().Z + 300.0f;
+
+			if (Survivor->GetControlRotation().Vector().Z > 0)
+				structureLocation.Z = Survivor->GetActorLocation().Z + Survivor->GetControlRotation().Vector().Z * 1000.0f;
+			else
+				structureLocation.Z = Survivor->GetActorLocation().Z;
+
 			SpawnedCeiling->SetActorLocation(structureLocation);
-			structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+			structureRotation = Survivor->GetActorRotation();
 			SpawnedCeiling->SetActorRotation(structureRotation);
 			bIsBuildable = false;
 		}
