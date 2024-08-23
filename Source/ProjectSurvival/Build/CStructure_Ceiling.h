@@ -16,17 +16,17 @@ public:
 	void CheckCenter();
 	bool GetCeilingCenterHit() { return bCenterHit; }
 
-	void CheckDown_Forward();
-	bool GetCeilingDown_ForwardHit() { return bDown_ForwardHit; }
+	void CheckForward();
+	bool GetCeilingForwardHit() { return bForwardHit; }
 	
-	void CheckDown_Backward();
-	bool GetCeilingDown_BackwardHit() { return bDown_BackwardHit; }
+	void CheckBackward();
+	bool GetCeilingBackwardHit() { return bBackwardHit; }
 
-	void CheckDown_Left();
-	bool GetCeilingDown_LeftHit() { return bDown_LeftHit; }
+	void CheckLeft();
+	bool GetCeilingLeftHit() { return bLeftHit; }
 
-	void CheckDown_Right();
-	bool GetCeilingDown_RightHit() { return bDown_RightHit; }
+	void CheckRight();
+	bool GetCeilingRightHit() { return bRightHit; }
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -42,10 +42,10 @@ protected:
 
 private:
 	bool bCenterHit;
-	bool bDown_ForwardHit;
-	bool bDown_BackwardHit;
-	bool bDown_LeftHit;
-	bool bDown_RightHit;
+	bool bForwardHit;
+	bool bBackwardHit;
+	bool bLeftHit;
+	bool bRightHit;
 
 	FRotator CenterRotation;
 };

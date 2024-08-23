@@ -63,7 +63,7 @@ void ACStructure_Foundation::CheckHeight()
 	{
 		if (heightHitActor->IsA(ALandscape::StaticClass()))
 		{
-			FoundationHeight = floorHitResult.ImpactPoint.Z + 50.0f;
+			FoundationHeight = floorHitResult.ImpactPoint.Z + 100.0f;
 			bHeightHit = true;
 		}
 		else

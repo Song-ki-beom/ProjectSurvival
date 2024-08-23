@@ -19,50 +19,167 @@ ACStructure_Ceiling::ACStructure_Ceiling()
 
 void ACStructure_Ceiling::CheckCenter()
 {
-}
-
-void ACStructure_Ceiling::CheckDown_Forward()
-{
-}
-
-void ACStructure_Ceiling::CheckDown_Backward()
-{
-}
-
-void ACStructure_Ceiling::CheckDown_Left()
-{
-}
-
-void ACStructure_Ceiling::CheckDown_Right()
-{
-	FHitResult down_RightHitResult;
-	FVector down_RightStartLocation = RightBox->GetComponentLocation();
-	FVector down_RightEndLocation = RightBox->GetComponentLocation() + RightBox->GetUpVector() * -250.0f;
-	TArray<TEnumAsByte<EObjectTypeQuery>> down_RightObjectTypeQuery;
-	down_RightObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
-
-	TArray<AActor*> down_RightBoxActorsToIgnore;
-	down_RightBoxActorsToIgnore.Add(this);
-
-	bDown_RightHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+	FHitResult centerBoxHitResult;
+	FVector centerBoxLocation = this->GetActorLocation();
+	FVector centerBoxSize = FVector(135, 135, 10);
+	FRotator centerBoxOrientation;
+	if (!bRightHit && !bLeftHit && !bBackwardHit && !bForwardHit)
+		centerBoxOrientation = GetOwner()->GetActorRotation();
+	else
+		centerBoxOrientation = CenterRotation;
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
+	bool bCenterBoxTraceComplex = false;
+	TArray<AActor*> centerBoxActorsToIgnore;
+	TArray<FHitResult> centerBoxHitResults;
+	bCenterHit = UKismetSystemLibrary::BoxTraceSingle(
 		GetWorld(),
-		down_RightStartLocation,
-		down_RightEndLocation,
-		down_RightObjectTypeQuery,
-		false,
-		down_RightBoxActorsToIgnore,
+		centerBoxLocation,
+		centerBoxLocation,
+		centerBoxSize,
+		centerBoxOrientation,
+		centerBoxTraceTypeQuery,
+		bCenterBoxTraceComplex,
+		centerBoxActorsToIgnore,
 		EDrawDebugTrace::ForOneFrame,
-		down_RightHitResult,
+		centerBoxHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+}
+
+void ACStructure_Ceiling::CheckForward()
+{
+	FHitResult forwardHitResult;
+	FVector forwardStartLocation = ForwardBox->GetComponentLocation();
+	FVector forwardEndLocation = ForwardBox->GetComponentLocation() + ForwardBox->GetForwardVector() * 50.0f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> forwardObjectTypeQuery;
+	forwardObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+
+	TArray<AActor*> forwardBoxActorsToIgnore;
+	forwardBoxActorsToIgnore.Add(this);
+
+	bForwardHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		forwardStartLocation,
+		forwardEndLocation,
+		forwardObjectTypeQuery,
+		false,
+		forwardBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		forwardHitResult,
 		true,
 		FLinearColor::Green,
 		FLinearColor::Red
 	);
 
-	if (bDown_RightHit)
+	if (bForwardHit)
 	{
-		DrawDebugLine(GetWorld(), down_RightHitResult.GetComponent()->GetComponentLocation(), down_RightHitResult.GetComponent()->GetComponentLocation() + down_RightHitResult.ImpactNormal * 300.0f, FColor::Blue);
-		this->SetActorLocation(down_RightHitResult.GetComponent()->GetComponentLocation() + down_RightHitResult.GetComponent()->GetForwardVector() * -130.0f + down_RightHitResult.ImpactNormal * 20.0f);
-		CenterRotation = down_RightHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
+		//DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		this->SetActorLocation(forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 130.0f + forwardHitResult.GetComponent()->GetUpVector() * 20.0f);
+		CenterRotation = forwardHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 180, 0);
+		this->SetActorRotation(CenterRotation);
+	}
+}
+
+void ACStructure_Ceiling::CheckBackward()
+{
+	FHitResult backwardHitResult;
+	FVector backwardStartLocation = BackwardBox->GetComponentLocation();
+	FVector backwardEndLocation = BackwardBox->GetComponentLocation() + BackwardBox->GetForwardVector() * 50.0f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> backwardObjectTypeQuery;
+	backwardObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+
+	TArray<AActor*> backwardBoxActorsToIgnore;
+	backwardBoxActorsToIgnore.Add(this);
+
+	bBackwardHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		backwardStartLocation,
+		backwardEndLocation,
+		backwardObjectTypeQuery,
+		false,
+		backwardBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		backwardHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+
+	if (bBackwardHit)
+	{
+		//DrawDebugLine(GetWorld(), backwardHitResult.GetComponent()->GetComponentLocation(), backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		this->SetActorLocation(backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 130.0f + backwardHitResult.GetComponent()->GetUpVector() * 20.0f);
+		CenterRotation = backwardHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 0, 0);
+		this->SetActorRotation(CenterRotation);
+	}
+}
+
+void ACStructure_Ceiling::CheckLeft()
+{
+	FHitResult leftHitResult;
+	FVector leftStartLocation = LeftBox->GetComponentLocation();
+	FVector leftEndLocation = LeftBox->GetComponentLocation() + LeftBox->GetForwardVector() * 50.0f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> leftObjectTypeQuery;
+	leftObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+
+	TArray<AActor*> leftBoxActorsToIgnore;
+	leftBoxActorsToIgnore.Add(this);
+
+	bLeftHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		leftStartLocation,
+		leftEndLocation,
+		leftObjectTypeQuery,
+		false,
+		leftBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		leftHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+
+	if (bLeftHit)
+	{
+		//DrawDebugLine(GetWorld(), leftHitResult.GetComponent()->GetComponentLocation(), leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		this->SetActorLocation(leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 130.0f + leftHitResult.GetComponent()->GetUpVector() * 20.0f);
+		CenterRotation = leftHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 90, 0);
+		this->SetActorRotation(CenterRotation);
+	}
+}
+
+void ACStructure_Ceiling::CheckRight()
+{
+	FHitResult rightHitResult;
+	FVector rightStartLocation = RightBox->GetComponentLocation();
+	FVector rightEndLocation = RightBox->GetComponentLocation() + RightBox->GetForwardVector() * 50.0f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> rightObjectTypeQuery;
+	rightObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
+
+	TArray<AActor*> rightBoxActorsToIgnore;
+	rightBoxActorsToIgnore.Add(this);
+
+	bRightHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		rightStartLocation,
+		rightEndLocation,
+		rightObjectTypeQuery,
+		false,
+		rightBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		rightHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+
+	if (bRightHit)
+	{
+		//DrawDebugLine(GetWorld(), rightHitResult.GetComponent()->GetComponentLocation(), rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		this->SetActorLocation(rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 130.0f + rightHitResult.GetComponent()->GetUpVector() * 20.0f);
+		CenterRotation = rightHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
 }
