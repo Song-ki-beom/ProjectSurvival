@@ -2,10 +2,19 @@
 
 
 #include "Widget/Inventory/CItemBase.h"
+#include "ActorComponents/CInventoryComponent.h"
 
 
-UCItemBase::UCItemBase()
+UCItemBase::UCItemBase() : bIsCopy(false) , bIsPickup(false)
 {
+
+}
+
+void UCItemBase::ResetItemFlags()
+{
+	bIsCopy = false;
+	bIsPickup = false;
+
 
 }
 
@@ -19,6 +28,7 @@ UCItemBase* UCItemBase::CreateItemCopy()
 	ItemCopy->ItemStats = this->ItemStats;
 	ItemCopy->NumericData = this->NumericData;
 	ItemCopy->AssetData = this->AssetData;
+	ItemCopy->bIsCopy = true;
 
 	return ItemCopy;
 }
@@ -34,13 +44,13 @@ void UCItemBase::SetQuantity(const int32 NewQuantity)
 		}
 		Quantity = FMath::Clamp(NewQuantity, 0, size);
 
-		/*if (Inventory)
+		if (Inventory) // 재고가 0개 이하면 아이템 자체를 제거 
 		{
 			if (Quantity <= 0)
 			{
-				Inventory->RemoveItem(this);
+				Inventory->RemoveSingleItem(this);
 			}
-		}*/
+		}
 
 	}
 
@@ -50,3 +60,5 @@ void UCItemBase::Use(ACSurvivor* Character)
 {
 
 }
+
+

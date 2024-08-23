@@ -3,6 +3,9 @@
 
 #include "World/CPickUp.h"
 #include "Character/CSurvivor.h"
+#include "ActorComponents/CInventoryComponent.h"
+#include "Utility/CDebug.h"
+#include "ActorComponents/CInteractionComponent.h"
 #include "Widget/Inventory/CItemBase.h"
 // Sets default values
 ACPickUp::ACPickUp()
@@ -57,11 +60,26 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 {
 	if (!IsPendingKillPending()) //픽업 아이템이 Destroy 되고 있는지 체크 
 	{
-		//if(UCInventoryComponent * PlayerInventory = Taker->GetInventory())
+		if (UCInventoryComponent* PlayerInventory = Taker->GetInventoryComponent())
+		{
+			const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
 
-		// 인벤토리에 추가
-		// add 연산자 오버라이딩에 대한 조건문 처리  
-		//pickUp 의 존속여부에 대한 후처리(생성 or 수량 변경)
+			switch (AddResult.OperationResult)
+			{
+			case EItemAddResult::NoItemAdded:
+				break;
+			case EItemAddResult::PartialItemAdded:
+				UpdateInteractableData(); //PickUp 아이템 수량 조정 
+					Taker->GetInteractionComponent()-> UpdateInteractionWidget(); //인벤 ui  업뎃
+				break;
+			case EItemAddResult::AllItemAdded:
+				Destroy();
+				break;
+			}
+
+			CDebug::Print(AddResult.ResultMessage.ToString());
+		}
+		
 	}
 }
 

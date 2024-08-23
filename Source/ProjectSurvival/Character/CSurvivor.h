@@ -47,10 +47,18 @@ public:
 	void Build();
 	void CancleBuild();
 
+
 	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
 	class UCHarvestComponent* GetHarvestComponent() { return HarvestComponent; }
 	class UCBuildComponent* GetBuildComponent() { return BuildComponent; }
 	class UCMovingComponent* GetMovingComponent() { return MovingComponent; }
+	class UCInventoryComponent* GetInventoryComponent() const {
+		return InventoryComponent;
+	}
+	class UCInteractionComponent* GetInteractionComponent() const {
+		return InteractionComponent;
+	}
+
 
 	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 
@@ -63,7 +71,8 @@ public:
 	USkeletalMeshComponent* GetHandsMeshComponent() { return Hands; }
 	USkeletalMeshComponent* GetAccessoryMeshComponent() { return Accessory; }
 
-
+	
+	
 
 private:
 	//Name  
@@ -119,7 +128,12 @@ private:
 		class UCBuildComponent* BuildComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCMovingComponent* MovingComponent;
+	
+	//Inventory
 	UPROPERTY(VisibleAnywhere)
 		class UCInteractionComponent* InteractionComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCInventoryComponent* InventoryComponent;
+
 };
 

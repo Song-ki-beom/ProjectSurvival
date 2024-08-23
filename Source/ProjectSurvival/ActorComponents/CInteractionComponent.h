@@ -23,6 +23,7 @@ public:
 	bool IsInteracting() const;
 	void DoInteract();
 	void FinishInteract();
+	void UpdateInteractionWidget() const;
 protected:
 	virtual void BeginPlay() override;
 	void PerformInteractionCheck();

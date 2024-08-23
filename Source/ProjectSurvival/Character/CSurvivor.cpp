@@ -6,6 +6,7 @@
 #include "ActorComponents/CBuildComponent.h"
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CInteractionComponent.h"
+#include "ActorComponents/CInventoryComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -33,13 +34,16 @@ ACSurvivor::ACSurvivor()
 
 	//컴포넌트 세팅
 	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
+	WeaponComponent->SetIsReplicated(true);
+	InventoryComponent = CreateDefaultSubobject<UCInventoryComponent>(TEXT("Inventory"));
+	InventoryComponent->SetSlotsCapacity(20);
+	InventoryComponent->SetWeightCapacity(50.0f);
 	HarvestComponent = CreateDefaultSubobject<UCHarvestComponent>(TEXT("Harvest"));
 	InteractionComponent = CreateDefaultSubobject<UCInteractionComponent>(TEXT("Interaction"));
 	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));
 	BuildComponent = CreateDefaultSubobject<UCBuildComponent>(TEXT("Build"));
 	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("Moving"));
 	CustomizeComponent->SetIsReplicated(true);
-	WeaponComponent->SetIsReplicated(true);
 	
 	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
@@ -225,6 +229,8 @@ void ACSurvivor::CancleBuild()
 	if (IsValid(BuildComponent))
 		BuildComponent->ClearSpawnedStructure();
 }
+
+
 
 void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {

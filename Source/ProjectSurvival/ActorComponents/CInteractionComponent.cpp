@@ -69,6 +69,14 @@ void UCInteractionComponent::FinishInteract()
 	EndInteract();
 }
 
+void UCInteractionComponent::UpdateInteractionWidget() const
+{
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	}
+}
+
 //탐색 함수 
 void UCInteractionComponent::PerformInteractionCheck()
 {
