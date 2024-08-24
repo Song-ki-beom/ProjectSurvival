@@ -134,9 +134,9 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere,Category = "Inventory")
 	float InventoryTotalWeight;
-	UPROPERTY(EditDefaultsOnly,Category = "Inventory")
+	UPROPERTY(VisibleAnywhere,Category = "Inventory")
 	int32 InventorySlotsCapacity;
-	UPROPERTY(EditDefaultsOnly,Category = "Inventory")
+	UPROPERTY(VisibleAnywhere,Category = "Inventory")
 	float InventoryWeightCapacity;
 
 	//언리얼 4는 TObjectPtr을 지원하지 않으므로, UPROPERTY()와  TWeakObjectPtr을 통해 GC의 의해 삭제된 곳도 안전하게 포인터 접근이 가능하다.

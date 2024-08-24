@@ -59,19 +59,19 @@ public:
 	UPROPERTY()
 		class UCInventoryComponent* Inventory; //참고할 인벤토리
 
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 	int32 Quantity; //같은 아이템 항목에서 개수를 분리하는 등의 액션을 취하기 위해 따로 수량 변수 사용 (ex.) 나무 뗄감 x3 에서 한개 떼어서 버릴때)
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 		FName ID;
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 		EItemType ItemType;
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 		FItemStats ItemStats;
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 		FItemTextData TextData;
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 		FItemNumericData NumericData;
-	UPROPERTY(VisibleAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item")
 		FItemAssetData AssetData;
 
 	bool bIsCopy;

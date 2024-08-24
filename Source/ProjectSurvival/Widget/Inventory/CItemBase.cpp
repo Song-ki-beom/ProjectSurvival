@@ -2,6 +2,7 @@
 
 
 #include "Widget/Inventory/CItemBase.h"
+#include "Utility/CDebug.h"
 #include "ActorComponents/CInventoryComponent.h"
 
 
@@ -30,6 +31,7 @@ UCItemBase* UCItemBase::CreateItemCopy()
 	ItemCopy->AssetData = this->AssetData;
 	ItemCopy->bIsCopy = true;
 
+	
 	return ItemCopy;
 }
 

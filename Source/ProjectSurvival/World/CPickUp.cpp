@@ -119,7 +119,14 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 		ItemReference->TextData = ItemData->TextData;
 		ItemReference->AssetData = ItemData->AssetData;
 
-		InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
+		if (InQuantity <= 0) //0보다 작으면 
+		{
+			ItemReference->SetQuantity(1);
+		}
+		else
+		{
+			ItemReference->SetQuantity(InQuantity);
+		}
 
 		PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 

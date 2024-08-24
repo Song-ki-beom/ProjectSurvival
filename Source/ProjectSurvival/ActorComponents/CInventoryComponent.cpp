@@ -56,7 +56,7 @@ UCItemBase* UCInventoryComponent::FindNextPartialStack(UCItemBase* ItemIn) const
 
 	//FindByPredicate 와 람다 함수 사용하여 , 캡쳐된 ItemIn 과 InventoryContent 배열의 각 요소를 검사하여 람다함수의 조건식을 만족하는 첫 번째 요소를 찾아 Result 에 반환 
 	if (const TArray<TWeakObjectPtr<UCItemBase>>::ElementType* Result = InventoryContents.FindByPredicate(
-		[&ItemIn](const UCItemBase* InventoryItem)
+		[&ItemIn](const TWeakObjectPtr<UCItemBase> InventoryItem)
 		{
 			return InventoryItem->ID == ItemIn->ID && !InventoryItem->IsFullItemStack(); //ID 일치 , 재고가 최대 허용량인 상태가 아니면  
 		}
@@ -106,8 +106,7 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 		{
 			return HandleNonStackableItems(InItem, InitialRequestedAddAmount);
 		}
-		else
-		{
+		
 			//Stack 가능한 아이템일 때, 기존에 Item이 존재하고 Stack 가능 개수가 남아있음 
 			const int32 StackableAmountAdded = HandleStackableItems(InItem, InitialRequestedAddAmount);
 
@@ -116,26 +115,28 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 
 			if (StackableAmountAdded == InitialRequestedAddAmount)
 			{
-				// returns added all result
+				return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} {1} All added To Inventory"),InItem->TextData.Name, InitialRequestedAddAmount));
 			}
 
 			//Stack 한 결과가 처음 리퀘스트한 양이 아닌 일부만 넣어졌을때   
 			if (StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded >0)
 			{
-				//returns added partial result 
+				return FItemAddResult::AddedPartial(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} x {1} Partial Amount of Item Added"), InItem->TextData.Name, StackableAmountAdded));
 			}
 
 			if (StackableAmountAdded <= 0)
 			{
-				// return Added none result 
+				return FItemAddResult::AddedNone(FText::Format(FText::FromString("Cannot Add {0} Due To Inventory Weight or Slot Capacity"), InItem->TextData.Name));
 			}
 
 
 
 		}
 
+	check(false);
+	return FItemAddResult::AddedNone(FText::FromString("HandleItem Fail Due To OwnerCharacter Problem"));
 
-	}
+	
 }
 
 
@@ -174,6 +175,7 @@ FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn,
 int32 UCInventoryComponent::HandleStackableItems(UCItemBase*, int32 RequestedAddAmount)
 {
 
+	return 1;
 }
 
 
@@ -201,7 +203,8 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 	//아이템 세팅
 	NewItem->Inventory = this;
 	NewItem->SetQuantity(AmountToAdd);
-
+	InItem->GetItemStackWeight();
+	NewItem->GetItemStackWeight();
 	//인벤 TArray에 추가 
 	InventoryContents.Add(NewItem);
 	InventoryTotalWeight += NewItem->GetItemStackWeight();
