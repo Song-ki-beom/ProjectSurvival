@@ -139,7 +139,7 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 	
 }
 
-
+//IsStackable 이 False 인 데이터 수납할 시, 중첩 불가 단일 개수 
 FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount)
 {
 	{//return none check
@@ -147,26 +147,26 @@ FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn,
 		//중량이 없으면 -> 아이템 정보가 이상한지 체크 
 		if (FMath::IsNearlyZero(ItemIn->GetItemStackWeight()) || ItemIn->GetItemStackWeight() < 0)
 		{
-			return FItemAddResult::AddedNone(FText::Format(FText::FromString("{0} 아이템 정보 오류로 수납 불가"), ItemIn->TextData.Name));
+			return FItemAddResult::AddedNone(FText::Format(FText::FromString("{0} Item Info Invalid. Cannot put Into Inventory"), ItemIn->TextData.Name));
 		}
 
 		//아이템이 최대 허용 용량을 넘는다면 
 		if (InventoryTotalWeight + ItemIn->GetItemSingleWeight() > GetWeightCapacity())
 		{
-			return FItemAddResult::AddedNone(FText::FromString("최대 허용 용량 넘음. 수납 불가"));
+			return FItemAddResult::AddedNone(FText::FromString("Over Max Weight. Cannot put Into Inventory"));
 		}
 
 		//아이템 슬롯 추가로 최대 슬롯 갯수를 넘으면 
 		if (InventoryContents.Num() + 1 > InventorySlotsCapacity)
 		{
-			return FItemAddResult::AddedNone(FText::Format(FText::FromString("최대 수납 갯수 초과. 수납 불가"), ItemIn->TextData.Name));
+			return FItemAddResult::AddedNone(FText::Format(FText::FromString("Over Max Slot. Cannot Put Into Inventory"), ItemIn->TextData.Name));
 		}
 
 
 
 	}
-	AddNewItem(ItemIn, RequestedAddAmount);
-	return FItemAddResult::AddedAll(RequestedAddAmount,FText::Format(FText::FromString("성공적으로 {0} X{1} 아이템을 인벤토리에 수납함"), ItemIn->TextData.Name, RequestedAddAmount));
+	AddNewItem(ItemIn, 1);
+	return FItemAddResult::AddedAll(RequestedAddAmount,FText::Format(FText::FromString("Successfully put  {0} X{1} Item into Inventoty"), ItemIn->TextData.Name, RequestedAddAmount));
 
 }
 

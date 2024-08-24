@@ -1,4 +1,4 @@
-﻿#include "ActorComponents/CReplicateComponent.h"
+#include "ActorComponents/CReplicateComponent.h"
 
 UCReplicateComponent::UCReplicateComponent()
 {
