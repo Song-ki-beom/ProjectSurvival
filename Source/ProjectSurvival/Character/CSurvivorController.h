@@ -28,8 +28,8 @@ private:
 	void ToggleBuildWidget();
 	void SelectQ();
 	void SelectW();
-	void SelectE();
-	void ReleaseE();
+	void SelectE(); //Interaction 관련 분기문 존재
+	void ReleaseE(); //Interaction 관련 분기문 존재
 	void SelectA();
 	void SelectS();
 	void SelectD();
@@ -44,6 +44,8 @@ private:
 	void SubAction();
 	void HoldAxe();
 
+	//Inventory
+	void ToggleMenu();
 
 
 private:

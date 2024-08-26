@@ -42,6 +42,9 @@ public:
 	void StartInteract();
 	void FinishInteract();
 
+	//Inventory
+	void ToggleMenu();
+
 
 	//Build
 	void Build();

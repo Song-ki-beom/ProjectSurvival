@@ -1,5 +1,8 @@
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Character/CSurvivorController.h"
+#include "Net/UnrealNetwork.h"
+#include "Widget/CMainHUD.h"
 
 
 UCInventoryComponent::UCInventoryComponent()
@@ -10,10 +13,29 @@ UCInventoryComponent::UCInventoryComponent()
 }
 
 
+void UCInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCInventoryComponent, HUD);
+
+
+}
+
 void UCInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
+
+	if (OwnerCharacter)
+	{
+		ACSurvivorController* playerController = Cast<ACSurvivorController>(OwnerCharacter->GetController());
+		if (playerController)
+		{
+			HUD = Cast<ACMainHUD>(playerController->GetHUD());
+		}
+	}
 
 
 	
@@ -137,6 +159,12 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 	return FItemAddResult::AddedNone(FText::FromString("HandleItem Fail Due To OwnerCharacter Problem"));
 
 	
+}
+
+void UCInventoryComponent::ToggleMenu()
+{
+	if (HUD)
+		HUD->ToggleMenu();
 }
 
 //IsStackable 이 False 인 데이터 수납할 시, 중첩 불가 단일 개수 

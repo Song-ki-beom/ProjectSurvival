@@ -79,6 +79,10 @@ public:
 	FItemAddResult HandleAddItem(class UCItemBase* InItem); //추가하려는 Item 에 대한 처리 
 
 
+	//Toggle Menu
+	void ToggleMenu();
+
+
 	//Find
 
 	//인벤토리에서 동일한 UCItemBase 포인터(데이터 저장소)가 존재하는지 확인
@@ -105,7 +109,7 @@ public:
 	FORCEINLINE int32 GetSlotsCapacity() const { return InventorySlotsCapacity; }; //슬롯 개수
 	
 	//내용물 호출 
-	FORCEINLINE TArray<TWeakObjectPtr<UCItemBase>> GetInventroyContents() { return InventoryContents; };
+	FORCEINLINE TArray<TWeakObjectPtr<UCItemBase>> GetInventoryContents() { return InventoryContents; };
 
 	//Set
 
@@ -143,7 +147,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	TArray<TWeakObjectPtr<UCItemBase>> InventoryContents;
 	
-
+private:
+	class ACharacter* OwnerCharacter;
+	UPROPERTY(Replicated)
+		class ACMainHUD* HUD;
 
 
 };

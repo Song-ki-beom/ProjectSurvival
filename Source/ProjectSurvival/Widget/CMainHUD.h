@@ -19,7 +19,7 @@ public:
 
 	void DisplayMenu();
 	void HideMenu();
-
+	void ToggleMenu(); //Hide & Show Menu Toggle 
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
