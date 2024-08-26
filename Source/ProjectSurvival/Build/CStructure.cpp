@@ -1,10 +1,14 @@
 #include "Build/CStructure.h"
 #include "Components/BoxComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ACStructure::ACStructure()
 {
 	bReplicates = true;
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PrivewBox");
+	PreviewBox->SetupAttachment(StaticMesh);
+	PreviewBox->SetIsReplicated(true);
 }
 
 void ACStructure::BeginPlay()
@@ -16,6 +20,11 @@ void ACStructure::BeginPlay()
 void ACStructure::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACStructure::BroadcastDestroyPreviewBox_Implementation()
+{
+	PreviewBox->DestroyComponent();
 }
 
 void ACStructure::SaveOriginMaterial()

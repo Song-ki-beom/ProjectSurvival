@@ -24,10 +24,6 @@ public:
 	void OpenDoor();
 	void CloseDoor();
 
-protected:
-	UPROPERTY(EditAnywhere)
-		class UBoxComponent* PreviewBox;
-
 private:
 	bool bCenterHit;
 	bool bUp_DoorFrameHit;

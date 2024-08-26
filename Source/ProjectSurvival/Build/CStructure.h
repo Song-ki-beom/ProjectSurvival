@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -19,12 +19,18 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastDestroyPreviewBox();
+
 protected:
 	void SaveOriginMaterial();
 
 protected:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* StaticMesh;
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* PreviewBox;
 
 	UMaterialInterface* OriginMaterial;
 };

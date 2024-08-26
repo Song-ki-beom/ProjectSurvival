@@ -22,12 +22,8 @@ public:
 	 
 	void CheckForward();
 	bool GetRampForwardHit() { return bForwardHit; }
-		 
-	void DestroyPreviewBox();
 
 protected:
-	UPROPERTY(EditAnywhere)
-		class UBoxComponent* PreviewBox;
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* ForwardBox;
 

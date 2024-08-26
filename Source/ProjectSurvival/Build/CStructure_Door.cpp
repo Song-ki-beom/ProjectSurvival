@@ -4,9 +4,7 @@
 
 ACStructure_Door::ACStructure_Door()
 {
-	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
 
-	PreviewBox->SetupAttachment(StaticMesh);
 }
 
 void ACStructure_Door::CheckCenter()
@@ -72,11 +70,6 @@ void ACStructure_Door::CheckUp_DoorFrame()
 		CenterRotation = upHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
-}
-
-void ACStructure_Door::DestroyPreviewBox()
-{
-	PreviewBox->DestroyComponent();
 }
 
 void ACStructure_Door::OpenDoor()

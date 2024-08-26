@@ -25,11 +25,7 @@ public:
 	void CheckDown_DoorFrame();
 	bool GetWallDown_DoorFrameHit() { return bDown_DoorFrameHit; }
 
-	void DestroyPreviewBox();
-
 protected:
-	UPROPERTY(EditAnywhere)
-		class UBoxComponent* PreviewBox;
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* UpBox;
 

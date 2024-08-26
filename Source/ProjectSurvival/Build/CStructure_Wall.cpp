@@ -6,10 +6,8 @@
 
 ACStructure_Wall::ACStructure_Wall()
 {
-	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
 	UpBox = CreateDefaultSubobject<UBoxComponent>("UpBox");
 
-	PreviewBox->SetupAttachment(StaticMesh);
 	UpBox->SetupAttachment(StaticMesh);
 }
 
@@ -144,9 +142,4 @@ void ACStructure_Wall::CheckDown_DoorFrame()
 		CenterRotation = downHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
-}
-
-void ACStructure_Wall::DestroyPreviewBox()
-{
-	PreviewBox->DestroyComponent();
 }

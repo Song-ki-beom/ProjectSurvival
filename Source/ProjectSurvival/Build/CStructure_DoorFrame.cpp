@@ -3,10 +3,8 @@
 
 ACStructure_DoorFrame::ACStructure_DoorFrame()
 {
-	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
 	UpBox = CreateDefaultSubobject<UBoxComponent>("UpBox");
 
-	PreviewBox->SetupAttachment(StaticMesh);
 	UpBox->SetupAttachment(StaticMesh);
 }
 
@@ -73,9 +71,4 @@ void ACStructure_DoorFrame::CheckDown_Foundation()
 		CenterRotation = downHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
-}
-
-void ACStructure_DoorFrame::DestroyPreviewBox()
-{
-	PreviewBox->DestroyComponent();
 }

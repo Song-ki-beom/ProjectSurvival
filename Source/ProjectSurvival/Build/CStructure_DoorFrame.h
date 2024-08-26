@@ -23,8 +23,6 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-		class UBoxComponent* PreviewBox;
-	UPROPERTY(EditAnywhere)
 		class UBoxComponent* UpBox;
 
 private:

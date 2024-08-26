@@ -5,10 +5,8 @@
 
 ACStructure_Ramp::ACStructure_Ramp()
 {
-	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
 	ForwardBox = CreateDefaultSubobject<UBoxComponent>("ForwardBox");
 
-	PreviewBox->SetupAttachment(StaticMesh);
 	ForwardBox->SetupAttachment(StaticMesh);
 }
 
@@ -125,9 +123,4 @@ void ACStructure_Ramp::CheckForward()
 		CenterRotation = forwardHitResult.ImpactNormal.GetSafeNormal().Rotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
-}
-
-void ACStructure_Ramp::DestroyPreviewBox()
-{
-	PreviewBox->DestroyComponent();
 }

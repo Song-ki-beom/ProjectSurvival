@@ -198,12 +198,14 @@ void UCBuildComponent::BuildSpawnedStructure()
 
 	if (Survivor->HasAuthority())
 	{
-		PerformBuild(StructureClass, StructureElement);
+		StructureTransform = SpawnedStructure->GetActorTransform();
+		PerformBuild(StructureClass, StructureTransform);
 	}
 	else
 	{
 		CDebug::Print("Spawned Structure : ", SpawnedStructure);
-		RequestBuild(StructureClass, StructureElement);
+		StructureTransform = SpawnedStructure->GetActorTransform();
+		RequestBuild(StructureClass, StructureTransform);
 	}
 }
 
@@ -966,25 +968,25 @@ void UCBuildComponent::BuildStartDoor()
 	}
 }
 
-void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform)
 {
 	if (IsValid(InClass))
 	{
-		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, Survivor->GetActorLocation(), Survivor->GetActorRotation());
-		DestroyChildComponent(buildstructure, InElement);
+		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, InTransform);
+		buildstructure->BroadcastDestroyPreviewBox();
 		bIsSnapped = false;
 	}
 	else
 	{
-		CDebug::Print("InStructure Is Not Valid");
+		CDebug::Print("InClass Is Not Valid");
 	}
 }
 
-void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InClass, FTransform InTransform)
 {
 	if (IsValid(InClass))
 	{
-		PerformBuild(InClass, InElement);
+		PerformBuild(InClass, InTransform);
 	}
 	else
 	{
@@ -993,76 +995,9 @@ void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InCl
 	}
 }
 
-bool UCBuildComponent::RequestBuild_Validate(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+bool UCBuildComponent::RequestBuild_Validate(TSubclassOf<ACStructure> InClass, FTransform InTransform)
 {
 	return true;
-}
-
-void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement)
-{
-	switch (InElement)
-	{
-	case EBuildStructureElement::Foundation:
-	{
-		ACStructure_Foundation* structure_Foundation = Cast<ACStructure_Foundation>(InStructure);
-		structure_Foundation->DestroyPreviewBox();
-		break;
-	}
-	case EBuildStructureElement::TriFoundation:
-		break;
-	case EBuildStructureElement::Wall:
-	{
-		ACStructure_Wall* structure_Wall = Cast<ACStructure_Wall>(InStructure);
-		structure_Wall->DestroyPreviewBox();
-		break;
-	}
-	case EBuildStructureElement::WindowWall:
-		break;
-	case EBuildStructureElement::TriLeftWall:
-		break;
-	case EBuildStructureElement::TriRightWall:
-		break;
-	case EBuildStructureElement::TriTopWall:
-		break;
-	case EBuildStructureElement::Ceiling:
-	{
-		ACStructure_Ceiling* structure_Ceiling = Cast<ACStructure_Ceiling>(InStructure);
-		structure_Ceiling->DestroyPreviewBox();
-		break;
-	}
-	case EBuildStructureElement::TriCeiling:
-		break;
-	case EBuildStructureElement::Roof:
-		break;
-	case EBuildStructureElement::HalfRoof:
-		break;
-	case EBuildStructureElement::DoorFrame:
-	{
-		ACStructure_DoorFrame* structure_DoorFrame = Cast<ACStructure_DoorFrame>(InStructure);
-		structure_DoorFrame->DestroyPreviewBox();
-		break;
-	}
-	case EBuildStructureElement::Door:
-	{
-		ACStructure_Door* structure_Door = Cast<ACStructure_Door>(InStructure);
-		structure_Door->DestroyPreviewBox();
-		break;
-	}
-	case EBuildStructureElement::Fence:
-		break;
-	case EBuildStructureElement::Ramp:
-	{
-		ACStructure_Ramp* structure_Ramp = Cast<ACStructure_Ramp>(InStructure);
-		structure_Ramp->DestroyPreviewBox();
-		break;
-	}
-	case EBuildStructureElement::Stair:
-		break;
-	case EBuildStructureElement::None:
-		break;
-	default:
-		break;
-	}
 }
 
 void UCBuildComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

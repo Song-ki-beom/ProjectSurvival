@@ -43,11 +43,9 @@ private:
 	void BuildStartDoorFrame();
 	void BuildStartDoor();
 
-	void PerformBuild(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void PerformBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform);
 	UFUNCTION(Server, Reliable, WithValidation)
-		void RequestBuild(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-
-	void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
+		void RequestBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform);
 
 private:
 	class ACSurvivor* Survivor;
@@ -74,6 +72,7 @@ private:
 
 	TSubclassOf<ACStructure> StructureClass;
 	EBuildStructureElement StructureElement;
+	FTransform StructureTransform;
 	bool bIsBuildable;
 	bool bIsSnapped;
 	bool bIsBuilding;

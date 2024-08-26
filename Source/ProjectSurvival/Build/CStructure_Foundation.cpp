@@ -8,13 +8,11 @@
 ACStructure_Foundation::ACStructure_Foundation()
 {
 	//PrimaryActorTick.bCanEverTick = true;
-	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PreviewBox");
 	ForwardBox = CreateDefaultSubobject<UBoxComponent>("ForwardBox");
 	BackwardBox = CreateDefaultSubobject<UBoxComponent>("BackwardBox");
 	LeftBox = CreateDefaultSubobject<UBoxComponent>("LeftBox");
 	RightBox = CreateDefaultSubobject<UBoxComponent>("RightBox");
 	
-	PreviewBox->SetupAttachment(StaticMesh);
 	ForwardBox->SetupAttachment(StaticMesh);
 	BackwardBox->SetupAttachment(StaticMesh);
 	LeftBox->SetupAttachment(StaticMesh);
@@ -243,35 +241,3 @@ void ACStructure_Foundation::CheckForward()
 		this->SetActorRotation(CenterRotation);
 	}
 }
-
-void ACStructure_Foundation::DestroyPreviewBox()
-{
-	PreviewBox->DestroyComponent();
-}
-
-
-//void ACStructure_Foundation::FloorCheckBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//	if (IsValid(OtherActor))
-//	{
-//		CDebug::Print("Overlapped : ", OtherActor);
-//		FloorCheckBoxOverlapActors.Add(OtherActor);
-//	}
-//	else
-//	{
-//		CDebug::Print("Not Valid");
-//	}
-//}
-//
-//void ACStructure_Foundation::FloorCheckBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-//{
-//	if (IsValid(OtherActor))
-//	{
-//		CDebug::Print("UnOverlapped : ", OtherActor);
-//		FloorCheckBoxOverlapActors.Remove(OtherActor);
-//	}
-//	else
-//	{
-//		CDebug::Print("Not Valid");
-//	}
-//}

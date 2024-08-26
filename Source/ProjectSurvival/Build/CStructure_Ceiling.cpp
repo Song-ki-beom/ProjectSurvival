@@ -4,13 +4,11 @@
 
 ACStructure_Ceiling::ACStructure_Ceiling()
 {
-	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PrivewBox");
 	ForwardBox = CreateDefaultSubobject<UBoxComponent>("ForwardBox");
 	BackwardBox = CreateDefaultSubobject<UBoxComponent>("BackwardBox");
 	LeftBox = CreateDefaultSubobject<UBoxComponent>("LeftBox");
 	RightBox = CreateDefaultSubobject<UBoxComponent>("RightBox");
 
-	PreviewBox->SetupAttachment(StaticMesh);
 	ForwardBox->SetupAttachment(StaticMesh);
 	BackwardBox->SetupAttachment(StaticMesh);
 	LeftBox->SetupAttachment(StaticMesh);
@@ -51,8 +49,8 @@ void ACStructure_Ceiling::CheckCenter()
 void ACStructure_Ceiling::CheckForward()
 {
 	FHitResult forwardHitResult;
-	FVector forwardStartLocation = ForwardBox->GetComponentLocation();
-	FVector forwardEndLocation = ForwardBox->GetComponentLocation() + ForwardBox->GetForwardVector() * 50.0f;
+	FVector forwardStartLocation = this->GetActorLocation();
+	FVector forwardEndLocation = this->GetActorLocation() + this->GetActorForwardVector() * -200.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> forwardObjectTypeQuery;
 	forwardObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
 
@@ -85,8 +83,8 @@ void ACStructure_Ceiling::CheckForward()
 void ACStructure_Ceiling::CheckBackward()
 {
 	FHitResult backwardHitResult;
-	FVector backwardStartLocation = BackwardBox->GetComponentLocation();
-	FVector backwardEndLocation = BackwardBox->GetComponentLocation() + BackwardBox->GetForwardVector() * 50.0f;
+	FVector backwardStartLocation = this->GetActorLocation();
+	FVector backwardEndLocation = this->GetActorLocation() + this->GetActorForwardVector() * 200.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> backwardObjectTypeQuery;
 	backwardObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
 
@@ -119,8 +117,8 @@ void ACStructure_Ceiling::CheckBackward()
 void ACStructure_Ceiling::CheckLeft()
 {
 	FHitResult leftHitResult;
-	FVector leftStartLocation = LeftBox->GetComponentLocation();
-	FVector leftEndLocation = LeftBox->GetComponentLocation() + LeftBox->GetForwardVector() * 50.0f;
+	FVector leftStartLocation = this->GetActorLocation();
+	FVector leftEndLocation = this->GetActorLocation() + this->GetActorRightVector() * -200.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> leftObjectTypeQuery;
 	leftObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
 
@@ -153,8 +151,8 @@ void ACStructure_Ceiling::CheckLeft()
 void ACStructure_Ceiling::CheckRight()
 {
 	FHitResult rightHitResult;
-	FVector rightStartLocation = RightBox->GetComponentLocation();
-	FVector rightEndLocation = RightBox->GetComponentLocation() + RightBox->GetForwardVector() * 50.0f;
+	FVector rightStartLocation = this->GetActorLocation();
+	FVector rightEndLocation = this->GetActorLocation() + this->GetActorRightVector() * 200.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> rightObjectTypeQuery;
 	rightObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel4));
 
@@ -182,9 +180,4 @@ void ACStructure_Ceiling::CheckRight()
 		CenterRotation = rightHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
-}
-
-void ACStructure_Ceiling::DestroyPreviewBox()
-{
-	PreviewBox->DestroyComponent();
 }
