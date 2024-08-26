@@ -12,7 +12,8 @@ ACPickUp::ACPickUp()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
-	PickupMesh->SetSimulatePhysics(false);
+	PickupMesh->SetSimulatePhysics(true);
+	PickupMesh->SetEnableGravity(true);
 	SetRootComponent(PickupMesh);
 
 }
@@ -20,6 +21,8 @@ ACPickUp::ACPickUp()
 void ACPickUp::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 
 	InitializePickup(UCItemBase::StaticClass(), ItemQuantity);
 	

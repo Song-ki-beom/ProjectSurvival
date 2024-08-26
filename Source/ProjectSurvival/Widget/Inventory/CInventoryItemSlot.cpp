@@ -4,9 +4,11 @@
 #include "Widget/Inventory/CInventoryItemSlot.h"
 #include "Widget/Inventory/CInventoryTooltip.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CDragItemVisual.h"
+#include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-
+#include "Components/Border.h"
 
 
 
@@ -28,6 +30,23 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 
 	if (ItemReference)
 	{
+		switch (ItemReference->ItemType)
+		{
+		case EItemType::Build:
+			ItemBorder->SetBrushColor(FLinearColor::Gray);
+			break;
+		case EItemType::Harvest:
+			ItemBorder->SetBrushColor(FLinearColor::Green);
+				break;
+		case EItemType::Hunt:
+			ItemBorder->SetBrushColor(FLinearColor::Red);
+			break;
+
+		default:
+			break;
+		}
+
+
 		ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
 
 
@@ -48,18 +67,57 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 }
 
 
+//Drag 전에 위젯을 마우스오버 상태로 마우스 버튼을 클릭했는지 감지 
 FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	
-	return FReply::Handled();
+	FReply Reply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		return  Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton); //드래그 감지 실행 , TakeWidget() <<- 이 메서드는 현재 위젯이 드래그 가능한 객체임을 반환함 
+	}
+
+	{
+		//오른쪽 클릭 시  처리할 이벤트 구간(SubMenu) 
+	}
+
+	return Reply.Unhandled(); //다른 마우스 버튼일 경우 , 무응답 반환 
+
+
 }
 
 void UCInventoryItemSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 }
 
+//Tooltip Function 과 비슷하게 해당 위젯에 대한 마우스오버로 마우스가 해당 위젯을 Dragging 중인지 감지 
 void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
+	if (DragItemVisualClass)
+	{
+
+
+		UCDragItemVisual* DragVisual = CreateWidget<UCDragItemVisual>(this, DragItemVisualClass); //ui이므로 에디터에 있는 블루프린트 위젯 클래스로부터 동적 생성
+
+
+		//Drag하여 움직일 때 표시되는 DragVisual 위젯에 현재 ItemSlot 의 UI 정보 복사 
+		DragVisual->ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
+		
+		DragVisual->ItemBorder->SetBrushColor(ItemBorder->BrushColor);
+
+		DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+
+		UCItemDragDropOperation* DragItemOperation = NewObject<UCItemDragDropOperation>(); //데이터로만 이루어진 인스턴스이므로 NewObject 로 생성 
+		DragItemOperation->SourceItem = ItemReference;
+		DragItemOperation->SourceInventory = ItemReference->Inventory;
+
+		DragItemOperation->DefaultDragVisual = DragVisual; //dragvisual 내장 변수, drag 시 보이는 default dragvisual 설정
+		DragItemOperation->Pivot = EDragPivot::TopLeft; //드래그 시 마우스의 어느 부분에 Attach 될 것인지 설정하는 offet Pivot 
+
+
+		//MainMenu에서 호출될 NativeOnDrop에서의 UDragDropOperation* OutOperation에 전달될 객체 설정 
+		OutOperation = DragItemOperation;
+	}
 }
 
 bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)

@@ -14,7 +14,7 @@ class PROJECTSURVIVAL_API UCDragItemVisual : public UUserWidget
 {
 	GENERATED_BODY()
 	
-protected:
+public:
 	//VisibleAnywhere
 UPROPERTY(VisibleAnywhere, Category = "Drag Item Visual", meta = (BindWidget))
 	class UBorder* ItemBorder; //ItemSlot 의 외부 프레임 

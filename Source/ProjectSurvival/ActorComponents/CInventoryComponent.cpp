@@ -3,7 +3,8 @@
 #include "Character/CSurvivorController.h"
 #include "Net/UnrealNetwork.h"
 #include "Widget/CMainHUD.h"
-
+#include "World/CPickup.h"
+#include "Utility/CDebug.h"
 
 UCInventoryComponent::UCInventoryComponent()
 {
@@ -165,6 +166,33 @@ void UCInventoryComponent::ToggleMenu()
 {
 	if (HUD)
 		HUD->ToggleMenu();
+}
+
+void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 QuantityToDrop)
+{
+	if (FindMatchingItem(ItemToDrop))
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = OwnerCharacter;
+		SpawnParams.bNoFail = true;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
+		 
+		//Drop할 아이템 Spawn Location 과 Transform 설정 
+		const FVector SpawnLocation =  OwnerCharacter->GetActorLocation() + (OwnerCharacter->GetActorForwardVector() * 50.0f) ;
+		 const FTransform SpawnTransform(OwnerCharacter->GetActorRotation(), SpawnLocation);
+		
+		 //QuantityToDrop 만큼 인벤토리에서 제거 
+		 const int32 RemovedQuantity = RemoveAmountOfItem(ItemToDrop, QuantityToDrop); 
+
+		 ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams); //PickUp 클래스는 CObject Construct 이후에 , 의도적으로 Initialize를 하거나 PickUp 이벤트가 일어날때 액터의 재복사 및 전달 데이터의 Copy가 일어나기 때문에 StaticClass 로 정적 생성해도 괜찮다.
+
+		 Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+	}
+	else
+	{
+		CDebug::Print(TEXT("No Matching Item Do Drop ! Failed Drop"));
+	}
+
 }
 
 //IsStackable 이 False 인 데이터 수납할 시, 중첩 불가 단일 개수 

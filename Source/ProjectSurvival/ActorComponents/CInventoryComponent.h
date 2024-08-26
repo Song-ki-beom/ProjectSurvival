@@ -81,7 +81,7 @@ public:
 
 	//Toggle Menu
 	void ToggleMenu();
-
+	void DropItem(class UCItemBase* ItemToDrop, const int32 QuantityToDrop);
 
 	//Find
 
