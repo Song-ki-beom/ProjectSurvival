@@ -1,8 +1,9 @@
-﻿#include "Build/CStructure.h"
+#include "Build/CStructure.h"
 #include "Components/BoxComponent.h"
 
 ACStructure::ACStructure()
 {
+	bReplicates = true;
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 }
 

@@ -29,7 +29,7 @@ DECLARE_LOG_CATEGORY_EXTERN(UserDebug, Log, All);
 #define LOGLINE CDebug::Log(__FILE__,__FUNCTION__,__LINE__);
 
 #define PRINTLINE CDebug::Print(__FILE__,__FUNCTION__, __LINE__);
-#define PRINTLINE_DETAIL (Color, Duration) CDebug::Print(__FILE__,__FUNCTION__, __LINE__, Color, Duration);
+#define PRINTLINE_DETAIL(Color, Duration) CDebug::Print(__FILE__,__FUNCTION__, __LINE__, Color, Duration);
 
 class PROJECTSURVIVAL_API CDebug
 {

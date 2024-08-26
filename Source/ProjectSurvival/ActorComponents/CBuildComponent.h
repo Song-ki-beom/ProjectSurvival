@@ -42,6 +42,11 @@ private:
 	void BuildStartRamp();
 	void BuildStartDoorFrame();
 	void BuildStartDoor();
+
+	void PerformBuild(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void RequestBuild(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+
 	void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
 
 private:
@@ -49,7 +54,7 @@ private:
 
 	UPROPERTY()
 		class UCBuildWidget* BuildWidget;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 		class ACStructure* SpawnedStructure;
 	UPROPERTY()
 		class ACStructure_Foundation* SpawnedFoundation;
@@ -67,6 +72,7 @@ private:
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;
 
+	TSubclassOf<ACStructure> StructureClass;
 	EBuildStructureElement StructureElement;
 	bool bIsBuildable;
 	bool bIsSnapped;

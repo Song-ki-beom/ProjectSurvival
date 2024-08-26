@@ -9,12 +9,14 @@
 #include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 #include "Utility/CDebug.h"
 
 UCBuildComponent::UCBuildComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	SetIsReplicatedByDefault(true);
 	bIsBuilding = false;
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> redMaterialFinder(TEXT("MaterialInstanceConstant'/Game/PirateIsland/Include/Materials/Builds/MI_Build_Red.MI_Build_Red'"));
 	if (redMaterialFinder.Succeeded())
@@ -190,9 +192,19 @@ void UCBuildComponent::BuildSpawnedStructure()
 		CDebug::Print("You Can't Build There", FColor::Cyan);
 		return;
 	}
-	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(SpawnedStructure->GetClass(), SpawnedStructure->GetActorLocation(), SpawnedStructure->GetActorRotation());
-	DestroyChildComponent(buildstructure, StructureElement);
-	bIsSnapped = false;
+
+	if (IsValid(SpawnedStructure))
+		SpawnedStructure->SetReplicates(true);
+
+	if (Survivor->HasAuthority())
+	{
+		PerformBuild(StructureClass, StructureElement);
+	}
+	else
+	{
+		CDebug::Print("Spawned Structure : ", SpawnedStructure);
+		RequestBuild(StructureClass, StructureElement);
+	}
 }
 
 void UCBuildComponent::ClearSpawnedStructure()
@@ -204,6 +216,7 @@ void UCBuildComponent::ClearSpawnedStructure()
 
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
+	StructureClass = InClass;
 	StructureElement = InElement;
 
 	switch (StructureElement)
@@ -217,7 +230,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = Survivor;
 		spawnParams.Instigator = Survivor->GetInstigator();
-		SpawnedFoundation = GetWorld()->SpawnActor<ACStructure_Foundation>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedFoundation = GetWorld()->SpawnActor<ACStructure_Foundation>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedFoundation->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedFoundation);
 		break;
@@ -233,7 +246,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = Survivor;
 		spawnParams.Instigator = Survivor->GetInstigator();
-		SpawnedWall = GetWorld()->SpawnActor<ACStructure_Wall>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedWall = GetWorld()->SpawnActor<ACStructure_Wall>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedWall->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedWall);
 		break;
@@ -255,7 +268,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = Survivor;
 		spawnParams.Instigator = Survivor->GetInstigator();
-		SpawnedCeiling = GetWorld()->SpawnActor<ACStructure_Ceiling>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedCeiling = GetWorld()->SpawnActor<ACStructure_Ceiling>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedCeiling->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedCeiling);
 		break;
@@ -275,7 +288,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = Survivor;
 		spawnParams.Instigator = Survivor->GetInstigator();
-		SpawnedDoorFrame = GetWorld()->SpawnActor<ACStructure_DoorFrame>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedDoorFrame = GetWorld()->SpawnActor<ACStructure_DoorFrame>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedDoorFrame->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedDoorFrame);
 		break;
@@ -289,7 +302,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = Survivor;
 		spawnParams.Instigator = Survivor->GetInstigator();
-		SpawnedDoor = GetWorld()->SpawnActor<ACStructure_Door>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedDoor = GetWorld()->SpawnActor<ACStructure_Door>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedDoor->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedDoor);
 		break;
@@ -305,7 +318,7 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = Survivor;
 		spawnParams.Instigator = Survivor->GetInstigator();
-		SpawnedRamp = GetWorld()->SpawnActor<ACStructure_Ramp>(InClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedRamp = GetWorld()->SpawnActor<ACStructure_Ramp>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedRamp->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedRamp);
 		break;
@@ -317,6 +330,9 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 	default:
 		break;
 	}
+
+	if(IsValid(SpawnedStructure))
+		SpawnedStructure->SetReplicates(false);
 }
 
 void UCBuildComponent::BuildStartFoundation()
@@ -950,6 +966,38 @@ void UCBuildComponent::BuildStartDoor()
 	}
 }
 
+void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+{
+	if (IsValid(InClass))
+	{
+		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, Survivor->GetActorLocation(), Survivor->GetActorRotation());
+		DestroyChildComponent(buildstructure, InElement);
+		bIsSnapped = false;
+	}
+	else
+	{
+		CDebug::Print("InStructure Is Not Valid");
+	}
+}
+
+void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+{
+	if (IsValid(InClass))
+	{
+		PerformBuild(InClass, InElement);
+	}
+	else
+	{
+		CDebug::Print("InClass Is Not Valid", FColor::Silver);
+		PRINTLINE_DETAIL(FColor::Silver, 10.0f);
+	}
+}
+
+bool UCBuildComponent::RequestBuild_Validate(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+{
+	return true;
+}
+
 void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement)
 {
 	switch (InElement)
@@ -1015,4 +1063,11 @@ void UCBuildComponent::DestroyChildComponent(ACStructure* InStructure, EBuildStr
 	default:
 		break;
 	}
+}
+
+void UCBuildComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UCBuildComponent, SpawnedStructure);
 }
