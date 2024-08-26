@@ -36,6 +36,11 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 		{
 			ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
 		}
+		else
+		{
+
+			ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
+		}
 
 
 	}

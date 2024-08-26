@@ -37,7 +37,7 @@ void UCInventoryPanel::NativeOnInitialized()
 //인벤토리로부터 수량과 용량 정보 업데이트 
 void UCInventoryPanel::SetInfoText() 
 {
-    WeightInfo->SetText(FText::Format(FText::FromString("{0}/{1}"), InventoryReference->GetInventoryTotalWeight(), InventoryReference->GetWeightCapacity()));
+    WeightInfo->SetText(FText::FromString( FString::SanitizeFloat(InventoryReference->GetInventoryTotalWeight())+ "/"+FString::SanitizeFloat(InventoryReference->GetWeightCapacity())));
 
     CapacityInfo->SetText(FText::Format(FText::FromString("{0}/{1}"), InventoryReference->GetInventoryContents().Num(), InventoryReference->GetSlotsCapacity()));
 }

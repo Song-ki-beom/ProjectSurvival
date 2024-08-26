@@ -41,8 +41,7 @@ public:
 		class UTextBlock* ItemDescription;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* MaxStackSize;//스택
-	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* MaxStackSizeText;//스택
+	
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* StackWeight; //무게

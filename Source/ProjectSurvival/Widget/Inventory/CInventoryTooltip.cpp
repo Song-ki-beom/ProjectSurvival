@@ -38,10 +38,17 @@ void UCInventoryTooltip::NativeConstruct()
 	DamageValue->SetText(FText::AsNumber(ItemBeingHovered->ItemStats.DamageValue));
 	Usage->SetText(ItemBeingHovered->TextData.UsageText);
 	ItemDescription->SetText(ItemBeingHovered->TextData.Description);
-	StackWeight->SetText(FText::AsNumber(ItemBeingHovered->GetItemStackWeight()));
+	
+	const FString WeightInfo = { "Weight: " + FString::SanitizeFloat(ItemBeingHovered->GetItemStackWeight()) };
+
+
+	StackWeight->SetText(FText::FromString(WeightInfo));
+
+
+	const FString StackInfo = { "Max Stack Size: " + FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize)};
 
 	
-		MaxStackSize->SetText(FText::AsNumber(ItemBeingHovered->NumericData.MaxStackSize));
+	MaxStackSize->SetText(FText::FromString(StackInfo));
 	
 	
 
