@@ -84,8 +84,8 @@ void ACStructure_Foundation::CheckHeight()
 void ACStructure_Foundation::CheckCenter()
 {
 	FHitResult centerBoxHitResult;
-	FVector centerBoxLocation = this->GetActorLocation() + FVector(0, 0, 50);
-	FVector centerBoxSize = FVector(145, 145, 50);
+	FVector centerBoxLocation = this->GetActorLocation();
+	FVector centerBoxSize = FVector(145, 145, 75);
 	FRotator centerBoxOrientation;
 	if (!bRightHit && !bLeftHit && !bBackwardHit && !bForwardHit)
 		centerBoxOrientation = GetOwner()->GetActorRotation();

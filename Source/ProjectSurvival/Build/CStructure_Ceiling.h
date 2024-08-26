@@ -28,6 +28,8 @@ public:
 	void CheckRight();
 	bool GetCeilingRightHit() { return bRightHit; }
 
+	void DestroyPreviewBox();
+
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;

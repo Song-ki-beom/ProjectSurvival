@@ -96,7 +96,6 @@ void ACSurvivorController::ToggleBuildWidget()
 {
 	if (IsValid(BuildWidget))
 	{
-
 		if (bIsBuildWidgetOn)
 		{
 			CDebug::Print("Off Build");
@@ -187,8 +186,17 @@ void ACSurvivorController::SelectA()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::A);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::A)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::A);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::A);
+			Survivor->SelectStructure(ESelectedStructure::A, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -196,8 +204,17 @@ void ACSurvivorController::SelectS()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::S);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::S)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::S);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::S);
+			Survivor->SelectStructure(ESelectedStructure::S, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -205,8 +222,17 @@ void ACSurvivorController::SelectD()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::D);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::D)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::D);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::D);
+			Survivor->SelectStructure(ESelectedStructure::D, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -214,8 +240,17 @@ void ACSurvivorController::SelectZ()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::Z);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::Z)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::Z);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::Z);
+			Survivor->SelectStructure(ESelectedStructure::Z, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -223,8 +258,17 @@ void ACSurvivorController::SelectX()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::X);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::X)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::X);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::X);
+			Survivor->SelectStructure(ESelectedStructure::X, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -232,8 +276,17 @@ void ACSurvivorController::SelectC()
 {
 	if (bIsBuildWidgetOn)
 	{
-		//CSurvivor_BuildTest->SelectStructure(ESelectedStructure::C);
-		ToggleBuildWidget();
+		if (IsValid(BuildWidget->GetStructureClass(ESelectedStructure::C)))
+		{
+			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::C);
+			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::C);
+			Survivor->SelectStructure(ESelectedStructure::C, structureClass, structureElement);
+			ToggleBuildWidget();
+		}
+		else
+		{
+			CDebug::Print("InValid Class or Number 0");
+		}
 	}
 }
 
@@ -260,6 +313,24 @@ void ACSurvivorController::TestP()
 	TSubclassOf<ACStructure> structureClass3 = structureInfo3->StructureClass;
 	EBuildStructureElement structureElem3 = structureInfo3->StructureElement;
 	BuildWidget->SaveStructureInfo(ESelectedStructure::E, texture3, structureClass3, structureElem3);
+
+	FBuildStructureInfo* structureInfo4 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodRamp", TEXT("WoodRamp"));
+	UTexture2D* texture4 = structureInfo4->StructureTexture;
+	TSubclassOf<ACStructure> structureClass4 = structureInfo4->StructureClass;
+	EBuildStructureElement structureElem4 = structureInfo4->StructureElement;
+	BuildWidget->SaveStructureInfo(ESelectedStructure::A, texture4, structureClass4, structureElem4);
+
+	FBuildStructureInfo* structureInfo5 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodDoorFrame", TEXT("WoodDoorFrame"));
+	UTexture2D* texture5 = structureInfo5->StructureTexture;
+	TSubclassOf<ACStructure> structureClass5 = structureInfo5->StructureClass;
+	EBuildStructureElement structureElem5 = structureInfo5->StructureElement;
+	BuildWidget->SaveStructureInfo(ESelectedStructure::S, texture5, structureClass5, structureElem5);
+
+	FBuildStructureInfo* structureInfo6 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodDoor", TEXT("WoodDoor"));
+	UTexture2D* texture6 = structureInfo6->StructureTexture;
+	TSubclassOf<ACStructure> structureClass6 = structureInfo6->StructureClass;
+	EBuildStructureElement structureElem6 = structureInfo6->StructureElement;
+	BuildWidget->SaveStructureInfo(ESelectedStructure::D, texture6, structureClass6, structureElem6);
 }
 
 void ACSurvivorController::DoAction()

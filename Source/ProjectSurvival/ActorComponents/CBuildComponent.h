@@ -39,6 +39,9 @@ private:
 	void BuildStartFoundation();
 	void BuildStartWall();
 	void BuildStartCeiling();
+	void BuildStartRamp();
+	void BuildStartDoorFrame();
+	void BuildStartDoor();
 	void DestroyChildComponent(ACStructure* InStructure, EBuildStructureElement InElement);
 
 private:
@@ -54,6 +57,12 @@ private:
 		class ACStructure_Wall* SpawnedWall;
 	UPROPERTY()
 		class ACStructure_Ceiling* SpawnedCeiling;
+	UPROPERTY()
+		class ACStructure_Ramp* SpawnedRamp;
+	UPROPERTY()
+		class ACStructure_DoorFrame* SpawnedDoorFrame;
+	UPROPERTY()
+		class ACStructure_Door* SpawnedDoor;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;

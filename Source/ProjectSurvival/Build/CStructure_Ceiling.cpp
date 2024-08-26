@@ -183,3 +183,8 @@ void ACStructure_Ceiling::CheckRight()
 		this->SetActorRotation(CenterRotation);
 	}
 }
+
+void ACStructure_Ceiling::DestroyPreviewBox()
+{
+	PreviewBox->DestroyComponent();
+}

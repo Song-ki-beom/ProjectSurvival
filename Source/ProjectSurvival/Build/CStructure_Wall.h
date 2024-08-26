@@ -22,6 +22,11 @@ public:
 	void CheckDown_Wall();
 	bool GetWallDown_WallHit() { return bDown_WallHit; }
 
+	void CheckDown_DoorFrame();
+	bool GetWallDown_DoorFrameHit() { return bDown_DoorFrameHit; }
+
+	void DestroyPreviewBox();
+
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;
@@ -32,6 +37,7 @@ private:
 	bool bCenterHit;
 	bool bDown_FoundationHit;
 	bool bDown_WallHit;
+	bool bDown_DoorFrameHit;
 
 	FRotator CenterRotation;
 };
