@@ -108,7 +108,7 @@ int32 UCInventoryComponent::CalculateWeightAddAmount(UCItemBase* ItemIn, int32 R
 
 }
 
-//스택 = 아이템 마다 가질 수 있는 최대 재고 개수 
+//Max스택 = 아이템 마다 가질 수 있는 최대 재고 개수 
 //현재 가지고 있는 스택  갯수를 토대로 추가할 수 있는 최대 스택 개수 계산 
 int32 UCInventoryComponent::CalculateNumberForFullStack(UCItemBase* StackableItem, int32 InitialRequestedAddAmount)
 {
@@ -228,10 +228,92 @@ FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn,
 
 
 
-int32 UCInventoryComponent::HandleStackableItems(UCItemBase*, int32 RequestedAddAmount)
+int32 UCInventoryComponent::HandleStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount)
 {
+	if (RequestedAddAmount <= 0 || FMath::IsNearlyZero(ItemIn->GetItemStackWeight()))
+	{
+		return 0;
+	}
 
-	return 1;
+	int32 AmountLeftToDistribute = RequestedAddAmount;
+	UCItemBase* ExistingItem = FindNextPartialStack(ItemIn); //인벤에 일치하는 아이템 있는지 확인 
+	
+	while (ExistingItem) //이미 인벤에 같은 아이템 종류가 있으면 
+	{
+		const int32 AmountToMakeFullStack = CalculateNumberForFullStack(ExistingItem, AmountLeftToDistribute); //넣을수 있는 최대 재고량 계산 (1차 필터)
+		const int32 WeightLimitAddAmount = CalculateWeightAddAmount(ExistingItem, AmountToMakeFullStack); //허용 가능한 최대 중량을 기반으로  넣을 수 있는 최대 재고량 계산 (2차 필터)
+
+		if (WeightLimitAddAmount > 0)
+		{
+			//기존 인벤 아이템에 add
+			ExistingItem->SetQuantity(ExistingItem->Quantity + WeightLimitAddAmount);
+			InventoryTotalWeight += ExistingItem->GetItemSingleWeight() * WeightLimitAddAmount;
+			
+			
+			//넣은 개수만큼 기존의 빼오는 아이템 재고에 Subtract 
+			AmountLeftToDistribute -= WeightLimitAddAmount; 
+			ItemIn->SetQuantity(AmountLeftToDistribute);
+
+
+			if (InventoryTotalWeight >= InventoryWeightCapacity) //무게 초과 시
+			{
+				OnInventoryUpdated.Broadcast();
+				return RequestedAddAmount - AmountLeftToDistribute; //넣은 재고량 반환 
+			}
+
+		}
+
+
+		else if (WeightLimitAddAmount <= 0) //무게 문제로 넣지 못할 시
+		{
+			if (AmountLeftToDistribute != RequestedAddAmount)
+			{
+				OnInventoryUpdated.Broadcast();
+				return RequestedAddAmount - AmountLeftToDistribute; 
+			}
+
+			//AmountLeftToDistribute == RequestedAddAmount 일 시(넣은게 한개도 없음) 
+			return 0; 
+		}
+
+		if (AmountLeftToDistribute <= 0) //모든 Request재고량을 넣었을 시 
+		{
+			OnInventoryUpdated.Broadcast();
+			return RequestedAddAmount;
+		}
+
+		ExistingItem = FindNextPartialStack(ItemIn); //while문을 돌며 또 다른 넣을 수 있는 재고(Slot)가 있나 체크  
+	} 
+
+
+
+	//새로 Slot을 생성하려할 때 , 여분의 슬롯 개수가 있는지 체크 
+	if (InventoryContents.Num() + 1 <= InventorySlotsCapacity)
+	{
+		const int32 WeightLimitAddAmount = CalculateWeightAddAmount(ItemIn, AmountLeftToDistribute);
+
+		if (WeightLimitAddAmount > 0)
+		{
+			if (WeightLimitAddAmount < AmountLeftToDistribute) //새로 만들긴 하지만 넣을수 있는 재고가 요청만큼 안나올때
+			{
+				AmountLeftToDistribute -= WeightLimitAddAmount;
+				ItemIn->SetQuantity(AmountLeftToDistribute);
+
+				AddNewItem(ItemIn->CreateItemCopy(), WeightLimitAddAmount);
+				return RequestedAddAmount - AmountLeftToDistribute;
+
+			}
+
+			//새로운 아이템 Slot 에 모두 넣을수 있는 상태일때
+			AddNewItem(ItemIn, AmountLeftToDistribute);
+			return RequestedAddAmount;
+		}
+	}
+
+	OnInventoryUpdated.Broadcast();
+	return RequestedAddAmount - AmountLeftToDistribute;
+
+
 }
 
 
