@@ -25,6 +25,7 @@ void UCInventoryTooltip::NativeConstruct()
 
 	case EItemType::Harvest:
 		ItemType->SetText(FText::FromString("Harvest Tool"));
+		DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 
 

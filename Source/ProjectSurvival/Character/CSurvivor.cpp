@@ -37,7 +37,7 @@ ACSurvivor::ACSurvivor()
 	WeaponComponent->SetIsReplicated(true);
 	InventoryComponent = CreateDefaultSubobject<UCInventoryComponent>(TEXT("Inventory"));
 	InventoryComponent->SetSlotsCapacity(20);
-	InventoryComponent->SetWeightCapacity(50.0f);
+	InventoryComponent->SetWeightCapacity(200.0f);
 	HarvestComponent = CreateDefaultSubobject<UCHarvestComponent>(TEXT("Harvest"));
 	InteractionComponent = CreateDefaultSubobject<UCInteractionComponent>(TEXT("Interaction"));
 	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));

@@ -8,7 +8,7 @@
 #include "Components/WrapBox.h"
 #include "Components/TextBlock.h"
 #include "ActorComponents/CInventoryComponent.h"
-
+#include "Widget/Inventory/CItemDragDropOperation.h"
 
 void UCInventoryPanel::NativeOnInitialized()
 {
@@ -72,5 +72,11 @@ void UCInventoryPanel::RefreshInventory()
 
 bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-    return false;
+    //별도로 만든 DragDropOperation 생성 
+    const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
+    if (ItemDragDrop->SourceItem && InventoryReference) //아이템이 DragDropOperation에서 감지되면 (아이템이 Drag중이면 )
+    {
+        return true; // Drop 취소 
+    }
+    return false; 
 }

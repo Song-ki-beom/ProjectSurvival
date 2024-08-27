@@ -255,7 +255,7 @@ int32 UCInventoryComponent::HandleStackableItems(UCItemBase* ItemIn, int32 Reque
 			ItemIn->SetQuantity(AmountLeftToDistribute);
 
 
-			if (InventoryTotalWeight >= InventoryWeightCapacity) //무게 초과 시
+			if (InventoryTotalWeight + ExistingItem->GetItemSingleWeight()> InventoryWeightCapacity) //무게 초과 시
 			{
 				OnInventoryUpdated.Broadcast();
 				return RequestedAddAmount - AmountLeftToDistribute; //넣은 재고량 반환 
@@ -286,8 +286,8 @@ int32 UCInventoryComponent::HandleStackableItems(UCItemBase* ItemIn, int32 Reque
 	} 
 
 
-
-	//새로 Slot을 생성하려할 때 , 여분의 슬롯 개수가 있는지 체크 
+	//기존 Item에 추가 완료 후, 아직 AmountLeftToDistributes가 남았으면,
+	//새로 Slot을 생성함.. 여분의 슬롯 개수가 있는지 체크 
 	if (InventoryContents.Num() + 1 <= InventorySlotsCapacity)
 	{
 		const int32 WeightLimitAddAmount = CalculateWeightAddAmount(ItemIn, AmountLeftToDistribute);
@@ -308,11 +308,13 @@ int32 UCInventoryComponent::HandleStackableItems(UCItemBase* ItemIn, int32 Reque
 			AddNewItem(ItemIn, AmountLeftToDistribute);
 			return RequestedAddAmount;
 		}
+
+		//아이템 슬롯 여유 but WeightLimitAddAmount 0 일때(더 추가할 필요가 없을 때)
+		return RequestedAddAmount - AmountLeftToDistribute;
 	}
 
-	OnInventoryUpdated.Broadcast();
-	return RequestedAddAmount - AmountLeftToDistribute;
-
+	//no Capacity , no Slot
+	return 0;
 
 }
 

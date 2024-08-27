@@ -105,7 +105,15 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 		
 		DragVisual->ItemBorder->SetBrushColor(ItemBorder->BrushColor);
 
-		DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+		if (ItemReference->NumericData.bIsStackable)
+		{
+			DragVisual->ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+
+		}
+		else
+		{
+			DragVisual->ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
+		}
 
 		UCItemDragDropOperation* DragItemOperation = NewObject<UCItemDragDropOperation>(); //데이터로만 이루어진 인스턴스이므로 NewObject 로 생성 
 		DragItemOperation->SourceItem = ItemReference;

@@ -28,10 +28,11 @@ bool UCMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent&
 
 	//별도로 만든 DragDropOperation 생성 
 	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
-	if (PlayerCharacter && ItemDragDrop->SourceItem) // 떨어뜨릴 아이템이 존재하면 Drop
+	if (PlayerCharacter && ItemDragDrop->SourceItem) // 해당 UI 내에서 떨어뜨릴 아이템이 감지되면 
 	{
+
 		PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
-		return true;
+		return true; 
 	}
 	return false;
 }
