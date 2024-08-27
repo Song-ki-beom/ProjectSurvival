@@ -13,7 +13,7 @@ class PROJECTSURVIVAL_API ACStructure : public ACPickUp
 	
 public:	
 	ACStructure();
-	UStaticMeshComponent* GetStaticMesh() { return StaticMesh; }
+	UStaticMeshComponent* GetStaticMesh() { return PickupMesh; }
 	UMaterialInterface* GetOriginMaterial() { return OriginMaterial; }
 
 protected:
@@ -34,8 +34,8 @@ protected:
 	void SaveOriginMaterial();
 
 protected:
-	UPROPERTY(EditAnywhere)
-		class UStaticMeshComponent* StaticMesh;
+	//UPROPERTY(EditAnywhere)
+	//	class UStaticMeshComponent* StaticMesh;
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;
 

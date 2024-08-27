@@ -9,10 +9,10 @@ ACStructure_Ceiling::ACStructure_Ceiling()
 	LeftBox = CreateDefaultSubobject<UBoxComponent>("LeftBox");
 	RightBox = CreateDefaultSubobject<UBoxComponent>("RightBox");
 
-	ForwardBox->SetupAttachment(StaticMesh);
-	BackwardBox->SetupAttachment(StaticMesh);
-	LeftBox->SetupAttachment(StaticMesh);
-	RightBox->SetupAttachment(StaticMesh);
+	ForwardBox->SetupAttachment(PickupMesh);
+	BackwardBox->SetupAttachment(PickupMesh);
+	LeftBox->SetupAttachment(PickupMesh);
+	RightBox->SetupAttachment(PickupMesh);
 }
 
 void ACStructure_Ceiling::CheckCenter()

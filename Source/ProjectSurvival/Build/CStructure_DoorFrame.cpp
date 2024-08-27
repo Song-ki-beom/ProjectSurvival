@@ -5,7 +5,7 @@ ACStructure_DoorFrame::ACStructure_DoorFrame()
 {
 	UpBox = CreateDefaultSubobject<UBoxComponent>("UpBox");
 
-	UpBox->SetupAttachment(StaticMesh);
+	UpBox->SetupAttachment(PickupMesh);
 }
 
 void ACStructure_DoorFrame::CheckCenter()

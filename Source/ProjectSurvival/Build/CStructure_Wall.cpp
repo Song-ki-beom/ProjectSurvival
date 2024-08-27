@@ -8,7 +8,7 @@ ACStructure_Wall::ACStructure_Wall()
 {
 	UpBox = CreateDefaultSubobject<UBoxComponent>("UpBox");
 
-	UpBox->SetupAttachment(StaticMesh);
+	UpBox->SetupAttachment(PickupMesh);
 }
 
 void ACStructure_Wall::CheckCenter()

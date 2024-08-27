@@ -5,9 +5,8 @@
 ACStructure::ACStructure()
 {
 	bReplicates = true;
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PrivewBox");
-	PreviewBox->SetupAttachment(StaticMesh);
+	PreviewBox->SetupAttachment(PickupMesh);
 	PreviewBox->SetIsReplicated(true);
 }
 
@@ -15,6 +14,7 @@ void ACStructure::BeginPlay()
 {
 	Super::BeginPlay();
 	SaveOriginMaterial();
+	PickupMesh->SetSimulatePhysics(false);
 }
 
 void ACStructure::Tick(float DeltaTime)
@@ -55,7 +55,7 @@ void ACStructure::BroadcastDestroyPreviewBox_Implementation()
 
 void ACStructure::SaveOriginMaterial()
 {
-	if (IsValid(StaticMesh->GetStaticMesh()))
-		OriginMaterial = StaticMesh->GetStaticMesh()->GetMaterial(0);
+	if (IsValid(PickupMesh->GetStaticMesh()))
+		OriginMaterial = PickupMesh->GetStaticMesh()->GetMaterial(0);
 }
 

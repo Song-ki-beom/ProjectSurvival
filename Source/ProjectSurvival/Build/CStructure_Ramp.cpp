@@ -7,7 +7,7 @@ ACStructure_Ramp::ACStructure_Ramp()
 {
 	ForwardBox = CreateDefaultSubobject<UBoxComponent>("ForwardBox");
 
-	ForwardBox->SetupAttachment(StaticMesh);
+	ForwardBox->SetupAttachment(PickupMesh);
 }
 
 void ACStructure_Ramp::CheckHeight()

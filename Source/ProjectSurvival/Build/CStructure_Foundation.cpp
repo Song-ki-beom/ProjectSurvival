@@ -13,10 +13,10 @@ ACStructure_Foundation::ACStructure_Foundation()
 	LeftBox = CreateDefaultSubobject<UBoxComponent>("LeftBox");
 	RightBox = CreateDefaultSubobject<UBoxComponent>("RightBox");
 	
-	ForwardBox->SetupAttachment(StaticMesh);
-	BackwardBox->SetupAttachment(StaticMesh);
-	LeftBox->SetupAttachment(StaticMesh);
-	RightBox->SetupAttachment(StaticMesh);
+	ForwardBox->SetupAttachment(PickupMesh);
+	BackwardBox->SetupAttachment(PickupMesh);
+	LeftBox->SetupAttachment(PickupMesh);
+	RightBox->SetupAttachment(PickupMesh);
 }
 
 //void ACStructure_Foundation::Tick(float DeltaTime)
