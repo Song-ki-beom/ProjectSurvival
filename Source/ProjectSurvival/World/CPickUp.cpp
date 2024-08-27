@@ -149,6 +149,7 @@ void ACPickUp::InitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 	ItemReference = ItemToDrop;
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
 	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
+	ItemReference->Inventory = nullptr;
 	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
 	UpdateInteractableData();
 
