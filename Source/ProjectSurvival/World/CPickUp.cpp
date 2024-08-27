@@ -5,6 +5,7 @@
 #include "Character/CSurvivor.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Utility/CDebug.h"
+#include "Engine/DataTable.h"
 #include "ActorComponents/CInteractionComponent.h"
 #include "Widget/Inventory/CItemBase.h"
 // Sets default values
@@ -15,6 +16,12 @@ ACPickUp::ACPickUp()
 	PickupMesh->SetSimulatePhysics(true);
 	PickupMesh->SetEnableGravity(true);
 	SetRootComponent(PickupMesh);
+	 ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
+	if (DataTableAsset.Succeeded())
+	{
+		ItemDataTable = DataTableAsset.Object; 
+	}
+	
 
 }
 

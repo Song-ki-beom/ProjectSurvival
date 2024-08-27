@@ -51,13 +51,13 @@ protected:
 
 public:
 	//DataTable은 처음 시작하고 게임이 Start 될 때만 초기화 된다.
-	UPROPERTY(EditInstanceOnly, Category = "PickupInitialization")
+	UPROPERTY(VisibleAnywhere, Category = "PickupInitialization")
 	class UDataTable* ItemDataTable;
 
-	UPROPERTY(EditInstanceOnly, Category = "PickupInitialization")
+	UPROPERTY(EditAnywhere, Category = "PickupInitialization")
 	FName DesiredItemID; // ItemDataTable Row Search에 쓰이는 키
 
-	UPROPERTY(EditInstanceOnly, Category = "PickupInitialization")
+	UPROPERTY(EditAnywhere, Category = "PickupInitialization")
 		int32 ItemQuantity;
 
 
