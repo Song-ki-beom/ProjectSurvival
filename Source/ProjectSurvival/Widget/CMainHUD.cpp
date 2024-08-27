@@ -53,9 +53,33 @@ void ACMainHUD::HideMenu()
 {
 	if (MainMenuWidget)
 	{
-		bIsMenuVisible = true;
+		bIsMenuVisible = false;
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void ACMainHUD::ToggleMenu()
+{
+	if (bIsMenuVisible)
+	{
+		HideMenu();
+
+		const FInputModeGameOnly InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(false);
+
+
+
+	}
+	else
+	{
+		DisplayMenu();
+		const FInputModeGameAndUI InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(true);
+	}
+
+
 }
 
 void ACMainHUD::ShowInteractionWidget()

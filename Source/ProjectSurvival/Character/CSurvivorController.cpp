@@ -76,6 +76,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("SelectX", IE_Pressed, this, &ACSurvivorController::SelectX);
 		InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
 		InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
+		InputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACSurvivorController::ToggleMenu);
 
 		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
@@ -372,4 +373,10 @@ void ACSurvivorController::HoldAxe()
 	{
 		Survivor->HoldAxe();
 	}
+}
+
+void ACSurvivorController::ToggleMenu()
+{
+
+	Survivor->ToggleMenu();
 }

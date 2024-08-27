@@ -21,6 +21,9 @@ void UCInteractionWidget::NativeConstruct()
 	Super::NativeConstruct();
 	KeyPressText->SetText(FText::FromString("Press"));
 	CurrentInteractionDuration = 0.0f;
+
+
+
 }
 
 

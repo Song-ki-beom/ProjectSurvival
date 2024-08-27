@@ -3,6 +3,9 @@
 
 #include "Widget/Menu/CMainMenu.h"
 #include "Character/CSurvivor.h"
+#include "Widget/Inventory/CItemDragDropOperation.h"
+#include "ActorComponents/CInventoryComponent.h"
+#include "Widget/Inventory/CItemBase.h"
 
 void UCMainMenu::NativeOnInitialized() 
 {
@@ -21,7 +24,14 @@ void UCMainMenu::NativeConstruct()
 
 bool UCMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	return 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
-	//cast operation to item drag drop, ensure player is valid , call drop item on player
+
+	//별도로 만든 DragDropOperation 생성 
+	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
+	if (PlayerCharacter && ItemDragDrop->SourceItem) // 떨어뜨릴 아이템이 존재하면 Drop
+	{
+		PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
+		return true;
+	}
+	return false;
 }
