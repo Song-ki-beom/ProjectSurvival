@@ -19,7 +19,7 @@ public:
 
 public:	
 	virtual void BeginFocus() override;
-	virtual void EndFocus()override;
+	virtual void EndFocus() override;
 	virtual void BeginInteract() override; //인터렉션까지의 타이머 설정
 	virtual void EndInteract() override;
 

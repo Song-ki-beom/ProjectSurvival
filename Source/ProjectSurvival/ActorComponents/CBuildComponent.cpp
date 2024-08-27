@@ -563,7 +563,7 @@ void UCBuildComponent::BuildStartCeiling()
 					else
 					{
 						SpawnedCeiling->CheckForward();
-						if (SpawnedCeiling->GetCeilingForwardHit())\
+						if (SpawnedCeiling->GetCeilingForwardHit())
 							bIsSnapped = SpawnedCeiling->GetCeilingForwardHit();
 					}
 				}
