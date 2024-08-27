@@ -63,7 +63,7 @@ public:
 	}
 
 
-	void SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectStructure(ESelectedStructure InKey, TSubclassOf< ACStructure> InClass, EBuildStructureElement InElement);
 
 
 	//Customize

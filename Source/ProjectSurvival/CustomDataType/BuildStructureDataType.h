@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "Build/CStructure.h"
 #include "Engine/DataTable.h"

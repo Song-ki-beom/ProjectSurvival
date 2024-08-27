@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Character/CSurvivor.h"
 #include "InteractionInterface.generated.h"
 
 
