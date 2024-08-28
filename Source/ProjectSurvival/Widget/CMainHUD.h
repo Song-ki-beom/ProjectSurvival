@@ -23,11 +23,18 @@ public:
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
+	void ShowSubMenu(FVector2D Position);
+	void HideSubMenu(FVector2D Position);
+
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCMainMenu> MainMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UCInventorySubMenu> InventorySubMenuClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCInteractionWidget> InteractionWidgetClass;
+	
+
 
 
 protected:
@@ -39,7 +46,8 @@ protected:
 		class UCMainMenu* MainMenuWidget;
 	UPROPERTY()
 		class UCInteractionWidget* InteractionWidget;
-
+	UPROPERTY()
+		class UCInventorySubMenu* InventorySubMenuWidget;
 
 public:
 	bool bIsMenuVisible;

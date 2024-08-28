@@ -41,6 +41,12 @@ public:
 	FORCEINLINE class UCItemBase* GetItemReference()
 	{ return ItemReference; }
 
+	FORCEINLINE void SetHUDReference(class ACMainHUD* InHUDReference)
+	{
+		HUDReference = InHUDReference;
+	}
+
+
 protected:
 
 
@@ -63,7 +69,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
 	class UTextBlock* ItemQuantity; // 수량 
 
-
+	UPROPERTY(VisibleAnywhere, Category = "HUD")
+	class ACMainHUD* HUDReference; //SubMenu를 표시할 HUD 
 
 
 

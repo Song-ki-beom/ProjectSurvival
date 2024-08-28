@@ -120,6 +120,9 @@ public:
 	};
 
 
+	FORCEINLINE class ACMainHUD* GetHUDReference() const { return HUD;}; //현재 소지 용량 
+
+
 protected:
 	virtual void BeginPlay() override;
 

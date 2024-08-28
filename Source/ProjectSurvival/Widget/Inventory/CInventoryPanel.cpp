@@ -57,8 +57,8 @@ void UCInventoryPanel::RefreshInventory()
         for (TWeakObjectPtr<UCItemBase> InventoryItem : InventoryReference->GetInventoryContents())
         {
             UCInventoryItemSlot* ItemSlot = CreateWidget<UCInventoryItemSlot>(this,InventorySlotClass);
-
             ItemSlot->SetItemReference(InventoryItem.Get());
+            ItemSlot->SetHUDReference(InventoryReference->GetHUDReference());
             InventoryPanel->AddChildToWrapBox(ItemSlot);
 
         }

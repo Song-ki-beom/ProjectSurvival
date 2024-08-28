@@ -6,11 +6,12 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CDragItemVisual.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
+#include "Widget/CMainHUD.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
-
-
+#include "Utility/CDebug.h"
+#include "Kismet/GameplayStatics.h"
 
 void UCInventoryItemSlot::NativeOnInitialized() //위젯 생성될때 호출
 {
@@ -20,7 +21,6 @@ void UCInventoryItemSlot::NativeOnInitialized() //위젯 생성될때 호출
 		UCInventoryTooltip* ToolTip = CreateWidget<UCInventoryTooltip>(this, ToolTipClass);
 		ToolTip->InventorySlotBeingHovered = this;
 		SetToolTip(ToolTip);
-
 	}
 }
 
@@ -72,13 +72,23 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 {
 	FReply Reply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
-	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton) // 왼쪽 클릭 이벤트 처리
 	{
 		return  Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton); //드래그 감지 실행 , TakeWidget() <<- 이 메서드는 현재 위젯이 드래그 가능한 객체임을 반환함 
 	}
 
+	else if(InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton) // 오른쪽 클릭 이벤트 처리
 	{
-		//오른쪽 클릭 시  처리할 이벤트 구간(SubMenu) 
+
+		FVector2D mousePosition(0,0);
+
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mousePosition.X, mousePosition.Y);
+
+		
+		HUDReference->ShowSubMenu(FVector2D(mousePosition.X+10, mousePosition.Y+15));
+		SetToolTip(nullptr);
+		
+		return Reply.Handled(); // 오른쪽 클릭 처리 완료
 	}
 
 	return Reply.Unhandled(); //다른 마우스 버튼일 경우 , 무응답 반환 
@@ -88,6 +98,7 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
 void UCInventoryItemSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
+
 }
 
 //Tooltip Function 과 비슷하게 해당 위젯에 대한 마우스오버로 마우스가 해당 위젯을 Dragging 중인지 감지 
@@ -128,7 +139,10 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 	}
 }
 
+
 bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	return false;
 }
+
+

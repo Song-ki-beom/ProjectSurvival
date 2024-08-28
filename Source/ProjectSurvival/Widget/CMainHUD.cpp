@@ -4,7 +4,8 @@
 #include "Widget/CMainHUD.h"
 #include "Widget/Menu/CMainMenu.h"
 #include "Widget/Inventory/CInteractionWidget.h"
-
+#include "Widget/Inventory/CInventorySubMenu.h"
+#include "Utility/CDebug.h"
 ACMainHUD::ACMainHUD()
 {
 
@@ -32,7 +33,13 @@ void ACMainHUD::BeginPlay()
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
+	//위젯들 등록 
+	if (InventorySubMenuClass)
+	{
+		//Widget 은 그래픽 요소를 지니고 있기 때문에 StaticClass() 가 아니라 에디터에 존재하는 요소를 참조로 가져와야 한다..MainMenuClass 가 그 예시
+		InventorySubMenuWidget = CreateWidget<UCInventorySubMenu>(GetWorld(), InventorySubMenuClass);
 
+	}
 
 
 
@@ -113,3 +120,29 @@ void ACMainHUD::UpdateInteractionWidget(const FInteractableData* InteractableDat
 	}
 }
 
+
+void ACMainHUD::ShowSubMenu(FVector2D Position)
+{
+	if (InventorySubMenuWidget && !InventorySubMenuWidget->IsInViewport())
+	{
+		
+		CDebug::Print(FText::Format(FText::FromString("{0} , {1}"), Position.X, Position.Y).ToString());
+		// 서브메뉴의 위치를 설정
+
+		InventorySubMenuWidget->SetPositionInViewport(Position, true);
+		
+		// 서브메뉴 표시
+		InventorySubMenuWidget->AddToViewport(6);
+	}
+
+}
+
+void ACMainHUD::HideSubMenu(FVector2D Position)
+{
+	if (InventorySubMenuWidget &&InventorySubMenuWidget->IsInViewport())
+	{
+		// 서브메뉴를 뷰포트에서 제거
+		InventorySubMenuWidget->RemoveFromViewport();
+	}
+
+}
