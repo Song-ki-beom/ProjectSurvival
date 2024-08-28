@@ -332,6 +332,12 @@ void ACSurvivorController::TestP()
 	TSubclassOf<ACStructure> structureClass6 = structureInfo6->StructureClass;
 	EBuildStructureElement structureElem6 = structureInfo6->StructureElement;
 	BuildWidget->SaveStructureInfo(ESelectedStructure::D, texture6, structureClass6, structureElem6);
+
+	FBuildStructureInfo* structureInfo7 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodStair", TEXT("WoodStair"));
+	UTexture2D* texture7 = structureInfo7->StructureTexture;
+	TSubclassOf<ACStructure> structureClass7 = structureInfo7->StructureClass;
+	EBuildStructureElement structureElem7 = structureInfo7->StructureElement;
+	BuildWidget->SaveStructureInfo(ESelectedStructure::Z, texture7, structureClass7, structureElem7);
 }
 
 void ACSurvivorController::DoAction()

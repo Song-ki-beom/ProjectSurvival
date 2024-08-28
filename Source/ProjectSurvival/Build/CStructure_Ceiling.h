@@ -16,17 +16,29 @@ public:
 	void CheckCenter();
 	bool GetCeilingCenterHit() { return bCenterHit; }
 
-	void CheckForward();
-	bool GetCeilingForwardHit() { return bForwardHit; }
-	
-	void CheckBackward();
-	bool GetCeilingBackwardHit() { return bBackwardHit; }
+	void CheckForward_Wall();
+	bool GetCeilingForward_WallHit() { return bForward_WallHit; }
 
-	void CheckLeft();
-	bool GetCeilingLeftHit() { return bLeftHit; }
+	void CheckBackward_Wall();
+	bool GetCeilingBackward_WallHit() { return bBackward_WallHit; }
 
-	void CheckRight();
-	bool GetCeilingRightHit() { return bRightHit; }
+	void CheckLeft_Wall();
+	bool GetCeilingLeft_WallHit() { return bLeft_WallHit; }
+
+	void CheckRight_Wall();
+	bool GetCeilingRight_WallHit() { return bRight_WallHit; }
+
+	void CheckForward_Ceiling();
+	bool GetCeilingForward_CeilingHit() { return bForward_CeilingHit; }
+
+	void CheckBackward_Ceiling();
+	bool GetCeilingBackward_CeilingHit() { return bBackward_CeilingHit; }
+
+	void CheckLeft_Ceiling();
+	bool GetCeilingLeft_CeilingHit() { return bLeft_CeilingHit; }
+
+	void CheckRight_Ceiling();
+	bool GetCeilingRight_CeilingHit() { return bRight_CeilingHit; }
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -40,10 +52,14 @@ protected:
 
 private:
 	bool bCenterHit;
-	bool bForwardHit;
-	bool bBackwardHit;
-	bool bLeftHit;
-	bool bRightHit;
+	bool bForward_WallHit;
+	bool bBackward_WallHit;
+	bool bLeft_WallHit;
+	bool bRight_WallHit;
+	bool bForward_CeilingHit;
+	bool bBackward_CeilingHit;
+	bool bLeft_CeilingHit;
+	bool bRight_CeilingHit;
 
 	FRotator CenterRotation;
 };

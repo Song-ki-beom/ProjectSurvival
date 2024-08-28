@@ -17,7 +17,7 @@ void ACStructure_Wall::CheckCenter()
 	FVector centerBoxLocation = this->GetActorLocation();
 	FVector centerBoxSize = FVector(135, 10, 135);
 	FRotator centerBoxOrientation;
-	if (!bDown_FoundationHit && !bDown_WallHit && !bDown_DoorFrameHit)
+	if (!bDown_FoundationHit && !bDown_WallHit && !bDown_DoorFrameHit && !bDown_CeilingHit)
 		centerBoxOrientation = GetOwner()->GetActorRotation();
 	else
 		centerBoxOrientation = CenterRotation;
@@ -136,6 +136,40 @@ void ACStructure_Wall::CheckDown_DoorFrame()
 	);
 
 	if (bDown_DoorFrameHit)
+	{
+		DrawDebugLine(GetWorld(), downHitResult.GetComponent()->GetComponentLocation(), downHitResult.GetComponent()->GetComponentLocation() + downHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		this->SetActorLocation(downHitResult.GetComponent()->GetComponentLocation() + downHitResult.GetComponent()->GetForwardVector() * 15.0f + downHitResult.ImpactNormal * 170.0f);
+		CenterRotation = downHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
+		this->SetActorRotation(CenterRotation);
+	}
+}
+
+void ACStructure_Wall::CheckDown_Ceiling()
+{
+	FHitResult downHitResult;
+	FVector downStartLocation = this->GetActorLocation();
+	FVector downEndLocation = this->GetActorLocation() + this->GetActorUpVector() * -250.0f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> downObjectTypeQuery;
+	downObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel6));
+
+	TArray<AActor*> downBoxActorsToIgnore;
+	downBoxActorsToIgnore.Add(this);
+
+	bDown_CeilingHit = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		downStartLocation,
+		downEndLocation,
+		downObjectTypeQuery,
+		false,
+		downBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		downHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+
+	if (bDown_CeilingHit)
 	{
 		DrawDebugLine(GetWorld(), downHitResult.GetComponent()->GetComponentLocation(), downHitResult.GetComponent()->GetComponentLocation() + downHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(downHitResult.GetComponent()->GetComponentLocation() + downHitResult.GetComponent()->GetForwardVector() * 15.0f + downHitResult.ImpactNormal * 170.0f);

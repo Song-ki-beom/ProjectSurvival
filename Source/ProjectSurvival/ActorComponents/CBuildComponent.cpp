@@ -5,6 +5,7 @@
 #include "Build/CStructure_Ramp.h"
 #include "Build/CStructure_DoorFrame.h"
 #include "Build/CStructure_Door.h"
+#include "Build/CStructure_Stair.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
@@ -114,7 +115,10 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		break;
 	}
 	case EBuildStructureElement::Stair:
+	{
+		BuildStartStair();
 		break;
+	}
 	case EBuildStructureElement::None:
 		break;
 	default:
@@ -326,7 +330,19 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		break;
 	}
 	case EBuildStructureElement::Stair:
+	{
+		if (IsValid(SpawnedStructure))
+			SpawnedStructure->Destroy();
+		FVector spawnLocation = Survivor->GetActorLocation();
+		FRotator spawnRotation = Survivor->GetActorRotation();
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = Survivor;
+		spawnParams.Instigator = Survivor->GetInstigator();
+		SpawnedStair = GetWorld()->SpawnActor<ACStructure_Stair>(StructureClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedStair->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SpawnedStructure = Cast<ACStructure>(SpawnedStair);
 		break;
+	}
 	case EBuildStructureElement::None:
 		break;
 	default:
@@ -454,6 +470,12 @@ void UCBuildComponent::BuildStartWall()
 					SpawnedWall->CheckDown_DoorFrame();
 					if (SpawnedWall->GetWallDown_DoorFrameHit())
 						bIsSnapped = SpawnedWall->GetWallDown_DoorFrameHit();
+					else
+					{
+						SpawnedWall->CheckDown_Ceiling();
+						if (SpawnedWall->GetWallDown_CeilingHit())
+							bIsSnapped = SpawnedWall->GetWallDown_CeilingHit();
+					}
 				}
 			}
 		}
@@ -547,24 +569,48 @@ void UCBuildComponent::BuildStartCeiling()
 
 		if (!bIsSnapped)
 		{
-			SpawnedCeiling->CheckRight();
-			if (SpawnedCeiling->GetCeilingRightHit())
-				bIsSnapped = SpawnedCeiling->GetCeilingRightHit();
+			SpawnedCeiling->CheckRight_Wall();
+			if (SpawnedCeiling->GetCeilingRight_WallHit())
+				bIsSnapped = SpawnedCeiling->GetCeilingRight_WallHit();
 			else
 			{
-				SpawnedCeiling->CheckLeft();
-				if (SpawnedCeiling->GetCeilingLeftHit())
-					bIsSnapped = SpawnedCeiling->GetCeilingLeftHit();
+				SpawnedCeiling->CheckLeft_Wall();
+				if (SpawnedCeiling->GetCeilingLeft_WallHit())
+					bIsSnapped = SpawnedCeiling->GetCeilingLeft_WallHit();
 				else
 				{
-					SpawnedCeiling->CheckBackward();
-					if (SpawnedCeiling->GetCeilingBackwardHit())
-						bIsSnapped = SpawnedCeiling->GetCeilingBackwardHit();
+					SpawnedCeiling->CheckBackward_Wall();
+					if (SpawnedCeiling->GetCeilingBackward_WallHit())
+						bIsSnapped = SpawnedCeiling->GetCeilingBackward_WallHit();
 					else
 					{
-						SpawnedCeiling->CheckForward();
-						if (SpawnedCeiling->GetCeilingForwardHit())
-							bIsSnapped = SpawnedCeiling->GetCeilingForwardHit();
+						SpawnedCeiling->CheckForward_Wall();
+						if (SpawnedCeiling->GetCeilingForward_WallHit())
+							bIsSnapped = SpawnedCeiling->GetCeilingForward_WallHit();
+						else
+						{
+							SpawnedCeiling->CheckRight_Ceiling();
+							if (SpawnedCeiling->GetCeilingRight_CeilingHit())
+								bIsSnapped = SpawnedCeiling->GetCeilingRight_CeilingHit();
+							else
+							{
+								SpawnedCeiling->CheckLeft_Ceiling();
+								if (SpawnedCeiling->GetCeilingLeft_CeilingHit())
+									bIsSnapped = SpawnedCeiling->GetCeilingLeft_CeilingHit();
+								else
+								{
+									SpawnedCeiling->CheckBackward_Ceiling();
+									if (SpawnedCeiling->GetCeilingBackward_CeilingHit())
+										bIsSnapped = SpawnedCeiling->GetCeilingBackward_CeilingHit();
+									else
+									{
+										SpawnedCeiling->CheckForward_Ceiling();
+										if (SpawnedCeiling->GetCeilingForward_CeilingHit())
+											bIsSnapped = SpawnedCeiling->GetCeilingForward_CeilingHit();
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -792,6 +838,12 @@ void UCBuildComponent::BuildStartDoorFrame()
 			SpawnedDoorFrame->CheckDown_Foundation();
 			if (SpawnedDoorFrame->GetDoorFrameDown_FoundationHit())
 				bIsSnapped = SpawnedDoorFrame->GetDoorFrameDown_FoundationHit();
+			else
+			{
+				SpawnedDoorFrame->CheckDown_Ceiling();
+				if (SpawnedDoorFrame->GetDoorFrameDown_CeilingHit())
+					bIsSnapped = SpawnedDoorFrame->GetDoorFrameDown_CeilingHit();
+			}
 		}
 
 		if (bIsSnapped)
@@ -964,6 +1016,99 @@ void UCBuildComponent::BuildStartDoor()
 		if (!bIsBuildable && SpawnedDoor->GetStaticMesh()->GetMaterial(0) != RedMaterial)
 		{
 			SpawnedDoor->GetStaticMesh()->SetMaterial(0, RedMaterial);
+		}
+	}
+}
+
+void UCBuildComponent::BuildStartStair()
+{
+	if (IsValid(SpawnedStair))
+	{
+		FVector structureLocation;
+		FRotator structureRotation;
+
+		if (!bIsSnapped)
+		{
+			SpawnedStair->CheckDown_Foundation();
+			if (SpawnedStair->GetStairDown_FoundationHit())
+				bIsSnapped = SpawnedStair->GetStairDown_FoundationHit();
+		}
+
+		if (bIsSnapped)
+		{
+			SpawnedStair->CheckCenter();
+			if (!SpawnedStair->GetStairCenterHit())
+				bIsBuildable = (!SpawnedStair->GetStairCenterHit());
+			else
+			{
+				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
+				SpawnedStair->SetActorLocation(structureLocation);
+				structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+				SpawnedStair->SetActorRotation(structureRotation);
+				bIsSnapped = false;
+				bIsBuildable = false;
+			}
+
+			TArray<FHitResult> tempHitResults;
+			FVector tempStartLocation = Survivor->GetActorLocation();
+			FVector tempEndLocation = Survivor->GetActorLocation() + Survivor->GetControlRotation().Vector() * 750.0f;
+			TArray<TEnumAsByte<EObjectTypeQuery>> tempObjectTypeQuery;
+			tempObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+			TArray<AActor*> tempActorsIgnore;
+			FCollisionObjectQueryParams tempObjectQueryParams;
+			FCollisionQueryParams tempQueryParams;
+			
+			bool tempBool = UKismetSystemLibrary::LineTraceMultiForObjects(
+				GetWorld(),
+				tempStartLocation,
+				tempEndLocation,
+				tempObjectTypeQuery,
+				false,
+				tempActorsIgnore,
+				EDrawDebugTrace::Persistent,
+				tempHitResults,
+				true,
+				FLinearColor::Green,
+				FLinearColor::Red
+			);
+			
+			if (!tempBool)
+			{
+				// Preview Box를 벗어났을 때
+				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
+				SpawnedStair->SetActorLocation(structureLocation);
+				structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+				SpawnedStair->SetActorRotation(structureRotation);
+				bIsSnapped = false;
+				bIsBuildable = false;
+			}
+		}
+		else
+		{
+			// DownHit로 Foundation을 못 찾았을 때
+			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+			if (Survivor->GetControlRotation().Vector().Z > 0)
+				structureLocation.Z = Survivor->GetActorLocation().Z + Survivor->GetControlRotation().Vector().Z * 1000.0f + 100.0f;
+			else
+				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
+			SpawnedStair->SetActorLocation(structureLocation);
+			structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+			SpawnedStair->SetActorRotation(structureRotation);
+			bIsBuildable = false;
+		}
+
+		if (bIsBuildable && SpawnedStair->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
+		{
+			SpawnedStair->GetStaticMesh()->SetMaterial(0, GreenMaterial);
+		}
+		if (!bIsBuildable && SpawnedStair->GetStaticMesh()->GetMaterial(0) != RedMaterial)
+		{
+			SpawnedStair->GetStaticMesh()->SetMaterial(0, RedMaterial);
 		}
 	}
 }

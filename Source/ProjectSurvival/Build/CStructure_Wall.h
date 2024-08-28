@@ -25,6 +25,9 @@ public:
 	void CheckDown_DoorFrame();
 	bool GetWallDown_DoorFrameHit() { return bDown_DoorFrameHit; }
 
+	void CheckDown_Ceiling();
+	bool GetWallDown_CeilingHit() { return bDown_CeilingHit; }
+
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* UpBox;
@@ -34,6 +37,7 @@ private:
 	bool bDown_FoundationHit;
 	bool bDown_WallHit;
 	bool bDown_DoorFrameHit;
+	bool bDown_CeilingHit;
 
 	FRotator CenterRotation;
 };
