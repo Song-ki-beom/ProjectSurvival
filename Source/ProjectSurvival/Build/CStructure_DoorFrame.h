@@ -19,6 +19,9 @@ public:
 	void CheckDown_Foundation();
 	bool GetDoorFrameDown_FoundationHit() { return bDown_FoundationHit; }
 
+	void CheckDown_Ceiling();
+	bool GetDoorFrameDown_CeilingHit() { return bDown_CeilingHit; }
+
 	void DestroyPreviewBox();
 
 protected:
@@ -28,6 +31,7 @@ protected:
 private:
 	bool bCenterHit;
 	bool bDown_FoundationHit;
+	bool bDown_CeilingHit;
 
 	FRotator CenterRotation;
 };

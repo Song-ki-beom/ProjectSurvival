@@ -42,6 +42,7 @@ private:
 	void BuildStartRamp();
 	void BuildStartDoorFrame();
 	void BuildStartDoor();
+	void BuildStartStair();
 
 	void PerformBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform);
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -66,6 +67,8 @@ private:
 		class ACStructure_DoorFrame* SpawnedDoorFrame;
 	UPROPERTY()
 		class ACStructure_Door* SpawnedDoor;
+	UPROPERTY()
+		class ACStructure_Stair* SpawnedStair;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;
