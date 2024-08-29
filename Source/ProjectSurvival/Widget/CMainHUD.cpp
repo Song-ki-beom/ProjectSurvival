@@ -31,14 +31,16 @@ void ACMainHUD::BeginPlay()
 		MainMenuWidget = CreateWidget<UCMainMenu>(GetWorld(), MainMenuClass);
 		MainMenuWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
 		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		MainMenuWidget->OnMainMenuToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
+		MainMenuWidget->bIsFocusable = true;
+
 	}
 	
 	//위젯들 등록 
 	if (InventorySubMenuClass)
 	{
-		//Widget 은 그래픽 요소를 지니고 있기 때문에 StaticClass() 가 아니라 에디터에 존재하는 요소를 참조로 가져와야 한다..MainMenuClass 가 그 예시
 		InventorySubMenuWidget = CreateWidget<UCInventorySubMenu>(GetWorld(), InventorySubMenuClass);
-
+		InventorySubMenuWidget->OnFocusOnSubMenuEnded.AddUObject(this, &ACMainHUD::HideSubMenu);
 	}
 
 
@@ -47,14 +49,7 @@ void ACMainHUD::BeginPlay()
 }
 
 
-void ACMainHUD::DisplayMenu()
-{
-	if (MainMenuWidget)
-	{
-		bIsMenuVisible = true;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-}
+
 
 void ACMainHUD::HideMenu()
 {
@@ -81,12 +76,23 @@ void ACMainHUD::ToggleMenu()
 	else
 	{
 		DisplayMenu();
-		const FInputModeGameAndUI InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
+		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
+
 	}
 
 
+}
+
+void ACMainHUD::DisplayMenu()
+{
+	if (MainMenuWidget)
+	{
+		bIsMenuVisible = true;
+		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		MainMenuWidget->SetKeyboardFocus();
+	}
 }
 
 void ACMainHUD::ShowInteractionWidget()
@@ -130,14 +136,16 @@ void ACMainHUD::ShowSubMenu(FVector2D Position)
 		// 서브메뉴의 위치를 설정
 
 		InventorySubMenuWidget->SetPositionInViewport(Position, true);
-		
 		// 서브메뉴 표시
 		InventorySubMenuWidget->AddToViewport(6);
+		InventorySubMenuWidget->bIsFocusable = true;
+		InventorySubMenuWidget->SetKeyboardFocus();
+
 	}
 
 }
 
-void ACMainHUD::HideSubMenu(FVector2D Position)
+void ACMainHUD::HideSubMenu()
 {
 	if (InventorySubMenuWidget &&InventorySubMenuWidget->IsInViewport())
 	{

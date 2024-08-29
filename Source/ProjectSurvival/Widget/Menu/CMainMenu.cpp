@@ -6,6 +6,7 @@
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Input/Reply.h"
 
 void UCMainMenu::NativeOnInitialized() 
 {
@@ -21,6 +22,19 @@ void UCMainMenu::NativeConstruct()
 	PlayerCharacter = Cast<ACSurvivor>(GetOwningPlayerPawn());
 
 }
+
+FReply UCMainMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+	if (InKeyEvent.GetKey() == EKeys::Tab)
+	{
+		OnMainMenuToggled.Broadcast();  // 메뉴를 켜고 끄는 함수 호출
+		return FReply::Handled();  // 입력을 처리했다고 반환
+	}
+	return FReply::Unhandled();
+
+}
+
 
 bool UCMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {

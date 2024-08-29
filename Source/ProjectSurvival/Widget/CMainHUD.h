@@ -24,7 +24,9 @@ public:
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
 	void ShowSubMenu(FVector2D Position);
-	void HideSubMenu(FVector2D Position);
+	void HideSubMenu();
+
+
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
