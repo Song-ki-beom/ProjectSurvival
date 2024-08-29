@@ -9,5 +9,14 @@
 void UCInventorySubMenu::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
 {
 	Super::NativeOnFocusLost(InFocusEvent);
+    if (InFocusEvent.GetCause() == EFocusCause::Mouse)
+    {
+        if (IsHovered())
+        {
+            SetKeyboardFocus();
+            return;
+        }
+    }
+
 	OnFocusOnSubMenuEnded.Broadcast();
 }

@@ -60,7 +60,7 @@ void UCItemBase::SetQuantity(const int32 NewQuantity)
 
 void UCItemBase::Use(ACSurvivor* Character)
 {
-
+	
 }
 
 
