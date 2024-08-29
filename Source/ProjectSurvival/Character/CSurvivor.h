@@ -131,12 +131,14 @@ private:
 		class UCBuildComponent* BuildComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCMovingComponent* MovingComponent;
+
 	
 	//Inventory
 	UPROPERTY(VisibleAnywhere)
 		class UCInteractionComponent* InteractionComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCInventoryComponent* InventoryComponent;
-
+	UPROPERTY(VisibleAnywhere)
+		class UCProduceComponent* ProduceComponent;
 };
 
