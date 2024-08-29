@@ -7,6 +7,7 @@
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CInteractionComponent.h"
 #include "ActorComponents/CInventoryComponent.h"
+#include "ActorComponents/CProduceComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -38,6 +39,7 @@ ACSurvivor::ACSurvivor()
 	InventoryComponent = CreateDefaultSubobject<UCInventoryComponent>(TEXT("Inventory"));
 	InventoryComponent->SetSlotsCapacity(20);
 	InventoryComponent->SetWeightCapacity(50.0f);
+	ProduceComponent = CreateDefaultSubobject<UCProduceComponent>(TEXT("Produce"));
 	HarvestComponent = CreateDefaultSubobject<UCHarvestComponent>(TEXT("Harvest"));
 	InteractionComponent = CreateDefaultSubobject<UCInteractionComponent>(TEXT("Interaction"));
 	CustomizeComponent = CreateDefaultSubobject<UCCustomizeComponent>(TEXT("Customize"));

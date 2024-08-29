@@ -9,6 +9,7 @@
 #include "ActorComponents/CBuildComponent.h"
 #include "ActorComponents/CMovingComponent.h"
 #include "Widget/Build/CBuildWidget.h"
+#include "Widget/Produce/CProduceWidget.h"
 #include "Utility/CDebug.h"
 
 ACSurvivorController::ACSurvivorController()
@@ -31,7 +32,16 @@ ACSurvivorController::ACSurvivorController()
 	else
 		CDebug::Print("buildStructureDataFinder Failed", FColor::Red);
 
+	static ConstructorHelpers::FClassFinder<UUserWidget> produceWidgetFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceWidget.WBP_CProduceWidget_C'"));
+	if (produceWidgetFinder.Succeeded())
+	{
+		ProduceWidgetClass = produceWidgetFinder.Class;
+	}
+	else
+		CDebug::Print("produceWidgetFinder Failed", FColor::Red);
+
 	bIsBuildWidgetOn = false;
+	bIsProduceWidgetOn = false;
 }
 
 void ACSurvivorController::BeginPlay()
@@ -95,6 +105,9 @@ void ACSurvivorController::SetupInputFunction()
 
 void ACSurvivorController::ToggleBuildWidget()
 {
+	if (bIsProduceWidgetOn)
+		return;
+
 	if (IsValid(BuildWidget))
 	{
 		if (bIsBuildWidgetOn)
@@ -383,6 +396,36 @@ void ACSurvivorController::HoldAxe()
 
 void ACSurvivorController::ToggleMenu()
 {
-
+	if (bIsBuildWidgetOn)
+		return;
 	Survivor->ToggleMenu();
+	ToggleProduceWidget();
+}
+
+void ACSurvivorController::ToggleProduceWidget()
+{
+	if (IsValid(ProduceWidget))
+	{
+		if (bIsProduceWidgetOn)
+		{
+			bIsProduceWidgetOn = false;
+			ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+			this->SetInputMode(FInputModeUIOnly());
+		}
+		else
+		{
+			bIsProduceWidgetOn = true;
+			ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+			this->SetInputMode(FInputModeGameOnly());
+		}
+	}
+	else
+	{
+		ProduceWidget = CreateWidget<UCProduceWidget>(this, ProduceWidgetClass);
+		ProduceWidget->AddToViewport();
+		ProduceWidget->SetPositionInViewport(FVector2D(75, 75));
+		ProduceWidget->SetDesiredSizeInViewport(FVector2D(600, 850));
+		bIsProduceWidgetOn = true;
+		this->SetInputMode(FInputModeUIOnly());
+	}
 }
