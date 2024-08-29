@@ -26,7 +26,7 @@ void UCMainMenu::NativeConstruct()
 FReply UCMainMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-	if (InKeyEvent.GetKey() == EKeys::Tab)
+	if (InKeyEvent.GetKey() == EKeys::I)
 	{
 		OnMainMenuToggled.Broadcast();  // 메뉴를 켜고 끄는 함수 호출
 		return FReply::Handled();  // 입력을 처리했다고 반환

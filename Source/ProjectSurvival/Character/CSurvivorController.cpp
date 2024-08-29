@@ -399,33 +399,4 @@ void ACSurvivorController::ToggleMenu()
 	if (bIsBuildWidgetOn)
 		return;
 	Survivor->ToggleMenu();
-	ToggleProduceWidget();
-}
-
-void ACSurvivorController::ToggleProduceWidget()
-{
-	if (IsValid(ProduceWidget))
-	{
-		if (bIsProduceWidgetOn)
-		{
-			bIsProduceWidgetOn = false;
-			ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
-			this->SetInputMode(FInputModeUIOnly());
-		}
-		else
-		{
-			bIsProduceWidgetOn = true;
-			ProduceWidget->SetVisibility(ESlateVisibility::Visible);
-			this->SetInputMode(FInputModeGameOnly());
-		}
-	}
-	else
-	{
-		ProduceWidget = CreateWidget<UCProduceWidget>(this, ProduceWidgetClass);
-		ProduceWidget->AddToViewport();
-		ProduceWidget->SetPositionInViewport(FVector2D(75, 75));
-		ProduceWidget->SetDesiredSizeInViewport(FVector2D(600, 850));
-		bIsProduceWidgetOn = true;
-		this->SetInputMode(FInputModeUIOnly());
-	}
 }

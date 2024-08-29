@@ -44,11 +44,8 @@ private:
 	void SubAction();
 	void HoldAxe();
 
-	//Inventory
+	//Inventory and Produce
 	void ToggleMenu();
-
-	//Produce
-	void ToggleProduceWidget();
 
 
 private:
