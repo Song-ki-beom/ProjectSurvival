@@ -138,7 +138,5 @@ private:
 		class UCInteractionComponent* InteractionComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCInventoryComponent* InventoryComponent;
-	UPROPERTY(VisibleAnywhere)
-		class UCProduceComponent* ProduceComponent;
 };
 

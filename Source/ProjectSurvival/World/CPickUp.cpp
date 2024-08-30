@@ -138,7 +138,8 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			ItemReference->SetQuantity(InQuantity);
 		}
 
-		PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+		if (ItemReference->ItemType != EItemType::Build)
+			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 
 		UpdateInteractableData();
 	}

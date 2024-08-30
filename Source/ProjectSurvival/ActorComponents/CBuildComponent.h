@@ -69,6 +69,8 @@ private:
 		class ACStructure_Door* SpawnedDoor;
 	UPROPERTY()
 		class ACStructure_Stair* SpawnedStair;
+	UPROPERTY()
+		class ACStructure_Placeable* SpawnedPlaceable;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;

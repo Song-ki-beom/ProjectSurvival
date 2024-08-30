@@ -44,8 +44,8 @@ bool UCMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent&
 	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
 	if (PlayerCharacter && ItemDragDrop->SourceItem) // 해당 UI 내에서 떨어뜨릴 아이템이 감지되면 
 	{
-		if (ItemDragDrop->SourceItem->ItemType == EItemType::Build) // 빌드타입 아이템 드랍 금지 
-			return true;
+		//if (ItemDragDrop->SourceItem->ItemType == EItemType::Build) // 빌드타입 아이템 드랍 금지 
+		//	return true;
 
 		PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
 		return true; 

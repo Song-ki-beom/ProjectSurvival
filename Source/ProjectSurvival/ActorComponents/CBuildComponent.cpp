@@ -6,6 +6,7 @@
 #include "Build/CStructure_DoorFrame.h"
 #include "Build/CStructure_Door.h"
 #include "Build/CStructure_Stair.h"
+#include "Build/CStructure_Placeable.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
@@ -341,6 +342,20 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		SpawnedStair = GetWorld()->SpawnActor<ACStructure_Stair>(StructureClass, spawnLocation, spawnRotation, spawnParams);
 		SpawnedStair->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SpawnedStructure = Cast<ACStructure>(SpawnedStair);
+		break;
+	}
+	case EBuildStructureElement::Placeable:
+	{
+		if (IsValid(SpawnedStructure))
+			SpawnedStructure->Destroy();
+		FVector spawnLocation = Survivor->GetActorLocation();
+		FRotator spawnRotation = Survivor->GetActorRotation();
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = Survivor;
+		spawnParams.Instigator = Survivor->GetInstigator();
+		SpawnedPlaceable = GetWorld()->SpawnActor<ACStructure_Placeable>(StructureClass, spawnLocation, spawnRotation, spawnParams);
+		SpawnedPlaceable->GetStaticMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SpawnedStructure = Cast<ACStructure>(SpawnedPlaceable);
 		break;
 	}
 	case EBuildStructureElement::None:

@@ -14,7 +14,7 @@ enum class ESelectedStructure : uint8
 UENUM()
 enum class EBuildStructureElement : uint8
 {
-	Foundation, TriFoundation, Wall, WindowWall, TriLeftWall, TriRightWall, TriTopWall, Ceiling, TriCeiling, Roof, HalfRoof, DoorFrame, Door, Fence, Ramp, Stair, None
+	Foundation, TriFoundation, Wall, WindowWall, TriLeftWall, TriRightWall, TriTopWall, Ceiling, TriCeiling, Roof, HalfRoof, DoorFrame, Door, Fence, Ramp, Stair, Placeable, None
 };
 
 USTRUCT(BlueprintType)
