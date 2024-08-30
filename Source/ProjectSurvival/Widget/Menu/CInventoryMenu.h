@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "CMainMenu.generated.h"
+#include "CInventoryMenu.generated.h"
 
 /**
  * 
@@ -12,7 +12,7 @@
 DECLARE_MULTICAST_DELEGATE(FOnMainMenuToggled);
 
 UCLASS()
-class PROJECTSURVIVAL_API UCMainMenu : public UUserWidget
+class PROJECTSURVIVAL_API UCInventoryMenu : public UUserWidget
 {
 	GENERATED_BODY()
 

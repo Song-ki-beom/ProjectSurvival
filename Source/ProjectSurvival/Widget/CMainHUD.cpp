@@ -2,7 +2,7 @@
 
 
 #include "Widget/CMainHUD.h"
-#include "Widget/Menu/CMainMenu.h"
+#include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Widget/Inventory/CInventorySubMenu.h"
 #include "Utility/CDebug.h"
@@ -25,14 +25,14 @@ void ACMainHUD::BeginPlay()
 	}
 
 	//위젯들 등록 
-	if (MainMenuClass)
+	if (InventoryMenuClass)
 	{
-		//Widget 은 그래픽 요소를 지니고 있기 때문에 StaticClass() 가 아니라 에디터에 존재하는 요소를 참조로 가져와야 한다..MainMenuClass 가 그 예시
-		MainMenuWidget = CreateWidget<UCMainMenu>(GetWorld(), MainMenuClass);
-		MainMenuWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
-		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-		MainMenuWidget->OnMainMenuToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
-		MainMenuWidget->bIsFocusable = true;
+		//Widget 은 그래픽 요소를 지니고 있기 때문에 StaticClass() 가 아니라 에디터에 존재하는 요소를 참조로 가져와야 한다..InventoryMenuClass 가 그 예시
+		InventoryMenuWidget = CreateWidget<UCInventoryMenu>(GetWorld(), InventoryMenuClass);
+		InventoryMenuWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
+		InventoryMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		InventoryMenuWidget->OnMainMenuToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
+		InventoryMenuWidget->bIsFocusable = true;
 
 	}
 	
@@ -53,10 +53,10 @@ void ACMainHUD::BeginPlay()
 
 void ACMainHUD::HideMenu()
 {
-	if (MainMenuWidget)
+	if (InventoryMenuWidget)
 	{
 		bIsMenuVisible = false;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		InventoryMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -87,11 +87,11 @@ void ACMainHUD::ToggleMenu()
 
 void ACMainHUD::DisplayMenu()
 {
-	if (MainMenuWidget)
+	if (InventoryMenuWidget)
 	{
 		bIsMenuVisible = true;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
-		MainMenuWidget->SetKeyboardFocus();
+		InventoryMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		InventoryMenuWidget->SetKeyboardFocus();
 	}
 }
 

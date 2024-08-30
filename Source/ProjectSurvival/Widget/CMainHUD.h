@@ -30,7 +30,7 @@ public:
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<class UCMainMenu> MainMenuClass;
+	TSubclassOf<class UCInventoryMenu> InventoryMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCInventorySubMenu> InventorySubMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -45,7 +45,7 @@ protected:
 
 protected:
 	UPROPERTY()
-		class UCMainMenu* MainMenuWidget;
+		class UCInventoryMenu* InventoryMenuWidget;
 	UPROPERTY()
 		class UCInteractionWidget* InteractionWidget;
 	UPROPERTY()

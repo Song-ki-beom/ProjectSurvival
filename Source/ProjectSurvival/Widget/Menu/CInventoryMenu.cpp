@@ -1,20 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Widget/Menu/CMainMenu.h"
+#include "Widget/Menu/CInventoryMenu.h"
 #include "Character/CSurvivor.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Input/Reply.h"
 
-void UCMainMenu::NativeOnInitialized() 
+void UCInventoryMenu::NativeOnInitialized() 
 {
 
 	Super::NativeOnInitialized();
 }
 
-void UCMainMenu::NativeConstruct()
+void UCInventoryMenu::NativeConstruct()
 {
 
 	Super::NativeConstruct();
@@ -23,7 +23,7 @@ void UCMainMenu::NativeConstruct()
 
 }
 
-FReply UCMainMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+FReply UCInventoryMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 	if (InKeyEvent.GetKey() == EKeys::I)
@@ -36,7 +36,7 @@ FReply UCMainMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent&
 }
 
 
-bool UCMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 
 
@@ -44,8 +44,8 @@ bool UCMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent&
 	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
 	if (PlayerCharacter && ItemDragDrop->SourceItem) // 해당 UI 내에서 떨어뜨릴 아이템이 감지되면 
 	{
-		//if (ItemDragDrop->SourceItem->ItemType == EItemType::Build) // 빌드타입 아이템 드랍 금지 
-		//	return true;
+		if (ItemDragDrop->SourceItem->ItemType == EItemType::Build) // 빌드타입 아이템 드랍 금지 
+			return true;
 
 		PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
 		return true; 
