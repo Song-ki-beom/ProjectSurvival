@@ -10,6 +10,8 @@ enum class EItemType : uint8
 	Harvest UMETA(DisplayName = "Harvest"),
 	Build UMETA(DisplayName = "Build"),
 	Hunt UMETA(DisplayName = "Hunt"),
+	Consumable UMETA(DisplayName = "Consumable"),
+	NoType UMETA(DisplayName = "NoType")
 };
 
 USTRUCT()

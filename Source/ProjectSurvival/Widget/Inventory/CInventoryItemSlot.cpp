@@ -18,9 +18,10 @@ void UCInventoryItemSlot::NativeOnInitialized() //위젯 생성될때 호출
 	Super::NativeOnInitialized();
 	if (ToolTipClass)
 	{
-		UCInventoryTooltip* ToolTip = CreateWidget<UCInventoryTooltip>(this, ToolTipClass);
+		ToolTip = CreateWidget<UCInventoryTooltip>(this, ToolTipClass);
 		ToolTip->InventorySlotBeingHovered = this;
-		SetToolTip(ToolTip);
+		ToggleTooltip();
+		
 	}
 }
 
@@ -85,8 +86,8 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mousePosition.X, mousePosition.Y);
 
 		
-		HUDReference->ShowSubMenu(FVector2D(mousePosition.X+10, mousePosition.Y+15));
-		SetToolTip(nullptr);
+		HUDReference->ShowSubMenu(FVector2D(mousePosition.X+10, mousePosition.Y+15), this);
+		ToggleTooltip();
 		
 		return Reply.Handled(); // 오른쪽 클릭 처리 완료
 	}
@@ -143,6 +144,25 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	return false;
+}
+
+void UCInventoryItemSlot::ToggleTooltip()
+{
+
+	if (bIsTooltipToggled == false)
+	{
+		SetToolTip(ToolTip);
+		bIsTooltipToggled = true;
+	}
+
+	else
+	{
+		SetToolTip(nullptr);
+		bIsTooltipToggled = false;
+
+	}
+
+	return;
 }
 
 

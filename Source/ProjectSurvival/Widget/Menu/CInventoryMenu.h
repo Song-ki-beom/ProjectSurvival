@@ -11,6 +11,7 @@
  */
 DECLARE_MULTICAST_DELEGATE(FOnMainMenuToggled);
 
+
 UCLASS()
 class PROJECTSURVIVAL_API UCInventoryMenu : public UUserWidget
 {

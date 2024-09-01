@@ -27,6 +27,10 @@ protected:
 
 
 
+public:
+	void ToggleTooltip();
+
+
 
 protected:
 
@@ -45,6 +49,8 @@ public:
 	{
 		HUDReference = InHUDReference;
 	}
+
+
 
 
 protected:
@@ -72,9 +78,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "HUD")
 	class ACMainHUD* HUDReference; //SubMenu를 표시할 HUD 
 
+	class UCInventoryTooltip* ToolTip;
 
 
-
+private:
+	bool bIsTooltipToggled =false;
 
 
 

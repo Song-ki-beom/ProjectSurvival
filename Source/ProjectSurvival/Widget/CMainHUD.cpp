@@ -5,6 +5,7 @@
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Widget/Inventory/CInventorySubMenu.h"
+#include "Widget/Inventory/CInventoryItemSlot.h"
 #include "Utility/CDebug.h"
 ACMainHUD::ACMainHUD()
 {
@@ -127,12 +128,12 @@ void ACMainHUD::UpdateInteractionWidget(const FInteractableData* InteractableDat
 }
 
 
-void ACMainHUD::ShowSubMenu(FVector2D Position)
+void ACMainHUD::ShowSubMenu(FVector2D Position , UCInventoryItemSlot* InSlotReference)
 {
 	if (InventorySubMenuWidget && !InventorySubMenuWidget->IsInViewport())
 	{
 		
-		CDebug::Print(FText::Format(FText::FromString("{0} , {1}"), Position.X, Position.Y).ToString());
+		//CDebug::Print(FText::Format(FText::FromString("{0} , {1}"), Position.X, Position.Y).ToString());
 		// 서브메뉴의 위치를 설정
 
 		InventorySubMenuWidget->SetPositionInViewport(Position, true);
@@ -140,7 +141,8 @@ void ACMainHUD::ShowSubMenu(FVector2D Position)
 		InventorySubMenuWidget->AddToViewport(6);
 		InventorySubMenuWidget->bIsFocusable = true;
 		InventorySubMenuWidget->SetKeyboardFocus();
-
+		InventorySubMenuWidget->SetSlotReference(InSlotReference);
+		InventorySubMenuWidget->UpdateSubMenu();
 	}
 
 }
@@ -154,3 +156,4 @@ void ACMainHUD::HideSubMenu()
 	}
 
 }
+
