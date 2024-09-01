@@ -210,6 +210,7 @@ void ACSurvivor::HoldAxe()
 	WeaponComponent->SetAxeMode();
 }
 
+
 void ACSurvivor::StartInteract()
 {
 	InteractionComponent->DoInteract();

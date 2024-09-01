@@ -157,3 +157,8 @@ void ACMainHUD::HideSubMenu()
 
 }
 
+void ACMainHUD::ShowMoreInfo()
+{
+	InteractionWidget->ShowMoreInfo();
+}
+

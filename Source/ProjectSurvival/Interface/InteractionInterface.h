@@ -13,8 +13,8 @@ enum class EInteractableType : uint8
 	Pickup UMETA(DisplayName = "Pickup"),
 	NonPlayerCharacter UMETA(DisplayName = "NonPlayerCharacter"), //플레이어 제외 NPC
 	Device UMETA(DisplayName = "Device"), // Door , Window Interaction etc.
-	Toggle UMETA(DisplayName = "Toggle"), // Button, Switch -> Device 와 상호작용할 것들 
-	Container UMETA(DisplayName = "Container")
+	Container UMETA(DisplayName = "Container"), // 별도의 인벤토리가 있는 아이템 
+	Build UMETA(DisplayName = "Build") //플레이어가 월드에 설치한 아이템 
 };
 
 
@@ -81,6 +81,7 @@ class UInteractionInterface : public UInterface
 /**
  * 
  */
+class ACSurvivor;
 class PROJECTSURVIVAL_API IInteractionInterface // 언리얼 인터페이스는 Implementate 해야 할 것 중에 필요한 것만 선택적으로 찾아 상속 클래스에서의 구현이 가능하다.
 {
 	GENERATED_BODY()
@@ -91,7 +92,7 @@ public:
 	virtual void EndFocus()=0;
 	virtual void BeginInteract()=0; //인터렉션까지의 타이머 설정
 	virtual void EndInteract()=0;
-	virtual void Interact(class ACSurvivor* PlayerCharacter)=0; // 인터렉트가 준비되면 바로 Interact 시작 
+	virtual void Interact(ACSurvivor* PlayerCharacter)=0; // 인터렉트가 준비되면 바로 Interact 시작 
 
 	FInteractableData InteractableData;
 

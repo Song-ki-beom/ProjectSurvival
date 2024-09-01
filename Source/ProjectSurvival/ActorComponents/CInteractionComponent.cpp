@@ -6,7 +6,7 @@
 #include "Widget/CMainHUD.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
-
+#include "Character/CSurvivor.h"
 UCInteractionComponent::UCInteractionComponent()
 {
 	
@@ -56,17 +56,23 @@ void UCInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 bool UCInteractionComponent::IsInteracting() const
 {
-	return OwnerCharacter->GetWorldTimerManager().IsTimerActive(TimerHandleInteraction); //상호작용 시작으로부터 타이머 설정 
+	return OwnerCharacter->GetWorldTimerManager().IsTimerActive(LongPressTimerHandle); //상호작용 시작으로부터 타이머 설정 
 }
 
 void UCInteractionComponent::DoInteract()
 {
-	BeginInteract();
+	// 상세 정보 타이머 시작
+	bIsLongPress = false;
+	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ShowMoreInfo, 1.f, false);
+	//BeginInteract();
+	
 }
 
-void UCInteractionComponent::FinishInteract()
+
+
+void UCInteractionComponent::ShowMoreInfo()
 {
-	EndInteract();
+	HUD->ShowMoreInfo();
 }
 
 void UCInteractionComponent::UpdateInteractionWidget() const
@@ -148,15 +154,13 @@ void UCInteractionComponent::FoundInteractable(AActor* NewInteractable)
 	TargetInteractable->BeginFocus(); //지금 검출해서 찾은 것으로 Focus 시작 
 
 
-
-
 }
 
 void UCInteractionComponent::NoInteractableFound()
 {
 	if (IsInteracting())
 	{
-		OwnerCharacter->GetWorldTimerManager().ClearTimer(TimerHandleInteraction);
+		OwnerCharacter->GetWorldTimerManager().ClearTimer(LongPressTimerHandle);
 	}
 
 	if (InteractionData.CurrentInteractable)
@@ -176,7 +180,7 @@ void UCInteractionComponent::NoInteractableFound()
 	}
 }
 
-//상호작용 시작 
+//상호작용 시작 (PickUp , Open 등등)
 void UCInteractionComponent::BeginInteract()
 {
 	//상호작용 하기전에 타겟 적절한지 다시 한번 확인  
@@ -188,24 +192,22 @@ void UCInteractionComponent::BeginInteract()
 		{
 			TargetInteractable->BeginInteract();
 		}
-
-		//상호작용하려는 액터가 검출되고 이벤트가 일어나기까지 걸리는 시간 체크 
-		if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.15f)) 
-		{	//짧으면 바로 Interact 
 			Interact();
-		}
-		else
-		{
-			//Duraction 이후에 실행 
-			OwnerCharacter->GetWorldTimerManager().SetTimer(TimerHandleInteraction, this, &UCInteractionComponent::Interact, TargetInteractable->InteractableData.InteractionDuration,false);
-		}
+		
 	}
 
 }
 
+
+//E 키 떼면 
+void UCInteractionComponent::FinishInteract()
+{
+	EndInteract();
+}
+
 void UCInteractionComponent::EndInteract()
 {
-	OwnerCharacter->GetWorldTimerManager().ClearTimer(TimerHandleInteraction);
+	OwnerCharacter->GetWorldTimerManager().ClearTimer(LongPressTimerHandle);
 
 	if (IsValid(TargetInteractable.GetObject()))
 	{
@@ -214,9 +216,11 @@ void UCInteractionComponent::EndInteract()
 
 }
 
+
+
 void UCInteractionComponent::Interact()
 {
-	OwnerCharacter->GetWorldTimerManager().ClearTimer(TimerHandleInteraction);
+	OwnerCharacter->GetWorldTimerManager().ClearTimer(LongPressTimerHandle);
 	if (IsValid(TargetInteractable.GetObject()))
 	{
 		ACSurvivor* playerCharacter = Cast<ACSurvivor>(OwnerCharacter);

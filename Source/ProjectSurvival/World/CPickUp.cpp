@@ -55,7 +55,7 @@ void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 	}
 }
 
-void ACPickUp::Interact(class ACSurvivor* PlayerCharacter)
+void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
 {
 	if (PlayerCharacter)
 	{

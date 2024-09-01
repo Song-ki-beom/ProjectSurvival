@@ -25,7 +25,7 @@ public:
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
 	void ShowSubMenu(FVector2D Position,class UCInventoryItemSlot* InSlotReference);
 	void HideSubMenu();
-	
+	void ShowMoreInfo();
 
 
 	//EditAnywhere, BlueprintReadWrite

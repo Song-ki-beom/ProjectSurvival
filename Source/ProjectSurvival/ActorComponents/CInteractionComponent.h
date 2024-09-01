@@ -32,7 +32,7 @@ protected:
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
-
+	void ShowMoreInfo();
 
 
 protected:
@@ -42,13 +42,12 @@ protected:
 	float InteractionCheckFrequency;
 	float InteractionCheckDistance;
 
-	FTimerHandle TimerHandleInteraction;
 	FInteractionData InteractionData;
+	FTimerHandle LongPressTimerHandle;
 
 private:
 	class ACharacter* OwnerCharacter;
 	UPROPERTY(Replicated)
 	class ACMainHUD* HUD;
-
-		
+	bool bIsLongPress;
 };

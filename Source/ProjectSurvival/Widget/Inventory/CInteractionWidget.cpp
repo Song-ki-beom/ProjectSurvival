@@ -19,13 +19,16 @@ void UCInteractionWidget::NativeOnInitialized()
 void UCInteractionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	KeyPressText->SetText(FText::FromString("Press"));
 	CurrentInteractionDuration = 0.0f;
-
-
-
 }
 
+
+void UCInteractionWidget::ShowMoreInfo()
+{
+
+	return;
+
+}
 
 float UCInteractionWidget::UpdateInteractionProgress()
 {
@@ -37,38 +40,42 @@ float UCInteractionWidget::UpdateInteractionProgress()
 
 void UCInteractionWidget::UpdateWidget(const struct FInteractableData* InteractableData)
 {
+
+	NameText->SetText(InteractableData->Name); // 아이템 이름 
+	ActionText->SetText(InteractableData->Action); //상호작용 Text
+
 	switch (InteractableData->InteractableType)
 	{
 	case EInteractableType::Pickup: //Press 시 바로 픽업 가능하게 프로그레스 바x
-		KeyPressText->SetText(FText::FromString("Press"));
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-
-		if (InteractableData->Quantity == 1)
-		{
-			QuantityText->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		else
-		{
-			//NSLOCKTEXT <- 하나의 빌드에 국가 언어에 따른 Localize하여 번역된 문자열 제공  
-			QuantityText->SetText(FText::Format(NSLOCTEXT("InteractionWidget","QuantityText","x{0}"),InteractableData->Quantity));
-			QuantityText->SetVisibility(ESlateVisibility::Visible);
-
-		}
-
 		break;
 	case EInteractableType::NonPlayerCharacter:
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 		break;
-	case EInteractableType::Device:
-		break;
-	case EInteractableType::Toggle:
+	case EInteractableType::Device: 
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	case EInteractableType::Container:
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
 		break;
+	case EInteractableType::Build:
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 	default:;
 	}
 
-	ActionText->SetText(InteractableData->Action);
-	NameText->SetText(InteractableData->Name);
+	if (InteractableData->Quantity == 1)
+	{
+		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		//NSLOCKTEXT <- 하나의 빌드에 국가 언어에 따른 Localize하여 번역된 문자열 제공  
+		QuantityText->SetText(FText::Format(NSLOCTEXT("InteractionWidget", "QuantityText", "x{0}"), InteractableData->Quantity));
+		QuantityText->SetVisibility(ESlateVisibility::Visible);
+
+	}
+	
+
 }
 
 
