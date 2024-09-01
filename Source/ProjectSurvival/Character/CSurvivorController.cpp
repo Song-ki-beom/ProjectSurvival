@@ -185,6 +185,7 @@ void ACSurvivorController::SelectE()
 	}
 	else 
 	{
+
 		Survivor->StartInteract();
 	}
 

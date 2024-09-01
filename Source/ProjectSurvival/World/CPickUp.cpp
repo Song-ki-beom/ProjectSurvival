@@ -13,7 +13,7 @@ ACPickUp::ACPickUp()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
-	PickupMesh->SetSimulatePhysics(true);
+	PickupMesh->SetSimulatePhysics(false);
 	PickupMesh->SetEnableGravity(true);
 	SetRootComponent(PickupMesh);
 	 ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
@@ -139,7 +139,14 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 		}
 
 		if (ItemReference->ItemType != EItemType::Build)
+		{
 			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+			//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
+			PickupMesh->SetCollisionProfileName(FName("Item"));
+			//중력의 영향을 받기 위한 피직스 설정 
+			PickupMesh->SetSimulatePhysics(true);
+		}
+		
 
 		UpdateInteractableData();
 	}
