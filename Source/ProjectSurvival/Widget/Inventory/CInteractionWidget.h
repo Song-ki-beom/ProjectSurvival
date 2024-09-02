@@ -12,9 +12,7 @@ class PROJECTSURVIVAL_API UCInteractionWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	void UpdateWidget(const struct FInteractableData* InteractableData);
-	void ShowMoreInfo();
+	
 protected:
 	//InteractionProgressBar 정보 갱신
 	UFUNCTION(Category = "Interaction widget | Interactable Data")
@@ -22,6 +20,12 @@ protected:
 
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
+
+public:
+	void UpdateWidget(const struct FInteractableData* InteractableData);
+	void ToggleMoreInfo();
+	void ShowMoreInfo();
+	void HideMoreInfo();
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Interaction widget | Player Reference")
@@ -43,21 +47,26 @@ protected:
 	float CurrentInteractionDuration;
 
 
+
+	UPROPERTY(meta = (BindWidget)) //접히고 펼칠 MoreInfo Vertical Box 
+		class UVerticalBox* MoreInfoBox;
+
+
 	//More Info
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* ItemName;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* ItemType;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* Usage;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* ItemDescription;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* MaxStackSize;//스택
-
-
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* StackWeight; //무게
+
+
 
 
 	

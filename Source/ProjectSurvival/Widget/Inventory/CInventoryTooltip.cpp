@@ -40,13 +40,13 @@ void UCInventoryTooltip::NativeConstruct()
 	Usage->SetText(ItemBeingHovered->TextData.UsageText);
 	ItemDescription->SetText(ItemBeingHovered->TextData.Description);
 	
-	const FString WeightInfo = { "Weight: " + FString::SanitizeFloat(ItemBeingHovered->GetItemStackWeight()) };
+	const FString WeightInfo =  TEXT("무게: ") + FString::SanitizeFloat(ItemBeingHovered->GetItemStackWeight());
 
 
 	StackWeight->SetText(FText::FromString(WeightInfo));
 
 
-	const FString StackInfo = { "Max Stack Size: " + FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize)};
+	const FString StackInfo = TEXT("최대 허용 수량: ") + FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize);
 
 	
 	MaxStackSize->SetText(FText::FromString(StackInfo));

@@ -32,7 +32,9 @@ protected:
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
+	void ToggleMoreInfo();
 	void ShowMoreInfo();
+	void HideMoreInfo();
 
 
 protected:

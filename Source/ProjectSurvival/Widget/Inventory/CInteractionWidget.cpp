@@ -4,6 +4,7 @@
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
 #include "Interface/InteractionInterface.h"
 
 
@@ -13,6 +14,7 @@ void UCInteractionWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	InteractionProgressBar->PercentDelegate.BindUFunction(this,"UpdateInteractionProgress");
+	MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
 
 }
 
@@ -20,15 +22,49 @@ void UCInteractionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	CurrentInteractionDuration = 0.0f;
+
+
+
+	
+
 }
+
+
 
 
 void UCInteractionWidget::ShowMoreInfo()
 {
-
-	return;
+	if (MoreInfoBox->GetVisibility() == ESlateVisibility::Collapsed)
+	{
+		MoreInfoBox->SetVisibility(ESlateVisibility::Visible);
+	}
 
 }
+
+void UCInteractionWidget::HideMoreInfo()
+{
+	if (MoreInfoBox->GetVisibility() == ESlateVisibility::Visible)
+	{
+		MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+}
+
+void UCInteractionWidget::ToggleMoreInfo()
+{
+	if (MoreInfoBox->GetVisibility() == ESlateVisibility::Collapsed)
+	{
+		MoreInfoBox->SetVisibility(ESlateVisibility::Visible);
+	}
+	else if (MoreInfoBox->GetVisibility() == ESlateVisibility::Visible)
+	{
+		MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+
+
+
 
 float UCInteractionWidget::UpdateInteractionProgress()
 {

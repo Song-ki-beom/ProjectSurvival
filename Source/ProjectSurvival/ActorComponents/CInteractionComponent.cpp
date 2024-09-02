@@ -58,22 +58,43 @@ bool UCInteractionComponent::IsInteracting() const
 {
 	return OwnerCharacter->GetWorldTimerManager().IsTimerActive(LongPressTimerHandle); //상호작용 시작으로부터 타이머 설정 
 }
-
+//E키 누르면 
 void UCInteractionComponent::DoInteract()
 {
 	// 상세 정보 타이머 시작
 	bIsLongPress = false;
-	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ShowMoreInfo, 1.f, false);
-	//BeginInteract();
+	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleMoreInfo, 1.f, false);
 	
 }
 
+//E 키 떼면 
+void UCInteractionComponent::FinishInteract()
+{
+	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(LongPressTimerHandle);
+	if (ElapsedTime <0.25f&& ElapsedTime >=0)
+		BeginInteract();
+	else
+		EndInteract();
+}
 
+
+
+//인터렉션 메뉴 Switch On/OFF
+void UCInteractionComponent::ToggleMoreInfo()
+{
+	HUD->ToggleMoreInfo();
+}
 
 void UCInteractionComponent::ShowMoreInfo()
 {
 	HUD->ShowMoreInfo();
 }
+
+void UCInteractionComponent::HideMoreInfo()
+{
+	HUD->HideMoreInfo();
+}
+
 
 void UCInteractionComponent::UpdateInteractionWidget() const
 {
@@ -114,7 +135,7 @@ void UCInteractionComponent::PerformInteractionCheck()
 
 				if (TraceHit.GetActor() != InteractionData.CurrentInteractable) 
 				{
-
+					HideMoreInfo();
 					FoundInteractable(TraceHit.GetActor());
 					return;
 				}
@@ -144,6 +165,7 @@ void UCInteractionComponent::FoundInteractable(AActor* NewInteractable)
 	{
 		TargetInteractable = InteractionData.CurrentInteractable; //타겟을 최근에발견한 것으로 설정 
 		TargetInteractable->EndFocus(); //타겟 엑터에 가하고 있는 Focus 해제 
+
 	}
 
 
@@ -199,11 +221,6 @@ void UCInteractionComponent::BeginInteract()
 }
 
 
-//E 키 떼면 
-void UCInteractionComponent::FinishInteract()
-{
-	EndInteract();
-}
 
 void UCInteractionComponent::EndInteract()
 {
