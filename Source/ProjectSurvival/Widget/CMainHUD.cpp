@@ -5,6 +5,7 @@
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Widget/Inventory/CInventorySubMenu.h"
+#include "Widget/Produce/CProduceWidget.h"
 #include "Utility/CDebug.h"
 ACMainHUD::ACMainHUD()
 {
@@ -43,6 +44,13 @@ void ACMainHUD::BeginPlay()
 		InventorySubMenuWidget->OnFocusOnSubMenuEnded.AddUObject(this, &ACMainHUD::HideSubMenu);
 	}
 
+	if (ProduceWidgetClass)
+	{
+		ProduceWidget = CreateWidget<UCProduceWidget>(GetWorld(), ProduceWidgetClass);
+		ProduceWidget->AddToViewport(5);
+		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+		ProduceWidget->OnProduceWidgetToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
+	}
 
 
 
@@ -57,6 +65,11 @@ void ACMainHUD::HideMenu()
 	{
 		bIsMenuVisible = false;
 		InventoryMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (ProduceWidget)
+	{
+		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -92,6 +105,14 @@ void ACMainHUD::DisplayMenu()
 		bIsMenuVisible = true;
 		InventoryMenuWidget->SetVisibility(ESlateVisibility::Visible);
 		InventoryMenuWidget->SetKeyboardFocus();
+	}
+
+	if (ProduceWidget)
+	{
+		ProduceWidget->SetDesiredSizeInViewport(FVector2D(580, 850));
+		ProduceWidget->SetPositionInViewport(FVector2D(50, 50));
+		ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+		ProduceWidget->bIsFocusable = true;
 	}
 }
 

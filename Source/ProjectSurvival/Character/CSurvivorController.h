@@ -46,6 +46,7 @@ private:
 
 	//Inventory and Produce
 	void ToggleMenu();
+	//void ToggleProduceWidget();
 
 
 private:
