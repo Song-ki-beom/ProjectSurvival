@@ -14,7 +14,6 @@ UCInteractionComponent::UCInteractionComponent()
 	InteractionCheckFrequency = 0.2f;
 	InteractionCheckDistance = 300.0f;
 
-
 }
 
 
@@ -58,12 +57,14 @@ bool UCInteractionComponent::IsInteracting() const
 {
 	return OwnerCharacter->GetWorldTimerManager().IsTimerActive(LongPressTimerHandle); //상호작용 시작으로부터 타이머 설정 
 }
+
+
 //E키 누르면 
 void UCInteractionComponent::DoInteract()
 {
 	// 상세 정보 타이머 시작
 	bIsLongPress = false;
-	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleMoreInfo, 1.f, false);
+	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleMoreInfo, 0.5f, false);
 	
 }
 

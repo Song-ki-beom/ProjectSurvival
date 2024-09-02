@@ -12,7 +12,10 @@ class PROJECTSURVIVAL_API UCInteractionWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-	
+public:
+	UCInteractionWidget(const FObjectInitializer& ObjectInitializer);
+
+
 protected:
 	//InteractionProgressBar 정보 갱신
 	UFUNCTION(Category = "Interaction widget | Interactable Data")
@@ -48,8 +51,8 @@ protected:
 
 
 
-	UPROPERTY(meta = (BindWidget)) //접히고 펼칠 MoreInfo Vertical Box 
-		class UVerticalBox* MoreInfoBox;
+	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info") //접히고 펼칠 MoreInfo Vertical Box 
+		class UBorder* MoreInfoBox;
 
 
 	//More Info
@@ -58,17 +61,19 @@ protected:
 	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* ItemType;
 	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
-		class UTextBlock* Usage;
-	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* ItemDescription;
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Item More Info")
+		class UTextBlock* DamageValue;
 	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* MaxStackSize;//스택
 	UPROPERTY(VisibleAnywhere,meta = (BindWidget), Category = "Interaction widget | Item More Info")
 		class UTextBlock* StackWeight; //무게
 
 
-
-
+private:
+		//DataTable은 처음 시작하고 게임이 Start 될 때만 초기화 된다.
+		UPROPERTY(VisibleAnywhere, Category = "PickupInitialization")
+		class UDataTable* ItemDataTable;
 	
 
 };

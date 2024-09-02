@@ -29,6 +29,7 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 		Action(FText::GetEmpty()),
 		Quantity(0),
 		InteractionDuration(0.0f)
+		,ID("")
 		{
 		
 
@@ -51,7 +52,9 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 	float InteractionDuration;
 
 	UPROPERTY(EditInstanceOnly)
-	int32 Id;
+	FName ID;
+
+
 
 };
 

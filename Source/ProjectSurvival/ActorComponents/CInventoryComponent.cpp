@@ -305,7 +305,7 @@ int32 UCInventoryComponent::HandleStackableItems(UCItemBase* ItemIn, int32 Reque
 			}
 
 			//새로운 아이템 Slot 에 모두 넣을수 있는 상태일때
-			AddNewItem(ItemIn, AmountLeftToDistribute);
+			AddNewItem(ItemIn->CreateItemCopy(), AmountLeftToDistribute);
 			return RequestedAddAmount;
 		}
 
@@ -343,6 +343,7 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 	//아이템 세팅
 	NewItem->Inventory = this;
 	NewItem->SetQuantity(AmountToAdd);
+	NewItem->ItemStats.DamageValue;
 	InItem->GetItemStackWeight();
 	NewItem->GetItemStackWeight();
 	//인벤 TArray에 추가 

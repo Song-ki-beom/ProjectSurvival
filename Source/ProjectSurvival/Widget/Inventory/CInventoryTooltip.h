@@ -28,15 +28,13 @@ public:
 
 
 	UPROPERTY(meta=(BindWidget))
-	class UTextBlock* ItemName;
+		class UTextBlock* ItemName;
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* ItemType;
+		class UTextBlock* ItemType;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* DamageValue;
 
 
-	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* Usage;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ItemDescription;
 	UPROPERTY(meta = (BindWidget))

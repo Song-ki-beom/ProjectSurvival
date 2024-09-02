@@ -120,35 +120,38 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 	if (ItemDataTable && !DesiredItemID.IsNone()) //Empty String 인지 체크 
 	{
 		const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString());
-
-		ItemReference = NewObject<UCItemBase>(this, BaseClass);
-
-		ItemReference->ID = ItemData->ID;
-		ItemReference->ItemType = ItemData->ItemType;
-		ItemReference->NumericData = ItemData->NumericData;
-		ItemReference->TextData = ItemData->TextData;
-		ItemReference->AssetData = ItemData->AssetData;
-
-		if (InQuantity <= 0) //0보다 작으면 
+		if (ItemData) 
 		{
-			ItemReference->SetQuantity(1);
-		}
-		else
-		{
-			ItemReference->SetQuantity(InQuantity);
-		}
 
-		if (ItemReference->ItemType != EItemType::Build)
-		{
-			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
-			//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
-			PickupMesh->SetCollisionProfileName(FName("Item"));
-			//중력의 영향을 받기 위한 피직스 설정 
-			PickupMesh->SetSimulatePhysics(true);
-		}
-		
+			ItemReference = NewObject<UCItemBase>(this, BaseClass);
 
-		UpdateInteractableData();
+			ItemReference->ID = ItemData->ID;
+			ItemReference->ItemType = ItemData->ItemType;
+			ItemReference->NumericData = ItemData->NumericData;
+			ItemReference->TextData = ItemData->TextData;
+			ItemReference->AssetData = ItemData->AssetData;
+			ItemReference->ItemStats = ItemData->ItemStats;
+			if (InQuantity <= 0) //0보다 작으면 
+			{
+				ItemReference->SetQuantity(1);
+			}
+			else
+			{
+				ItemReference->SetQuantity(InQuantity);
+			}
+
+			if (ItemReference->ItemType != EItemType::Build)
+			{
+				PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+				//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
+				PickupMesh->SetCollisionProfileName(FName("Item"));
+				//중력의 영향을 받기 위한 피직스 설정 
+				PickupMesh->SetSimulatePhysics(true);
+			}
+
+
+			UpdateInteractableData();
+		}
 	}
 }
 
@@ -159,6 +162,13 @@ void ACPickUp::InitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
 	ItemReference->Inventory = nullptr;
 	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+	if (ItemReference->ItemType != EItemType::Build)
+	{
+		//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
+		PickupMesh->SetCollisionProfileName(FName("Item"));
+		//중력의 영향을 받기 위한 피직스 설정 
+		PickupMesh->SetSimulatePhysics(true);
+	}
 	UpdateInteractableData();
 
 }
@@ -170,6 +180,7 @@ void ACPickUp::UpdateInteractableData()
 	InstanceInteractableData.Action = ItemReference->TextData.InteractionText;
 	InstanceInteractableData.Name = ItemReference->TextData.Name;
 	InstanceInteractableData.Quantity = ItemReference->Quantity;
+	InstanceInteractableData.ID = ItemReference->ID;
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
 
 

@@ -146,6 +146,7 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 	return false;
 }
 
+//서브메뉴의 On & off 에 따른 툴팁 토글 이벤트
 void UCInventoryItemSlot::ToggleTooltip()
 {
 
