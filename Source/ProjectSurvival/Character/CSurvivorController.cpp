@@ -407,3 +407,35 @@ void ACSurvivorController::ToggleMenu()
 		return;
 	Survivor->ToggleMenu();
 }
+
+//void ACSurvivorController::ToggleProduceWidget()
+//{
+//	if (IsValid(ProduceWidget))
+//	{
+//		if (bIsProduceWidgetOn)
+//		{
+//			CDebug::Print("Off Produce Widget");
+//			bIsProduceWidgetOn = false;
+//			ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+//			//ProduceWidget->bIsFocusable = false;
+//			this->SetInputMode(FInputModeGameOnly());
+//		}
+//		else
+//		{
+//			CDebug::Print("On Produce Widget");
+//			bIsProduceWidgetOn = true;
+//			ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+//			//ProduceWidget->bIsFocusable = true;
+//			this->SetInputMode(FInputModeUIOnly());
+//		}
+//	}
+//	else
+//	{
+//		ProduceWidget = CreateWidget<UCProduceWidget>(this, ProduceWidgetClass);
+//		ProduceWidget->OnProduceWidgetToggled.AddUObject(this, &ACSurvivorController::ToggleProduceWidget);
+//		ProduceWidget->AddToViewport();
+//		bIsProduceWidgetOn = true;
+//		ProduceWidget->bIsFocusable = true;
+//		this->SetInputMode(FInputModeUIOnly());
+//	}
+//}

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "CProduceSlot.generated.h"
+#include "CProduceRecipe.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTSURVIVAL_API UCProduceSlot : public UUserWidget
+class PROJECTSURVIVAL_API UCProduceRecipe : public UUserWidget
 {
 	GENERATED_BODY()
 	

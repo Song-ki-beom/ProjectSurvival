@@ -37,6 +37,8 @@ public:
 	TSubclassOf<class UCInventorySubMenu> InventorySubMenuClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCInteractionWidget> InteractionWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UCProduceWidget> ProduceWidgetClass;
 	
 
 
@@ -52,6 +54,8 @@ protected:
 		class UCInteractionWidget* InteractionWidget;
 	UPROPERTY()
 		class UCInventorySubMenu* InventorySubMenuWidget;
+	UPROPERTY()
+		class UCProduceWidget* ProduceWidget;
 
 public:
 	bool bIsMenuVisible;

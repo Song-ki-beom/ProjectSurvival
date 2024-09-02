@@ -67,7 +67,29 @@ struct FItemAssetData
 
 };
 
+USTRUCT()
+struct FProduceWidgetData :public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		float ProduceTime;
+	UPROPERTY(EditAnywhere)
+		FName ProduceMethod;
+	UPROPERTY(EditAnywhere)
+		FName FlavorText_1;
+};
 
+USTRUCT()
+struct FProduceSlotData :public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		UTexture2D* ICon;
+	UPROPERTY(EditAnywhere)
+		int32 ProduceDemand;
+};
 
 
 
@@ -89,5 +111,7 @@ public:
 		FItemNumericData NumericData;
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 		FItemAssetData AssetData;
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+		FProduceWidgetData ProduceData;
 
 };
