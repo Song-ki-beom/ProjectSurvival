@@ -29,6 +29,7 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 		Action(FText::GetEmpty()),
 		Quantity(0),
 		InteractionDuration(0.0f)
+		,ID("")
 		{
 		
 
@@ -50,18 +51,10 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 	UPROPERTY(EditInstanceOnly)
 	float InteractionDuration;
 
-	/*UPROPERTY(EditInstanceOnly)
-		UENUM EItemType ItemType;
 	UPROPERTY(EditInstanceOnly)
-		USTRUCT FItemStats ItemStats;
-	UPROPERTY(EditInstanceOnly)
-		 FItemTextData TextData;
-	UPROPERTY(EditInstanceOnly)
-		 FItemNumericData NumericData;
-	UPROPERTY(EditInstanceOnly)
-		 FItemAssetData AssetData;
-		 */
-	UTexture2D* Icon;
+	FName ID;
+
+
 
 };
 

@@ -42,6 +42,7 @@ public:
 	void StartInteract();
 	void FinishInteract();
 
+
 	//Inventory
 	void ToggleMenu();
 
@@ -49,6 +50,10 @@ public:
 	//Build
 	void Build();
 	void CancleBuild();
+
+	//Mouse Event 
+	void HandleMouseWheelUp();
+	void HandleMouseWheelDown();
 
 
 	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }

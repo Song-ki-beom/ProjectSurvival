@@ -238,6 +238,16 @@ void ACSurvivor::CancleBuild()
 		BuildComponent->ClearSpawnedStructure();
 }
 
+void ACSurvivor::HandleMouseWheelUp()
+{
+	InteractionComponent->ExtraOptionButtonUp();
+}
+
+void ACSurvivor::HandleMouseWheelDown()
+{
+	InteractionComponent->ExtraOptionButtonDown();
+}
+
 
 
 void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)

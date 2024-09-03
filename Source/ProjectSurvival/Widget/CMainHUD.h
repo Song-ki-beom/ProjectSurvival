@@ -25,9 +25,11 @@ public:
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
 	void ShowSubMenu(FVector2D Position,class UCInventoryItemSlot* InSlotReference);
 	void HideSubMenu();
-	void ToggleMoreInfo();
-	void ShowMoreInfo();
-	void HideMoreInfo();
+	void ToggleHiddenMenu();
+	void ShowHiddenMenu();
+	void HideHiddenMenu();
+	void ExtraOptionButtonUp();
+	void ExtraOptionButtonDown();
 
 
 	//EditAnywhere, BlueprintReadWrite
@@ -59,6 +61,5 @@ protected:
 
 public:
 	bool bIsMenuVisible;
-
 
 };

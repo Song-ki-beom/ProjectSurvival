@@ -87,7 +87,7 @@ void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
 		DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
 		DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
 
-
+		//커밋 테스트(09.03)
 
 		if (bHit)
 		{

@@ -16,6 +16,8 @@ void UCInventorySubMenu::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
         if (!IsHovered())
         {
             OnFocusOnSubMenuEnded.Broadcast();
+            SlotReference->ToggleTooltip();
+
            // NativeOnMouseEnter(Geometry, PointerEvent);
             return;
         }
@@ -67,13 +69,22 @@ void UCInventorySubMenu::UpdateSubMenu()
         case EItemType::Harvest:
             ActionButton->SetVisibility(ESlateVisibility::Collapsed);
             break;
+        case EItemType::Hunt:
+            if (IsValid(ActionButton))
+            {
+                ActionButton->SetVisibility(ESlateVisibility::Visible);
+                ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+            }
+            ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+            break;
+
         case EItemType::Consumable:
             if (IsValid(ActionButton)) 
             {
                 ActionButton->SetVisibility(ESlateVisibility::Visible);
                 ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
             }
-            ActionText->SetText(FText::FromString("Use"));
+            ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
             break;
         case EItemType::Build:
             if (IsValid(ActionButton)) 
@@ -82,7 +93,7 @@ void UCInventorySubMenu::UpdateSubMenu()
                 ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnBuildButtonClicked);
 
             }
-            ActionText->SetText(FText::FromString("Build"));
+            ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
             break;
         default:
             break;
@@ -96,21 +107,25 @@ void UCInventorySubMenu::UpdateSubMenu()
 
 void UCInventorySubMenu::HandleOnUseButtonClicked()
 {
-    OnUseButtonClicked.Broadcast();
+   // OnUseButtonClicked.Broadcast();
     OnFocusOnSubMenuEnded.Broadcast();
     SlotReference->ToggleTooltip();
+    //Item Use 구현 부분 
 }
 
 
 void UCInventorySubMenu::HandleOnBuildButtonClicked()
 {
+    
     OnFocusOnSubMenuEnded.Broadcast();
-
+    SlotReference->ToggleTooltip();
+    //Build 등록 구현 부분 
 }
 
 
 void UCInventorySubMenu::HandleOnSplitButtonClicked()
 {
     OnFocusOnSubMenuEnded.Broadcast();
-
+    SlotReference->ToggleTooltip();
+    //Split 구현 부분 
 }

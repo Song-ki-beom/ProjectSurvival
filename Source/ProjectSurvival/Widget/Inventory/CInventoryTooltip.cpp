@@ -37,7 +37,6 @@ void UCInventoryTooltip::NativeConstruct()
 	}
 	ItemName->SetText(ItemBeingHovered->TextData.Name);
 	DamageValue->SetText(FText::AsNumber(ItemBeingHovered->ItemStats.DamageValue));
-	Usage->SetText(ItemBeingHovered->TextData.UsageText);
 	ItemDescription->SetText(ItemBeingHovered->TextData.Description);
 	
 	const FString WeightInfo =  TEXT("무게: ") + FString::SanitizeFloat(ItemBeingHovered->GetItemStackWeight());
