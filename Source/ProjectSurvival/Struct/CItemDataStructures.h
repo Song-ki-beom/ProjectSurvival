@@ -68,6 +68,21 @@ struct FItemAssetData
 };
 
 USTRUCT()
+struct FProduceSlotData :public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		FName ResourceID;
+	UPROPERTY(EditAnywhere)
+		UTexture2D* ResourceIcon;
+	UPROPERTY(EditAnywhere)
+		FText ResourceName;
+	UPROPERTY(EditAnywhere)
+		int32 ProduceResourceDemand;
+};
+
+USTRUCT()
 struct FProduceWidgetData :public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
@@ -75,24 +90,20 @@ public:
 	UPROPERTY(EditAnywhere)
 		float ProduceTime;
 	UPROPERTY(EditAnywhere)
-		FName ProduceMethod;
+		FText ProduceMethod;
 	UPROPERTY(EditAnywhere)
-		FName FlavorText_1;
+		FText FlavorText;
+	UPROPERTY(EditAnywhere)
+		FProduceSlotData ProduceResource_1;
+	UPROPERTY(EditAnywhere)
+		FProduceSlotData ProduceResource_2;
+	UPROPERTY(EditAnywhere)
+		FProduceSlotData ProduceResource_3;
+	UPROPERTY(EditAnywhere)
+		FProduceSlotData ProduceResource_4;
+	UPROPERTY(EditAnywhere)
+		FProduceSlotData ProduceResource_5;
 };
-
-USTRUCT()
-struct FProduceSlotData :public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-		UTexture2D* ICon;
-	UPROPERTY(EditAnywhere)
-		int32 ProduceDemand;
-};
-
-
-
 
 USTRUCT()
 struct FItemData :public FTableRowBase

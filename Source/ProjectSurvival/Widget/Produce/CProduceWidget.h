@@ -18,6 +18,9 @@ protected:
 
 public:
 	FOnProduceWidgetToggled OnProduceWidgetToggled;
+	void SetProduceDetail(FName InID);
+	void RefreshProduceDetail();
+	void Produce();
 
 private:
 	UFUNCTION()
@@ -42,6 +45,12 @@ private:
 		class UGridPanel* ToolPanel;
 	UPROPERTY(meta = (BindWidget))
 		class UGridPanel* WeaponPanel;
+	UPROPERTY(meta = (BindWidget))
+		class UCProduceDetail* ProduceDetail;
 	UPROPERTY()
 		class UDataTable* ItemData;
+
+	class ACSurvivor* Survivor;
+	class UCInventoryComponent* InventoryComponent;
+	FName SelectedID;
 };

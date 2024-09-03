@@ -114,6 +114,7 @@ void ACMainHUD::DisplayMenu()
 		ProduceWidget->SetDesiredSizeInViewport(FVector2D(580, 850));
 		ProduceWidget->SetPositionInViewport(FVector2D(50, 50));
 		ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+		ProduceWidget->RefreshProduceDetail();
 		ProduceWidget->bIsFocusable = true;
 	}
 }
