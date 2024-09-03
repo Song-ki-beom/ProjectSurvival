@@ -24,6 +24,8 @@ public:
 	void DoInteract();
 	void FinishInteract();
 	void UpdateInteractionWidget() const;
+	void ExtraOptionButtonUp();
+	void ExtraOptionButtonDown();
 protected:
 	virtual void BeginPlay() override;
 	void PerformInteractionCheck();
@@ -32,9 +34,12 @@ protected:
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
-	void ToggleMoreInfo();
-	void ShowMoreInfo();
-	void HideMoreInfo();
+	void ToggleHiddenMenu();
+	void ShowHiddenMenu();
+	void HideHiddenMenu();
+	
+
+
 
 
 protected:
@@ -52,4 +57,5 @@ private:
 	UPROPERTY(Replicated)
 	class ACMainHUD* HUD;
 	bool bIsLongPress;
+	bool bIsExtraOptionOn;
 };

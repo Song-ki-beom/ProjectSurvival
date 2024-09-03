@@ -87,6 +87,8 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
 		InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
 		InputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACSurvivorController::ToggleMenu);
+		InputComponent->BindAction("MouseWheelUp", IE_Pressed, this,&ACSurvivorController::HandleMouseWheelUp);
+		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
 
 		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
@@ -406,6 +408,18 @@ void ACSurvivorController::ToggleMenu()
 	if (bIsBuildWidgetOn)
 		return;
 	Survivor->ToggleMenu();
+}
+
+void ACSurvivorController::HandleMouseWheelUp()
+{
+	
+		Survivor->HandleMouseWheelUp();
+}
+
+void ACSurvivorController::HandleMouseWheelDown()
+{
+	
+		Survivor->HandleMouseWheelDown();
 }
 
 //void ACSurvivorController::ToggleProduceWidget()

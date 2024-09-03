@@ -64,7 +64,7 @@ void UCInteractionComponent::DoInteract()
 {
 	// 상세 정보 타이머 시작
 	bIsLongPress = false;
-	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleMoreInfo, 0.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleHiddenMenu, 0.5f, false);
 	
 }
 
@@ -72,29 +72,58 @@ void UCInteractionComponent::DoInteract()
 void UCInteractionComponent::FinishInteract()
 {
 	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(LongPressTimerHandle);
-	if (ElapsedTime <0.25f&& ElapsedTime >=0)
-		BeginInteract();
-	else
-		EndInteract();
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		const FInteractableData* InteractableData = &TargetInteractable->InteractableData;
+		if (InteractableData->InteractableType == EInteractableType::Build)
+		{
+			HUD->HideHiddenMenu();
+			EndInteract();
+		}
+		else
+		{
+			if (ElapsedTime < 0.25f && ElapsedTime >= 0)
+				BeginInteract();
+			else
+				EndInteract();
+		}
+
+	}
+
+	
 }
+
 
 
 
 //인터렉션 메뉴 Switch On/OFF
-void UCInteractionComponent::ToggleMoreInfo()
+void UCInteractionComponent::ToggleHiddenMenu()
 {
-	HUD->ToggleMoreInfo();
+	HUD->ToggleHiddenMenu();
 }
 
-void UCInteractionComponent::ShowMoreInfo()
+void UCInteractionComponent::ShowHiddenMenu()
 {
-	HUD->ShowMoreInfo();
+	HUD->ShowHiddenMenu();
 }
 
-void UCInteractionComponent::HideMoreInfo()
+void UCInteractionComponent::HideHiddenMenu()
 {
-	HUD->HideMoreInfo();
+	HUD->HideHiddenMenu();
 }
+
+void UCInteractionComponent::ExtraOptionButtonUp()
+{
+	HUD->ExtraOptionButtonUp();
+}
+
+void UCInteractionComponent::ExtraOptionButtonDown()
+{
+	HUD->ExtraOptionButtonDown();
+}
+
+
 
 
 void UCInteractionComponent::UpdateInteractionWidget() const
@@ -136,7 +165,7 @@ void UCInteractionComponent::PerformInteractionCheck()
 
 				if (TraceHit.GetActor() != InteractionData.CurrentInteractable) 
 				{
-					HideMoreInfo();
+					HideHiddenMenu();
 					FoundInteractable(TraceHit.GetActor());
 					return;
 				}

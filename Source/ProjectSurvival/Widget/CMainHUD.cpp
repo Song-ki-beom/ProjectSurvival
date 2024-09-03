@@ -25,6 +25,7 @@ void ACMainHUD::BeginPlay()
 		InteractionWidget = CreateWidget<UCInteractionWidget>(GetWorld(), InteractionWidgetClass);
 		InteractionWidget->AddToViewport(-1); //그보다 아래
 		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		InteractionWidget->bIsFocusable = true;
 	}
 
 	//위젯들 등록 
@@ -179,21 +180,32 @@ void ACMainHUD::HideSubMenu()
 
 }
 
-void ACMainHUD::ToggleMoreInfo()
+void ACMainHUD::ToggleHiddenMenu()
 {
-	InteractionWidget->ToggleMoreInfo();
+	InteractionWidget->ToggleHiddenMenu();
 }
 
 
 
 
-void ACMainHUD::ShowMoreInfo()
+void ACMainHUD::ShowHiddenMenu()
 {
-	InteractionWidget->ShowMoreInfo();
+	InteractionWidget->ShowHiddenMenu();
 }
 
-void ACMainHUD::HideMoreInfo()
+void ACMainHUD::HideHiddenMenu()
 {
-	InteractionWidget->HideMoreInfo();
-
+	InteractionWidget->HideHiddenMenu();
 }
+
+void ACMainHUD::ExtraOptionButtonUp()
+{
+	InteractionWidget->MoveFocusToPrevButton();
+}
+
+void ACMainHUD::ExtraOptionButtonDown()
+{
+	InteractionWidget->MoveFocusToNextButton();
+}
+
+

@@ -48,6 +48,10 @@ private:
 	void ToggleMenu();
 	//void ToggleProduceWidget();
 
+	//Mouse Event
+	void HandleMouseWheelUp();
+	void HandleMouseWheelDown();
+
 
 private:
 	class ACSurvivor* Survivor;

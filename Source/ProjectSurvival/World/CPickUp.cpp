@@ -176,14 +176,20 @@ void ACPickUp::InitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 
 void ACPickUp::UpdateInteractableData()
 {
-	InstanceInteractableData.InteractableType = EInteractableType::Pickup;
+	switch(ItemReference->ItemType)
+	{
+	case EItemType::Build:
+		InstanceInteractableData.InteractableType = EInteractableType::Build;
+		break;
+	default:
+		InstanceInteractableData.InteractableType = EInteractableType::Pickup;
+		break;
+	}
 	InstanceInteractableData.Action = ItemReference->TextData.InteractionText;
 	InstanceInteractableData.Name = ItemReference->TextData.Name;
 	InstanceInteractableData.Quantity = ItemReference->Quantity;
 	InstanceInteractableData.ID = ItemReference->ID;
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
-
-
 
 
 }
