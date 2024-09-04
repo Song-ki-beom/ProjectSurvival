@@ -146,11 +146,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_1.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_1.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_1.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_1.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 
 		if (itemData->ProduceData.ProduceResource_2.ResourceIcon)
@@ -168,11 +168,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_2.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_2.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_2.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_2.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 
 		if (itemData->ProduceData.ProduceResource_3.ResourceIcon)
@@ -190,11 +190,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_3.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_3.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_3.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_3.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 		if (itemData->ProduceData.ProduceResource_4.ResourceIcon)
 		{
@@ -211,11 +211,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_4.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_4.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_4.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_4.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 		if (itemData->ProduceData.ProduceResource_5.ResourceIcon)
 		{
@@ -232,11 +232,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_5.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_5.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_5.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_5.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 	}
 	else
