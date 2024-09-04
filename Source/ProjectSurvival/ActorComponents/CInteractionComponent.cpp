@@ -25,7 +25,7 @@ void UCInteractionComponent::BeginPlay()
 	if (OwnerCharacter) 
 	{
 		ACSurvivorController* playerController = Cast<ACSurvivorController>(OwnerCharacter->GetController());
-		if (playerController)
+		if (playerController && playerController->IsLocalController())
 		{
 			HUD = Cast<ACMainHUD>(playerController->GetHUD());
 		}
@@ -45,13 +45,13 @@ void UCInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 }
 
-void UCInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UCInteractionComponent, HUD);
-	
-
-}
+//void UCInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//	
+//	
+//
+//}
 
 bool UCInteractionComponent::IsInteracting() const
 {
@@ -100,27 +100,32 @@ void UCInteractionComponent::FinishInteract()
 //인터렉션 메뉴 Switch On/OFF
 void UCInteractionComponent::ToggleHiddenMenu()
 {
-	HUD->ToggleHiddenMenu();
+	if (HUD)
+		HUD->ToggleHiddenMenu();
 }
 
 void UCInteractionComponent::ShowHiddenMenu()
 {
-	HUD->ShowHiddenMenu();
+	if (HUD)
+		HUD->ShowHiddenMenu();
 }
 
 void UCInteractionComponent::HideHiddenMenu()
 {
-	HUD->HideHiddenMenu();
+	if (HUD)
+		HUD->HideHiddenMenu();
 }
 
 void UCInteractionComponent::ExtraOptionButtonUp()
 {
-	HUD->ExtraOptionButtonUp();
+	if (HUD)
+		HUD->ExtraOptionButtonUp();
 }
 
 void UCInteractionComponent::ExtraOptionButtonDown()
 {
-	HUD->ExtraOptionButtonDown();
+	if (HUD)
+		HUD->ExtraOptionButtonDown();
 }
 
 
