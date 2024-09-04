@@ -54,7 +54,7 @@ protected:
 
 private:
 	class ACharacter* OwnerCharacter;
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	class ACMainHUD* HUD;
 	bool bIsLongPress;
 	bool bIsExtraOptionOn;
