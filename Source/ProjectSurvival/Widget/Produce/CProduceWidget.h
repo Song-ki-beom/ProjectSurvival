@@ -20,6 +20,9 @@ public:
 	FOnProduceWidgetToggled OnProduceWidgetToggled;
 	void SetProduceDetail(FName InID);
 	void RefreshProduceDetail();
+	void StartProduce();
+	void AddProduceItemToQueue();
+	void SetProducingItemText(FText InText);
 
 private:
 	UFUNCTION()
@@ -46,6 +49,10 @@ private:
 		class UGridPanel* WeaponPanel;
 	UPROPERTY(meta = (BindWidget))
 		class UCProduceDetail* ProduceDetail;
+	UPROPERTY(meta = (BindWidget))
+		class UWrapBox* ProduceQueue;
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* ProducingItemText;
 	UPROPERTY()
 		class UDataTable* ItemData;
 

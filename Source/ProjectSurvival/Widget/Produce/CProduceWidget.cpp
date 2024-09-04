@@ -6,9 +6,11 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/GridPanel.h"
+#include "Components/WrapBox.h"
 #include "Struct/CItemDataStructures.h"
 #include "Widget/Produce/CProduceDetail.h"
 #include "Widget/Produce/CProduceItemSlot.h"
+#include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Utility/CDebug.h"
 
@@ -29,7 +31,7 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 
 	if (InKeyEvent.GetKey() == EKeys::E)
 	{
-		ProduceDetail->ProduceItem();
+		StartProduce();
 		return FReply::Handled();
 	}
 	return FReply::Unhandled();
@@ -96,7 +98,6 @@ bool UCProduceWidget::Initialize()
 	return true;
 }
 
-// ProduceSlot을 클릭했을때 상단에 출력되는 UI 설정
 void UCProduceWidget::SetProduceDetail(FName InID)
 {
 	SelectedID = InID;
@@ -252,6 +253,44 @@ void UCProduceWidget::RefreshProduceDetail()
 		FName initialID = "Build_1";
 		SetProduceDetail(initialID);
 	}
+}
+
+void UCProduceWidget::StartProduce()
+{
+	ProduceDetail->ProduceItem();
+}
+
+void UCProduceWidget::AddProduceItemToQueue()
+{
+	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemQueueSlot.WBP_CProduceItemQueueSlot_C'"));
+	if (widgetClass)
+	{
+		UCProduceItemQueueSlot* produceItemQueueSlot = CreateWidget<UCProduceItemQueueSlot>(GetWorld(), widgetClass);
+		if (produceItemQueueSlot)
+		{
+			FItemData* itemData = ItemData->FindRow<FItemData>(SelectedID, TEXT(""));
+			if (itemData)
+			{
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemQueueSlot->SetProduceQueueSlotIcon(itemIcon);
+				
+				int32 produceTime = itemData->ProduceData.ProduceTime;
+				FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(produceTime));
+				produceItemQueueSlot->SetProduceTimeText(produceTimeText);
+				
+				FText produceItemName = itemData->TextData.Name;
+				produceItemQueueSlot->SetProduceItemName(produceItemName);
+
+				ProduceQueue->AddChildToWrapBox(produceItemQueueSlot);
+				produceItemQueueSlot->CheckWrapBox(ProduceQueue);
+			}
+		}
+	}
+}
+
+void UCProduceWidget::SetProducingItemText(FText InText)
+{
+	
 }
 
 void UCProduceWidget::ClickBuildStructureButton()

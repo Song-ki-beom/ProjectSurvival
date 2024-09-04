@@ -1,5 +1,6 @@
 #include "Widget/Produce/CProduceDetail.h"
 #include "Widget/Produce/CProduceRecipe.h"
+#include "Widget/Produce/CProduceWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
@@ -112,6 +113,11 @@ void UCProduceDetail::ProduceItem()
 				}
 			}
 		}
+		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
+		if (produceWidget)
+			produceWidget->AddProduceItemToQueue();
+		else
+			CDebug::Print("produceWidget : is not valid");
 	}
 	else
 		CDebug::Print("Can't Produce");
