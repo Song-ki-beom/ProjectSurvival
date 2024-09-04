@@ -29,7 +29,7 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 
 	if (InKeyEvent.GetKey() == EKeys::E)
 	{
-		Produce();
+		ProduceDetail->ProduceItem();
 		return FReply::Handled();
 	}
 	return FReply::Unhandled();
@@ -252,11 +252,6 @@ void UCProduceWidget::RefreshProduceDetail()
 		FName initialID = "Build_1";
 		SetProduceDetail(initialID);
 	}
-}
-
-void UCProduceWidget::Produce()
-{
-	CDebug::Print("Produce Called");
 }
 
 void UCProduceWidget::ClickBuildStructureButton()

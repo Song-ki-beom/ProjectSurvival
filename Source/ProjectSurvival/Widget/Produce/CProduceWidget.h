@@ -20,7 +20,6 @@ public:
 	FOnProduceWidgetToggled OnProduceWidgetToggled;
 	void SetProduceDetail(FName InID);
 	void RefreshProduceDetail();
-	void Produce();
 
 private:
 	UFUNCTION()

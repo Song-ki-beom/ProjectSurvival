@@ -18,6 +18,7 @@ public:
 	void SetProduceDetailFlavorText(FText InText);
 	void AddResourceToProduceRecipeScroll(UTexture2D* InTexture2D, FText InResourceName, int32 InventoryQuantity, int32 InDemandQuantity);
 	void ClearRecipeScrollBox();
+	void ProduceItem();
 
 private:
 	UPROPERTY(meta = (BindWidget))

@@ -18,6 +18,8 @@ public:
 	void SetResourceIcon(UTexture2D* InTexture2D);
 	void SetResourceName(FText InText);
 	void SetResourceQuantity(int32 InventoryQuantity, int32 DemandQuantity);
+	//bool CheckResourceValid() { return bIsResourceValid; }
+	bool CheckProduceable() { return bIsProduceable; }
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -26,4 +28,7 @@ private:
 		class UTextBlock* ResourceName;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ResourceQuantity;
+
+	//bool bIsResourceValid = false;
+	bool bIsProduceable = false;
 };

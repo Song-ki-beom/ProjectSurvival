@@ -112,8 +112,11 @@ void ACMainHUD::DisplayMenu()
 
 	if (ProduceWidget)
 	{
-		ProduceWidget->SetDesiredSizeInViewport(FVector2D(580, 850));
-		ProduceWidget->SetPositionInViewport(FVector2D(50, 50));
+		FVector2D widgetSize = FVector2D(580, 850);
+		ProduceWidget->SetDesiredSizeInViewport(widgetSize);
+		//FVector2D viewportSize;
+		//GEngine->GameViewport->GetViewportSize(viewportSize);
+		//ProduceWidget->SetPositionInViewport((viewportSize - widgetSize) / 2);
 		ProduceWidget->SetVisibility(ESlateVisibility::Visible);
 		ProduceWidget->RefreshProduceDetail();
 		ProduceWidget->bIsFocusable = true;

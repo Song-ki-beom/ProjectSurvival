@@ -3,6 +3,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
+#include "Utility/CDebug.h"
 
 void UCProduceDetail::SetProduceDetailIcon(UTexture2D* InTexture2D)
 {
@@ -53,4 +54,30 @@ void UCProduceDetail::AddResourceToProduceRecipeScroll(UTexture2D* InTexture2D, 
 void UCProduceDetail::ClearRecipeScrollBox()
 {
 	ProduceDetailRecipeScroll->ClearChildren();
+}
+
+void UCProduceDetail::ProduceItem()
+{
+	int32 recipeNumber = ProduceDetailRecipeScroll->GetAllChildren().Num();
+	int32 checkNumber = 0;
+	for (UWidget* ChildWidget : ProduceDetailRecipeScroll->GetAllChildren())
+	{
+		if (UCProduceRecipe* RecipeWidget = Cast<UCProduceRecipe>(ChildWidget))
+		{
+			if (RecipeWidget->CheckProduceable())
+			{
+				CDebug::Print("Enough Resource");
+				checkNumber++;
+			}
+			else
+			{
+				CDebug::Print("Not Enough Resource");
+				break;
+			}
+		}
+	}
+	if (recipeNumber == checkNumber)
+		CDebug::Print("Can Produce");
+	else
+		CDebug::Print("Can't Produce");
 }

@@ -8,6 +8,7 @@
 void UCProduceRecipe::SetResourceIcon(UTexture2D* InTexture2D)
 {
 	ResourceIcon->SetBrushFromTexture(InTexture2D);
+	//bIsResourceValid = true;
 }
 
 void UCProduceRecipe::SetResourceName(FText InText)
@@ -21,11 +22,13 @@ void UCProduceRecipe::SetResourceQuantity(int32 InventoryQuantity, int32 DemandQ
 	{
 		ResourceName->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
 		ResourceQuantity->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
+		bIsProduceable = false;
 	}
 	else
 	{
 		ResourceName->SetColorAndOpacity(FSlateColor(FLinearColor::Green));
 		ResourceQuantity->SetColorAndOpacity(FSlateColor(FLinearColor::Green));
+		bIsProduceable = true;
 	}
 	FText itemWeightText = FText::Format(FText::FromString(TEXT("({0}/{1})")), FText::AsNumber(InventoryQuantity), FText::AsNumber(DemandQuantity));
 	ResourceQuantity->SetText(itemWeightText);
