@@ -43,6 +43,7 @@ private:
 	void BuildStartDoorFrame();
 	void BuildStartDoor();
 	void BuildStartStair();
+	void BuildStartPlaceable();
 
 	void PerformBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform);
 	UFUNCTION(Server, Reliable, WithValidation)

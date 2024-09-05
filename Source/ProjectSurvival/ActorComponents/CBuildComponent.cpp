@@ -120,6 +120,11 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		BuildStartStair();
 		break;
 	}
+	case EBuildStructureElement::Placeable:
+	{
+		BuildStartPlaceable();
+		break;
+	}
 	case EBuildStructureElement::None:
 		break;
 	default:
@@ -205,6 +210,7 @@ void UCBuildComponent::BuildSpawnedStructure()
 	{
 		StructureTransform = SpawnedStructure->GetActorTransform();
 		PerformBuild(StructureClass, StructureTransform);
+		SpawnedStructure->SetReplicates(false);
 	}
 	else
 	{
@@ -1125,6 +1131,111 @@ void UCBuildComponent::BuildStartStair()
 		{
 			SpawnedStair->GetStaticMesh()->SetMaterial(0, RedMaterial);
 		}
+	}
+}
+
+void UCBuildComponent::BuildStartPlaceable()
+{
+	if (IsValid(SpawnedPlaceable))
+	{
+		FVector structureLocation;
+		FRotator structureRotation;
+
+		SpawnedPlaceable->CheckDown_FoundationActor();
+		bIsBuildable = (SpawnedPlaceable->GetPlaceableDown_FoundationHit());
+		if (bIsBuildable)
+		{
+			// ImPactPoint의 Z위치 + Box 높이의 절반만큼 위로
+		}
+		else
+		{
+			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+			structureLocation.Z = Survivor->GetActorLocation().Z;
+			SpawnedPlaceable->SetActorLocation(structureLocation);
+			structureRotation = Survivor->GetActorRotation();
+			SpawnedPlaceable->SetActorRotation(structureRotation);
+		}
+
+		//	SpawnedFoundation->CheckRight();
+		//	if (SpawnedFoundation->GetFoundationRightHit())
+		//		bIsSnapped = SpawnedFoundation->GetFoundationRightHit();
+		//	else
+		//	{
+		//		SpawnedFoundation->CheckLeft();
+		//		if (SpawnedFoundation->GetFoundationLeftHit())
+		//			bIsSnapped = SpawnedFoundation->GetFoundationLeftHit();
+		//		else
+		//		{
+		//			SpawnedFoundation->CheckBackward();
+		//			if (SpawnedFoundation->GetFoundationBackwardHit())
+		//				bIsSnapped = SpawnedFoundation->GetFoundationBackwardHit();
+		//			else
+		//			{
+		//				SpawnedFoundation->CheckForward();
+		//				if (SpawnedFoundation->GetFoundationForwardHit())
+		//					bIsSnapped = SpawnedFoundation->GetFoundationForwardHit();
+		//			}
+		//		}
+		//	}
+		//}
+
+		//if (bIsSnapped)
+		//{
+		//	TArray<FHitResult> tempHitResults;
+		//	FVector tempStartLocation = Survivor->GetActorLocation();
+		//	FVector tempEndLocation = Survivor->GetActorLocation() + Survivor->GetControlRotation().Vector() * 750.0f;
+		//	TArray<TEnumAsByte<EObjectTypeQuery>> tempObjectTypeQuery;
+		//	tempObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+		//	TArray<AActor*> tempActorsIgnore;
+		//	FCollisionObjectQueryParams tempObjectQueryParams;
+		//	FCollisionQueryParams tempQueryParams;
+
+		//	bool tempBool = UKismetSystemLibrary::LineTraceMultiForObjects(
+		//		GetWorld(),
+		//		tempStartLocation,
+		//		tempEndLocation,
+		//		tempObjectTypeQuery,
+		//		false,
+		//		tempActorsIgnore,
+		//		EDrawDebugTrace::Persistent,
+		//		tempHitResults,
+		//		true,
+		//		FLinearColor::Green,
+		//		FLinearColor::Red
+		//	);
+
+		//	if (!tempBool)
+		//	{
+		//		bIsSnapped = false;
+		//		structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+		//		structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+		//		structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
+		//		SpawnedFoundation->SetActorLocation(structureLocation);
+		//		structureRotation = Survivor->GetActorRotation();
+		//		SpawnedFoundation->SetActorRotation(structureRotation);
+		//	}
+		//}
+		//else
+		//{
+		//	structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+		//	structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+		//	structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
+		//	SpawnedFoundation->SetActorLocation(structureLocation);
+		//	structureRotation = Survivor->GetActorRotation();
+		//	SpawnedFoundation->SetActorRotation(structureRotation);
+		//}
+
+		//if (bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
+		//{
+		//	//CDebug::Print("Change To GreenMaterial");
+		//	SpawnedFoundation->GetStaticMesh()->SetMaterial(0, GreenMaterial);
+		//}
+		//if (!bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != RedMaterial)
+		//{
+		//	//CDebug::Print("Change To RedMaterial");
+		//	SpawnedFoundation->GetStaticMesh()->SetMaterial(0, RedMaterial);
+		//}
 	}
 }
 

@@ -140,16 +140,15 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 				ItemReference->SetQuantity(InQuantity);
 			}
 
+			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+
 			if (ItemReference->ItemType != EItemType::Build)
 			{
-				PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 				//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
 				PickupMesh->SetCollisionProfileName(FName("Item"));
 				//중력의 영향을 받기 위한 피직스 설정 
 				PickupMesh->SetSimulatePhysics(true);
 			}
-
-
 			UpdateInteractableData();
 		}
 	}
@@ -161,16 +160,14 @@ void ACPickUp::InitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
 	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
 	ItemReference->Inventory = nullptr;
-	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
-	if (ItemReference->ItemType != EItemType::Build)
-	{
-		//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
-		PickupMesh->SetCollisionProfileName(FName("Item"));
-		//중력의 영향을 받기 위한 피직스 설정 
-		PickupMesh->SetSimulatePhysics(true);
-	}
+	//DT_Items에 DropMesh가 있을 경우 DropMesh로 드롭, 없을 경우 Mesh로 드롭
+	if (ItemToDrop->AssetData.DropMesh)
+		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.DropMesh);
+	else
+		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+	PickupMesh->SetCollisionProfileName(FName("Item"));
+	PickupMesh->SetSimulatePhysics(true);
 	UpdateInteractableData();
-
 }
 
 
