@@ -290,7 +290,7 @@ void UCProduceWidget::AddProduceItemToQueue()
 
 void UCProduceWidget::SetProducingItemText(FText InText)
 {
-	
+	ProducingItemText->SetText(InText);
 }
 
 void UCProduceWidget::ClickBuildStructureButton()

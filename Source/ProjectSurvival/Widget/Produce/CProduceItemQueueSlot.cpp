@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/WrapBox.h"
+#include "Components/ProgressBar.h"
 #include "Utility/CDebug.h"
 
 bool UCProduceItemQueueSlot::Initialize()
@@ -39,17 +40,44 @@ void UCProduceItemQueueSlot::StartProduce()
 	CDebug::Print("StartProduce Called");
 	bIsWaiting = false;
 
-	UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
-	if (produceWidget)
+	ProduceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+	if (ProduceWidget)
 	{
+		CDebug::Print("ProduceItemName", ProduceItemName, FColor::Silver);
 		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
-		produceWidget->SetProducingItemText(produceItemNameText);
+		ProduceWidget->SetProducingItemText(produceItemNameText);
+	}
+	else
+		CDebug::Print("produceWidget is not valid");
+
+	TotalProduceTime = FCString::Atof(*ProduceTimeText->GetText().ToString());
+	RemainProduceTime = TotalProduceTime;
+	GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, this, &UCProduceItemQueueSlot::SetProduceProgress, 0.1f, true);
+}
+
+void UCProduceItemQueueSlot::SetProduceProgress()
+{
+	RemainProduceTime -= 0.1f;
+	FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(RemainProduceTime, &FNumberFormattingOptions().SetMaximumFractionalDigits(1)));
+	ProduceTimeText->SetText(produceTimeText);
+
+	float progress = (TotalProduceTime - RemainProduceTime) / TotalProduceTime;
+	ProduceProgressBar->SetPercent(progress);
+
+	if (RemainProduceTime <= 0.0f)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
+		EndProduce();
 	}
 }
 
 void UCProduceItemQueueSlot::EndProduce()
 {
+	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
+	if (wrapBox)
+		wrapBox->RemoveChild(this);
 
+	CheckWrapBox(wrapBox);
 }
 
 void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
@@ -86,6 +114,14 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 		}
 		else
 		{
+			if (ProduceWidget)
+			{
+				FText produceItemNameText = FText::GetEmpty();
+				ProduceWidget->SetProducingItemText(produceItemNameText);
+			}
+			else
+				CDebug::Print("produceWidget is not valid");
+
 			CDebug::Print("Children.Num() <= 0: False", FColor::Red);
 		}
 	}
