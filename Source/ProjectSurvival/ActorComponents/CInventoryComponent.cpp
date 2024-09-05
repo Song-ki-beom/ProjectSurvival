@@ -22,6 +22,8 @@ void UCInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 }
 
+
+
 void UCInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -184,9 +186,9 @@ void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 Quantity
 		 //QuantityToDrop 만큼 인벤토리에서 제거 
 		 const int32 RemovedQuantity = RemoveAmountOfItem(ItemToDrop, QuantityToDrop); 
 
-		 ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams); //PickUp 클래스는 CObject Construct 이후에 , 의도적으로 Initialize를 하거나 PickUp 이벤트가 일어날때 액터의 재복사 및 전달 데이터의 Copy가 일어나기 때문에 StaticClass 로 정적 생성해도 괜찮다.
+			 ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams); //PickUp 클래스는 CObject Construct 이후에 , 의도적으로 Initialize를 하거나 PickUp 이벤트가 일어날때 액터의 재복사 및 전달 데이터의 Copy가 일어나기 때문에 StaticClass 로 정적 생성해도 괜찮다.
+			 Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
 
-		 Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
 	}
 	else
 	{

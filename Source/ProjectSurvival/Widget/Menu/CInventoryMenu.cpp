@@ -6,6 +6,7 @@
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Net/UnrealNetwork.h"
 #include "Input/Reply.h"
 
 void UCInventoryMenu::NativeOnInitialized() 
@@ -44,8 +45,27 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
 	if (PlayerCharacter && ItemDragDrop->SourceItem) // 해당 UI 내에서 떨어뜨릴 아이템이 감지되면 
 	{
-		PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
+		if (PlayerCharacter->HasAuthority())
+		{
+			PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
+		}
+		
+
 		return true; 
 	}
 	return false;
+}
+
+
+void UCInventoryMenu::RequestDropItem_Implementation(class UCItemBase* ItemToDrop, const int32 QuantityToDrop)
+{
+	PlayerCharacter->GetInventoryComponent()->DropItem(ItemToDrop, QuantityToDrop);
+
+
+}
+
+
+void UCInventoryMenu::BroadCastDropItem_Implementation(class UCItemBase* ItemToDrop, const int32 QuantityToDrop)
+{
+
 }
