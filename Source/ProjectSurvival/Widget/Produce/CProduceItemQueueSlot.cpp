@@ -1,5 +1,8 @@
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Produce/CProduceWidget.h"
+#include "Character/CSurvivor.h"
+#include "ActorComponents/CInventoryComponent.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
@@ -18,6 +21,11 @@ bool UCProduceItemQueueSlot::Initialize()
 	ProduceCancleButton->OnClicked.AddDynamic(this, &UCProduceItemQueueSlot::CancleProduce);
 
 	return true;
+}
+
+void UCProduceItemQueueSlot::SetProduceItemID(FName InID)
+{
+	ProduceItemID = InID;
 }
 
 void UCProduceItemQueueSlot::SetProduceQueueSlotIcon(UTexture2D* InTexture2D)
@@ -68,6 +76,27 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 		EndProduce();
+		ACSurvivor* survivor = Cast<ACSurvivor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		if (survivor)
+		{
+			UClass* pickUpClass = LoadObject<UClass>(nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Item/BP_CPickUpBase.BP_CPickUpBase_C'"));
+			if (pickUpClass)
+			{
+				FActorSpawnParameters spawnParams;
+				spawnParams.Owner = survivor;
+				spawnParams.Instigator = survivor->GetInstigator();
+				ACPickUp* spawnedItem = GetWorld()->SpawnActor<ACPickUp>(pickUpClass, FVector::ZeroVector, FRotator::ZeroRotator, spawnParams);
+				spawnedItem->DesiredItemID = ProduceItemID;
+				spawnedItem->InitializePickup(UCItemBase::StaticClass(), 1);
+				spawnedItem->TakePickup(survivor);
+			}
+			
+			//ACPickUp* producedItem = GetWorld()->SpawnActor<ACPickUp>();
+			//producedItem->DesiredItemID = ProduceItemID;
+			//producedItem->TakePickup(survivor);
+			//survivor->GetInventoryComponent()->HandleAddItem()
+
+		}
 	}
 }
 

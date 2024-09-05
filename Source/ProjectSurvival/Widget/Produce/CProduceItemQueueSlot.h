@@ -13,6 +13,7 @@ protected:
 	virtual bool Initialize() override;
 
 public:
+	void SetProduceItemID(FName InID);
 	void SetProduceQueueSlotIcon(UTexture2D* InTexture2D);
 	void SetProduceTimeText(FText InText);
 	void SetProduceItemName(FText InText);
@@ -38,6 +39,7 @@ private:
 
 	class UCProduceWidget* ProduceWidget;
 
+	FName ProduceItemID;
 	FText ProduceItemName;
 	bool bIsWaiting = true;
 	FTimerHandle ProgressTimerHandle;

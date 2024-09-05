@@ -271,6 +271,9 @@ void UCProduceWidget::AddProduceItemToQueue()
 			FItemData* itemData = ItemData->FindRow<FItemData>(SelectedID, TEXT(""));
 			if (itemData)
 			{
+				FName itemID = itemData->ID;
+				produceItemQueueSlot->SetProduceItemID(itemID);
+
 				UTexture2D* itemIcon = itemData->AssetData.Icon;
 				produceItemQueueSlot->SetProduceQueueSlotIcon(itemIcon);
 				
