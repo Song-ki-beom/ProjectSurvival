@@ -49,7 +49,10 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 		{
 			PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
 		}
-		
+		else
+		{
+			RequestDropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
+		}
 
 		return true; 
 	}

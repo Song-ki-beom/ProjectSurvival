@@ -7,10 +7,12 @@
 #include "Utility/CDebug.h"
 #include "Engine/DataTable.h"
 #include "ActorComponents/CInteractionComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
 // Sets default values
 ACPickUp::ACPickUp()
 {
+	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
 	PickupMesh->SetSimulatePhysics(false);
