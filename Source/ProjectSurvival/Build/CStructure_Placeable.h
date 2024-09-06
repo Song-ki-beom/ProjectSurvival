@@ -14,13 +14,16 @@ public:
 
 public:
 	void CheckCenter();
-	bool GetWallCenterHit() { return bCenterHit; }
+	bool GetPlaceableCenterHit() { return bCenterHit; }
 
-	void CheckDown_FoundationActor();
-	bool GetPlaceableDown_FoundationHit() { return bDown_FoundationActorHit; }
+	void CheckDown_FoundationAndCeiling();
+	bool GetPlaceableDown_FoundationAndCeilingHit() { return bDown_FoundationAndCeilingActorHit; }
 
-	void CheckDown_CeilingActor();
-	bool GetPlaceableDown_CeilingHit() { return bDown_CeilingActorHit; }
+	//void CheckDown_FoundationActor();
+	//bool GetPlaceableDown_FoundationHit() { return bDown_FoundationActorHit; }
+
+	//void CheckDown_CeilingActor();
+	//bool GetPlaceableDown_CeilingHit() { return bDown_CeilingActorHit; }
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -28,8 +31,9 @@ protected:
 
 private:
 	bool bCenterHit;
-	bool bDown_FoundationActorHit;
-	bool bDown_CeilingActorHit;
+	bool bDown_FoundationAndCeilingActorHit;
+	//bool bDown_FoundationActorHit;
+	//bool bDown_CeilingActorHit;
 
 	FRotator CenterRotation;
 };

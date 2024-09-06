@@ -1141,19 +1141,28 @@ void UCBuildComponent::BuildStartPlaceable()
 		FVector structureLocation;
 		FRotator structureRotation;
 
-		SpawnedPlaceable->CheckDown_FoundationActor();
-		bIsBuildable = (SpawnedPlaceable->GetPlaceableDown_FoundationHit());
+		SpawnedPlaceable->CheckDown_FoundationAndCeiling();
+		if (SpawnedPlaceable->GetPlaceableDown_FoundationAndCeilingHit())
+		{
+			SpawnedPlaceable->CheckCenter();
+			bIsBuildable = SpawnedPlaceable->GetPlaceableCenterHit();
+		}
+		else
+			bIsBuildable = false;
+
 		if (bIsBuildable)
 		{
 			// ImPactPoint의 Z위치 + Box 높이의 절반만큼 위로
+			CDebug::Print("bIsBuildable: ", bIsBuildable);
 		}
 		else
 		{
+			CDebug::Print("bIsBuildable: ", bIsBuildable);
 			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
 			structureLocation.Z = Survivor->GetActorLocation().Z;
 			SpawnedPlaceable->SetActorLocation(structureLocation);
-			structureRotation = Survivor->GetActorRotation();
+			structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
 			SpawnedPlaceable->SetActorRotation(structureRotation);
 		}
 

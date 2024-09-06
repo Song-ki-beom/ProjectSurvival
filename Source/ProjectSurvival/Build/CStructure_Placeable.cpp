@@ -1,5 +1,6 @@
 #include "Build/CStructure_Placeable.h"
 #include "Build/CStructure_Foundation.h"
+#include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Utility/CDebug.h"
 
@@ -10,20 +11,47 @@ ACStructure_Placeable::ACStructure_Placeable()
 }
 void ACStructure_Placeable::CheckCenter()
 {
-
+	FHitResult centerBoxHitResult;
+	FVector centerBoxLocation = this->GetActorLocation();
+	FVector centerBoxSize = FVector(145, 145, 75);
+	FRotator centerBoxOrientation;
+	if (!bDown_FoundationAndCeilingActorHit)
+		centerBoxOrientation = GetOwner()->GetActorRotation();
+	else
+		centerBoxOrientation = CenterRotation;
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
+	bool bCenterBoxTraceComplex = false;
+	TArray<AActor*> centerBoxActorsToIgnore;
+	TArray<FHitResult> centerBoxHitResults;
+	bCenterHit = UKismetSystemLibrary::BoxTraceSingle(
+		GetWorld(),
+		centerBoxLocation,
+		centerBoxLocation,
+		centerBoxSize,
+		centerBoxOrientation,
+		centerBoxTraceTypeQuery,
+		bCenterBoxTraceComplex,
+		centerBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		centerBoxHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
 }
 
-void ACStructure_Placeable::CheckDown_FoundationActor()
+void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 {
-	// 토대 액터 체크
+	// 액터 체크
 	FHitResult foundationActorHitResult;
 	FVector startLocation = DownBox->GetComponentLocation();
 	FVector endLocation = startLocation - FVector(0, 0, 300);
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypeQuery;
-	objectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+	objectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_Visibility));
 	TArray<AActor*> ignores;
+	ignores.Add(this);
 	FCollisionQueryParams collisionParams;
-	bDown_FoundationActorHit = UKismetSystemLibrary::LineTraceSingleForObjects
+	bool bDownActorHit = UKismetSystemLibrary::LineTraceSingleForObjects
 	(
 		GetWorld(),
 		startLocation,
@@ -38,17 +66,27 @@ void ACStructure_Placeable::CheckDown_FoundationActor()
 		FLinearColor::Red
 	);
 
-	if (bDown_FoundationActorHit) // 라인트레이스가 어떤 액터에 히트했는지 확인
+	if (bDownActorHit) // 라인트레이스가 어떤 액터에 히트했는지 확인
 	{
-		AActor* HitActor = foundationActorHitResult.GetActor();
-		if (HitActor && HitActor->IsA(ACStructure_Foundation::StaticClass())) // 히트된 액터가 AСStructure_Foundation의 하위 클래스인지 확인
+		AActor* hitActor = foundationActorHitResult.GetActor();
+		if (hitActor && (hitActor->IsA(ACStructure_Foundation::StaticClass()) || hitActor->IsA(ACStructure_Ceiling::StaticClass())))
 		{
-			// AСStructure_Foundation 하위 클래스 액터에 히트했을 때 실행할 로직
-			CDebug::Print("Foundation Found", FColor::Cyan);
+			CDebug::Print("hitActor: ", hitActor, FColor::Cyan);
+			bDown_FoundationAndCeilingActorHit = true;
+		}
+		else
+		{
+			CDebug::Print("hitActor: ", hitActor, FColor::Cyan);
+			bDown_FoundationAndCeilingActorHit = false;
 		}
 	}
 }
 
-void ACStructure_Placeable::CheckDown_CeilingActor()
-{
-}
+//void ACStructure_Placeable::CheckDown_FoundationActor()
+//{
+//	
+//}
+//
+//void ACStructure_Placeable::CheckDown_CeilingActor()
+//{
+//}
