@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Struct/CItemDataStructures.h"
+#include "Engine/World.h"
 #include "CInventoryComponent.generated.h"
 
 
@@ -83,6 +85,7 @@ public:
 	void ToggleMenu();
 	void DropItem(class UCItemBase* ItemToDrop, const int32 QuantityToDrop);
 
+
 	//Find
 
 	//인벤토리에서 동일한 UCItemBase 포인터(데이터 저장소)가 존재하는지 확인
@@ -133,6 +136,11 @@ protected:
 
 	void AddNewItem(UCItemBase* InItem, const int32 AmountToAdd);
 
+	void PerformDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
+	UFUNCTION(Server, Reliable)
+	void RequestDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
+	
+
 
 //인벤토리에 변경사항이 있을때마다 호출할 델리게이트 함수 
 public:
@@ -154,6 +162,4 @@ private:
 	class ACharacter* OwnerCharacter;
 	UPROPERTY(Replicated)
 		class ACMainHUD* HUD;
-
-
 };

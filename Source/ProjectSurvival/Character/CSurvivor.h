@@ -141,7 +141,7 @@ private:
 	//Inventory
 	UPROPERTY(VisibleAnywhere)
 		class UCInteractionComponent* InteractionComponent;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere ,Replicated)
 		class UCInventoryComponent* InventoryComponent;
 };
 

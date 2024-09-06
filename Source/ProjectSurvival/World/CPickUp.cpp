@@ -9,6 +9,9 @@
 #include "ActorComponents/CInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
+
+
+
 // Sets default values
 ACPickUp::ACPickUp()
 {
@@ -56,6 +59,10 @@ void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 		}
 	}
 }
+
+
+
+
 
 void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
 {
@@ -157,13 +164,31 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 	}
 }
 
-void ACPickUp::InitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
+void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity)
+{
+	
+
+	if (this->HasAuthority())
+	{
+		BroadCastInitializeDrop(ItemID, InQuantity);
+	}
+	else
+	{
+		RequestInitializeDrop(ItemID, InQuantity);
+	}
+	
+
+}
+
+void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity) 
 {
 	ItemReference = ItemToDrop;
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
 	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
 	ItemReference->Inventory = nullptr;
-	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+	//UStaticMesh
+	MeshToChange = ItemToDrop->AssetData.Mesh;
+	PickupMesh->SetStaticMesh(MeshToChange);
 	if (ItemReference->ItemType != EItemType::Build)
 	{
 		//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
@@ -173,7 +198,29 @@ void ACPickUp::InitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 	}
 	UpdateInteractableData();
 
+
 }
+
+
+void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
+{
+	InitializeDrop(ItemID,InQuantity);
+}
+
+
+void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
+{
+	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemID, ItemID.ToString());
+	if (ItemData)
+	{
+		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
+		ItemToDrop->CopyFromItemData(*ItemData);
+		PerformInitializeDrop(ItemToDrop, InQuantity);
+	}
+}
+
+
+
 
 
 void ACPickUp::UpdateInteractableData()

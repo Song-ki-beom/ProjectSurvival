@@ -20,7 +20,12 @@ public:
 
 	UFUNCTION(Category = "Item")
 	UCItemBase* CreateItemCopy();
-
+	
+	//Drop & PickUp Item Spawn  리플리케이트를 위한 Struct 복제 전달용 
+	UFUNCTION(Category = "Item")
+	FItemData CreateFItemData(class UCItemBase* ItemReference);
+	UFUNCTION(Category = "Item")
+	void CopyFromItemData(FItemData ItemDataReference);
 
 	UFUNCTION(Category = "Item")
 	FORCEINLINE float GetItemStackWeight() const
@@ -59,19 +64,19 @@ public:
 	UPROPERTY()
 		class UCInventoryComponent* Inventory; //참고할 인벤토리
 
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item" , Replicated)
 	int32 Quantity; //같은 아이템 항목에서 개수를 분리하는 등의 액션을 취하기 위해 따로 수량 변수 사용 (ex.) 나무 뗄감 x3 에서 한개 떼어서 버릴때)
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item", Replicated)
 		FName ID;
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item", Replicated)
 		EItemType ItemType;
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item", Replicated)
 		FItemStats ItemStats;
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item", Replicated)
 		FItemTextData TextData;
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item", Replicated)
 		FItemNumericData NumericData;
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, Category = "Item", Replicated)
 		FItemAssetData AssetData;
 
 	bool bIsCopy;
@@ -79,3 +84,4 @@ public:
 
 
 };
+

@@ -39,12 +39,12 @@ private:
 	void AddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
 	UFUNCTION(Server, Reliable)
 		void RequestSwitchFoligeToDestructible(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform);
-	UFUNCTION(Server, Reliable)
-		void RequestRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);
-	UFUNCTION(Server, Reliable)
-		void RequestAddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
+	/*UFUNCTION(Server, Reliable)
+		void RequestRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);*/
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);
+	UFUNCTION(Server, Reliable)
+		void RequestAddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastSwitchFoligeToDestructible(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio, float InDamageAmount);
 

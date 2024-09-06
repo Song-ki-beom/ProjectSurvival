@@ -135,10 +135,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 		{
 			RemoveFoliageInstance(InstanceToRemove,InstanceIndex);
 		}
-		else
-		{
-			RequestRemoveFoliageInstance(InstanceToRemove, InstanceIndex);
-		}
+
 			
 
 		if (InstanceIndex != NO_INDEX) return true;
@@ -155,7 +152,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 void UCHarvestComponent::RemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
 {
 	
-	InInstanceToRemove->RemoveInstance(InInstanceIndex);
+	//InInstanceToRemove->RemoveInstance(InInstanceIndex);
 	
 	if (OwnerCharacter->HasAuthority()) 
 	{
@@ -166,11 +163,11 @@ void UCHarvestComponent::RemoveFoliageInstance(UInstancedStaticMeshComponent* In
 
 }
 
-void UCHarvestComponent::RequestRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
-{
-	
-	RemoveFoliageInstance(InInstanceToRemove, InInstanceIndex);
-}
+//void UCHarvestComponent::RequestRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
+//{
+//	
+//	RemoveFoliageInstance(InInstanceToRemove, InInstanceIndex);
+//}
 
 void UCHarvestComponent::BroadCastRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
 {

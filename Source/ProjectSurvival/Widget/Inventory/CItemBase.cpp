@@ -35,6 +35,32 @@ UCItemBase* UCItemBase::CreateItemCopy()
 	return ItemCopy;
 }
 
+
+FItemData UCItemBase::CreateFItemData(UCItemBase* ItemReference)
+{
+	FItemData returnData;
+	returnData.AssetData = ItemReference->AssetData;
+	returnData.ID = ItemReference->ID;
+	returnData.ItemStats = ItemReference->ItemStats;
+	returnData.ItemType = ItemReference->ItemType;
+	returnData.NumericData = ItemReference->NumericData;
+	returnData.TextData = ItemReference->TextData;
+	return returnData;
+}
+
+
+void UCItemBase::CopyFromItemData(FItemData ItemDataReference)
+{
+	this->AssetData = ItemDataReference.AssetData;
+	this->ID = ItemDataReference.ID;
+	this->ItemStats = ItemDataReference.ItemStats;
+	this->ItemType = ItemDataReference.ItemType;
+	this->NumericData = ItemDataReference.NumericData;
+	this->TextData = ItemDataReference.TextData;
+	
+}
+
+
 void UCItemBase::SetQuantity(const int32 NewQuantity)
 {
 	if (NewQuantity != Quantity)
@@ -64,3 +90,16 @@ void UCItemBase::Use(ACSurvivor* Character)
 }
 
 
+void UCItemBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCItemBase, Quantity);
+	DOREPLIFETIME(UCItemBase, ID);
+	DOREPLIFETIME(UCItemBase, ItemType);
+	DOREPLIFETIME(UCItemBase, ItemStats);
+	DOREPLIFETIME(UCItemBase, TextData);
+	DOREPLIFETIME(UCItemBase, NumericData);
+	DOREPLIFETIME(UCItemBase, AssetData);
+
+
+}

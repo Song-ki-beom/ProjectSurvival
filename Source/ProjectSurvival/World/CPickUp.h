@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Struct/CItemDataStructures.h"
 #include "Interface/InteractionInterface.h"
 #include "CPickUp.generated.h"
 
@@ -26,7 +27,13 @@ public:
 	//Pickup은 월드에 등록된 데이터베이스에서 PickUp 데이터의 참조가 가능함 
 	void InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, const int32 InQuantity);
 	//반면 아이템을 Drop 할 때는 에디터와 데이터테이블에 등록이 되어 있지 않아 별도의 함수로 처리를 해 주어야 함
-	void InitializeDrop(class UCItemBase* ItemToDrop, const int32 InQuantity);
+	void InitializeDrop(FName ItemID, const int32 InQuantity);
+	void PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity);
+	
+	UFUNCTION(Server, Reliable)
+	void RequestInitializeDrop(FName ItemID, const int32 InQuantity);
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadCastInitializeDrop(FName ItemID, const int32 InQuantity);
 
 	void UpdateInteractableData(); //PickUp 의 Quantity 일부만 가져갈 때의 상황을 가정하면 매번 데이터 업데이트 함수가 필요함 
 	virtual void Interact(class ACSurvivor* PlayerCharacter) override; // 인터렉트가 준비되면 바로 Interact 시작 
@@ -45,7 +52,6 @@ protected:
 	
 
 	
-	
 
 	
 
@@ -63,6 +69,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Pickup")
 		UStaticMeshComponent* PickupMesh;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Pickup")
+		UStaticMesh* MeshToChange;
 
 	UPROPERTY(VisibleAnywhere, Category = "Pickup")
 	class UCItemBase* ItemReference; //참조된 아이템 데이터, 값을 에디터 내에 수정할수 있게 VisibleAnywhere로..(포인터) , PickUp, Drop 에 쓰이는 중간 매개체

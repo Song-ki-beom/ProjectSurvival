@@ -8,7 +8,6 @@
 
 UCInventoryComponent::UCInventoryComponent()
 {
-	
 	PrimaryComponentTick.bCanEverTick = true;
 
 }
@@ -170,25 +169,35 @@ void UCInventoryComponent::ToggleMenu()
 		HUD->ToggleMenu();
 }
 
+
+
+
+
+
 void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 QuantityToDrop)
 {
 	if (FindMatchingItem(ItemToDrop))
 	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = OwnerCharacter;
-		SpawnParams.bNoFail = true;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
+		
 		 
 		//Drop할 아이템 Spawn Location 과 Transform 설정 
 		const FVector SpawnLocation =  OwnerCharacter->GetActorLocation() + (OwnerCharacter->GetActorForwardVector() * 50.0f) ;
-		 const FTransform SpawnTransform(OwnerCharacter->GetActorRotation(), SpawnLocation);
+		const FTransform SpawnTransform(OwnerCharacter->GetActorRotation(), SpawnLocation);
 		
 		 //QuantityToDrop 만큼 인벤토리에서 제거 
 		 const int32 RemovedQuantity = RemoveAmountOfItem(ItemToDrop, QuantityToDrop); 
-
-			 ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams); //PickUp 클래스는 CObject Construct 이후에 , 의도적으로 Initialize를 하거나 PickUp 이벤트가 일어날때 액터의 재복사 및 전달 데이터의 Copy가 일어나기 때문에 StaticClass 로 정적 생성해도 괜찮다.
-			 Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
-
+		 
+		// FItemData ItemToDropData = ItemToDrop->CreateFItemData(ItemToDrop);
+		 FName ItemID = ItemToDrop->ID;
+		 if (OwnerCharacter->HasAuthority())
+		 {
+			 PerformDropItem(SpawnTransform, ItemID, RemovedQuantity);
+		 }
+		 else
+		 {
+			 RequestDropItem(SpawnTransform, ItemID, RemovedQuantity);
+		 }
+			 
 	}
 	else
 	{
@@ -196,6 +205,32 @@ void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 Quantity
 	}
 
 }
+
+void UCInventoryComponent::PerformDropItem( const  FTransform SpawnTransform, FName ItemID,  const int32 RemovedQuantity)
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = OwnerCharacter;
+	SpawnParams.bNoFail = true;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
+
+
+	ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams); 
+	Pickup->InitializeDrop(ItemID, RemovedQuantity);
+
+	
+}
+
+void UCInventoryComponent::RequestDropItem_Implementation(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity)
+{
+
+	if (OwnerCharacter->HasAuthority())
+	{
+		PerformDropItem(SpawnTransform, ItemID, RemovedQuantity);
+	}
+}
+
+
+
 
 //IsStackable 이 False 인 데이터 수납할 시, 중첩 불가 단일 개수 
 FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount)
