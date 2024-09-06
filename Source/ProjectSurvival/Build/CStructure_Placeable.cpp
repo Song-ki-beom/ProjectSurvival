@@ -12,13 +12,10 @@ ACStructure_Placeable::ACStructure_Placeable()
 void ACStructure_Placeable::CheckCenter()
 {
 	FHitResult centerBoxHitResult;
-	FVector centerBoxLocation = this->GetActorLocation();
-	FVector centerBoxSize = FVector(145, 145, 75);
+	FVector centerBoxLocation = PreviewBox->GetComponentLocation();
+	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0,0,1);
 	FRotator centerBoxOrientation;
-	if (!bDown_FoundationAndCeilingActorHit)
-		centerBoxOrientation = GetOwner()->GetActorRotation();
-	else
-		centerBoxOrientation = CenterRotation;
+	centerBoxOrientation = this->GetActorRotation();
 	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
 	bool bCenterBoxTraceComplex = false;
 	TArray<AActor*> centerBoxActorsToIgnore;
@@ -43,8 +40,8 @@ void ACStructure_Placeable::CheckCenter()
 void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 {
 	// 액터 체크
-	FHitResult foundationActorHitResult;
-	FVector startLocation = DownBox->GetComponentLocation();
+	FHitResult actorHitResult;
+	FVector startLocation = PreviewBox->GetComponentLocation();
 	FVector endLocation = startLocation - FVector(0, 0, 300);
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypeQuery;
 	objectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_Visibility));
@@ -60,7 +57,7 @@ void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 		false,
 		ignores,
 		EDrawDebugTrace::ForDuration,
-		foundationActorHitResult,
+		actorHitResult,
 		true,
 		FLinearColor::Yellow,
 		FLinearColor::Red
@@ -68,25 +65,21 @@ void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 
 	if (bDownActorHit) // 라인트레이스가 어떤 액터에 히트했는지 확인
 	{
-		AActor* hitActor = foundationActorHitResult.GetActor();
+		AActor* hitActor = actorHitResult.GetActor();
 		if (hitActor && (hitActor->IsA(ACStructure_Foundation::StaticClass()) || hitActor->IsA(ACStructure_Ceiling::StaticClass())))
 		{
 			CDebug::Print("hitActor: ", hitActor, FColor::Cyan);
 			bDown_FoundationAndCeilingActorHit = true;
+			PlaceableHeight = actorHitResult.ImpactPoint.Z;
 		}
 		else
 		{
-			CDebug::Print("hitActor: ", hitActor, FColor::Cyan);
-			bDown_FoundationAndCeilingActorHit = false;
+
 		}
 	}
+	else
+	{
+		bDown_FoundationAndCeilingActorHit = false;
+		PlaceableHeight = GetOwner()->GetActorLocation().Z;
+	}
 }
-
-//void ACStructure_Placeable::CheckDown_FoundationActor()
-//{
-//	
-//}
-//
-//void ACStructure_Placeable::CheckDown_CeilingActor()
-//{
-//}

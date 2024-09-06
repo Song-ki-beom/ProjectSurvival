@@ -12,6 +12,7 @@
 #include "Widget/Produce/CProduceItemSlot.h"
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
 #include "Utility/CDebug.h"
 
 void UCProduceWidget::NativeConstruct()
@@ -34,6 +35,13 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 		StartProduce();
 		return FReply::Handled();
 	}
+
+	if (InKeyEvent.GetKey() == EKeys::O)
+	{
+		Test_ShowPlaceableInventory();
+		return FReply::Handled();
+	}
+
 	return FReply::Unhandled();
 }
 
@@ -294,6 +302,23 @@ void UCProduceWidget::AddProduceItemToQueue()
 void UCProduceWidget::SetProducingItemText(FText InText)
 {
 	ProducingItemText->SetText(InText);
+}
+
+void UCProduceWidget::Test_ShowPlaceableInventory()
+{
+	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Inventory/WBP_CInventoryPanel_WorkingBench.WBP_CInventoryPanel_WorkingBench_C'"));
+	
+	if (widgetClass)
+	{
+		UCInventoryPanel_WorkingBench* workingBenchPanelWidget = CreateWidget<UCInventoryPanel_WorkingBench>(GetWorld(), widgetClass);
+		if (workingBenchPanelWidget)
+		{
+			workingBenchPanelWidget->AddToViewport(5);
+			//ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+			//ProduceWidget->RefreshProduceDetail();
+			//ProduceWidget->bIsFocusable = true;
+		}
+	}
 }
 
 void UCProduceWidget::ClickBuildStructureButton()

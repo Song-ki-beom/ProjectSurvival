@@ -23,6 +23,7 @@ public:
 	void StartProduce();
 	void AddProduceItemToQueue();
 	void SetProducingItemText(FText InText);
+	void Test_ShowPlaceableInventory();
 
 private:
 	UFUNCTION()

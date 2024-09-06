@@ -13,27 +13,23 @@ public:
 	ACStructure_Placeable();
 
 public:
-	void CheckCenter();
-	bool GetPlaceableCenterHit() { return bCenterHit; }
-
 	void CheckDown_FoundationAndCeiling();
 	bool GetPlaceableDown_FoundationAndCeilingHit() { return bDown_FoundationAndCeilingActorHit; }
 
-	//void CheckDown_FoundationActor();
-	//bool GetPlaceableDown_FoundationHit() { return bDown_FoundationActorHit; }
+	void CheckCenter();
+	bool GetPlaceableCenterHit() { return bCenterHit; }
 
-	//void CheckDown_CeilingActor();
-	//bool GetPlaceableDown_CeilingHit() { return bDown_CeilingActorHit; }
+	float GetPlaceableHeight() { return PlaceableHeight; }
+
 
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* DownBox;
 
 private:
-	bool bCenterHit;
 	bool bDown_FoundationAndCeilingActorHit;
-	//bool bDown_FoundationActorHit;
-	//bool bDown_CeilingActorHit;
+	bool bCenterHit;
+	float PlaceableHeight;
 
 	FRotator CenterRotation;
 };

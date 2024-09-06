@@ -1145,106 +1145,30 @@ void UCBuildComponent::BuildStartPlaceable()
 		if (SpawnedPlaceable->GetPlaceableDown_FoundationAndCeilingHit())
 		{
 			SpawnedPlaceable->CheckCenter();
-			bIsBuildable = SpawnedPlaceable->GetPlaceableCenterHit();
+			bIsBuildable = !SpawnedPlaceable->GetPlaceableCenterHit();
 		}
 		else
 			bIsBuildable = false;
 
-		if (bIsBuildable)
+		structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+		structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+		structureLocation.Z = SpawnedPlaceable->GetPlaceableHeight();
+		SpawnedPlaceable->SetActorLocation(structureLocation);
+		structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+		SpawnedPlaceable->SetActorRotation(structureRotation);
+
+		if (bIsBuildable && SpawnedPlaceable->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
 		{
-			// ImPactPoint의 Z위치 + Box 높이의 절반만큼 위로
-			CDebug::Print("bIsBuildable: ", bIsBuildable);
+			//CDebug::Print("Change To GreenMaterial");
+			SpawnedPlaceable->GetStaticMesh()->SetMaterial(0, GreenMaterial);
 		}
-		else
+		if (!bIsBuildable && SpawnedPlaceable->GetStaticMesh()->GetMaterial(0) != RedMaterial)
 		{
-			CDebug::Print("bIsBuildable: ", bIsBuildable);
-			structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-			structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-			structureLocation.Z = Survivor->GetActorLocation().Z;
-			SpawnedPlaceable->SetActorLocation(structureLocation);
-			structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
-			SpawnedPlaceable->SetActorRotation(structureRotation);
+			//CDebug::Print("Change To RedMaterial");
+			SpawnedPlaceable->GetStaticMesh()->SetMaterial(0, RedMaterial);
 		}
 
-		//	SpawnedFoundation->CheckRight();
-		//	if (SpawnedFoundation->GetFoundationRightHit())
-		//		bIsSnapped = SpawnedFoundation->GetFoundationRightHit();
-		//	else
-		//	{
-		//		SpawnedFoundation->CheckLeft();
-		//		if (SpawnedFoundation->GetFoundationLeftHit())
-		//			bIsSnapped = SpawnedFoundation->GetFoundationLeftHit();
-		//		else
-		//		{
-		//			SpawnedFoundation->CheckBackward();
-		//			if (SpawnedFoundation->GetFoundationBackwardHit())
-		//				bIsSnapped = SpawnedFoundation->GetFoundationBackwardHit();
-		//			else
-		//			{
-		//				SpawnedFoundation->CheckForward();
-		//				if (SpawnedFoundation->GetFoundationForwardHit())
-		//					bIsSnapped = SpawnedFoundation->GetFoundationForwardHit();
-		//			}
-		//		}
-		//	}
-		//}
-
-		//if (bIsSnapped)
-		//{
-		//	TArray<FHitResult> tempHitResults;
-		//	FVector tempStartLocation = Survivor->GetActorLocation();
-		//	FVector tempEndLocation = Survivor->GetActorLocation() + Survivor->GetControlRotation().Vector() * 750.0f;
-		//	TArray<TEnumAsByte<EObjectTypeQuery>> tempObjectTypeQuery;
-		//	tempObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
-		//	TArray<AActor*> tempActorsIgnore;
-		//	FCollisionObjectQueryParams tempObjectQueryParams;
-		//	FCollisionQueryParams tempQueryParams;
-
-		//	bool tempBool = UKismetSystemLibrary::LineTraceMultiForObjects(
-		//		GetWorld(),
-		//		tempStartLocation,
-		//		tempEndLocation,
-		//		tempObjectTypeQuery,
-		//		false,
-		//		tempActorsIgnore,
-		//		EDrawDebugTrace::Persistent,
-		//		tempHitResults,
-		//		true,
-		//		FLinearColor::Green,
-		//		FLinearColor::Red
-		//	);
-
-		//	if (!tempBool)
-		//	{
-		//		bIsSnapped = false;
-		//		structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-		//		structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-		//		structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
-		//		SpawnedFoundation->SetActorLocation(structureLocation);
-		//		structureRotation = Survivor->GetActorRotation();
-		//		SpawnedFoundation->SetActorRotation(structureRotation);
-		//	}
-		//}
-		//else
-		//{
-		//	structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-		//	structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-		//	structureLocation.Z = SpawnedFoundation->GetFoundationHeight();
-		//	SpawnedFoundation->SetActorLocation(structureLocation);
-		//	structureRotation = Survivor->GetActorRotation();
-		//	SpawnedFoundation->SetActorRotation(structureRotation);
-		//}
-
-		//if (bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
-		//{
-		//	//CDebug::Print("Change To GreenMaterial");
-		//	SpawnedFoundation->GetStaticMesh()->SetMaterial(0, GreenMaterial);
-		//}
-		//if (!bIsBuildable && SpawnedFoundation->GetStaticMesh()->GetMaterial(0) != RedMaterial)
-		//{
-		//	//CDebug::Print("Change To RedMaterial");
-		//	SpawnedFoundation->GetStaticMesh()->SetMaterial(0, RedMaterial);
-		//}
+		
 	}
 }
 
