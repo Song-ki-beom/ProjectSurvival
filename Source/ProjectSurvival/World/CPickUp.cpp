@@ -236,6 +236,24 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 	UpdateInteractableData();
 }
 
+void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
+{
+	InitializeDrop(ItemID, InQuantity);
+}
+
+
+void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
+{
+	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemID, ItemID.ToString());
+	if (ItemData)
+	{
+		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
+		ItemToDrop->CopyFromItemData(*ItemData);
+		PerformInitializeDrop(ItemToDrop, InQuantity);
+	}
+}
+
+
 
 
 void ACPickUp::UpdateInteractableData()
