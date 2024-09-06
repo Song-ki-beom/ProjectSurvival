@@ -6,10 +6,13 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/GridPanel.h"
+#include "Components/WrapBox.h"
 #include "Struct/CItemDataStructures.h"
 #include "Widget/Produce/CProduceDetail.h"
 #include "Widget/Produce/CProduceItemSlot.h"
+#include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
 #include "Utility/CDebug.h"
 
 void UCProduceWidget::NativeConstruct()
@@ -29,9 +32,16 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 
 	if (InKeyEvent.GetKey() == EKeys::E)
 	{
-		ProduceDetail->ProduceItem();
+		StartProduce();
 		return FReply::Handled();
 	}
+
+	if (InKeyEvent.GetKey() == EKeys::O)
+	{
+		Test_ShowPlaceableInventory();
+		return FReply::Handled();
+	}
+
 	return FReply::Unhandled();
 }
 
@@ -96,7 +106,6 @@ bool UCProduceWidget::Initialize()
 	return true;
 }
 
-// ProduceSlot을 클릭했을때 상단에 출력되는 UI 설정
 void UCProduceWidget::SetProduceDetail(FName InID)
 {
 	SelectedID = InID;
@@ -146,11 +155,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_1.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_1.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_1.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_1.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 
 		if (itemData->ProduceData.ProduceResource_2.ResourceIcon)
@@ -168,11 +177,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_2.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_2.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_2.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_2.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 
 		if (itemData->ProduceData.ProduceResource_3.ResourceIcon)
@@ -190,11 +199,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_3.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_3.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_3.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_3.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 		if (itemData->ProduceData.ProduceResource_4.ResourceIcon)
 		{
@@ -211,11 +220,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_4.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_4.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_4.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_4.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 		if (itemData->ProduceData.ProduceResource_5.ResourceIcon)
 		{
@@ -232,11 +241,11 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 					}
 				}
 			}
-
+			FName resourceID = itemData->ProduceData.ProduceResource_5.ResourceID;
 			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_5.ResourceIcon;
 			FText resourceName = itemData->ProduceData.ProduceResource_5.ResourceName;
 			int32 demandQuantity = itemData->ProduceData.ProduceResource_5.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 		}
 	}
 	else
@@ -251,6 +260,64 @@ void UCProduceWidget::RefreshProduceDetail()
 	{
 		FName initialID = "Build_1";
 		SetProduceDetail(initialID);
+	}
+}
+
+void UCProduceWidget::StartProduce()
+{
+	ProduceDetail->ProduceItem();
+}
+
+void UCProduceWidget::AddProduceItemToQueue()
+{
+	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemQueueSlot.WBP_CProduceItemQueueSlot_C'"));
+	if (widgetClass)
+	{
+		UCProduceItemQueueSlot* produceItemQueueSlot = CreateWidget<UCProduceItemQueueSlot>(GetWorld(), widgetClass);
+		if (produceItemQueueSlot)
+		{
+			FItemData* itemData = ItemData->FindRow<FItemData>(SelectedID, TEXT(""));
+			if (itemData)
+			{
+				FName itemID = itemData->ID;
+				produceItemQueueSlot->SetProduceItemID(itemID);
+
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemQueueSlot->SetProduceQueueSlotIcon(itemIcon);
+				
+				int32 produceTime = itemData->ProduceData.ProduceTime;
+				FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(produceTime));
+				produceItemQueueSlot->SetProduceTimeText(produceTimeText);
+				
+				FText produceItemName = itemData->TextData.Name;
+				produceItemQueueSlot->SetProduceItemName(produceItemName);
+
+				ProduceQueue->AddChildToWrapBox(produceItemQueueSlot);
+				produceItemQueueSlot->CheckWrapBox(ProduceQueue);
+			}
+		}
+	}
+}
+
+void UCProduceWidget::SetProducingItemText(FText InText)
+{
+	ProducingItemText->SetText(InText);
+}
+
+void UCProduceWidget::Test_ShowPlaceableInventory()
+{
+	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Inventory/WBP_CInventoryPanel_WorkingBench.WBP_CInventoryPanel_WorkingBench_C'"));
+	
+	if (widgetClass)
+	{
+		UCInventoryPanel_WorkingBench* workingBenchPanelWidget = CreateWidget<UCInventoryPanel_WorkingBench>(GetWorld(), widgetClass);
+		if (workingBenchPanelWidget)
+		{
+			workingBenchPanelWidget->AddToViewport(5);
+			//ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+			//ProduceWidget->RefreshProduceDetail();
+			//ProduceWidget->bIsFocusable = true;
+		}
 	}
 }
 

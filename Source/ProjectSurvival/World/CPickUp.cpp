@@ -21,12 +21,12 @@ ACPickUp::ACPickUp()
 	PickupMesh->SetSimulatePhysics(false);
 	PickupMesh->SetEnableGravity(true);
 	SetRootComponent(PickupMesh);
-	 ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
+	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
 	{
-		ItemDataTable = DataTableAsset.Object; 
+		ItemDataTable = DataTableAsset.Object;
 	}
-	
+
 
 }
 
@@ -37,7 +37,7 @@ void ACPickUp::BeginPlay()
 
 
 	InitializePickup(UCItemBase::StaticClass(), ItemQuantity);
-	
+
 }
 void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -100,8 +100,8 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 				{
 					OnUpdatePartialAdded.Broadcast(ItemReference->Quantity);
 				}
-					UpdateInteractableData(); //PickUp 아이템 수량 조정 
-					Taker->GetInteractionComponent()-> UpdateInteractionWidget(); //인벤 ui  업뎃
+				UpdateInteractableData(); //PickUp 아이템 수량 조정 
+				Taker->GetInteractionComponent()->UpdateInteractionWidget(); //인벤 ui  업뎃
 				break;
 			case EItemAddResult::AllItemAdded:
 				if (Taker->HasAuthority())
@@ -117,7 +117,7 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 
 			CDebug::Print(AddResult.ResultMessage.ToString());
 		}
-		
+
 	}
 }
 void ACPickUp::UpdatePartialAdded(int32 InQuantity)
@@ -145,7 +145,7 @@ void ACPickUp::BroadcastDestroy_Implementation()
 
 void ACPickUp::BeginFocus()
 {
-	if (PickupMesh) 
+	if (PickupMesh)
 	{
 		PickupMesh->SetRenderCustomDepth(true);
 
@@ -168,7 +168,7 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 	if (ItemDataTable && !DesiredItemID.IsNone()) //Empty String 인지 체크 
 	{
 		const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString());
-		if (ItemData) 
+		if (ItemData)
 		{
 
 			ItemReference = NewObject<UCItemBase>(this, BaseClass);
@@ -188,16 +188,15 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 				ItemReference->SetQuantity(InQuantity);
 			}
 
+			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+
 			if (ItemReference->ItemType != EItemType::Build)
 			{
-				PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 				//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
 				PickupMesh->SetCollisionProfileName(FName("Item"));
 				//중력의 영향을 받기 위한 피직스 설정 
 				PickupMesh->SetSimulatePhysics(true);
 			}
-
-
 			UpdateInteractableData();
 		}
 	}
@@ -205,7 +204,7 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 
 void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity)
 {
-	
+
 
 	if (this->HasAuthority())
 	{
@@ -215,56 +214,33 @@ void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity)
 	{
 		RequestInitializeDrop(ItemID, InQuantity);
 	}
-	
+
 
 }
 
-void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity) 
+void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 {
 	ItemReference = ItemToDrop;
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
 	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
 	ItemReference->Inventory = nullptr;
-	//UStaticMesh
 	MeshToChange = ItemToDrop->AssetData.Mesh;
-	PickupMesh->SetStaticMesh(MeshToChange);
-	if (ItemReference->ItemType != EItemType::Build)
-	{
-		//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
-		PickupMesh->SetCollisionProfileName(FName("Item"));
-		//중력의 영향을 받기 위한 피직스 설정 
-		PickupMesh->SetSimulatePhysics(true);
-	}
+	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+	//DT_Items에 DropMesh가 있을 경우 DropMesh로 드롭, 없을 경우 Mesh로 드롭
+	if (ItemToDrop->AssetData.DropMesh)
+		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.DropMesh);
+	else
+		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+	PickupMesh->SetCollisionProfileName(FName("Item"));
+	PickupMesh->SetSimulatePhysics(true);
 	UpdateInteractableData();
-	
-
 }
-
-
-void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
-{
-	InitializeDrop(ItemID,InQuantity);
-}
-
-
-void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
-{
-	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemID, ItemID.ToString());
-	if (ItemData)
-	{
-		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
-		ItemToDrop->CopyFromItemData(*ItemData);
-		PerformInitializeDrop(ItemToDrop, InQuantity);
-	}
-}
-
-
 
 
 
 void ACPickUp::UpdateInteractableData()
 {
-	switch(ItemReference->ItemType)
+	switch (ItemReference->ItemType)
 	{
 	case EItemType::Build:
 		InstanceInteractableData.InteractableType = EInteractableType::Build;

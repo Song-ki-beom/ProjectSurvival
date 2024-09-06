@@ -120,6 +120,11 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		BuildStartStair();
 		break;
 	}
+	case EBuildStructureElement::Placeable:
+	{
+		BuildStartPlaceable();
+		break;
+	}
 	case EBuildStructureElement::None:
 		break;
 	default:
@@ -205,6 +210,7 @@ void UCBuildComponent::BuildSpawnedStructure()
 	{
 		StructureTransform = SpawnedStructure->GetActorTransform();
 		PerformBuild(StructureClass, StructureTransform);
+		SpawnedStructure->SetReplicates(false);
 	}
 	else
 	{
@@ -1125,6 +1131,44 @@ void UCBuildComponent::BuildStartStair()
 		{
 			SpawnedStair->GetStaticMesh()->SetMaterial(0, RedMaterial);
 		}
+	}
+}
+
+void UCBuildComponent::BuildStartPlaceable()
+{
+	if (IsValid(SpawnedPlaceable))
+	{
+		FVector structureLocation;
+		FRotator structureRotation;
+
+		SpawnedPlaceable->CheckDown_FoundationAndCeiling();
+		if (SpawnedPlaceable->GetPlaceableDown_FoundationAndCeilingHit())
+		{
+			SpawnedPlaceable->CheckCenter();
+			bIsBuildable = !SpawnedPlaceable->GetPlaceableCenterHit();
+		}
+		else
+			bIsBuildable = false;
+
+		structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
+		structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
+		structureLocation.Z = SpawnedPlaceable->GetPlaceableHeight();
+		SpawnedPlaceable->SetActorLocation(structureLocation);
+		structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
+		SpawnedPlaceable->SetActorRotation(structureRotation);
+
+		if (bIsBuildable && SpawnedPlaceable->GetStaticMesh()->GetMaterial(0) != GreenMaterial)
+		{
+			//CDebug::Print("Change To GreenMaterial");
+			SpawnedPlaceable->GetStaticMesh()->SetMaterial(0, GreenMaterial);
+		}
+		if (!bIsBuildable && SpawnedPlaceable->GetStaticMesh()->GetMaterial(0) != RedMaterial)
+		{
+			//CDebug::Print("Change To RedMaterial");
+			SpawnedPlaceable->GetStaticMesh()->SetMaterial(0, RedMaterial);
+		}
+
+		
 	}
 }
 

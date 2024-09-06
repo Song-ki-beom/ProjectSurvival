@@ -1,9 +1,14 @@
 #include "Widget/Produce/CProduceRecipe.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "ActorComponents/CInventoryComponent.h"
+//#include "ActorComponents/CInventoryComponent.h"
 #include "Character/CSurvivor.h"
 #include "Utility/CDebug.h"
+
+void UCProduceRecipe::SetResourceID(FName InID)
+{
+	ResourceID = InID;
+}
 
 void UCProduceRecipe::SetResourceIcon(UTexture2D* InTexture2D)
 {
@@ -16,8 +21,10 @@ void UCProduceRecipe::SetResourceName(FText InText)
 	ResourceName->SetText(InText);
 }
 
-void UCProduceRecipe::SetResourceQuantity(int32 InventoryQuantity, int32 DemandQuantity)
+void UCProduceRecipe::SetResourceQuantity(int32 InInventoryQuantity, int32 InDemandQuantity)
 {
+	InventoryQuantity = InInventoryQuantity;
+	DemandQuantity = InDemandQuantity;
 	if (InventoryQuantity < DemandQuantity)
 	{
 		ResourceName->SetColorAndOpacity(FSlateColor(FLinearColor::Red));

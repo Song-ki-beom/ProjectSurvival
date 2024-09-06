@@ -65,7 +65,8 @@ struct FItemAssetData
 		UTexture2D* Icon;
 	UPROPERTY(EditAnywhere)
 		UStaticMesh* Mesh;
-
+	UPROPERTY(EditAnywhere)
+		UStaticMesh* DropMesh;
 };
 
 USTRUCT()

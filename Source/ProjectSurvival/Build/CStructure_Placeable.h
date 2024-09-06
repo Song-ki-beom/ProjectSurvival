@@ -10,19 +10,26 @@ class PROJECTSURVIVAL_API ACStructure_Placeable : public ACStructure
 	GENERATED_BODY()
 	
 public:
+	ACStructure_Placeable();
+
+public:
+	void CheckDown_FoundationAndCeiling();
+	bool GetPlaceableDown_FoundationAndCeilingHit() { return bDown_FoundationAndCeilingActorHit; }
+
 	void CheckCenter();
-	bool GetWallCenterHit() { return bCenterHit; }
+	bool GetPlaceableCenterHit() { return bCenterHit; }
 
-	void CheckDown_Foundation();
-	bool GetWorkingBenchDown_FoundationHit() { return bDown_FoundationHit; }
+	float GetPlaceableHeight() { return PlaceableHeight; }
 
-	void CheckDown_Ceiling();
-	bool GetWorkingBenchDown_CeilingHit() { return bDown_CeilingHit; }
+
+protected:
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* DownBox;
 
 private:
+	bool bDown_FoundationAndCeilingActorHit;
 	bool bCenterHit;
-	bool bDown_FoundationHit;
-	bool bDown_CeilingHit;
+	float PlaceableHeight;
 
 	FRotator CenterRotation;
 };
