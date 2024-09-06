@@ -6,7 +6,8 @@
 #include "UObject/Interface.h"
 #include "InteractionInterface.generated.h"
 
-
+DECLARE_MULTICAST_DELEGATE(FOnRequestDesroyCalled);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdatePartialAdded, int32);
 UENUM()
 enum class EInteractableType : uint8
 {
@@ -102,7 +103,8 @@ public:
 
 	FInteractableData InteractableData;
 
-
+	FOnRequestDesroyCalled OnRequestDesroyCalled;
+	FOnUpdatePartialAdded OnUpdatePartialAdded;
 
 
 

@@ -3,6 +3,7 @@
 #include "ActorComponents/CInteractionComponent.h"
 #include "GameFramework/Character.h"
 #include "Character/CSurvivorController.h"
+#include "World/CPickUp.h"
 #include "Widget/CMainHUD.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
@@ -276,11 +277,64 @@ void UCInteractionComponent::Interact()
 	if (IsValid(TargetInteractable.GetObject()))
 	{
 		ACSurvivor* playerCharacter = Cast<ACSurvivor>(OwnerCharacter);
-		if(playerCharacter)
+		if (playerCharacter)
+		{
+			TargetInteractable->OnRequestDesroyCalled.AddUObject(this, &UCInteractionComponent::RequestDestroy);
+			TargetInteractable->OnUpdatePartialAdded.AddUObject(this, &UCInteractionComponent::RequestUpdatePartialAdded);
 			TargetInteractable->Interact(playerCharacter);
+		}
+			
+	}
+}
+
+void UCInteractionComponent::RequestUpdatePartialAdded_Implementation(int32 InQuantity)
+{
+	
+			if (OwnerCharacter->HasAuthority())
+				BroadcastUpdatePartialAdded(InQuantity);
+	
+}
+
+
+void UCInteractionComponent::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
+{
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		ACPickUp* PickupActor = Cast<ACPickUp>(TargetInteractable.GetObject());
+		if (PickupActor)
+		{
+
+
+			if (OwnerCharacter->HasAuthority())
+				PickupActor->UpdatePartialAdded(InQuantity);
+
+		}
+
 	}
 }
 
 
+
+void UCInteractionComponent::RequestDestroy_Implementation()
+{
+
+	if (IsValid(TargetInteractable.GetObject()))
+	{
+		ACPickUp* PickupActor = Cast<ACPickUp>(TargetInteractable.GetObject());
+		if (PickupActor)
+		{
+
+
+			if(OwnerCharacter->HasAuthority())
+					PickupActor->Destroy();
+
+		}
+
+	}
+
+
+
+
+}
 
 

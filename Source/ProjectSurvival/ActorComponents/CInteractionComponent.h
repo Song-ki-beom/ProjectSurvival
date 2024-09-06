@@ -37,7 +37,13 @@ protected:
 	void ToggleHiddenMenu();
 	void ShowHiddenMenu();
 	void HideHiddenMenu();
-	
+private:
+	UFUNCTION(Server, Reliable)
+		void RequestDestroy();
+	UFUNCTION(Server, Reliable)
+		void RequestUpdatePartialAdded(int32 InQuantity);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUpdatePartialAdded(int32 InQuantity);
 
 
 

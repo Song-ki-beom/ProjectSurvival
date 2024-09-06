@@ -8,6 +8,7 @@
 #include "Interface/InteractionInterface.h"
 #include "CPickUp.generated.h"
 
+
 UCLASS()
 class PROJECTSURVIVAL_API ACPickUp : public AActor , public IInteractionInterface
 {
@@ -30,10 +31,18 @@ public:
 	void InitializeDrop(FName ItemID, const int32 InQuantity);
 	void PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity);
 	
+	//Drop&PickUp 리플리케이트
 	UFUNCTION(Server, Reliable)
 	void RequestInitializeDrop(FName ItemID, const int32 InQuantity);
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadCastInitializeDrop(FName ItemID, const int32 InQuantity);
+	UFUNCTION(Server, Reliable)
+		void RequestDestroy();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastDestroy();
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastUpdatePartialAdded(int32 InQuantity);
+	void UpdatePartialAdded(int32 InQuantity);
 
 	void UpdateInteractableData(); //PickUp 의 Quantity 일부만 가져갈 때의 상황을 가정하면 매번 데이터 업데이트 함수가 필요함 
 	virtual void Interact(class ACSurvivor* PlayerCharacter) override; // 인터렉트가 준비되면 바로 Interact 시작 
@@ -44,6 +53,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 
 #if WITH_EDITOR //WITH_EDITOR: 에디터에서 실행하는 코드의 경우 매크로 설정 
 	// PostEditChangeProperty = 인게임에서 Property가 Change 되었을때, 변경사항을 참조해주는 언리얼 Built In 함수 

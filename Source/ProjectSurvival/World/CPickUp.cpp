@@ -39,6 +39,10 @@ void ACPickUp::BeginPlay()
 	InitializePickup(UCItemBase::StaticClass(), ItemQuantity);
 	
 }
+void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	OnRequestDesroyCalled.Clear(); // CPickUp 파괴되기 전에 델리게이트 바인드한 목록 삭제 
+}
 // 에디터 내에서 변수 값이 바뀌었을때 델리게이트로 호출됨 (언리얼 Built-in 함수)
 void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -88,11 +92,26 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 			case EItemAddResult::NoItemAdded:
 				break;
 			case EItemAddResult::PartialItemAdded:
-				UpdateInteractableData(); //PickUp 아이템 수량 조정 
+				if (Taker->HasAuthority())
+				{
+					BroadcastUpdatePartialAdded(ItemReference->Quantity);
+				}
+				else
+				{
+					OnUpdatePartialAdded.Broadcast(ItemReference->Quantity);
+				}
+					UpdateInteractableData(); //PickUp 아이템 수량 조정 
 					Taker->GetInteractionComponent()-> UpdateInteractionWidget(); //인벤 ui  업뎃
 				break;
 			case EItemAddResult::AllItemAdded:
-				Destroy();
+				if (Taker->HasAuthority())
+				{
+					BroadcastDestroy();
+				}
+				else
+				{
+					OnRequestDesroyCalled.Broadcast();//RequestDestroy() 호출을 클라이언트에서 하도록 델리게이트로 브로드캐스트 ;
+				}
 				break;
 			}
 
@@ -100,6 +119,26 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 		}
 		
 	}
+}
+void ACPickUp::UpdatePartialAdded(int32 InQuantity)
+{
+	InteractableData.Quantity = InQuantity;
+
+}
+
+void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
+{
+	InteractableData.Quantity = InQuantity;
+}
+
+void ACPickUp::RequestDestroy_Implementation()
+{
+	if (this->HasAuthority())
+		Destroy();
+}
+void ACPickUp::BroadcastDestroy_Implementation()
+{
+	Destroy();
 }
 
 
@@ -197,7 +236,7 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 		PickupMesh->SetSimulatePhysics(true);
 	}
 	UpdateInteractableData();
-
+	
 
 }
 
@@ -255,3 +294,5 @@ void ACPickUp::EndInteract()
 {
 
 }
+
+
