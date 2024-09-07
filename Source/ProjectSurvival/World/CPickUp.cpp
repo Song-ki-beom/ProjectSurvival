@@ -86,40 +86,10 @@ void ACPickUp::EndFocus()
 void ACPickUp::BeginInteract()
 {
 
-
 }
 
-void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
+void ACPickUp::EndInteract()
 {
-	InteractableData.Quantity = InQuantity;
-}
-
-void ACPickUp::RequestDestroy_Implementation()
-{
-	if (this->HasAuthority())
-		Destroy();
-}
-void ACPickUp::BroadcastDestroy_Implementation()
-{
-	Destroy();
-}
-
-
-
-void ACPickUp::BeginFocus()
-{
-	if (PickupMesh)
-	{
-		PickupMesh->SetRenderCustomDepth(true);
-
-	}
-
-}
-
-
-void ACPickUp::EndFocus()
-{
-
 }
 
 void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, const int32 InQuantity)
@@ -219,7 +189,7 @@ void ACPickUp::BroadcastDestroy_Implementation()
 
 void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
 {
-	InteractableData.Quantity = InQuantity;
+	UpdatePartialAdded(InQuantity);
 }
 
 void ACPickUp::UpdatePartialAdded(int32 InQuantity)
@@ -250,7 +220,14 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
 {
 	if (PlayerCharacter)
 	{
-		TakePickup(PlayerCharacter);
+		if (ItemReference->ItemType == EItemType::Container)
+		{
+			OpenActorInventory(PlayerCharacter);
+		}
+		else
+		{
+			TakePickup(PlayerCharacter);
+		}
 	}
 }
 
@@ -299,6 +276,32 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 		}
 	}
 }
+
+void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor)
+{
+	// Container 클래스 자체에서 함수내용 구현
+}
+
+//void ACPickUp::RequestDestroy_Implementation()
+//{
+//	if (this->HasAuthority())
+//		Destroy();
+//}
+
+//void ACPickUp::BeginFocus()
+//{
+//	if (PickupMesh)
+//	{
+//		PickupMesh->SetRenderCustomDepth(true);
+//
+//	}
+//
+//}
+
+//void ACPickUp::EndFocus()
+//{
+//
+//}
 
 void ACPickUp::SetTransform()
 {
