@@ -10,8 +10,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
 
-
-
 // Sets default values
 ACPickUp::ACPickUp()
 {
@@ -26,23 +24,28 @@ ACPickUp::ACPickUp()
 	{
 		ItemDataTable = DataTableAsset.Object;
 	}
-
-
+	bTransformTimerUse = true;
 }
 
 void ACPickUp::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-
 	InitializePickup(UCItemBase::StaticClass(), ItemQuantity);
 
+	if (this->HasAuthority())
+	{
+		GetWorld()->GetTimerManager().SetTimer(TransformTimerHandle, this, &ACPickUp::SetTransform, 0.05f, true);
+		if (!bTransformTimerUse)
+			GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
+	}
 }
+
 void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	OnRequestDesroyCalled.Clear(); // CPickUp 파괴되기 전에 델리게이트 바인드한 목록 삭제 
 }
+
 // 에디터 내에서 변수 값이 바뀌었을때 델리게이트로 호출됨 (언리얼 Built-in 함수)
 void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -64,74 +67,31 @@ void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 	}
 }
 
-
-
-
-
-void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
+void ACPickUp::BeginFocus()
 {
-	if (PlayerCharacter)
+	if (PickupMesh)
 	{
-		TakePickup(PlayerCharacter);
-
+		PickupMesh->SetRenderCustomDepth(true);
 	}
 }
 
-
-
-void ACPickUp::TakePickup(const ACSurvivor* Taker)
+void ACPickUp::EndFocus()
 {
-	if (!IsPendingKillPending()) //픽업 아이템이 Destroy 되고 있는지 체크 
+	if (PickupMesh)
 	{
-		if (UCInventoryComponent* PlayerInventory = Taker->GetInventoryComponent())
-		{
-			const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
-
-			switch (AddResult.OperationResult)
-			{
-			case EItemAddResult::NoItemAdded:
-				break;
-			case EItemAddResult::PartialItemAdded:
-				if (Taker->HasAuthority())
-				{
-					BroadcastUpdatePartialAdded(ItemReference->Quantity);
-				}
-				else
-				{
-					OnUpdatePartialAdded.Broadcast(ItemReference->Quantity);
-				}
-				UpdateInteractableData(); //PickUp 아이템 수량 조정 
-				Taker->GetInteractionComponent()->UpdateInteractionWidget(); //인벤 ui  업뎃
-				break;
-			case EItemAddResult::AllItemAdded:
-				if (Taker->HasAuthority())
-				{
-					BroadcastDestroy();
-				}
-				else
-				{
-					OnRequestDesroyCalled.Broadcast();//RequestDestroy() 호출을 클라이언트에서 하도록 델리게이트로 브로드캐스트 ;
-				}
-				break;
-			}
-
-			CDebug::Print(AddResult.ResultMessage.ToString());
-		}
-
+		PickupMesh->SetRenderCustomDepth(false);
 	}
 }
-void ACPickUp::UpdatePartialAdded(int32 InQuantity)
+
+void ACPickUp::BeginInteract()
 {
-	ItemReference->SetQuantity(InQuantity);
-	InteractableData.Quantity = InQuantity;
+
 
 }
 
 void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
 {
-	/*ItemReference->SetQuantity(InQuantity);
-	InteractableData.Quantity = InQuantity;*/
-	UpdatePartialAdded(InQuantity);
+	InteractableData.Quantity = InQuantity;
 }
 
 void ACPickUp::RequestDestroy_Implementation()
@@ -156,15 +116,11 @@ void ACPickUp::BeginFocus()
 
 }
 
+
 void ACPickUp::EndFocus()
 {
-	if (PickupMesh)
-	{
-		PickupMesh->SetRenderCustomDepth(false);
-	}
 
 }
-
 
 void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, const int32 InQuantity)
 {
@@ -207,8 +163,6 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 
 void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity)
 {
-
-
 	if (this->HasAuthority())
 	{
 		BroadCastInitializeDrop(ItemID, InQuantity);
@@ -217,8 +171,6 @@ void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity)
 	{
 		RequestInitializeDrop(ItemID, InQuantity);
 	}
-
-
 }
 
 void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
@@ -244,7 +196,6 @@ void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 In
 	InitializeDrop(ItemID, InQuantity);
 }
 
-
 void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
 {
 	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemID, ItemID.ToString());
@@ -256,8 +207,26 @@ void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 
 	}
 }
 
+void ACPickUp::BroadcastSetTransform_Implementation(FTransform InTransform)
+{
+	SetActorTransform(InTransform);
+}
 
+void ACPickUp::BroadcastDestroy_Implementation()
+{
+	Destroy();
+}
 
+void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
+{
+	InteractableData.Quantity = InQuantity;
+}
+
+void ACPickUp::UpdatePartialAdded(int32 InQuantity)
+{
+	ItemReference->SetQuantity(InQuantity);
+	InteractableData.Quantity = InQuantity;
+}
 
 void ACPickUp::UpdateInteractableData()
 {
@@ -275,21 +244,63 @@ void ACPickUp::UpdateInteractableData()
 	InstanceInteractableData.Quantity = ItemReference->Quantity;
 	InstanceInteractableData.ID = ItemReference->ID;
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
-
-
 }
 
-
-
-
-void ACPickUp::BeginInteract()
+void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
 {
-
+	if (PlayerCharacter)
+	{
+		TakePickup(PlayerCharacter);
+	}
 }
 
-void ACPickUp::EndInteract()
+void ACPickUp::TakePickup(const ACSurvivor* Taker)
 {
+	CDebug::Print("TakePickup");
 
+	if (!IsPendingKillPending()) //픽업 아이템이 Destroy 되고 있는지 체크 
+	{
+		if (UCInventoryComponent* PlayerInventory = Taker->GetInventoryComponent())
+		{
+			const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
+
+			switch (AddResult.OperationResult)
+			{
+			case EItemAddResult::NoItemAdded:
+				break;
+			case EItemAddResult::PartialItemAdded:
+			{
+				if (Taker->HasAuthority())
+				{
+					BroadcastUpdatePartialAdded(ItemReference->Quantity);
+				}
+				else
+				{
+					OnUpdatePartialAdded.Broadcast(ItemReference->Quantity);
+				}
+				UpdateInteractableData(); //PickUp 아이템 수량 조정 
+				Taker->GetInteractionComponent()->UpdateInteractionWidget(); //인벤 ui  업뎃
+				break;
+			}
+			case EItemAddResult::AllItemAdded:
+			{
+				if (Taker->HasAuthority())
+				{
+					BroadcastDestroy();
+				}
+				else
+				{
+					OnRequestDesroyCalled.Broadcast();//RequestDestroy() 호출을 클라이언트에서 하도록 델리게이트로 브로드캐스트 ;
+				}
+				break;
+			}
+			}
+			CDebug::Print(AddResult.ResultMessage.ToString());
+		}
+	}
 }
 
-
+void ACPickUp::SetTransform()
+{
+	BroadcastSetTransform(this->GetActorTransform());
+}
