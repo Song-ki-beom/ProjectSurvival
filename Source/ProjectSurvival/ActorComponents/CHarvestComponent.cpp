@@ -91,8 +91,25 @@ void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
 
 		if (bHit)
 		{
-			FString hitIndex = *HitResult.Component->GetName().Right(2);
-			//FString hitIndex = *HitResult.Component->GetName();
+			FString hitObjectName = *HitResult.Component->GetName();
+
+			//기존 
+			//FString hitIndex = *HitResult.Component->GetName().Right(2);
+
+			int32 StringLength = hitObjectName.Len();
+
+			// 뒤에서부터 숫자를 추출
+			int32 StartIndex = StringLength - 1;
+			while (StartIndex >= 0 && FChar::IsDigit(hitObjectName[StartIndex]))
+			{
+				StartIndex--;
+			}
+
+
+			// 숫자 부분만 추출 (시작 인덱스를 증가시켜야 숫자 부분을 정확히 가져올 수 있음)
+			FString hitIndex = hitObjectName.Right(StringLength - StartIndex - 1);
+
+
 
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
 			CDebug::Print(debugText, FColor::Blue);
@@ -212,7 +229,7 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 
 				// Spawn ADestructibleActor
 				ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
-				destructibleActor->SetUp(Row->DestructibleMesh, InSpawnTransform, Row->MaxDamageThreshold, Row->DropItemRatio);
+				destructibleActor->SetUp(InSpawnTransform,Row);
 				destructibleActor->AccumulateDamage(damageAmount);
 				
 		
@@ -236,7 +253,7 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 
 void UCHarvestComponent::RequestSwitchFoligeToDestructible_Implementation(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform)
 {
-	FString tempStr = FString::Printf(TEXT(" OnServer this Actor should apply  %f"), IndamageAmount);
+	FString tempStr = FString::Printf(TEXT(" OnServer this Actor Got  %f Damage"), IndamageAmount);
 	CDebug::Print(tempStr);
 	SwitchFoligeToDestructible(InHitIndex, IndamageAmount, InSpawnTransform);
 

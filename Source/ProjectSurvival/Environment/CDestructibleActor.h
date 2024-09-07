@@ -8,6 +8,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "DestructibleMesh.h"
+#include "Struct/CDestructibleStructures.h"
 #include "CDestructibleActor.generated.h"
 
 UCLASS()
@@ -29,7 +30,7 @@ protected:
 
 
 public:
-	void SetUp(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio);
+	void SetUp(FTransform InstanceTransform, FDestructibleStruct* DestructibleStruct);
 	class UDestructibleComponent* GetDestructibleComponent();
 	float GetAccumulatedDamage();
 	UFUNCTION()
@@ -37,6 +38,8 @@ public:
 
 private:
 	void DestroyDestructibleActor();
+	void CreateDropItem();
+
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastAccumulateDamage(float NewAccumulatedDamage);
 	UFUNCTION()
@@ -47,6 +50,10 @@ private:
 
 	
 private:
+	//DataTable은 처음 시작하고 게임이 Start 될 때만 초기화 된다.
+	UPROPERTY(VisibleAnywhere, Category = "ItemDataTable")
+		class UDataTable* ItemDataTable;
+
 	FTimerHandle TimerHandle;
 	UPROPERTY(VisibleAnywhere,Replicated)
 		class UDestructibleComponent* DestructibleComponent;
@@ -55,7 +62,14 @@ private:
 	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;
 	UPROPERTY(VisibleAnywhere,Replicated)
-		int32 DropItemRatio = 3;
+		int32 EarnItemRatio;
 	UPROPERTY(VisibleAnywhere,Replicated)
-		float MaxDamageThreshold = 0.0f;
+		float MaxDamageThreshold;
+	UPROPERTY(VisibleAnywhere, Replicated)
+		int32 DropItemNum;
+	UPROPERTY(VisibleAnywhere, Replicated)
+		FName DropItemID;
+	UPROPERTY(VisibleAnywhere, Replicated)
+		float DropOffsetRange;
+
 };

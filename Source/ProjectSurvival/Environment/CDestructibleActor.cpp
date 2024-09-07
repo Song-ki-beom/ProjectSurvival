@@ -3,9 +3,10 @@
 
 #include "Environment/CDestructibleActor.h"
 #include "DestructibleComponent.h"
-#include "Struct/CDestructibleStructures.h"
 #include "TimerManager.h"
 #include "Utility/CDebug.h"
+#include "World/CPickUp.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Net/UnrealNetwork.h"
 #include "Math/UnrealMathUtility.h"
 // Sets default values
@@ -16,7 +17,11 @@ ACDestructibleActor::ACDestructibleActor()
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
 	DestructibleComponent->SetupAttachment(GetRootComponent());
 
-	
+	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
+	if (DataTableAsset.Succeeded())
+	{
+		ItemDataTable = DataTableAsset.Object;
+	}
 }
 
 void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -24,22 +29,22 @@ void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
 	DOREPLIFETIME(ACDestructibleActor, AccumulatedDamage);
-	DOREPLIFETIME(ACDestructibleActor, DropItemRatio);
+	DOREPLIFETIME(ACDestructibleActor, EarnItemRatio);
 	DOREPLIFETIME(ACDestructibleActor, MaxDamageThreshold);
 	DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
 
 }
 
-void ACDestructibleActor::SetUp(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio)
+void ACDestructibleActor::SetUp(FTransform InstanceTransform, FDestructibleStruct* DestructibleStruct)
 {
-	DestructibleMesh = InDestructibleMesh;
+	DestructibleMesh = DestructibleStruct->DestructibleMesh;
 	DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
 	DestructibleComponent->SetWorldTransform(InstanceTransform);
-	MaxDamageThreshold = InMaxDamageThreshold;
-	DropItemRatio = InDropItemRatio;
-	FString debugText = TEXT("SetUp Finished");
-	CDebug::Print(debugText);
-
+	MaxDamageThreshold = DestructibleStruct->MaxDamageThreshold;
+	EarnItemRatio = DestructibleStruct->EarnItemRatio;
+	DropItemID = DestructibleStruct->DropItemID;
+	DropItemNum = DestructibleStruct->DropItemNum;
+	DropOffsetRange = DestructibleStruct->DropOffsetRange;
 }
 
 class UDestructibleComponent* ACDestructibleActor::GetDestructibleComponent()
@@ -61,7 +66,7 @@ void ACDestructibleActor::AccumulateDamage(float DamageAmount)
 		float prevAccumulatedDamage = AccumulatedDamage;
 		AccumulatedDamage += DamageAmount;
 		AccumulatedDamage = FMath::Clamp(AccumulatedDamage, 0.0f, MaxDamageThreshold);
-		int32 DropItemCount = (int32)((AccumulatedDamage - prevAccumulatedDamage) / DropItemRatio);
+		int32 DropItemCount = (int32)((AccumulatedDamage - prevAccumulatedDamage) / EarnItemRatio);
 		if (DropItemCount > 0)
 		{
 			//Give Attacker Item by DropItemCount (인벤토리 구현)
@@ -73,9 +78,10 @@ void ACDestructibleActor::AccumulateDamage(float DamageAmount)
 
 		if (AccumulatedDamage >= MaxDamageThreshold)
 		{
+			//DestructibleMesh 콜리전 off 처리 
 			DestructibleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			DestructibleComponent->SetEnableGravity(true);
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACDestructibleActor::DestroyDestructibleActor, 3.0f, false);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACDestructibleActor::DestroyDestructibleActor, 1.7f, false);
 
 		}
 
@@ -104,7 +110,53 @@ void ACDestructibleActor::OnRef_DestructibleMeshSet()
 
 void ACDestructibleActor::DestroyDestructibleActor()
 {
+	//드랍 아이템 구현 
+	CreateDropItem();
 	Destroy();
+}
+
+void ACDestructibleActor::CreateDropItem()
+{
+
+
+
+	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DropItemID, DropItemID.ToString());
+	if (ItemData)
+	{
+		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
+		ItemToDrop->CopyFromItemData(*ItemData);
+	}
+
+		
+		// 디스트럭티블 메쉬의  절반 높이 가져오기 (Z 축 기준)
+		FVector MeshBounds = DestructibleComponent->Bounds.BoxExtent;
+		float HalfHeight = MeshBounds.Z;
+		// 스폰 위치 설정 시 절반 높이를 고려하여 Y축에만 오프셋을 적용
+		FVector SpawnLocation = this->GetActorLocation() + FVector(0.0f, 0.0f, HalfHeight*0.7f);
+
+	for (int i = 0; i < DropItemNum; i++)
+	{
+		// 겹치지 않도록 랜덤 오프셋 추가
+		FVector RandomOffset = FVector(
+			FMath::RandRange(-DropOffsetRange, DropOffsetRange),
+			FMath::RandRange(-DropOffsetRange, DropOffsetRange),
+			0.0f //높이는 그대로 
+		);
+		FVector FinalSpawnLocation = SpawnLocation + RandomOffset;
+		FTransform SpawnTransform(this->GetActorRotation(), FinalSpawnLocation); //최종 스폰 위치 
+		
+		//스폰 파라미터 설정 
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.bNoFail = true;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
+
+		ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams);
+		Pickup->InitializeDrop(DropItemID, 1);
+
+	}
+	
+
+
 }
 
 
@@ -113,8 +165,6 @@ void ACDestructibleActor::DestroyDestructibleActor()
 void ACDestructibleActor::BeginPlay()
 {
 	Super::BeginPlay();
-	FString tempStr = FString::Printf(TEXT("DestrucibleActor Spawned!!!!!!!!!!!!!"));
-	CDebug::Print(tempStr);
 	DestructibleComponent->RegisterComponent();
 	DestructibleComponent->AddToRoot(); // Root Set 등록 ->가비지 컬렉션 삭제 방지
 }

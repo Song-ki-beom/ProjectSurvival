@@ -9,6 +9,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "DestructibleMesh.h"
+#include "World/CPickUp.h"
 #include "CDestructibleStructures.generated.h"
 /**
  * 
@@ -25,9 +26,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
         float MaxDamageThreshold;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        int32 DropItemRatio = 3;
-
+        int32 EarnItemRatio = 3;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        int32 DropItemNum = 2;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+        FName DropItemID;
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+        float DropOffsetRange =50.0f;
 };
+
+
 
 
 

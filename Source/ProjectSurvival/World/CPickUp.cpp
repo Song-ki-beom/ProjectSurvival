@@ -129,8 +129,9 @@ void ACPickUp::UpdatePartialAdded(int32 InQuantity)
 
 void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
 {
-	ItemReference->SetQuantity(InQuantity);
-	InteractableData.Quantity = InQuantity;
+	/*ItemReference->SetQuantity(InQuantity);
+	InteractableData.Quantity = InQuantity;*/
+	UpdatePartialAdded(InQuantity);
 }
 
 void ACPickUp::RequestDestroy_Implementation()
