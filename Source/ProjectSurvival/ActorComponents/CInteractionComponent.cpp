@@ -84,7 +84,7 @@ void UCInteractionComponent::FinishInteract()
 		}
 		else
 		{
-			if (ElapsedTime < 0.25f && ElapsedTime >= 0)
+			if (ElapsedTime < 0.25f && ElapsedTime >= 0) //0.25 초 내의 짧은 E 키 Released 면 
 				BeginInteract();
 			else
 				EndInteract();
@@ -109,6 +109,7 @@ void UCInteractionComponent::ShowHiddenMenu()
 {
 	if (HUD)
 		HUD->ShowHiddenMenu();
+
 }
 
 void UCInteractionComponent::HideHiddenMenu()
@@ -127,6 +128,11 @@ void UCInteractionComponent::ExtraOptionButtonDown()
 {
 	if (HUD)
 		HUD->ExtraOptionButtonDown();
+}
+
+void UCInteractionComponent::RecallInteract()
+{
+	Interact();
 }
 
 

@@ -26,6 +26,7 @@ public:
 	void UpdateInteractionWidget() const;
 	void ExtraOptionButtonUp();
 	void ExtraOptionButtonDown();
+	void RecallInteract();
 protected:
 	virtual void BeginPlay() override;
 	void PerformInteractionCheck();

@@ -8,6 +8,8 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Utility/CDebug.h"
+#include "Character/CSurvivor.h"
+#include "ActorComponents/CInteractionComponent.h"
 #include "Interface/InteractionInterface.h"
 
 
@@ -53,10 +55,10 @@ void UCInteractionWidget::NativeConstruct()
 	ExtraButtonFoucsIndex = 0;
 	DefaultButtonStyle = CancelButton->WidgetStyle;
 
-	
 		
-	
+	PlayerReference =  Cast<ACSurvivor>(GetOwningPlayerPawn());
 
+	
 
 }
 
@@ -94,6 +96,7 @@ void UCInteractionWidget::MoveFocusToNextButton()
 		
 		int32 NewIndex = ExtraButtonFoucsIndex;
 		FButtonStyle HoveredStyle = ExtraButtonArray[NewIndex]->WidgetStyle;
+
 		// Hovered 상태의 스타일을 현재 상태로 설정합니다.
 		HoveredStyle.Normal = HoveredStyle.Hovered;
 
@@ -130,6 +133,11 @@ void UCInteractionWidget::OnCancelButtonClicked()
 
 void UCInteractionWidget::OnRecallButtonClicked()
 {
+	if (PlayerReference)
+	{
+		PlayerReference->GetInteractionComponent()->RecallInteract();
+	}
+
 	return;
 }
 
