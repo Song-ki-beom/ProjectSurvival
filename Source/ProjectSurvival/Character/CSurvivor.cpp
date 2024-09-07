@@ -28,7 +28,7 @@ ACSurvivor::ACSurvivor()
 
 	bReplicates = true;
 	//인터렉션 세팅
-	BaseEyeHeight = 75.0f; //Pawn의 Default 눈 높이 세팅
+	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
 
 
 

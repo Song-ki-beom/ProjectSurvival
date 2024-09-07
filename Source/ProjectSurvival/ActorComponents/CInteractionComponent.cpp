@@ -151,9 +151,11 @@ void UCInteractionComponent::PerformInteractionCheck()
 {
 	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
 
+	/*FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;*/
+
 	//눈 시점 location
-	FVector TraceStart{ OwnerCharacter->GetPawnViewLocation()}; //트레이스 벡터 초기화 
-	FVector TraceEnd{ TraceStart + (OwnerCharacter->GetViewRotation().Vector() * InteractionCheckDistance) };
+	FVector TraceStart = OwnerCharacter->GetPawnViewLocation() + OwnerCharacter->GetActorForwardVector() * 50.0f;//트레이스 벡터 초기화 
+	FVector TraceEnd = TraceStart + (OwnerCharacter->GetViewRotation().Vector() * InteractionCheckDistance) ;
 
 	//액터 자체의 forward Vector 와 pawn의 controller 에서의 방향벡터와의 내적을 통해 캐릭터가 앞을 보고 있는지 판단 
 	float LookDirection =  FVector::DotProduct(OwnerCharacter->GetActorForwardVector(), OwnerCharacter->GetViewRotation().Vector());
@@ -168,7 +170,15 @@ void UCInteractionComponent::PerformInteractionCheck()
 		QueryParams.AddIgnoredActor(OwnerCharacter);
 		FHitResult TraceHit;
 
-		if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+		// 트레이스 박스의 크기 및 회전 
+		FVector BoxHalfSize(50.0f, 50.0f, 50.0f);
+		FQuat BoxRotation = OwnerCharacter->GetViewRotation().Quaternion();
+
+		//디버그 BoxTrace
+		/*DrawDebugBox(GetWorld(), TraceStart, BoxHalfSize, BoxRotation, FColor::Green, false, 1.0f);
+		DrawDebugBox(GetWorld(), TraceEnd, BoxHalfSize, BoxRotation, FColor::Red, false, 1.0f);*/
+
+		if (GetWorld()->SweepSingleByChannel(TraceHit, TraceStart, TraceEnd, BoxRotation, ECC_Visibility, FCollisionShape::MakeBox(BoxHalfSize), QueryParams))
 		{
 			//UInteractionInterface 를 상속받고 있는지 검출(상호작용 가능한 액터인지)
 			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
