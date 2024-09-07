@@ -7,9 +7,14 @@
 #include "Interface/InteractionInterface.h"
 #include "CMainHUD.generated.h"
 
-/**
- * 
- */
+UENUM()
+enum class EWidgetCall : uint8
+{
+	Survivor,
+	WorkBench,
+	CloseWidget
+};
+
 UCLASS()
 class PROJECTSURVIVAL_API ACMainHUD : public AHUD
 {
@@ -17,9 +22,14 @@ class PROJECTSURVIVAL_API ACMainHUD : public AHUD
 public:
 	ACMainHUD();
 
-	void DisplayMenu();
-	void HideMenu();
-	void ToggleMenu(); //Hide & Show Menu Toggle 
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	void SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget = nullptr);
+	void DisplaySurvivorInventoryWidget();
+	void DisplayProduceWidget(EWidgetCall InWidgetCall);
+	void DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget);
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
@@ -30,7 +40,7 @@ public:
 	void HideHiddenMenu();
 	void ExtraOptionButtonUp();
 	void ExtraOptionButtonDown();
-
+	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -42,24 +52,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCProduceWidget> ProduceWidgetClass;
 	
-
-
-
-protected:
-	virtual void BeginPlay() override;
-
-
 protected:
 	UPROPERTY()
-		class UCInventoryMenu* InventoryMenuWidget;
+		class UCInventoryMenu* SurvivorInventoryWidget;
 	UPROPERTY()
 		class UCInteractionWidget* InteractionWidget;
 	UPROPERTY()
 		class UCInventorySubMenu* InventorySubMenuWidget;
 	UPROPERTY()
 		class UCProduceWidget* ProduceWidget;
+	UPROPERTY()
+		class UUserWidget* ActorInventoryWidget;
 
 public:
-	bool bIsMenuVisible;
+	//bool bIsMenuVisible;
+	
 
 };

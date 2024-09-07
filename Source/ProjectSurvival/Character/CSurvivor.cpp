@@ -223,11 +223,11 @@ void ACSurvivor::FinishInteract()
 	InteractionComponent->FinishInteract();
 }
 
-void ACSurvivor::ToggleMenu()
-{
-	InventoryComponent->ToggleMenu();
-
-}
+//void ACSurvivor::ToggleMenu()
+//{
+//	InventoryComponent->ToggleMenu();
+//
+//}
 
 void ACSurvivor::Build()
 {

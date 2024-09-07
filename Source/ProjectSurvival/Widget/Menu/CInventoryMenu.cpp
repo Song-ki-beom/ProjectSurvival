@@ -2,10 +2,12 @@
 
 
 #include "Widget/Menu/CInventoryMenu.h"
-#include "Character/CSurvivor.h"
+#include "Widget/CMainHUD.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
-#include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Produce/CProduceWidget.h"
+#include "Character/CSurvivor.h"
+#include "ActorComponents/CInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Input/Reply.h"
 
@@ -29,9 +31,21 @@ FReply UCInventoryMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 	if (InKeyEvent.GetKey() == EKeys::I)
 	{
-		OnMainMenuToggled.Broadcast();  // 메뉴를 켜고 끄는 함수 호출
+		//OnMainMenuToggled.Broadcast();  // 메뉴를 켜고 끄는 함수 호출
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+		if (mainHUD)
+			mainHUD->SetWidgetVisibility(EWidgetCall::CloseWidget);
 		return FReply::Handled();  // 입력을 처리했다고 반환
 	}
+
+	if (InKeyEvent.GetKey() == EKeys::E)
+	{
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+		if (mainHUD)
+			mainHUD->GetProduceWidget()->StartProduce();
+		return FReply::Handled();
+	}
+
 	return FReply::Unhandled();
 
 }

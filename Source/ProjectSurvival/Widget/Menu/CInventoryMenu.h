@@ -9,7 +9,7 @@
 /**
  * 
  */
-DECLARE_MULTICAST_DELEGATE(FOnMainMenuToggled);
+//DECLARE_MULTICAST_DELEGATE(FOnMainMenuToggled);
 
 
 UCLASS()
@@ -30,6 +30,6 @@ public:
 	UPROPERTY()
 		class ACSurvivor* PlayerCharacter;
 
-	FOnMainMenuToggled OnMainMenuToggled;
+	//FOnMainMenuToggled OnMainMenuToggled;
 
 };

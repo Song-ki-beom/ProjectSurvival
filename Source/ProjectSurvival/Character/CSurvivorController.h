@@ -17,6 +17,7 @@ protected:
 
 public:
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
+//	void OpenActorInventory(TSubclassOf<class UUserWidget> InClass);
 
 
 private:
@@ -45,7 +46,7 @@ private:
 	void HoldAxe();
 
 	//Inventory and Produce
-	void ToggleMenu();
+	void ShowWidget();
 	//void ToggleProduceWidget();
 
 	//Mouse Event

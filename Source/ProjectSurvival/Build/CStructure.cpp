@@ -8,6 +8,7 @@ ACStructure::ACStructure()
 	PreviewBox = CreateDefaultSubobject<UBoxComponent>("PrivewBox");
 	PreviewBox->SetupAttachment(PickupMesh);
 	PreviewBox->SetIsReplicated(true);
+	bTransformTimerUse = false;
 }
 
 void ACStructure::BeginPlay()
