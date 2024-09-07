@@ -122,12 +122,14 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 }
 void ACPickUp::UpdatePartialAdded(int32 InQuantity)
 {
+	ItemReference->SetQuantity(InQuantity);
 	InteractableData.Quantity = InQuantity;
 
 }
 
 void ACPickUp::BroadcastUpdatePartialAdded_Implementation(int32 InQuantity)
 {
+	ItemReference->SetQuantity(InQuantity);
 	InteractableData.Quantity = InQuantity;
 }
 

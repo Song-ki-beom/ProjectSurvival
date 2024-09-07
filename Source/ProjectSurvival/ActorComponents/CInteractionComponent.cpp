@@ -292,7 +292,7 @@ void UCInteractionComponent::RequestUpdatePartialAdded_Implementation(int32 InQu
 	
 			if (OwnerCharacter->HasAuthority())
 				BroadcastUpdatePartialAdded(InQuantity);
-	
+				
 }
 
 
@@ -306,7 +306,10 @@ void UCInteractionComponent::BroadcastUpdatePartialAdded_Implementation(int32 In
 
 
 			if (OwnerCharacter->HasAuthority())
+			{
 				PickupActor->UpdatePartialAdded(InQuantity);
+			}
+
 
 		}
 
