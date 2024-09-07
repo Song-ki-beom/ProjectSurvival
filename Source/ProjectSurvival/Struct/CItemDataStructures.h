@@ -12,6 +12,7 @@ enum class EItemType : uint8
 	Build UMETA(DisplayName = "Build"),
 	Hunt UMETA(DisplayName = "Hunt"),
 	Consumable UMETA(DisplayName = "Consumable"),
+	Container UMETA(DisplayName = "Container"),
 	NoType UMETA(DisplayName = "NoType")
 };
 

@@ -44,7 +44,7 @@ public:
 
 
 	//Inventory
-	void ToggleMenu();
+	//void ToggleMenu();
 
 
 	//Build

@@ -3,6 +3,7 @@
 
 #include "World/CPickUp.h"
 #include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Utility/CDebug.h"
 #include "Engine/DataTable.h"
@@ -119,14 +120,17 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			}
 
 			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
+			PickupMesh->SetCollisionProfileName(FName("Item"));
+			PickupMesh->SetSimulatePhysics(true);
 
-			if (ItemReference->ItemType != EItemType::Build)
+			if (ItemReference->ItemType == EItemType::Build || ItemReference->ItemType == EItemType::Container)
 			{
-				//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
-				PickupMesh->SetCollisionProfileName(FName("Item"));
-				//중력의 영향을 받기 위한 피직스 설정 
-				PickupMesh->SetSimulatePhysics(true);
+				//빌드, 컨테이너인 경우에는 캐릭터와 통과되지 못하도록 설정
+				PickupMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
+				//중력의 영향을 받지 않음 
+				PickupMesh->SetSimulatePhysics(false);
 			}
+
 			UpdateInteractableData();
 		}
 	}
@@ -205,6 +209,9 @@ void ACPickUp::UpdateInteractableData()
 	case EItemType::Build:
 		InstanceInteractableData.InteractableType = EInteractableType::Build;
 		break;
+	case EItemType::Container:
+		InstanceInteractableData.InteractableType = EInteractableType::Container;
+		break;
 	default:
 		InstanceInteractableData.InteractableType = EInteractableType::Pickup;
 		break;
@@ -220,7 +227,14 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
 {
 	if (PlayerCharacter)
 	{
-		TakePickup(PlayerCharacter);
+		if (ItemReference->ItemType == EItemType::Container)
+		{
+			OpenActorInventory(PlayerCharacter);
+		}
+		else
+		{
+			TakePickup(PlayerCharacter);
+		}
 	}
 }
 
@@ -268,6 +282,11 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 			CDebug::Print(AddResult.ResultMessage.ToString());
 		}
 	}
+}
+
+void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor)
+{
+	// Container 클래스 자체에서 함수내용 구현
 }
 
 void ACPickUp::SetTransform()

@@ -2,6 +2,12 @@
 #include "Build/CStructure_Foundation.h"
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "ActorComponents/CActorInventoryComponent.h"
+//#include "ActorComponents/CInventoryComponent.h"
+#include "Widget/CMainHUD.h"
+#include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
+#include "Blueprint/UserWidget.h"
 #include "Utility/CDebug.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
@@ -35,6 +41,52 @@ void ACStructure_Placeable::CheckCenter()
 		FLinearColor::Green,
 		FLinearColor::Red
 	);
+}
+
+void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor)
+{
+	CDebug::Print("OpenActorInventory Called");
+	if (Survivor)
+	{
+		switch (WidgetCaller)
+		{
+		case EWidgetCall::WorkBench:
+		{
+			if (ActorInventoryWidgetClass)
+			{
+				if (ActorInventoryWidget)
+				{
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+					if (survivorController)
+					{
+						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+						if (mainHUD)
+							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget);
+					}
+				}
+				else
+				{
+					ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
+
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+					if (survivorController)
+					{
+						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+						if (mainHUD)
+							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget);
+					}
+				}
+			}
+		}
+		}
+	}
+	else
+		CDebug::Print("Survivor is not valid");
+}
+
+void ACStructure_Placeable::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ACStructure_Placeable::CheckDown_FoundationAndCeiling()

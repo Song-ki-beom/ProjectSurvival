@@ -1,18 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Widget/CMainHUD.h"
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Widget/Inventory/CInventorySubMenu.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Produce/CProduceWidget.h"
+#include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
+
 ACMainHUD::ACMainHUD()
 {
-
-
 }
 
 void ACMainHUD::BeginPlay()
@@ -32,11 +30,11 @@ void ACMainHUD::BeginPlay()
 	if (InventoryMenuClass)
 	{
 		//Widget 은 그래픽 요소를 지니고 있기 때문에 StaticClass() 가 아니라 에디터에 존재하는 요소를 참조로 가져와야 한다..InventoryMenuClass 가 그 예시
-		InventoryMenuWidget = CreateWidget<UCInventoryMenu>(GetWorld(), InventoryMenuClass);
-		InventoryMenuWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
-		InventoryMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-		InventoryMenuWidget->OnMainMenuToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
-		InventoryMenuWidget->bIsFocusable = true;
+		SurvivorInventoryWidget = CreateWidget<UCInventoryMenu>(GetWorld(), InventoryMenuClass);
+		SurvivorInventoryWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
+		SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//SurvivorInventoryWidget->OnMainMenuToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
+		SurvivorInventoryWidget->bIsFocusable = true;
 
 	}
 	
@@ -52,76 +50,112 @@ void ACMainHUD::BeginPlay()
 		ProduceWidget = CreateWidget<UCProduceWidget>(GetWorld(), ProduceWidgetClass);
 		ProduceWidget->AddToViewport(5);
 		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
-		ProduceWidget->OnProduceWidgetToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
-	}
-
-
-
-}
-
-
-
-
-void ACMainHUD::HideMenu()
-{
-	if (InventoryMenuWidget)
-	{
-		bIsMenuVisible = false;
-		InventoryMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-
-	if (ProduceWidget)
-	{
-		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+		ProduceWidget->bIsFocusable = true;
 	}
 }
 
-void ACMainHUD::ToggleMenu()
+void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget)
 {
-	if (bIsMenuVisible)
+	CDebug::Print("SetWidgetVisibility Called");
+
+	switch (InWidgetCall)
 	{
-		HideMenu();
-
-		const FInputModeGameOnly InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
-		GetOwningPlayerController()->SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(false);
-
-
-
-	}
-	else
+	case EWidgetCall::Survivor:
 	{
-		DisplayMenu();
+		CDebug::Print("EWidgetCall::Survivor");
+		DisplaySurvivorInventoryWidget();
+		DisplayProduceWidget(InWidgetCall);
 		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
-
+		break;
 	}
+	case EWidgetCall::WorkBench:
+	{
+		DisplaySurvivorInventoryWidget();
+		DisplayProduceWidget(InWidgetCall);
+		DisplayActorInventory(InWidgetCall, InWidget);
+		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(true);
+		break;
+	}
+	case EWidgetCall::CloseWidget:
+	{
+		CDebug::Print("CloseWidget Called");
+		if (SurvivorInventoryWidget)
+		{
+			SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
 
+		if (ProduceWidget)
+		{
+			ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
 
+		if (ActorInventoryWidget)
+		{
+			ActorInventoryWidget->RemoveFromViewport();
+			ActorInventoryWidget = nullptr;
+		}
+		const FInputModeGameOnly InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(false);
+		break;
+	}
+	}
 }
 
-void ACMainHUD::DisplayMenu()
+void ACMainHUD::DisplaySurvivorInventoryWidget()
 {
-	if (InventoryMenuWidget)
+	if (SurvivorInventoryWidget)
 	{
-		bIsMenuVisible = true;
-		InventoryMenuWidget->SetVisibility(ESlateVisibility::Visible);
-		InventoryMenuWidget->SetKeyboardFocus();
+		CDebug::Print("SurvivorInventoryWidget is valid");
+		SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Visible);
+		SurvivorInventoryWidget->SetKeyboardFocus();
 	}
+	else
+		CDebug::Print("SurvivorInventoryWidget is not valid");
+}
 
+void ACMainHUD::DisplayProduceWidget(EWidgetCall InWidgetCall)
+{
 	if (ProduceWidget)
 	{
 		FVector2D widgetSize = FVector2D(580, 850);
 		ProduceWidget->SetDesiredSizeInViewport(widgetSize);
-		//FVector2D viewportSize;
-		//GEngine->GameViewport->GetViewportSize(viewportSize);
-		//ProduceWidget->SetPositionInViewport((viewportSize - widgetSize) / 2);
 		ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+		ProduceWidget->SetKeyboardFocus();
 		ProduceWidget->RefreshProduceDetail();
-		ProduceWidget->bIsFocusable = true;
+		ProduceWidget->SetWidgetSwitcherIndex(static_cast<int32>(InWidgetCall)); // 0번 : 생존자, 1번: 작업대
 	}
 }
+
+void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget)
+{
+	if (InWidget)
+	{
+		ActorInventoryWidget = InWidget;
+
+		switch (InWidgetCall)
+		{
+		case EWidgetCall::WorkBench:
+		{
+			FVector2D widgetSize = FVector2D(590, 440);
+			FVector2D viewportSize;
+			GEngine->GameViewport->GetViewportSize(viewportSize);
+			ActorInventoryWidget->SetAlignmentInViewport(FVector2D(0.5f, 1.0f));
+			ActorInventoryWidget->SetPositionInViewport(FVector2D(viewportSize.X / 2, viewportSize.Y / 2 - 15.0f));
+			ActorInventoryWidget->SetDesiredSizeInViewport(widgetSize);
+			ActorInventoryWidget->bIsFocusable = true;
+			ActorInventoryWidget->SetVisibility(ESlateVisibility::Visible);
+			ActorInventoryWidget->AddToViewport(5);
+			//ToggleMenu();
+		}
+		}
+	}
+}
+
 
 void ACMainHUD::ShowInteractionWidget()
 {

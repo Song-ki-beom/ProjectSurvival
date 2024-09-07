@@ -4,8 +4,6 @@
 #include "Blueprint/UserWidget.h"
 #include "CProduceWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnProduceWidgetToggled);
-
 UCLASS()
 class PROJECTSURVIVAL_API UCProduceWidget : public UUserWidget
 {
@@ -17,13 +15,13 @@ protected:
 	virtual bool Initialize() override;
 
 public:
-	FOnProduceWidgetToggled OnProduceWidgetToggled;
+	void SetWidgetSwitcherIndex(int32 InIndex);
 	void SetProduceDetail(FName InID);
 	void RefreshProduceDetail();
 	void StartProduce();
 	void AddProduceItemToQueue();
 	void SetProducingItemText(FText InText);
-	void Test_ShowPlaceableInventory();
+	//void Test_ShowPlaceableInventory();
 
 private:
 	UFUNCTION()
@@ -34,6 +32,8 @@ private:
 		void ClickWeaponButton();
 
 private:
+	UPROPERTY(meta = (BindWidget))
+		class UWidgetSwitcher* ProduceWidgetSwitcher;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* BuildStructureSelectButton;
 	UPROPERTY(meta = (BindWidget))

@@ -8,8 +8,10 @@
 #include "GameFramework/Actor.h"
 #include "ActorComponents/CBuildComponent.h"
 #include "ActorComponents/CMovingComponent.h"
+#include "Widget/CMainHUD.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Widget/Produce/CProduceWidget.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Utility/CDebug.h"
 
 ACSurvivorController::ACSurvivorController()
@@ -52,6 +54,29 @@ void ACSurvivorController::BeginPlay()
 	SetupInputFunction();
 }
 
+//void ACSurvivorController::OpenActorInventory(TSubclassOf<class UUserWidget> InClass)
+//{
+//	CDebug::Print("OpenActorInventory Called");
+//	if (InClass)
+//	{
+//		UUserWidget* widgetInstance = CreateWidget<UUserWidget>(this, InClass);
+//		if (widgetInstance)
+//		{
+//			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(widgetInstance);
+//			if (workingBenchWidget)
+//			{
+//				ToggleMenu();
+//				workingBenchWidget->AddToViewport(5);
+//				workingBenchWidget->SetVisibility(ESlateVisibility::Visible);
+//			}
+//			else
+//				CDebug::Print("workingBenchWidget is not Valid");
+//		}
+//		else
+//			CDebug::Print("widgetInstance is not Valid");
+//	}
+//}
+
 void ACSurvivorController::GetSurvivor()
 {
 	Survivor = Cast<ACSurvivor>(this->GetCharacter());
@@ -86,7 +111,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("SelectX", IE_Pressed, this, &ACSurvivorController::SelectX);
 		InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
 		InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
-		InputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACSurvivorController::ToggleMenu);
+		InputComponent->BindAction("Inventory", IE_Pressed, this, &ACSurvivorController::ShowWidget);
 		InputComponent->BindAction("MouseWheelUp", IE_Pressed, this,&ACSurvivorController::HandleMouseWheelUp);
 		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
 
@@ -403,11 +428,15 @@ void ACSurvivorController::HoldAxe()
 	}
 }
 
-void ACSurvivorController::ToggleMenu()
+void ACSurvivorController::ShowWidget()
 {
 	if (bIsBuildWidgetOn)
 		return;
-	Survivor->ToggleMenu();
+
+	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
+	if (mainHUD)
+		mainHUD->SetWidgetVisibility(EWidgetCall::Survivor);
+	//Survivor->ToggleMenu();
 }
 
 void ACSurvivorController::HandleMouseWheelUp()

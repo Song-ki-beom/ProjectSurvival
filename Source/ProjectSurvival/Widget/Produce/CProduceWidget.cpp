@@ -1,6 +1,7 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Character/CSurvivor.h"
 #include "ActorComponents/CInventoryComponent.h"
+#include "Components/WidgetSwitcher.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -13,6 +14,7 @@
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
+#include "Widget/CMainHUD.h"
 #include "Utility/CDebug.h"
 
 void UCProduceWidget::NativeConstruct()
@@ -25,9 +27,12 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 	if (InKeyEvent.GetKey() == EKeys::I)
 	{
-		OnProduceWidgetToggled.Broadcast();  // 메뉴를 켜고 끄는 함수 호출
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+		if (mainHUD)
+			mainHUD->SetWidgetVisibility(EWidgetCall::CloseWidget);
 		return FReply::Handled();  // 입력을 처리했다고 반환
 	}
+
 	//return FReply::Unhandled();
 
 	if (InKeyEvent.GetKey() == EKeys::E)
@@ -36,11 +41,11 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 		return FReply::Handled();
 	}
 
-	if (InKeyEvent.GetKey() == EKeys::O)
-	{
-		Test_ShowPlaceableInventory();
-		return FReply::Handled();
-	}
+	//if (InKeyEvent.GetKey() == EKeys::O)
+	//{
+	//	Test_ShowPlaceableInventory();
+	//	return FReply::Handled();
+	//}
 
 	return FReply::Unhandled();
 }
@@ -104,6 +109,11 @@ bool UCProduceWidget::Initialize()
 	CDebug::Print("Initialize Success");
 
 	return true;
+}
+
+void UCProduceWidget::SetWidgetSwitcherIndex(int32 InIndex)
+{
+	ProduceWidgetSwitcher->SetActiveWidgetIndex(InIndex);
 }
 
 void UCProduceWidget::SetProduceDetail(FName InID)
@@ -304,22 +314,22 @@ void UCProduceWidget::SetProducingItemText(FText InText)
 	ProducingItemText->SetText(InText);
 }
 
-void UCProduceWidget::Test_ShowPlaceableInventory()
-{
-	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Inventory/WBP_CInventoryPanel_WorkingBench.WBP_CInventoryPanel_WorkingBench_C'"));
-	
-	if (widgetClass)
-	{
-		UCInventoryPanel_WorkingBench* workingBenchPanelWidget = CreateWidget<UCInventoryPanel_WorkingBench>(GetWorld(), widgetClass);
-		if (workingBenchPanelWidget)
-		{
-			workingBenchPanelWidget->AddToViewport(5);
-			//ProduceWidget->SetVisibility(ESlateVisibility::Visible);
-			//ProduceWidget->RefreshProduceDetail();
-			//ProduceWidget->bIsFocusable = true;
-		}
-	}
-}
+//void UCProduceWidget::Test_ShowPlaceableInventory()
+//{
+//	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Inventory/WBP_CInventoryPanel_WorkingBench.WBP_CInventoryPanel_WorkingBench_C'"));
+//	
+//	if (widgetClass)
+//	{
+//		UCInventoryPanel_WorkingBench* workingBenchPanelWidget = CreateWidget<UCInventoryPanel_WorkingBench>(GetWorld(), widgetClass);
+//		if (workingBenchPanelWidget)
+//		{
+//			workingBenchPanelWidget->AddToViewport(5);
+//			//ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+//			//ProduceWidget->RefreshProduceDetail();
+//			//ProduceWidget->bIsFocusable = true;
+//		}
+//	}
+//}
 
 void UCProduceWidget::ClickBuildStructureButton()
 {
