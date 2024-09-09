@@ -10,6 +10,7 @@
 #include "ActorComponents/CInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Input/Reply.h"
+#include "Utility/CDebug.h"
 
 void UCInventoryMenu::NativeOnInitialized() 
 {
@@ -47,25 +48,20 @@ FReply UCInventoryMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 	}
 
 	return FReply::Unhandled();
-
 }
-
 
 bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-
-
 	//별도로 만든 DragDropOperation 생성 
 	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
 	if (PlayerCharacter && ItemDragDrop->SourceItem) // 해당 UI 내에서 떨어뜨릴 아이템이 감지되면 
 	{
-		
+		if (ItemDragDrop->DragStartWidget == WBP_InventoryPanel)
 			PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
-		
+		else
+			CDebug::Print("DragStartWidget is not WBP_InventoryPanel", FColor::Red);
 
 		return true; 
 	}
 	return false;
 }
-
-

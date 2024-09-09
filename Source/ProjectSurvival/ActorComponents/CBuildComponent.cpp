@@ -1178,6 +1178,9 @@ void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform
 	{
 		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, InTransform);
 		buildstructure->BroadcastDestroyPreviewBox();
+		ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+		if (placeableStructure)
+			placeableStructure->SetReplicates(true);
 		bIsSnapped = false;
 	}
 	else

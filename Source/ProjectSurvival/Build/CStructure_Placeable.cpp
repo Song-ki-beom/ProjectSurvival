@@ -8,80 +8,23 @@
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Blueprint/UserWidget.h"
+
+#include "Net/UnrealNetwork.h"
+#include "Widget/Inventory/CItemBase.h"
+
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+
 #include "Utility/CDebug.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
 {
+	//bReplicates = true;
+
 	DownBox = CreateDefaultSubobject<UBoxComponent>("DownBox");
 	DownBox->SetupAttachment(PickupMesh);
-}
-void ACStructure_Placeable::CheckCenter()
-{
-	FHitResult centerBoxHitResult;
-	FVector centerBoxLocation = PreviewBox->GetComponentLocation();
-	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0,0,1);
-	FRotator centerBoxOrientation;
-	centerBoxOrientation = this->GetActorRotation();
-	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
-	bool bCenterBoxTraceComplex = false;
-	TArray<AActor*> centerBoxActorsToIgnore;
-	TArray<FHitResult> centerBoxHitResults;
-	bCenterHit = UKismetSystemLibrary::BoxTraceSingle(
-		GetWorld(),
-		centerBoxLocation,
-		centerBoxLocation,
-		centerBoxSize,
-		centerBoxOrientation,
-		centerBoxTraceTypeQuery,
-		bCenterBoxTraceComplex,
-		centerBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
-		centerBoxHitResult,
-		true,
-		FLinearColor::Green,
-		FLinearColor::Red
-	);
-}
 
-void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor)
-{
-	CDebug::Print("OpenActorInventory Called");
-	if (Survivor)
-	{
-		switch (WidgetCaller)
-		{
-		case EWidgetCall::WorkBench:
-		{
-			if (ActorInventoryWidgetClass)
-			{
-				if (ActorInventoryWidget)
-				{
-					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
-					if (survivorController)
-					{
-						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
-						if (mainHUD)
-							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget);
-					}
-				}
-				else
-				{
-					ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
-
-					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
-					if (survivorController)
-					{
-						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
-						if (mainHUD)
-							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget);
-					}
-				}
-			}
-		}
-		}
-	}
-	else
-		CDebug::Print("Survivor is not valid");
+	//ActorInventoryComponent = CreateDefaultSubobject<UCActorInventoryComponent>(TEXT("ActorInventory"));
+	//ActorInventoryComponent->SetIsReplicated(true);
 }
 
 void ACStructure_Placeable::BeginPlay()
@@ -120,7 +63,7 @@ void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 		AActor* hitActor = actorHitResult.GetActor();
 		if (hitActor && (hitActor->IsA(ACStructure_Foundation::StaticClass()) || hitActor->IsA(ACStructure_Ceiling::StaticClass())))
 		{
-			CDebug::Print("hitActor: ", hitActor, FColor::Cyan);
+			//CDebug::Print("hitActor: ", hitActor, FColor::Cyan);
 			bDown_FoundationAndCeilingActorHit = true;
 			PlaceableHeight = actorHitResult.ImpactPoint.Z;
 		}
@@ -134,4 +77,129 @@ void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 		bDown_FoundationAndCeilingActorHit = false;
 		PlaceableHeight = GetOwner()->GetActorLocation().Z;
 	}
+}
+
+void ACStructure_Placeable::CheckCenter()
+{
+	FHitResult centerBoxHitResult;
+	FVector centerBoxLocation = PreviewBox->GetComponentLocation();
+	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0,0,1);
+	FRotator centerBoxOrientation;
+	centerBoxOrientation = this->GetActorRotation();
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
+	bool bCenterBoxTraceComplex = false;
+	TArray<AActor*> centerBoxActorsToIgnore;
+	TArray<FHitResult> centerBoxHitResults;
+	bCenterHit = UKismetSystemLibrary::BoxTraceSingle(
+		GetWorld(),
+		centerBoxLocation,
+		centerBoxLocation,
+		centerBoxSize,
+		centerBoxOrientation,
+		centerBoxTraceTypeQuery,
+		bCenterBoxTraceComplex,
+		centerBoxActorsToIgnore,
+		EDrawDebugTrace::ForOneFrame,
+		centerBoxHitResult,
+		true,
+		FLinearColor::Green,
+		FLinearColor::Red
+	);
+}
+
+//void ACStructure_Placeable::CreateActorInventoryComponent()
+//{
+//	ActorInventoryComponent = NewObject<UCActorInventoryComponent>(this);
+//
+//	if (ActorInventoryComponent)
+//	{
+//		ActorInventoryComponent->RegisterComponent();
+//		ActorInventoryComponent->SetIsReplicated(true);
+//	}
+//}
+
+void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
+{
+	CDebug::Print("OpenActorInventory Called");
+	if (Survivor)
+	{
+		switch (WidgetCaller)
+		{
+		case EWidgetCall::WorkBench:
+		{
+			if (ActorInventoryWidgetClass)
+			{
+				if (ActorInventoryWidget)
+				{
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+					if (survivorController)
+					{
+						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+						if (mainHUD)
+						{
+							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget, Actor);
+						}
+					}
+				}
+				else
+				{
+					ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
+
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+					if (survivorController)
+					{
+						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+						if (mainHUD)
+							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget, Actor);
+					}
+				}
+			}
+		}
+		}
+	}
+	else
+		CDebug::Print("Survivor is not valid");
+}
+
+void ACStructure_Placeable::PerformAddID(FName InID)
+{
+	//ItemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
+
+
+	FItemData* itemData = ItemDataTable->FindRow<FItemData>(InID, TEXT(""));
+	if (itemData)
+	{
+	    UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
+	    ItemCopy->ID = InID;
+	    ItemCopy->Quantity = 1;
+	    ItemCopy->ItemType = itemData->ItemType;
+	    ItemCopy->TextData = itemData->TextData;
+	    ItemCopy->ItemStats = itemData->ItemStats;
+	    ItemCopy->NumericData = itemData->NumericData;
+	    ItemCopy->AssetData = itemData->AssetData;
+	    ItemCopy->bIsCopy = true;
+		
+	    SharedInventoryObject.Add(ItemCopy);
+	}
+	
+	for (UCItemBase* tempItem : SharedInventoryObject)
+	{
+	    CDebug::Print("Item :", tempItem->ID);
+	}
+
+	//SharedInventoryID.Add(InID);
+	
+	//for (FName tempName : SharedInventoryID)
+	//{
+	//    CDebug::Print("TempName : ", tempName, FColor::Magenta);
+	//
+	//
+	//}
+}
+
+void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryObject);
 }

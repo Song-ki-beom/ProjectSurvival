@@ -89,7 +89,7 @@ void UCCustomizeComponent::BeginPlay()
 	FTimerHandle handle;
 
 	// 커스터마이징 시작, GameInstance의 변수값이 Null 일 경우 실행되지 않음
-	GetWorld()->GetTimerManager().SetTimer(handle, this, &UCCustomizeComponent::DoSkeletalMeshReplicate, 0.1f, false); 
+	GetWorld()->GetTimerManager().SetTimer(handle, this, &UCCustomizeComponent::DoSkeletalMeshReplicate, 1.0f, false); 
 }
 
 void UCCustomizeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

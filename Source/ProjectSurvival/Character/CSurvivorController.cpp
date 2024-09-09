@@ -13,6 +13,9 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Utility/CDebug.h"
+#include "CGameStateBase.h"
+
+#include "Build/CStructure_Placeable.h"
 
 ACSurvivorController::ACSurvivorController()
 {
@@ -482,3 +485,13 @@ void ACSurvivorController::HandleMouseWheelDown()
 //		this->SetInputMode(FInputModeUIOnly());
 //	}
 //}
+
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
+{
+	ACGameStateBase* gameStateBase = Cast<ACGameStateBase>(GetWorld()->GetGameState());
+	if (gameStateBase)
+	{
+		//gameStateBase->PerformAddID(ItemID);
+	}
+	InPlaceable->PerformAddID(ItemID);
+}

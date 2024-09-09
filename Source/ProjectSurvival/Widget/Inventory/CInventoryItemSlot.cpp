@@ -133,6 +133,20 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 
 		DragItemOperation->DefaultDragVisual = DragVisual; //dragvisual 내장 변수, drag 시 보이는 default dragvisual 설정
 		DragItemOperation->Pivot = EDragPivot::CenterCenter; //드래그 시 마우스의 어느 부분에 Attach 될 것인지 설정하는 offet Pivot 
+		
+		if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
+		{
+			if (this->GetTypedOuter<UUserWidget>())
+			{
+				DragItemOperation->DragStartWidget = this->GetTypedOuter<UUserWidget>();
+			}
+			else
+			{
+				DragItemOperation->DragStartWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
+			}
+		}
+		else
+			CDebug::Print("Start Widget is not valid ");
 
 
 		//MainMenu에서 호출될 NativeOnDrop에서의 UDragDropOperation* OutOperation에 전달될 객체 설정 

@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "CActorInventoryComponent.generated.h"
 
+//DECLARE_MULTICAST_DELEGATE(FOnActorInventoryUpdated);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSURVIVAL_API UCActorInventoryComponent : public UActorComponent
 {
@@ -17,7 +19,18 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	UPROPERTY()
-		class AActor* OwnerActor;
+public:
+	//FOnActorInventoryUpdated OnActorInventoryUpdated;
+
+//private:
+//	void PerformAddItem(class UCItemBase* InItem, const int32 AmountToAdd);
+//	UFUNCTION(Server, Reliable)
+//		void RequestAddItem(class UCItemBase* InItem, const int32 AmountToAdd);
+
+//private:
+//	UPROPERTY()
+//		class AActor* OwnerActor;
+//
+//	UPROPERTY()
+//		TArray<TWeakObjectPtr<UCItemBase>> ActorInventoryContents;
 };

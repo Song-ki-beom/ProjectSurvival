@@ -20,6 +20,10 @@
 void UCProduceWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	Survivor = Cast<ACSurvivor>(GetOwningPlayerPawn());
+	if (Survivor)
+		InventoryComponent = Survivor->GetInventoryComponent();
 }
 
 FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -56,14 +60,6 @@ bool UCProduceWidget::Initialize()
 
 	if (!Sucess)
 		return false;
-
-	if (!GetWorld() || !IsValid(GetWorld()->GetFirstPlayerController())) { CDebug::Print("World or PlayerController is invalid"); return false; }
-
-	Survivor = Cast<ACSurvivor>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (!IsValid(Survivor)) { CDebug::Print("Survivor is invalid"); return false; }
-
-	InventoryComponent = Survivor->GetInventoryComponent();
-	if (!IsValid(InventoryComponent)) { CDebug::Print("InventoryComponent is invalid"); return false; }
 
 	if (!IsValid(BuildStructureSelectButton)) { CDebug::Print("BuildStructureSelectButton is invalid"); return false; }
 	BuildStructureSelectButton->OnClicked.AddDynamic(this, &UCProduceWidget::ClickBuildStructureButton);

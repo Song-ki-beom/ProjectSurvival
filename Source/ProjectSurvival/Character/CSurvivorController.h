@@ -71,5 +71,10 @@ private:
 
 	bool bIsBuildWidgetOn;
 	bool bIsProduceWidgetOn;
+
+public:
+	// 서버 RPC 함수 테스트
+	UFUNCTION(Server, Reliable)
+		void RequestAddItem(FName ItemID, class ACStructure_Placeable* InPlaceable);
 };
 

@@ -17,7 +17,6 @@ void ACMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	if (InteractionWidgetClass)
 	{
 		InteractionWidget = CreateWidget<UCInteractionWidget>(GetWorld(), InteractionWidgetClass);
@@ -54,7 +53,7 @@ void ACMainHUD::BeginPlay()
 	}
 }
 
-void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget)
+void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor)
 {
 	CDebug::Print("SetWidgetVisibility Called");
 
@@ -74,7 +73,7 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 	{
 		DisplaySurvivorInventoryWidget();
 		DisplayProduceWidget(InWidgetCall);
-		DisplayActorInventory(InWidgetCall, InWidget);
+		DisplayActorInventory(InWidgetCall, InWidget, InActor);
 		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
@@ -131,7 +130,7 @@ void ACMainHUD::DisplayProduceWidget(EWidgetCall InWidgetCall)
 	}
 }
 
-void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget)
+void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor)
 {
 	if (InWidget)
 	{
@@ -150,7 +149,23 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 			ActorInventoryWidget->bIsFocusable = true;
 			ActorInventoryWidget->SetVisibility(ESlateVisibility::Visible);
 			ActorInventoryWidget->AddToViewport(5);
-			//ToggleMenu();
+
+			UCInventoryPanel_WorkingBench* workingBenchInventory = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+			if (workingBenchInventory)
+			{
+				CDebug::Print("workingBenchInventory is Valid", FColor::Green);
+
+				if (InActor)
+				{
+					workingBenchInventory->SetOwnerActor(InActor);
+				}
+				else
+					CDebug::Print("InActor is not Valid");
+
+
+			}
+			else
+				CDebug::Print("workingBenchInventory is not Valid", FColor::Red);
 		}
 		}
 	}

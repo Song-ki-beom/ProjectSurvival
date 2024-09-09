@@ -2,6 +2,8 @@
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/CMainHUD.h"
+#include "CGameState.h"
+
 ACMainGameMode::ACMainGameMode()
 {
 	//Pawn Class 세팅
@@ -39,6 +41,18 @@ ACMainGameMode::ACMainGameMode()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HUDClassFinder - ACMainGameMode"));
 
+	}
+
+	//State 세팅
+	static ConstructorHelpers::FClassFinder<AActor> stateClassFinder(TEXT("/Game/PirateIsland/Include/Blueprints/BP_CGameStateBase.BP_CGameStateBase_C"));
+	if (HUDClassFinder.Succeeded())
+	{
+		this->GameStateClass = stateClassFinder.Class;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("stateClassFinder - ACMainGameMode"));
+	
 	}
 
 }
