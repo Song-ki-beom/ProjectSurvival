@@ -161,7 +161,7 @@ void UCInteractionWidget::OnRepairButtonClicked()
 void UCInteractionWidget::ShowHiddenMenu()
 {
 	
-	if (InteractType == EInteractableType::Build)
+	if (InteractType == EInteractableType::Build && !bIsDropMesh)
 	{
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{
@@ -191,7 +191,7 @@ void UCInteractionWidget::HideHiddenMenu()
 {
 	if (InteractType == EInteractableType::Build)
 	{
-		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Visible)
+		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Visible && !bIsDropMesh)
 		{
 		ExtraOptionBox->SetVisibility(ESlateVisibility::Collapsed);
 		ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(DefaultButtonStyle);
@@ -212,7 +212,7 @@ void UCInteractionWidget::HideHiddenMenu()
 void UCInteractionWidget::ToggleHiddenMenu()
 {
 
-	if (InteractType == EInteractableType::Build)
+	if (InteractType == EInteractableType::Build && !bIsDropMesh)
 	{
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{
@@ -264,6 +264,7 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 	NameText->SetText(InteractableData->Name); // 아이템 이름 
 	ActionText->SetText(InteractableData->Action); //상호작용 Text
 	InteractType = InteractableData->InteractableType;
+	bIsDropMesh = InteractableData->bIsDropMesh;
 	switch (InteractType)
 	{
 	case EInteractableType::Pickup: //Press 시 바로 픽업 가능하게 프로그레스 바x
@@ -300,8 +301,8 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 
 
 	//MoreInfo 업데이트 부분 
-	if (ItemDataTable && InteractableData->InteractableType != EInteractableType::Build) //Empty String 인지 체크 
-	{
+	//if (ItemDataTable && InteractableData->InteractableType != EInteractableType::Build) //Empty String 인지 체크 
+	//{
 
 		const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(InteractableData->ID, InteractableData->ID.ToString());
 		if (ItemData)
@@ -345,7 +346,7 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 
 		}
 
-	}
+	//}
 }
 
 

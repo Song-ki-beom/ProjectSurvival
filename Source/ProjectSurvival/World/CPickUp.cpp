@@ -151,13 +151,21 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 	ItemReference->Inventory = nullptr;
 	MeshToChange = ItemToDrop->AssetData.Mesh;
 	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
-	//DT_Items에 DropMesh가 있을 경우 DropMesh로 드롭, 없을 경우 Mesh로 드롭
+	//DT_Items에 DropMesh가 있을 경우 DropMesh로 드롭, 없을 경우 Mesh로 드롭 (ex.) Build 아이템을 빌드 위젯으로 spawn하지 않고 메뉴에서 직접 Drop )
 	if (ItemToDrop->AssetData.DropMesh)
+	{
 		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.DropMesh);
+		ItemReference->bIsDropMesh = true;
+	}
 	else
 		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
-	PickupMesh->SetCollisionProfileName(FName("Item"));
-	PickupMesh->SetSimulatePhysics(true);
+
+	if (ItemReference->ItemType != EItemType::Build || ItemReference->AssetData.DropMesh)
+	{
+		PickupMesh->SetCollisionProfileName(FName("Item"));
+		PickupMesh->SetSimulatePhysics(true);
+	}
+
 	UpdateInteractableData();
 }
 
@@ -213,6 +221,7 @@ void ACPickUp::UpdateInteractableData()
 	InstanceInteractableData.Name = ItemReference->TextData.Name;
 	InstanceInteractableData.Quantity = ItemReference->Quantity;
 	InstanceInteractableData.ID = ItemReference->ID;
+	InstanceInteractableData.bIsDropMesh = ItemReference->bIsDropMesh; //DropMesh(주머니) 일때 참조 bool 
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
 }
 

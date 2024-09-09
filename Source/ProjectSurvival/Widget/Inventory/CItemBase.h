@@ -83,7 +83,7 @@ public:
 
 	bool bIsCopy;
 	bool bIsPickup;
-
+	bool bIsDropMesh = false;
 
 };
 

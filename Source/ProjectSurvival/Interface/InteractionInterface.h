@@ -55,7 +55,8 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 	UPROPERTY(EditInstanceOnly)
 	FName ID;
 
-
+	UPROPERTY(EditInstanceOnly)
+	bool bIsDropMesh;
 
 };
 

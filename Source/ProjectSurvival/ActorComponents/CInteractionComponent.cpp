@@ -89,7 +89,7 @@ void UCInteractionComponent::FinishInteract()
 	if (IsValid(TargetInteractable.GetObject()))
 	{
 		const FInteractableData* InteractableData = &TargetInteractable->InteractableData;
-		if (InteractableData->InteractableType == EInteractableType::Build)
+		if (InteractableData->InteractableType == EInteractableType::Build && !InteractableData->bIsDropMesh)
 		{
 			HUD->HideHiddenMenu();
 			EndInteract();

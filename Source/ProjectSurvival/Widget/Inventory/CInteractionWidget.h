@@ -58,6 +58,8 @@ protected:
 		class UTextBlock* ActionText; // 상호작용 이름 
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
 		class UTextBlock* QuantityText; //수량 
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
+		bool  bIsDropMesh; // 아이템이 주머니(DropMesh) 상태 인지
 
 	//상호작용에 쓰이는 변수들 
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")

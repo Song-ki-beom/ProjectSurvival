@@ -93,6 +93,6 @@ protected:
 
 	FORCEINLINE class UCItemBase* GetItemData() { return ItemReference; };
 	bool bTransformTimerUse;
-
+	
 
 };
