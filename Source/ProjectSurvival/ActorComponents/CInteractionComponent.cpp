@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 #include "Character/CSurvivor.h"
+
 UCInteractionComponent::UCInteractionComponent()
 {
 	
@@ -15,6 +16,14 @@ UCInteractionComponent::UCInteractionComponent()
 	InteractionCheckFrequency = 0.2f;
 	InteractionCheckDistance = 300.0f;
 
+}
+
+
+void UCInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCInteractionComponent, TargetInteractable);
+	
 }
 
 
@@ -66,13 +75,16 @@ void UCInteractionComponent::DoInteract()
 	// 상세 정보 타이머 시작
 	bIsLongPress = false;
 	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleHiddenMenu, 0.5f, false);
-	
+
+	//주위 범위 상호작용 트리거 타이머 시작 
+	GetWorld()->GetTimerManager().SetTimer(InteractAroundTimerHandle, this, &UCInteractionComponent::InteractAroundPlayer, 0.7f, false);
+
 }
 
 //E 키 떼면 
 void UCInteractionComponent::FinishInteract()
 {
-	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(LongPressTimerHandle);
+	float ElapsedTime = GetWorld()->GetTimerManager().GetTimerElapsed(LongPressTimerHandle); 
 
 	if (IsValid(TargetInteractable.GetObject()))
 	{
@@ -91,6 +103,10 @@ void UCInteractionComponent::FinishInteract()
 		}
 
 	}
+	
+	//조건에 상관없이 범위 상호작용 트리거 종료
+	OwnerCharacter->GetWorldTimerManager().ClearTimer(InteractAroundTimerHandle);
+	
 
 	
 }
@@ -117,6 +133,7 @@ void UCInteractionComponent::HideHiddenMenu()
 	if (HUD)
 		HUD->HideHiddenMenu();
 }
+
 
 void UCInteractionComponent::ExtraOptionButtonUp()
 {
@@ -303,6 +320,62 @@ void UCInteractionComponent::Interact()
 	}
 }
 
+void UCInteractionComponent::InteractAroundPlayer()
+{
+	if (!IsValid(TargetInteractable.GetObject()))
+	{
+		GatherAround();
+	}
+
+}
+
+void UCInteractionComponent::GatherAround()
+{
+	float SphereRadius = 200.0f; // 탐색 반지름 설정
+
+	FVector TraceStart = OwnerCharacter->GetActorLocation();
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(OwnerCharacter);
+
+	// 멀티 스피어 트레이스 실행
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		TraceStart,
+		TraceStart, 
+		FQuat::Identity,
+		ECC_Visibility,
+		FCollisionShape::MakeSphere(SphereRadius),
+		QueryParams
+	);
+
+	// 트레이스된 PickUp Actor들을 담을 TArray
+	TArray<ACPickUp*> PickUpsInSphere;
+
+	if (bHit)
+	{
+		for (const FHitResult& Hit : HitResults)
+		{
+			
+			if (IsValid(Hit.GetActor())&&Hit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			{
+				
+				TargetInteractable = Hit.GetActor();
+				RequestUpdateTarget(Hit.GetActor());
+				Interact();
+			}
+		}
+	}
+
+	// 디버그 스피어 그리기
+	DrawDebugSphere(GetWorld(), TraceStart, SphereRadius, 50, FColor::Green, false, 2.0f);
+
+	
+
+
+}
+
 void UCInteractionComponent::RequestUpdatePartialAdded_Implementation(int32 InQuantity)
 {
 	
@@ -356,4 +429,8 @@ void UCInteractionComponent::RequestDestroy_Implementation()
 
 }
 
+void UCInteractionComponent::RequestUpdateTarget_Implementation(AActor* InActor)
+{
+	TargetInteractable = InActor;
 
+}

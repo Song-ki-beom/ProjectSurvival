@@ -35,6 +35,8 @@ protected:
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
+	void InteractAroundPlayer();
+	void GatherAround();
 	void ToggleHiddenMenu();
 	void ShowHiddenMenu();
 	void HideHiddenMenu();
@@ -45,12 +47,13 @@ private:
 		void RequestUpdatePartialAdded(int32 InQuantity);
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastUpdatePartialAdded(int32 InQuantity);
-
+	UFUNCTION(Server, Reliable)
+		void RequestUpdateTarget(AActor* InActor);
 
 
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Interaction")
+	UPROPERTY(VisibleAnywhere, Replicated,Category = "Interaction")
 		TScriptInterface<IInteractionInterface> TargetInteractable;
 
 	float InteractionCheckFrequency;
@@ -58,6 +61,7 @@ protected:
 
 	FInteractionData InteractionData;
 	FTimerHandle LongPressTimerHandle;
+	FTimerHandle InteractAroundTimerHandle;
 
 private:
 	class ACharacter* OwnerCharacter;
