@@ -486,12 +486,12 @@ void ACSurvivorController::HandleMouseWheelDown()
 //	}
 //}
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable)
 {
 	ACGameStateBase* gameStateBase = Cast<ACGameStateBase>(GetWorld()->GetGameState());
 	if (gameStateBase)
 	{
 		//gameStateBase->PerformAddID(ItemID);
 	}
-	InPlaceable->PerformAddID(ItemID);
+	InPlaceable->PerformAddID(ItemID, InQuantity);
 }

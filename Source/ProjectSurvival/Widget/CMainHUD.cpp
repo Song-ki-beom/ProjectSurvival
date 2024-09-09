@@ -157,7 +157,7 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 
 				if (InActor)
 				{
-					workingBenchInventory->SetOwnerActor(InActor);
+					//workingBenchInventory->SetOwnerActor(InActor);
 				}
 				else
 					CDebug::Print("InActor is not Valid");

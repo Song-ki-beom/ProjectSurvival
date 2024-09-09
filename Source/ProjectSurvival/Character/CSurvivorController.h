@@ -75,6 +75,6 @@ private:
 public:
 	// 서버 RPC 함수 테스트
 	UFUNCTION(Server, Reliable)
-		void RequestAddItem(FName ItemID, class ACStructure_Placeable* InPlaceable);
+		void RequestAddItem(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable);
 };
 

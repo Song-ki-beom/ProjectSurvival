@@ -5,6 +5,8 @@
 #include "Widget/CMainHUD.h"
 #include "CStructure_Placeable.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnActorInventoryUpdated);
+
 UCLASS()
 class PROJECTSURVIVAL_API ACStructure_Placeable : public ACStructure
 {
@@ -31,7 +33,11 @@ public:
 
 	void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
-	TArray<UCItemBase*> GetSharedInventoryObject() { return SharedInventoryObject; }
+	TArray<UCItemBase*> GetActorInventoryContents() { return ActorInventoryContents; }
+
+	//TArray<FName> GetSharedInventoryID() { return SharedInventoryID; }
+
+	FOnActorInventoryUpdated OnActorInventoryUpdated;
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -56,16 +62,25 @@ public:
 	//UFUNCTION()
 	//	void AddInventoryID(FName InID);
 	
-	void PerformAddID(FName InID);
+	void PerformAddID(FName InID, int32 InQuantity);
 	
+	UFUNCTION()
+		void OnRep_SharedInventoryIDArray();
+
 	//UFUNCTION(BlueprintCallable, Category = "Inventory")
 	//	TArray<FName> GetSharedInventoryID() { return SharedInventoryID; }
 
 private:
-	//UPROPERTY(Replicated)
-	//	TArray<FName> SharedInventoryID;
+	UPROPERTY(ReplicatedUsing = OnRep_SharedInventoryIDArray)
+		TArray<FName> SharedInventoryIDArray;
 	UPROPERTY(Replicated)
-		TArray<UCItemBase*> SharedInventoryObject;
+		TArray<int32> SharedInventoryQuantityArray;
+	UPROPERTY()
+		TArray<UCItemBase*> ActorInventoryContents;
+
+	TArray<FName> InventoryIDArray;
+	TArray<int32> InventoryAddQuantity;
+
 	//UPROPERTY()
 	//	class UDataTable* ItemDataTable;
 

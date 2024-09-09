@@ -20,8 +20,7 @@ bool UCInventoryPanel_WorkingBench::Initialize()
 	if (!Sucess)
 		return false;
 
-	if (!IsValid(TestButton)) { CDebug::Print("TestButton is invalid"); return false; }
-	TestButton->OnClicked.AddDynamic(this, &UCInventoryPanel_WorkingBench::ChangeButtonColor);
+	OnWorkingBenchUpdated.AddUObject(this, &UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory);
 
 	return true;
 }
@@ -88,11 +87,11 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 	//WrapBox에 정보를 추가하기 전에 기존 이미지 삭제
 	WorkingBenchInventoryPanel->ClearChildren();
 
-	for (UCItemBase* tempItem : ItemArray)
+	for (UCItemBase* tempItem : WidgetItems)
 	{
 		if (tempItem)
 		{
-			CDebug::Print("tempItem is Valid", FColor::Magenta);
+			//CDebug::Print("tempItem is Valid", FColor::Magenta);
 			UCInventoryItemSlot* ItemSlot = CreateWidget<UCInventoryItemSlot>(this, InventorySlotClass);
 			ItemSlot->SetItemReference(tempItem);
 			WorkingBenchInventoryPanel->AddChildToWrapBox(ItemSlot);
@@ -102,6 +101,7 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 			CDebug::Print("tempItem is not Valid", FColor::Magenta);
 		}
 	}
+
 
 	//ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
 	//if (IsValid(survivorController))
@@ -115,17 +115,6 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 
 }
 
-void UCInventoryPanel_WorkingBench::ChangeButtonColor()
-{
-	if (TestButton)
-	{
-		CDebug::Print("TestButton is Valid");
-		TestButton->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	else
-		CDebug::Print("TestButton is not Valid");
-}
-
 void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {
 	//UCItemBase* NewItem;
@@ -135,30 +124,19 @@ void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int3
 	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(InActor);
 	if (workingBenchActor)
 	{
-		CDebug::Print("Widget Owner : ", workingBenchActor->GetName());
-		CDebug::Print("Widget Viewer", this->GetOwningPlayerPawn());
+		//CDebug::Print("Widget Owner : ", workingBenchActor->GetName());
+		//CDebug::Print("Widget Viewer", this->GetOwningPlayerPawn());
 		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 		if (survivor->HasAuthority())
 		{
-			CDebug::Print("Server Call", FColor::Silver);
-			ACGameStateBase* gameStateBase = Cast<ACGameStateBase>(GetWorld()->GetGameState());
-			if (gameStateBase)
-			{
-				//gameStateBase->PerformAddID(InItem->ID);
-			}
-			workingBenchActor->PerformAddID(InItem->ID);
-			ItemArray = workingBenchActor->GetSharedInventoryObject();
-			RefreshWorkingBenchInventory();
+			workingBenchActor->PerformAddID(InItem->ID, QuantityToAdd);
 		}
 		else
 		{
-			CDebug::Print("Client Call", FColor::Silver);
 			ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
 			if (playerController)
 			{
-				playerController->RequestAddItem(InItem->ID, workingBenchActor);
-				ItemArray = workingBenchActor->GetSharedInventoryObject();
-				RefreshWorkingBenchInventory();
+				playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor);
 			}
 			else
 				CDebug::Print("playerController is not valid");
