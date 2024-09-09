@@ -82,12 +82,3 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 }
 
 
-//FReply UCInventoryPanel::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-//{
-    //if (InKeyEvent.GetKey() == EKeys::Tab)
-    //{
-    //    //OnMainMenuToggled.Broadcast();  // 메뉴를 켜고 끄는 함수 호출
-    //    return FReply::Handled();  // 입력을 처리했다고 반환
-    //}
-    //return FReply::Unhandled();
-//}

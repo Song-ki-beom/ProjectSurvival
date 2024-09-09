@@ -262,9 +262,9 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 {
 
 	NameText->SetText(InteractableData->Name); // 아이템 이름 
+	bIsDropMesh = InteractableData->bIsDropMesh;
 	ActionText->SetText(InteractableData->Action); //상호작용 Text
 	InteractType = InteractableData->InteractableType;
-	bIsDropMesh = InteractableData->bIsDropMesh;
 	switch (InteractType)
 	{
 	case EInteractableType::Pickup: //Press 시 바로 픽업 가능하게 프로그레스 바x
@@ -280,11 +280,22 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
 		break;
 	case EInteractableType::Build:
+		if (bIsDropMesh)
+		{
+			ActionText->SetText(FText::FromString(TEXT("줍기"))); //상호작용 Text
+		}
+		else
+		{
+			ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
+
+		}
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-		ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
 
 	default:;
 	}
+
+
+
 
 	if (InteractableData->Quantity == 1)
 	{

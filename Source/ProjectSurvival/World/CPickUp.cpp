@@ -156,6 +156,7 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 	{
 		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.DropMesh);
 		ItemReference->bIsDropMesh = true;
+		
 	}
 	else
 		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);

@@ -6,6 +6,8 @@
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Produce/CProduceWidget.h"
+#include "Widget/Inventory/CEarnInfoPanel.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
@@ -52,6 +54,16 @@ void ACMainHUD::BeginPlay()
 		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
 		ProduceWidget->bIsFocusable = true;
 	}
+
+	if (EarnInfoPanelClass)
+	{
+		EarnInfoPanel = CreateWidget<UCEarnInfoPanel>(GetWorld(), EarnInfoPanelClass);
+		EarnInfoPanel->AddToViewport(4);
+		EarnInfoPanel->SetVisibility(ESlateVisibility::Visible);
+		EarnInfoPanel->bIsFocusable = true;
+	}
+
+
 }
 
 void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget)
@@ -245,5 +257,12 @@ void ACMainHUD::ExtraOptionButtonDown()
 {
 	InteractionWidget->MoveFocusToNextButton();
 }
+
+void ACMainHUD::AddEarnedInfo(UObject* EarnedItem)
+{
+	EarnInfoPanel->AddEarnedItemSlot(EarnedItem);
+}
+
+
 
 

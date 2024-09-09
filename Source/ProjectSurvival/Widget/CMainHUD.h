@@ -41,6 +41,7 @@ public:
 	void ExtraOptionButtonUp();
 	void ExtraOptionButtonDown();
 	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
+	void AddEarnedInfo(class UObject* EarnedItem);
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -51,7 +52,9 @@ public:
 	TSubclassOf<class UCInteractionWidget> InteractionWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCProduceWidget> ProduceWidgetClass;
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UCEarnInfoPanel> EarnInfoPanelClass;
+
 protected:
 	UPROPERTY()
 		class UCInventoryMenu* SurvivorInventoryWidget;
@@ -63,7 +66,8 @@ protected:
 		class UCProduceWidget* ProduceWidget;
 	UPROPERTY()
 		class UUserWidget* ActorInventoryWidget;
-
+	UPROPERTY()
+		class UCEarnInfoPanel* EarnInfoPanel;
 public:
 	//bool bIsMenuVisible;
 	

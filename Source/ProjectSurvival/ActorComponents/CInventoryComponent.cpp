@@ -23,6 +23,8 @@ void UCInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 
 
+
+
 void UCInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -135,11 +137,20 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 			const int32 StackableAmountAdded = HandleStackableItems(InItem, InitialRequestedAddAmount);
 
 			//StackableAmountAdded 결과에 따라 분기 처리 
+			if (StackableAmountAdded <= 0)
+			{
+				return FItemAddResult::AddedNone(FText::Format(FText::FromString("Cannot Add {0} Due To Inventory Weight or Slot Capacity"), InItem->TextData.Name));
+			}
 
+			//EarnedItem UI 표시
+			UCItemBase* EarnedItem = InItem->CreateItemCopy();
+			EarnedItem->Quantity = StackableAmountAdded;
+			HUD->AddEarnedInfo(EarnedItem);
 
 			if (StackableAmountAdded == InitialRequestedAddAmount)
 			{
 				return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} {1} All added To Inventory"),InItem->TextData.Name, InitialRequestedAddAmount));
+				
 			}
 
 			//Stack 한 결과가 처음 리퀘스트한 양이 아닌 일부만 넣어졌을때   
@@ -148,10 +159,7 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 				return FItemAddResult::AddedPartial(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} x {1} Partial Amount of Item Added"), InItem->TextData.Name, StackableAmountAdded));
 			}
 
-			if (StackableAmountAdded <= 0)
-			{
-				return FItemAddResult::AddedNone(FText::Format(FText::FromString("Cannot Add {0} Due To Inventory Weight or Slot Capacity"), InItem->TextData.Name));
-			}
+			
 
 
 
