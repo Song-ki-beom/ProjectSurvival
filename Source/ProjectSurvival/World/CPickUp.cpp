@@ -119,11 +119,9 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 
 			PickupMesh->SetStaticMesh(ItemData->AssetData.Mesh);
 
-			if (ItemReference->ItemType != EItemType::Build)
+			if (((ItemReference->ItemType != EItemType::Build) && (ItemReference->ItemType != EItemType::Container)))
 			{
-				//빌드 아이템이 아닌 경우에는 캐릭터와 통과되도록 설정
 				PickupMesh->SetCollisionProfileName(FName("Item"));
-				//중력의 영향을 받기 위한 피직스 설정 
 				PickupMesh->SetSimulatePhysics(true);
 			}
 			UpdateInteractableData();
@@ -161,7 +159,7 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 	else
 		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
 
-	if (ItemReference->ItemType != EItemType::Build || ItemReference->AssetData.DropMesh)
+	if (((ItemReference->ItemType != EItemType::Build)&&(ItemReference->ItemType != EItemType::Container)) || ItemReference->AssetData.DropMesh)
 	{
 		PickupMesh->SetCollisionProfileName(FName("Item"));
 		PickupMesh->SetSimulatePhysics(true);
