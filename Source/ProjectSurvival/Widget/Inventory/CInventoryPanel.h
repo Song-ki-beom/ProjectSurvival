@@ -19,6 +19,8 @@ public:
 	UFUNCTION()
 	void RefreshInventory();
 
+	void RemoveItem();
+
 
 
 protected:

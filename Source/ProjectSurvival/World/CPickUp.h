@@ -58,7 +58,7 @@ public:
 
 	//플레이어의 인벤토리와 상호작용하는 함수 
 	void TakePickup(const class ACSurvivor* Taker);
-	virtual void OpenActorInventory(const class ACSurvivor* Survivor);
+	virtual void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor);
 
 protected:
 	void SetTransform();

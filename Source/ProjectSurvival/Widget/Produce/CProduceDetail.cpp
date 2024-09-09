@@ -93,31 +93,42 @@ void UCProduceDetail::ProduceItem()
 				int32 demandQuantity = recipeWidget->GetDemandQuantity();
 				recipeWidget->SetResourceQuantity(inventoryQuantity - demandQuantity, demandQuantity);
 
-				ACSurvivor* survivor = Cast<ACSurvivor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+				ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 				if (survivor)
 				{
 					UCInventoryComponent* inventoryComponent = survivor->GetInventoryComponent();
+					if (inventoryComponent)
+						CDebug::Print("InventoryComponent is valid", FColor::Magenta);
+
 					TArray<TWeakObjectPtr<UCItemBase>> itemArray = inventoryComponent->GetInventoryContents();
 					
 					for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
 					{
 						if (UCItemBase* itemBase = itemBasePtr.Get())
 						{
+							CDebug::Print("itemBase is valid", FColor::Magenta);
 							if (itemBase->ID == recipeWidget->GetResourceID())
 							{
+								CDebug::Print("itemBase Set Quantity", FColor::Magenta);
 								itemBase->SetQuantity(inventoryQuantity - demandQuantity);
 								inventoryComponent->OnInventoryUpdated.Broadcast();
 							}
+							else
+								CDebug::Print("ID not match", FColor::Magenta);
 						}
+						else
+							CDebug::Print("itemBase is not valid", FColor::Magenta);
 					}
 				}
+				else
+					CDebug::Print("Survivor is not Valid", FColor::Magenta);
 			}
 		}
 		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
 		if (produceWidget)
 			produceWidget->AddProduceItemToQueue();
 		else
-			CDebug::Print("produceWidget : is not valid");
+			CDebug::Print("produceWidget : is not valid", FColor::Magenta);
 	}
 	else
 		CDebug::Print("Can't Produce");

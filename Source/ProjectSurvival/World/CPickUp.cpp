@@ -232,7 +232,7 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
 	{
 		if (ItemReference->ItemType == EItemType::Container)
 		{
-			OpenActorInventory(PlayerCharacter);
+			OpenActorInventory(PlayerCharacter, this);
 		}
 		else
 		{
@@ -287,7 +287,7 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 	}
 }
 
-void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor)
+void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
 	// Container 클래스 자체에서 함수내용 구현
 }

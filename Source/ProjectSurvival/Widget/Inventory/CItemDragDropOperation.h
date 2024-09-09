@@ -19,6 +19,8 @@ public:
 		class UCItemBase* SourceItem;
 	UPROPERTY()
 		class UCInventoryComponent* SourceInventory;
+	UPROPERTY()
+		class UUserWidget* DragStartWidget;
 
 
 };

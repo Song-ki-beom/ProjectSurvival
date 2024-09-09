@@ -26,10 +26,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget = nullptr);
+	void SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget = nullptr, class AActor* InActor = nullptr);
 	void DisplaySurvivorInventoryWidget();
 	void DisplayProduceWidget(EWidgetCall InWidgetCall);
-	void DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget);
+	void DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor);
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);

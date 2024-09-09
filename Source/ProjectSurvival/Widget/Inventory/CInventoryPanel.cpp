@@ -9,6 +9,7 @@
 #include "Components/TextBlock.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
+#include "Utility/CDebug.h"
 
 void UCInventoryPanel::NativeOnInitialized()
 {
@@ -33,6 +34,11 @@ void UCInventoryPanel::NativeOnInitialized()
 
 }
 
+
+void UCInventoryPanel::RemoveItem()
+{
+    //CDebug::Print("TestCalled");
+}
 
 //인벤토리로부터 수량과 용량 정보 업데이트 
 void UCInventoryPanel::SetInfoText() 
@@ -74,9 +80,19 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 {
     //별도로 만든 DragDropOperation 생성 
     const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
-    if (ItemDragDrop->SourceItem && InventoryReference) //아이템이 DragDropOperation에서 감지되면 (아이템이 Drag중이면 )
+    if (ItemDragDrop->SourceItem && InventoryReference) //아이템이 DragDropOperation에서 감지되면 위젯 검사 (아이템이 Drag중이면 )
     {
-        return true; // Drop 취소 
+        if (ItemDragDrop->DragStartWidget == this)
+        {
+            CDebug::Print("DragStartWidget is Same");
+            return true; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
+        }
+        else
+        {
+            CDebug::Print("StartWidget : ", ItemDragDrop->DragStartWidget);
+            CDebug::Print(TEXT("옮기는 함수"));
+            return true;
+        }
     }
     return false; 
 }

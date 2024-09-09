@@ -30,6 +30,9 @@ public:
 	UPROPERTY()
 		class ACSurvivor* PlayerCharacter;
 
+private:
+	UPROPERTY(meta = (BindWidget))
+		class UUserWidget* WBP_InventoryPanel;
 	//FOnMainMenuToggled OnMainMenuToggled;
 
 };

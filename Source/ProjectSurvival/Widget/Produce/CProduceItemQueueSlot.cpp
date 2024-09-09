@@ -56,7 +56,7 @@ void UCProduceItemQueueSlot::StartProduce()
 		ProduceWidget->SetProducingItemText(produceItemNameText);
 	}
 	else
-		CDebug::Print("produceWidget is not valid");
+		CDebug::Print("produceWidget is not valid", FColor::Magenta);
 
 	TotalProduceTime = FCString::Atof(*ProduceTimeText->GetText().ToString());
 	RemainProduceTime = TotalProduceTime;
@@ -76,7 +76,7 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 		EndProduce();
-		ACSurvivor* survivor = Cast<ACSurvivor>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 		if (survivor)
 		{
 			UClass* pickUpClass = LoadObject<UClass>(nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Item/BP_CPickUpBase.BP_CPickUpBase_C'"));
@@ -90,13 +90,15 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 				spawnedItem->InitializePickup(UCItemBase::StaticClass(), 1);
 				spawnedItem->TakePickup(survivor);
 			}
-			
+
 			//ACPickUp* producedItem = GetWorld()->SpawnActor<ACPickUp>();
 			//producedItem->DesiredItemID = ProduceItemID;
 			//producedItem->TakePickup(survivor);
 			//survivor->GetInventoryComponent()->HandleAddItem()
 
 		}
+		else
+			CDebug::Print("survivor is not valid", FColor::Magenta);
 	}
 }
 
