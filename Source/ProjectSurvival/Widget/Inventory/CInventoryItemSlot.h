@@ -51,7 +51,7 @@ public:
 	}
 
 	int32 GetUniqueItemIndexInWrapBox() { return UniqueItemIndexInWrapBox; }
-
+	void SetUniqueItemIndexInWrapBox(int32 InIndex) { UniqueItemIndexInWrapBox = InIndex; }
 
 protected:
 
