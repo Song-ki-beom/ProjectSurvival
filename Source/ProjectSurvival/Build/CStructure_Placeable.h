@@ -58,16 +58,27 @@ public:
 	//UFUNCTION()
 //	void AddInventoryID(FName InID);
 
-	void PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData);
+	void PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData, int32 InPlayerIndex);
+	void PerformAddID_Client(FName InID, int32 InQuantity, FItemNumericData InNumericData, int32 InPlayerIndex);
+
 
 	void AddItemInfoToWidget();
 
 	UFUNCTION()
 		void OnRep_BroadCastTrigger();
+	UFUNCTION()
+		void OnRep_AddTrigger();
+	UFUNCTION()
+		void OnRep_TestTrigger();
 
 
 	//UFUNCTION(BlueprintCallable, Category = "Inventory")
 	//	TArray<FName> GetSharedInventoryID() { return SharedInventoryID; }
+
+private:
+	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
+	bool CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex);
+	void ResetAdditionalInfo();
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -88,16 +99,22 @@ protected:
 	FRotator CenterRotation;
 
 private:
+	UPROPERTY()
+		class UCInventoryPanel_WorkingBench* WorkingBenchWidget;
 	//UPROPERTY(Replicated)
 	//	TArray<FName> SharedInventoryIDArray;
 	//UPROPERTY(Replicated)
 	//	TArray<int32> SharedInventoryQuantityArray;
 	//UPROPERTY(Replicated)
 	//	TArray<FItemNumericData> SharedInventoryNumericDataArray;
+	UPROPERTY(ReplicatedUsing = OnRep_TestTrigger)
+		bool TestTrigger;
 	UPROPERTY(ReplicatedUsing = OnRep_BroadCastTrigger)
 		bool BroadCastTrigger;
-	//UPROPERTY()
-	//	TArray<UCItemBase*> ActorInventoryContents;
+	UPROPERTY(ReplicatedUsing = OnRep_AddTrigger)
+		bool ClientAddTrigger;
+	UPROPERTY()
+		TArray<UCItemBase*> ActorInventoryContents;
 	//UPROPERTY()
 	//	TArray<FName> InventoryIDArray;
 	//UPROPERTY()
@@ -110,6 +127,14 @@ private:
 	UPROPERTY()
 		TArray<FItemInformation> ItemInfoArray;
 
+	UPROPERTY(Replicated)
+		FName AddtionalItemID;
+	UPROPERTY(Replicated)
+		int32 AddtionalQuantity;
+	UPROPERTY(Replicated)
+		FItemNumericData AddtionalNumericData;
+	UPROPERTY(Replicated)
+		int32 AddtionalCallerIndex;
 	//UPROPERTY()
 	//	class UDataTable* ItemDataTable;
 

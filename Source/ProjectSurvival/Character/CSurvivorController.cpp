@@ -487,7 +487,7 @@ void ACSurvivorController::HandleMouseWheelDown()
 //	}
 //}
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData)
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, int32 InPlayerIndex)
 {
-	InPlaceable->PerformAddID(ItemID, InQuantity, InNumericData);
+	InPlaceable->PerformAddID_Client(ItemID, InQuantity, InNumericData, InPlayerIndex);
 }
