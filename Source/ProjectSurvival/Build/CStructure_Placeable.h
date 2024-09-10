@@ -7,6 +7,22 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnActorInventoryUpdated);
 
+USTRUCT()
+struct FItemInformation
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+		FName ItemID;
+
+	UPROPERTY()
+		int32 Quantity;
+
+	UPROPERTY()
+		FItemNumericData NumericData;
+};
+
 UCLASS()
 class PROJECTSURVIVAL_API ACStructure_Placeable : public ACStructure
 {
@@ -33,7 +49,7 @@ public:
 
 	void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
-	TArray<UCItemBase*> GetActorInventoryContents() { return ActorInventoryContents; }
+	//TArray<UCItemBase*> GetActorInventoryContents() { return ActorInventoryContents; }
 
 	//TArray<FName> GetSharedInventoryID() { return SharedInventoryID; }
 
@@ -72,22 +88,27 @@ protected:
 	FRotator CenterRotation;
 
 private:
-	UPROPERTY(Replicated)
-		TArray<FName> SharedInventoryIDArray;
-	UPROPERTY(Replicated)
-		TArray<int32> SharedInventoryQuantityArray;
-	UPROPERTY(Replicated)
-		TArray<FItemNumericData> SharedInventoryNumericDataArray;
+	//UPROPERTY(Replicated)
+	//	TArray<FName> SharedInventoryIDArray;
+	//UPROPERTY(Replicated)
+	//	TArray<int32> SharedInventoryQuantityArray;
+	//UPROPERTY(Replicated)
+	//	TArray<FItemNumericData> SharedInventoryNumericDataArray;
 	UPROPERTY(ReplicatedUsing = OnRep_BroadCastTrigger)
 		bool BroadCastTrigger;
+	//UPROPERTY()
+	//	TArray<UCItemBase*> ActorInventoryContents;
+	//UPROPERTY()
+	//	TArray<FName> InventoryIDArray;
+	//UPROPERTY()
+	//	TArray<int32> InventoryQuantityArray;
+	//UPROPERTY()
+	//	TArray<FItemNumericData> InventoryNumericDataArray;
+
+	UPROPERTY(Replicated)
+		TArray<FItemInformation> SharedItemInfoArray;
 	UPROPERTY()
-		TArray<UCItemBase*> ActorInventoryContents;
-	UPROPERTY()
-		TArray<FName> InventoryIDArray;
-	UPROPERTY()
-		TArray<int32> InventoryQuantityArray;
-	UPROPERTY()
-		TArray<FItemNumericData> InventoryNumericDataArray;
+		TArray<FItemInformation> ItemInfoArray;
 
 	//UPROPERTY()
 	//	class UDataTable* ItemDataTable;

@@ -147,14 +147,30 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 
 void ACStructure_Placeable::PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData)
 {
-	InventoryQuantityArray.Add(InQuantity);
-	SharedInventoryQuantityArray = InventoryQuantityArray;
+	// 로직설계
+	// IDArray에서 InID와 일치하면서 InNumericData의 fullstack이 아닌 첫번째 인덱스 찾기
+	// 해당 인덱스의 갯수 확인, InQuantity를 더해도 fullStack보다 적으면 전부 더하기, 아니라면 남은 갯수 새로운 슬롯추가
+	// 
+	// 
+	//
 
-	InventoryIDArray.Add(InID);
-	SharedInventoryIDArray = InventoryIDArray;
+	//InventoryQuantityArray.Add(InQuantity);
+	//SharedInventoryQuantityArray = InventoryQuantityArray;
+	//
+	//InventoryIDArray.Add(InID);
+	//SharedInventoryIDArray = InventoryIDArray;
+	//
+	//InventoryNumericDataArray.Add(InNumericData);
+	//SharedInventoryNumericDataArray = InventoryNumericDataArray;
 
-	InventoryNumericDataArray.Add(InNumericData);
-	SharedInventoryNumericDataArray = InventoryNumericDataArray;
+	FItemInformation addedItemInfo;
+	addedItemInfo.ItemID = InID;
+	addedItemInfo.Quantity = InQuantity;
+	addedItemInfo.NumericData = InNumericData;
+
+	// ID와 FullStack이 아닌 첫 번째 인덱스 찾기
+	
+	SharedItemInfoArray.Add(addedItemInfo);
 
 	BroadCastTrigger = !BroadCastTrigger;
 
@@ -169,50 +185,58 @@ void ACStructure_Placeable::OnRep_BroadCastTrigger()
 
 void ACStructure_Placeable::AddItemInfoToWidget()
 {
-	CDebug::Print("BroadCastAddItemInfo_Implementation Called", FColor::Cyan);
-	CDebug::Print("SharedInventoryIDArray.Num() :", SharedInventoryIDArray.Num());
+	CDebug::Print("AddItemInfoToWidget Called");
 
-	ActorInventoryContents.Empty();
+	CDebug::Print("SharedItemInfoArray Number : ", SharedItemInfoArray.Num());
 
-	for (int32 tempIndex = 0; tempIndex < SharedInventoryIDArray.Num(); tempIndex++)
-	{
-		FName tempID = SharedInventoryIDArray[tempIndex];
-		FItemData* itemData = ItemDataTable->FindRow<FItemData>(tempID, TEXT(""));
-		if (itemData)
-		{
-			UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
-			ItemCopy->ID = tempID;
-			ItemCopy->Quantity = SharedInventoryQuantityArray[tempIndex];
-			ItemCopy->ItemType = itemData->ItemType;
-			ItemCopy->TextData = itemData->TextData;
-			ItemCopy->ItemStats = itemData->ItemStats;
-			ItemCopy->NumericData = itemData->NumericData;
-			ItemCopy->AssetData = itemData->AssetData;
-			ItemCopy->bIsCopy = true;
-	
-			ActorInventoryContents.Add(ItemCopy);
-	
-			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-			if (workingBenchWidget)
-			{
-				workingBenchWidget->SetWidgetItems(ActorInventoryContents);
-				workingBenchWidget->OnWorkingBenchUpdated.Broadcast();
-			}
-		}
-		else
-			CDebug::Print("Itemdata is not Valid", FColor::Magenta);
-	}
-	
-	CDebug::Print("Every Item Added by Multicast And Number is : ", ActorInventoryContents.Num(), FColor::Silver);
+	//CDebug::Print("BroadCastAddItemInfo_Implementation Called", FColor::Cyan);
+	//CDebug::Print("SharedInventoryIDArray.Num() :", SharedInventoryIDArray.Num());
+	//
+	//ActorInventoryContents.Empty();
+	//
+	//for (int32 tempIndex = 0; tempIndex < SharedInventoryIDArray.Num(); tempIndex++)
+	//{
+	//	FName tempID = SharedInventoryIDArray[tempIndex];
+	//	FItemData* itemData = ItemDataTable->FindRow<FItemData>(tempID, TEXT(""));
+	//	if (itemData)
+	//	{
+	//		UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
+	//		ItemCopy->ID = tempID;
+	//		ItemCopy->Quantity = SharedInventoryQuantityArray[tempIndex];
+	//		ItemCopy->ItemType = itemData->ItemType;
+	//		ItemCopy->TextData = itemData->TextData;
+	//		ItemCopy->ItemStats = itemData->ItemStats;
+	//		ItemCopy->NumericData = itemData->NumericData;
+	//		ItemCopy->AssetData = itemData->AssetData;
+	//		ItemCopy->bIsCopy = true;
+	//
+	//		ActorInventoryContents.Add(ItemCopy);
+	//
+	//		UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+	//		if (workingBenchWidget)
+	//		{
+	//			workingBenchWidget->SetWidgetItems(ActorInventoryContents);
+	//			workingBenchWidget->OnWorkingBenchUpdated.Broadcast();
+	//		}
+	//	}
+	//	else
+	//		CDebug::Print("Itemdata is not Valid", FColor::Magenta);
+	//}
+	//
+	//CDebug::Print("Every Item Added by Multicast And Number is : ", ActorInventoryContents.Num(), FColor::Silver);
 }
+
+
 
 void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryIDArray);
-	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryQuantityArray);
-	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryNumericDataArray);
+	//DOREPLIFETIME(ACStructure_Placeable, SharedInventoryIDArray);
+	//DOREPLIFETIME(ACStructure_Placeable, SharedInventoryQuantityArray);
+	//DOREPLIFETIME(ACStructure_Placeable, SharedInventoryNumericDataArray);
 	DOREPLIFETIME(ACStructure_Placeable, BroadCastTrigger);
+
+	DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
 	
 }
