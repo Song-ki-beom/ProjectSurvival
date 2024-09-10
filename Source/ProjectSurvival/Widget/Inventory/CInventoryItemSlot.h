@@ -50,7 +50,7 @@ public:
 		HUDReference = InHUDReference;
 	}
 
-
+	int32 GetUniqueItemIndexInWrapBox() { return UniqueItemIndexInWrapBox; }
 
 
 protected:
@@ -83,6 +83,7 @@ protected:
 
 private:
 	bool bIsTooltipToggled =false;
+	int32 UniqueItemIndexInWrapBox;
 
 
 

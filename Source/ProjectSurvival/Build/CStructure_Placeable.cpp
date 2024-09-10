@@ -3,7 +3,7 @@
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ActorComponents/CActorInventoryComponent.h"
-//#include "ActorComponents/CInventoryComponent.h"
+
 #include "Widget/CMainHUD.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
@@ -14,6 +14,8 @@
 
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 
+#include "ActorComponents/CInventoryComponent.h"
+
 #include "Utility/CDebug.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
@@ -22,9 +24,6 @@ ACStructure_Placeable::ACStructure_Placeable()
 
 	DownBox = CreateDefaultSubobject<UBoxComponent>("DownBox");
 	DownBox->SetupAttachment(PickupMesh);
-
-	//ActorInventoryComponent = CreateDefaultSubobject<UCActorInventoryComponent>(TEXT("ActorInventory"));
-	//ActorInventoryComponent->SetIsReplicated(true);
 }
 
 void ACStructure_Placeable::BeginPlay()
@@ -111,17 +110,6 @@ void ACStructure_Placeable::CheckCenter()
 	);
 }
 
-//void ACStructure_Placeable::CreateActorInventoryComponent()
-//{
-//	ActorInventoryComponent = NewObject<UCActorInventoryComponent>(this);
-//
-//	if (ActorInventoryComponent)
-//	{
-//		ActorInventoryComponent->RegisterComponent();
-//		ActorInventoryComponent->SetIsReplicated(true);
-//	}
-//}
-
 void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
 	CDebug::Print("OpenActorInventory Called");
@@ -157,85 +145,35 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 		CDebug::Print("Survivor is not valid");
 }
 
-void ACStructure_Placeable::PerformAddID(FName InID, int32 InQuantity)
+void ACStructure_Placeable::PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData)
 {
-	InventoryAddQuantity.Add(InQuantity);
-	SharedInventoryQuantityArray = InventoryAddQuantity;
+	InventoryQuantityArray.Add(InQuantity);
+	SharedInventoryQuantityArray = InventoryQuantityArray;
+
 	InventoryIDArray.Add(InID);
 	SharedInventoryIDArray = InventoryIDArray;
 
-	ActorInventoryContents.Empty();
-	for (int32 tempIndex = 0; tempIndex < SharedInventoryIDArray.Num(); tempIndex++)
-	{
-		FName tempID = SharedInventoryIDArray[tempIndex];
-		FItemData* itemData = ItemDataTable->FindRow<FItemData>(tempID, TEXT(""));
-		if (itemData)
-		{
-			CDebug::Print("tempIndex : ", tempIndex, FColor::Magenta);
-			UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
-			ItemCopy->ID = tempID;
-			ItemCopy->Quantity = SharedInventoryQuantityArray[tempIndex];
-			ItemCopy->ItemType = itemData->ItemType;
-			ItemCopy->TextData = itemData->TextData;
-			ItemCopy->ItemStats = itemData->ItemStats;
-			ItemCopy->NumericData = itemData->NumericData;
-			ItemCopy->AssetData = itemData->AssetData;
-			ItemCopy->bIsCopy = true;
+	InventoryNumericDataArray.Add(InNumericData);
+	SharedInventoryNumericDataArray = InventoryNumericDataArray;
 
-			ActorInventoryContents.Add(ItemCopy);
+	BroadCastTrigger = !BroadCastTrigger;
 
-			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-			if (workingBenchWidget)
-			{
-				workingBenchWidget->SetWidgetItems(ActorInventoryContents);
-				workingBenchWidget->OnWorkingBenchUpdated.Broadcast();
-			}
-		}
-		else
-			CDebug::Print("Itemdata is not Valid");
-
-	}
-		CDebug::Print("Every Item Added in Server And Number is : ", ActorInventoryContents.Num());
-
-	//ItemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
-
-
-	//FItemData* itemData = ItemDataTable->FindRow<FItemData>(InID, TEXT(""));
-	//if (itemData)
-	//{
-	//    UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
-	//    ItemCopy->ID = InID;
-	//    ItemCopy->Quantity = 1;
-	//    ItemCopy->ItemType = itemData->ItemType;
-	//    ItemCopy->TextData = itemData->TextData;
-	//    ItemCopy->ItemStats = itemData->ItemStats;
-	//    ItemCopy->NumericData = itemData->NumericData;
-	//    ItemCopy->AssetData = itemData->AssetData;
-	//    ItemCopy->bIsCopy = true;
-	//	
-	//    SharedInventoryObject.Add(ItemCopy);
-	//}
-	
-	//for (UCItemBase* tempItem : SharedInventoryObject)
-	//{
-	//    CDebug::Print("Item :", tempItem->ID);
-	//}
-
-	//SharedInventoryID.Add(InID);
-	
-	//for (FName tempName : SharedInventoryID)
-	//{
-	//    CDebug::Print("TempName : ", tempName, FColor::Magenta);
-	//
-	//
-	//}
+	if (HasAuthority())
+		AddItemInfoToWidget();
 }
 
-void ACStructure_Placeable::OnRep_SharedInventoryIDArray()
+void ACStructure_Placeable::OnRep_BroadCastTrigger()
 {
-	CDebug::Print("OnRep_SharedInventoryIDArray Called", FColor::Cyan);
+	AddItemInfoToWidget();
+}
+
+void ACStructure_Placeable::AddItemInfoToWidget()
+{
+	CDebug::Print("BroadCastAddItemInfo_Implementation Called", FColor::Cyan);
+	CDebug::Print("SharedInventoryIDArray.Num() :", SharedInventoryIDArray.Num());
 
 	ActorInventoryContents.Empty();
+
 	for (int32 tempIndex = 0; tempIndex < SharedInventoryIDArray.Num(); tempIndex++)
 	{
 		FName tempID = SharedInventoryIDArray[tempIndex];
@@ -251,9 +189,9 @@ void ACStructure_Placeable::OnRep_SharedInventoryIDArray()
 			ItemCopy->NumericData = itemData->NumericData;
 			ItemCopy->AssetData = itemData->AssetData;
 			ItemCopy->bIsCopy = true;
-
+	
 			ActorInventoryContents.Add(ItemCopy);
-
+	
 			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
 			if (workingBenchWidget)
 			{
@@ -262,10 +200,10 @@ void ACStructure_Placeable::OnRep_SharedInventoryIDArray()
 			}
 		}
 		else
-			CDebug::Print("Itemdata is not Valid");
+			CDebug::Print("Itemdata is not Valid", FColor::Magenta);
 	}
-
-	CDebug::Print("Every Item Added in Client And Number is : ", ActorInventoryContents.Num());
+	
+	CDebug::Print("Every Item Added by Multicast And Number is : ", ActorInventoryContents.Num(), FColor::Silver);
 }
 
 void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -274,4 +212,7 @@ void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryIDArray);
 	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryQuantityArray);
+	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryNumericDataArray);
+	DOREPLIFETIME(ACStructure_Placeable, BroadCastTrigger);
+	
 }

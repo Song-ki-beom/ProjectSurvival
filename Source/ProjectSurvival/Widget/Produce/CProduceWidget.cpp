@@ -13,7 +13,7 @@
 #include "Widget/Produce/CProduceItemSlot.h"
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
+//#include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
 #include "Widget/CMainHUD.h"
 #include "Utility/CDebug.h"
 

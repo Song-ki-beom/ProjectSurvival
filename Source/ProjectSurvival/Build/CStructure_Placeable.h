@@ -39,6 +39,20 @@ public:
 
 	FOnActorInventoryUpdated OnActorInventoryUpdated;
 
+	//UFUNCTION()
+//	void AddInventoryID(FName InID);
+
+	void PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData);
+
+	void AddItemInfoToWidget();
+
+	UFUNCTION()
+		void OnRep_BroadCastTrigger();
+
+
+	//UFUNCTION(BlueprintCallable, Category = "Inventory")
+	//	TArray<FName> GetSharedInventoryID() { return SharedInventoryID; }
+
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* DownBox;
@@ -57,29 +71,23 @@ protected:
 
 	FRotator CenterRotation;
 
-
-public:
-	//UFUNCTION()
-	//	void AddInventoryID(FName InID);
-	
-	void PerformAddID(FName InID, int32 InQuantity);
-	
-	UFUNCTION()
-		void OnRep_SharedInventoryIDArray();
-
-	//UFUNCTION(BlueprintCallable, Category = "Inventory")
-	//	TArray<FName> GetSharedInventoryID() { return SharedInventoryID; }
-
 private:
-	UPROPERTY(ReplicatedUsing = OnRep_SharedInventoryIDArray)
+	UPROPERTY(Replicated)
 		TArray<FName> SharedInventoryIDArray;
 	UPROPERTY(Replicated)
 		TArray<int32> SharedInventoryQuantityArray;
+	UPROPERTY(Replicated)
+		TArray<FItemNumericData> SharedInventoryNumericDataArray;
+	UPROPERTY(ReplicatedUsing = OnRep_BroadCastTrigger)
+		bool BroadCastTrigger;
 	UPROPERTY()
 		TArray<UCItemBase*> ActorInventoryContents;
-
-	TArray<FName> InventoryIDArray;
-	TArray<int32> InventoryAddQuantity;
+	UPROPERTY()
+		TArray<FName> InventoryIDArray;
+	UPROPERTY()
+		TArray<int32> InventoryQuantityArray;
+	UPROPERTY()
+		TArray<FItemNumericData> InventoryNumericDataArray;
 
 	//UPROPERTY()
 	//	class UDataTable* ItemDataTable;

@@ -17,6 +17,7 @@
 
 #include "Build/CStructure_Placeable.h"
 
+
 ACSurvivorController::ACSurvivorController()
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> buildWidgetFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Build/WBP_BuildWidget.WBP_BuildWidget_C'"));
@@ -486,12 +487,7 @@ void ACSurvivorController::HandleMouseWheelDown()
 //	}
 //}
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable)
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData)
 {
-	ACGameStateBase* gameStateBase = Cast<ACGameStateBase>(GetWorld()->GetGameState());
-	if (gameStateBase)
-	{
-		//gameStateBase->PerformAddID(ItemID);
-	}
-	InPlaceable->PerformAddID(ItemID, InQuantity);
+	InPlaceable->PerformAddID(ItemID, InQuantity, InNumericData);
 }

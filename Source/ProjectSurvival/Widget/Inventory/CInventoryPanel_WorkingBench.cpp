@@ -129,14 +129,14 @@ void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int3
 		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 		if (survivor->HasAuthority())
 		{
-			workingBenchActor->PerformAddID(InItem->ID, QuantityToAdd);
+			workingBenchActor->PerformAddID(InItem->ID, QuantityToAdd, InItem->NumericData);
 		}
 		else
 		{
 			ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
 			if (playerController)
 			{
-				playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor);
+				playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData);
 			}
 			else
 				CDebug::Print("playerController is not valid");
