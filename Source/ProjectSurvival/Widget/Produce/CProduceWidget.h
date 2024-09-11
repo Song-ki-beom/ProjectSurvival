@@ -20,7 +20,7 @@ public:
 	void RefreshProduceDetail();
 	void StartProduce();
 	void AddProduceItemToQueue();
-	void SetProducingItemText(FText InText);
+	void SetProducingItemText(FText InText, FLinearColor InLinearColor = FLinearColor::White);
 	//void Test_ShowPlaceableInventory();
 
 private:

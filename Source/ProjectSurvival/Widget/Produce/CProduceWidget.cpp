@@ -156,8 +156,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_1.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -178,8 +177,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_2.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -200,8 +198,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_3.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -221,8 +218,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_4.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -242,8 +238,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_5.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -271,6 +266,12 @@ void UCProduceWidget::RefreshProduceDetail()
 
 void UCProduceWidget::StartProduce()
 {
+	if (ProduceQueue->GetChildrenCount() > 5)
+	{
+		// 대기열 가득참
+		return;
+	}
+
 	ProduceDetail->ProduceItem();
 }
 
@@ -298,6 +299,9 @@ void UCProduceWidget::AddProduceItemToQueue()
 				FText produceItemName = itemData->TextData.Name;
 				produceItemQueueSlot->SetProduceItemName(produceItemName);
 
+				FProduceWidgetData produceWidgetData = itemData->ProduceData;
+				produceItemQueueSlot->SetProduceWidgetData(produceWidgetData);
+
 				ProduceQueue->AddChildToWrapBox(produceItemQueueSlot);
 				produceItemQueueSlot->CheckWrapBox(ProduceQueue);
 			}
@@ -305,9 +309,10 @@ void UCProduceWidget::AddProduceItemToQueue()
 	}
 }
 
-void UCProduceWidget::SetProducingItemText(FText InText)
+void UCProduceWidget::SetProducingItemText(FText InText, FLinearColor InLinearColor)
 {
 	ProducingItemText->SetText(InText);
+	ProducingItemText->SetColorAndOpacity(FSlateColor(InLinearColor));
 }
 
 //void UCProduceWidget::Test_ShowPlaceableInventory()

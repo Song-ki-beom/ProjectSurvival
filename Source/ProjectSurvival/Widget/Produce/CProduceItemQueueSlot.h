@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Struct/CItemDataStructures.h"
 #include "CProduceItemQueueSlot.generated.h"
 
 UCLASS()
@@ -17,8 +18,10 @@ public:
 	void SetProduceQueueSlotIcon(UTexture2D* InTexture2D);
 	void SetProduceTimeText(FText InText);
 	void SetProduceItemName(FText InText);
+	void SetProduceWidgetData(FProduceWidgetData InProduceWidgetData);
 	void StartProduce();
 	void SetProduceProgress();
+	void PauseProduceProgress();
 	void EndProduce();
 	void CheckWrapBox(class UWrapBox* InWrapBox);
 
@@ -41,8 +44,13 @@ private:
 
 	FName ProduceItemID;
 	FText ProduceItemName;
+	FProduceWidgetData ProduceWidgetData;
 	bool bIsWaiting = true;
 	FTimerHandle ProgressTimerHandle;
+	FTimerHandle PauseProgressTimerHandle;
 	float TotalProduceTime;
 	float RemainProduceTime;
+
+	class ACSurvivor* Survivor;
+	class UCItemBase* ProduceTargetItem;
 };

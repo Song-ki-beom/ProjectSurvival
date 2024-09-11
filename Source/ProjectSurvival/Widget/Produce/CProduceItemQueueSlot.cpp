@@ -43,6 +43,11 @@ void UCProduceItemQueueSlot::SetProduceItemName(FText InText)
 	ProduceItemName = InText;
 }
 
+void UCProduceItemQueueSlot::SetProduceWidgetData(FProduceWidgetData InProduceWidgetData)
+{
+	ProduceWidgetData = InProduceWidgetData;
+}
+
 void UCProduceItemQueueSlot::StartProduce()
 {
 	CDebug::Print("StartProduce Called");
@@ -60,11 +65,52 @@ void UCProduceItemQueueSlot::StartProduce()
 
 	TotalProduceTime = FCString::Atof(*ProduceTimeText->GetText().ToString());
 	RemainProduceTime = TotalProduceTime;
-	GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, this, &UCProduceItemQueueSlot::SetProduceProgress, 0.1f, true);
+
+	class UDataTable* itemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
+	FItemData* itemData = itemDataTable->FindRow<FItemData>(ProduceItemID, TEXT(""));
+	if (itemData)
+	{
+		ProduceTargetItem = NewObject<UCItemBase>(StaticClass());
+		ProduceTargetItem->ID = ProduceItemID;
+		ProduceTargetItem->Quantity = 1;
+		ProduceTargetItem->ItemType = itemData->ItemType;
+		ProduceTargetItem->TextData = itemData->TextData;
+		ProduceTargetItem->ItemStats = itemData->ItemStats;
+		ProduceTargetItem->NumericData = itemData->NumericData;
+		ProduceTargetItem->AssetData = itemData->AssetData;
+		ProduceTargetItem->bIsCopy = true;
+	}
+	Survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+	if (Survivor && ProduceTargetItem)
+	{
+		GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, this, &UCProduceItemQueueSlot::SetProduceProgress, 0.1f, true);
+		GetWorld()->GetTimerManager().SetTimer(PauseProgressTimerHandle, this, &UCProduceItemQueueSlot::PauseProduceProgress, 0.1f, true, 0.0f);
+		GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
+	}
 }
 
 void UCProduceItemQueueSlot::SetProduceProgress()
 {
+	int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
+	int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
+	
+	if (inventoryWeight + ProduceTargetItem->NumericData.Weight > totalWeight)
+	{
+		GetWorld()->GetTimerManager().PauseTimer(ProgressTimerHandle);
+		GetWorld()->GetTimerManager().UnPauseTimer(PauseProgressTimerHandle);
+
+
+		RemainProduceTime += 0.1f;
+		FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(RemainProduceTime, &FNumberFormattingOptions().SetMaximumFractionalDigits(1)));
+		ProduceTimeText->SetText(produceTimeText);
+
+		float progress = (TotalProduceTime - RemainProduceTime) / TotalProduceTime;
+		ProduceProgressBar->SetPercent(progress);
+
+		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중단됨: {0} - 무게 초과")), ProduceItemName);
+		ProduceWidget->SetProducingItemText(produceItemNameText, FLinearColor::Yellow);
+	}
+
 	RemainProduceTime -= 0.1f;
 	FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(RemainProduceTime, &FNumberFormattingOptions().SetMaximumFractionalDigits(1)));
 	ProduceTimeText->SetText(produceTimeText);
@@ -76,29 +122,22 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
 		EndProduce();
-		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor)
-		{
-			UClass* pickUpClass = LoadObject<UClass>(nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Item/BP_CPickUpBase.BP_CPickUpBase_C'"));
-			if (pickUpClass)
-			{
-				FActorSpawnParameters spawnParams;
-				spawnParams.Owner = survivor;
-				spawnParams.Instigator = survivor->GetInstigator();
-				ACPickUp* spawnedItem = GetWorld()->SpawnActor<ACPickUp>(pickUpClass, FVector::ZeroVector, FRotator::ZeroRotator, spawnParams);
-				spawnedItem->DesiredItemID = ProduceItemID;
-				spawnedItem->InitializePickup(UCItemBase::StaticClass(), 1);
-				spawnedItem->TakePickup(survivor);
-			}
+		Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
+	}
+}
 
-			//ACPickUp* producedItem = GetWorld()->SpawnActor<ACPickUp>();
-			//producedItem->DesiredItemID = ProduceItemID;
-			//producedItem->TakePickup(survivor);
-			//survivor->GetInventoryComponent()->HandleAddItem()
+void UCProduceItemQueueSlot::PauseProduceProgress()
+{
+	int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
+	int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
 
-		}
-		else
-			CDebug::Print("survivor is not valid", FColor::Magenta);
+	if (inventoryWeight < totalWeight)
+	{
+		GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
+		GetWorld()->GetTimerManager().UnPauseTimer(ProgressTimerHandle);
+
+		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
+		ProduceWidget->SetProducingItemText(produceItemNameText);
 	}
 }
 
@@ -160,6 +199,24 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 
 void UCProduceItemQueueSlot::CancleProduce()
 {
+	//class UDataTable* itemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
+	
+	//FItemData* cancleResource1 = itemDataTable->FindRow<FItemData>(ProduceTargetItem, TEXT(""));
+	//if (itemData)
+	//{
+	//	ProduceTargetItem = NewObject<UCItemBase>(StaticClass());
+	//	ProduceTargetItem->ID = ProduceItemID;
+	//	ProduceTargetItem->Quantity = 1;
+	//	ProduceTargetItem->ItemType = itemData->ItemType;
+	//	ProduceTargetItem->TextData = itemData->TextData;
+	//	ProduceTargetItem->ItemStats = itemData->ItemStats;
+	//	ProduceTargetItem->NumericData = itemData->NumericData;
+	//	ProduceTargetItem->AssetData = itemData->AssetData;
+	//	ProduceTargetItem->bIsCopy = true;
+	//}
+
+
+
 	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
 	if (wrapBox)
 		wrapBox->RemoveChild(this);
