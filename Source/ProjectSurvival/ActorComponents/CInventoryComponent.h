@@ -103,7 +103,7 @@ public:
 	UFUNCTION(Category = "Inventory")
 	int32 RemoveAmountOfItem(UCItemBase* ItemIn, int32 DesiredAmountToRemove); //아이템 Quanity 일부 덜어내기
 	UFUNCTION(Category = "Inventory")
-	void SplitExistingStack(UCItemBase* ItemIn, const int32 AmountToSplit); //ex) 6개 에서 3 Quantity 아이템 두개로 만들기 
+	bool SplitExistingStack(UCItemBase* ItemIn, const int32 AmountToSplit); //ex) 6개 에서 3 Quantity 아이템 두개로 만들기 
 
 	//Sort
 	UFUNCTION(Category = "Inventory")

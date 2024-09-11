@@ -420,14 +420,18 @@ int32 UCInventoryComponent::RemoveAmountOfItem(UCItemBase* ItemIn, int32 Desired
 
 }
 
-void UCInventoryComponent::SplitExistingStack(UCItemBase* ItemIn, const int32 AmountToSplit)
+bool UCInventoryComponent::SplitExistingStack(UCItemBase* ItemIn, const int32 AmountToSplit)
 {
 	//사용 가능 슬롯이 남아있으면
+	if (ItemIn->Quantity - AmountToSplit <= 0) return false;
 	if (!(InventoryContents.Num() + 1 > InventorySlotsCapacity))
 	{
 		RemoveAmountOfItem(ItemIn, AmountToSplit);
 		AddNewItem(ItemIn, AmountToSplit);
+		return true;
 	}
+	
+		return false;
 
 }
 

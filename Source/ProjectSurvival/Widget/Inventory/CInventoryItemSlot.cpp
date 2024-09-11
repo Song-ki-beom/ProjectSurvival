@@ -7,6 +7,7 @@
 #include "Widget/Inventory/CDragItemVisual.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Widget/CMainHUD.h"
+#include "ActorComponents/CInventoryComponent.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
@@ -178,6 +179,15 @@ void UCInventoryItemSlot::ToggleTooltip()
 	}
 
 	return;
+}
+
+bool UCInventoryItemSlot::Split(int32 InputNum)
+{
+	UCInventoryComponent* InventoryReference = ItemReference->Inventory;
+	bool answer = InventoryReference->SplitExistingStack(ItemReference , InputNum);
+
+
+	return answer;
 }
 
 

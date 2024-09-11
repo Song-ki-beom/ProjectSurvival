@@ -29,6 +29,7 @@ protected:
 
 public:
 	void ToggleTooltip();
+	bool Split(int32 InputNum);
 
 
 

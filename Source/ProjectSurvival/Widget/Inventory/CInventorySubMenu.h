@@ -10,6 +10,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnFocusOnSubMenuEnded);
 DECLARE_MULTICAST_DELEGATE(FOnUseButtonClicked);
+//DECLARE_MULTICAST_DELEGATE(FOnSplitButtonClicked);
+
 
 UCLASS()
 class PROJECTSURVIVAL_API UCInventorySubMenu : public UUserWidget
@@ -62,10 +64,15 @@ private:
 	void HandleOnBuildButtonClicked();
 	UFUNCTION()
 	void HandleOnSplitButtonClicked();
+	UFUNCTION()
+	void HandleOnFinalSplitButtonClicked();
+	UFUNCTION()
+	void HandleOnCancelButtonClicked();
 
 public:
 	FOnFocusOnSubMenuEnded OnFocusOnSubMenuEnded;
 	FOnUseButtonClicked OnUseButtonClicked;
+	//FOnSplitButtonClicked OnSplitButtonClicked;
 
 	UPROPERTY(meta = (BindWidget))
 		class UButton* ActionButton;
@@ -73,7 +80,16 @@ public:
 		class UTextBlock* ActionText;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* SplitButton;
-	
+	UPROPERTY(meta = (BindWidget))
+		class USizeBox* SubMenuSizeBox;
+	UPROPERTY(meta = (BindWidget))
+		class USizeBox* SplitMenuSizeBox;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* FinalSplitButton;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* CancelButton;
+	UPROPERTY(meta = (BindWidget))
+		class UEditableText* SplitQuantityEditText;
 
 private:
 	EItemType TextItemType;
