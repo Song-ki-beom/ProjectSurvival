@@ -432,3 +432,80 @@ void UCInventoryComponent::SplitExistingStack(UCItemBase* ItemIn, const int32 Am
 }
 
 
+//타입 , 수량 순으로 정렬 
+void UCInventoryComponent::SortInventory()
+{
+	if (InventoryContents.Num() == 0) return;
+
+	//병합 정렬 사용 
+	MergeSort(InventoryContents, 0, InventoryContents.Num() - 1);
+
+
+
+
+	OnInventoryUpdated.Broadcast();
+}
+
+
+void UCInventoryComponent::Merge(TArray<TWeakObjectPtr<UCItemBase>>& Array, int Left, int Mid, int Right)
+{
+	int n1 = Mid - Left + 1; //왼쪽 분할부분 원소 갯수
+	int n2 = Right - Mid; // 오른쪽 분할부분 원소 갯수
+
+	TArray<TWeakObjectPtr<UCItemBase>> LeftArray;
+	TArray<TWeakObjectPtr<UCItemBase>> RightArray;
+
+	for (int i = 0; i < n1; i++)
+		LeftArray.Add(Array[Left + i]);
+	for (int i = 0; i < n2; i++)
+		RightArray.Add(Array[Mid + 1 + i]);
+
+
+	//병합 시작 
+	int i = 0, j = 0, k = Left;
+	while (i < n1 && j < n2)
+	{
+		if (LeftArray[i]->ItemType < RightArray[j]->ItemType ||
+			(LeftArray[i]->ItemType == RightArray[j]->ItemType && LeftArray[i]->Quantity <= RightArray[j]->Quantity)) //아이템 타입 Enum 내림차순 , Quantity 내림차순 
+		{
+			Array[k] = RightArray[j];
+			j++;
+		}
+		else
+		{
+			Array[k] = LeftArray[i];
+			i++;
+		}
+		k++;
+	}
+
+	// 남은 값 복사
+	while (i < n1)
+	{
+		Array[k] = LeftArray[i];
+		i++;
+		k++;
+	}
+
+	while (j < n2)
+	{
+		Array[k] = RightArray[j];
+		j++;
+		k++;
+	}
+}
+
+void UCInventoryComponent::MergeSort(TArray<TWeakObjectPtr<UCItemBase>>& Array, int Left, int Right)
+{
+	if (Left < Right)
+	{
+		int Mid = Left + (Right - Left) / 2;
+
+		// 좌우 분할
+		MergeSort(Array, Left, Mid);
+		MergeSort(Array, Mid + 1, Right);
+
+		// 병합
+		Merge(Array, Left, Mid, Right);
+	}
+}

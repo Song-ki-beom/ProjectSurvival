@@ -105,6 +105,10 @@ public:
 	UFUNCTION(Category = "Inventory")
 	void SplitExistingStack(UCItemBase* ItemIn, const int32 AmountToSplit); //ex) 6개 에서 3 Quantity 아이템 두개로 만들기 
 
+	//Sort
+	UFUNCTION(Category = "Inventory")
+	void SortInventory();
+
 
 	//Get
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryTotalWeight; }; //현재 소지 용량 
@@ -140,6 +144,12 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void RequestDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
 	
+
+
+private:
+	void Merge(TArray<TWeakObjectPtr<UCItemBase>>& Array, int Left, int Mid, int Right);
+	void MergeSort(TArray<TWeakObjectPtr<UCItemBase>>& Array, int Left, int Right);
+
 
 
 //인벤토리에 변경사항이 있을때마다 호출할 델리게이트 함수 

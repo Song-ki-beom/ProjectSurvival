@@ -7,6 +7,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Components/WrapBox.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Utility/CDebug.h"
@@ -95,6 +96,22 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
         }
     }
     return false; 
+}
+
+bool UCInventoryPanel::Initialize()
+{
+    bool Success = Super::Initialize();
+
+    if (IsValid(SortItemButton))
+        SortItemButton->OnClicked.AddDynamic(this, &UCInventoryPanel::OnSortItemButtonClicked);
+
+    if (!Success) return false;
+    return true;
+}
+
+void UCInventoryPanel::OnSortItemButtonClicked()
+{
+    InventoryReference->SortInventory();
 }
 
 
