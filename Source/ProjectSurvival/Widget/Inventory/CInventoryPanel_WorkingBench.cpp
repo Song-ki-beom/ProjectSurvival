@@ -12,7 +12,6 @@
 #include "CGameStateBase.h"
 #include "Utility/CDebug.h"
 #include "Character/CSurvivorController.h"
-#include "GameFramework/PlayerState.h"
 
 bool UCInventoryPanel_WorkingBench::Initialize()
 {
@@ -21,12 +20,6 @@ bool UCInventoryPanel_WorkingBench::Initialize()
 	if (!Sucess)
 		return false;
 
-	OnWorkingBenchUpdated.AddUObject(this, &UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory);
-
-	OnAdditionalItem.BindUObject(this, &UCInventoryPanel_WorkingBench::AddAdditionalItem);
-
-
-	
 	return true;
 }
 
@@ -69,14 +62,8 @@ bool UCInventoryPanel_WorkingBench::NativeOnDrop(const FGeometry& InGeometry, co
 				UCInventoryPanel* inventoryPanel = Cast<UCInventoryPanel>(ItemDragDrop->DragStartWidget);
 				if (inventoryPanel)
 				{
-					APlayerController* playerController = Cast<APlayerController>(GetOwningPlayer());
-					if (playerController && playerController->PlayerState)
-					{
-						int32 playerIndex = playerController->PlayerState->GetPlayerId(); // PlayerState에서 고유 ID를 가져옴
-						CDebug::Print(TEXT("드랍한 플레이어 인덱스 : "), playerIndex);
-						AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor, playerIndex);
-						
-					}
+					AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor);
+
 					inventoryPanel->RemoveItem();
 				}
 			}
@@ -113,86 +100,32 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 			CDebug::Print("tempItem is not Valid", FColor::Magenta);
 		}
 	}
-
-
-	//ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
-	//if (IsValid(survivorController))
-	//{
-	//	survivorController->RefreshWorkingBenchInventory(InIndex);
-	//}
-	//else
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("lobbySurvivorController is not valid - ACLobbySurvivor"));
-	//}
-
 }
 
-void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor, int32 InPlayerIndex)
+void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {
-	//UCItemBase* NewItem;
-
-	//NewItem = InItem->CreateItemCopy();
-
-
-
 	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(InActor);
 	if (workingBenchActor)
 	{
-		////////
-
 		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor->HasAuthority())
+		if (survivor)
 		{
-			workingBenchActor->PerformAddID(InItem->ID, QuantityToAdd, InItem->NumericData, InPlayerIndex);
-		}
-		else
-		{
-			ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-			if (playerController)
-			{
-				playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData, InPlayerIndex);
-			}
+			// 위젯 클래스에서 RPC함수 호출 불가 + workingBenchActor에서 클라이언트가 RPC함수 호출 불가능해서
+			// 클라이언트의 경우 컨트롤러를 통해 RPC를 호출함
+			if (survivor->HasAuthority())
+				workingBenchActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData);
 			else
-				CDebug::Print("playerController is not valid");
+			{
+				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+				if (playerController)
+				{
+					playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData);
+				}
+				else
+					CDebug::Print("playerController is not valid");
+			}
 		}
 	}
 	else
 		CDebug::Print("Widget Owner is not Valid");
 }
-
-void UCInventoryPanel_WorkingBench::AddAdditionalItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, int32 InPlayerIndex)
-{
-	//ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(InActor);
-	//if (workingBenchActor)
-	{
-		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor->HasAuthority())
-		{
-			OwnerActor->PerformAddID(InID, InQuantity, InNumericData, InPlayerIndex);
-		}
-		else
-		{
-			APlayerController* playerController = Cast<APlayerController>(GetOwningPlayer());
-			if (playerController && playerController->PlayerState)
-			{
-				int32 playerIndex = playerController->PlayerState->GetPlayerId();
-
-				if (playerIndex == InPlayerIndex)
-				{
-					CDebug::Print(TEXT("같음!!!!"), FColor::Green);
-					ACSurvivorController* survivorController = Cast<ACSurvivorController>(playerController);
-					if (survivorController)
-						survivorController->RequestAddItem(InID, InQuantity, OwnerActor, InNumericData, InPlayerIndex);
-					else
-						CDebug::Print("playerController is not valid");
-				}
-				else
-					CDebug::Print(TEXT("다름!!!!"), FColor::Red);
-			}
-			
-		}
-	}
-	//else
-	//	CDebug::Print("Widget Owner is not Valid");
-}
-

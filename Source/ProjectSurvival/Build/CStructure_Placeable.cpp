@@ -3,21 +3,14 @@
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ActorComponents/CActorInventoryComponent.h"
-
 #include "Widget/CMainHUD.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Blueprint/UserWidget.h"
-
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
-
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
-
 #include "ActorComponents/CInventoryComponent.h"
-
-#include "GameFramework/PlayerState.h"
-
 #include "Utility/CDebug.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
@@ -88,7 +81,7 @@ void ACStructure_Placeable::CheckCenter()
 {
 	FHitResult centerBoxHitResult;
 	FVector centerBoxLocation = PreviewBox->GetComponentLocation();
-	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0,0,1);
+	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0, 0, 1);
 	FRotator centerBoxOrientation;
 	centerBoxOrientation = this->GetActorRotation();
 	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
@@ -147,128 +140,54 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 		CDebug::Print("Survivor is not valid");
 }
 
-void ACStructure_Placeable::PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData, int32 InPlayerIndex)
+void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
 {
 	FItemInformation addedItemInfo;
 	addedItemInfo.ItemID = InID;
 	addedItemInfo.Quantity = InQuantity;
 	addedItemInfo.NumericData = InNumericData;
 
+	// 스택이 가능한 아이템인지 검사
 	if (addedItemInfo.NumericData.bIsStackable)
 	{
+		// 최대 스택이 아니면서 ID가 같은 인덱스를 반환, 못 찾을 경우 -1 반환
 		int32 resultIndex = GetIndexOfNonFullStackByID(addedItemInfo);
 		if (resultIndex == -1)
-		{
-			ResetAdditionalInfo();
 			ItemInfoArray.Add(addedItemInfo);
-		}
 		else
 		{
+			// 더했을 때 최대 스택을 초과하는지 검사
 			if (CheckMaxStack(addedItemInfo, resultIndex))
 			{
 				int32 addQuantity = ItemInfoArray[resultIndex].NumericData.MaxStackSize - ItemInfoArray[resultIndex].Quantity;
 				ItemInfoArray[resultIndex].Quantity += addQuantity;
 
-				PerformAddID(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData, InPlayerIndex);
-
-				AddtionalItemID = addedItemInfo.ItemID;
-				AddtionalQuantity = addedItemInfo.Quantity - addQuantity;
-				AddtionalNumericData = addedItemInfo.NumericData;
-				AddtionalCallerIndex = InPlayerIndex; // 필요없으면삭제할것
+				// 최대 스택만큼 더하고 남은 양만큼 다시 PerformAddItem 호출
+				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData);
 			}
 			else
-			{
-				ResetAdditionalInfo();
 				ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
-			}
 		}
 	}
 	else
-	{
-		ResetAdditionalInfo();
 		ItemInfoArray.Add(addedItemInfo);
-	}
 
-	if (AddtionalItemID != NAME_None && AddtionalQuantity != -1)
-	{
-		//CDebug::Print(TEXT("조건이 맞음"), FColor::Blue);
-		TestTrigger = !TestTrigger;
-	}
-	else
-		//CDebug::Print(TEXT("조건이 안 맞음"), FColor::Red);
+	// 클라이언트에서 AddItemInfoToWidget() 호출하기위한 OnRep_WidgetRefreshTrigger 트리거
+	WidgetRefreshTrigger++;
 
+	// TArray는 리플리케이트 되더라도 특정 인덱스의 내용물만 바꾸는 것으로는 리플리케이트 되지 않음
+	// 새로 초기화 해주거나 행렬 원소 갯수가 변경되어야 리플리케이트가 적용됨
 	SharedItemInfoArray = ItemInfoArray;
 
-	BroadCastTrigger = !BroadCastTrigger;
-
-	if (HasAuthority())
-		AddItemInfoToWidget();
-}
-
-void ACStructure_Placeable::PerformAddID_Client(FName InID, int32 InQuantity, FItemNumericData InNumericData, int32 InPlayerIndex)
-{
-	FItemInformation addedItemInfo;
-	addedItemInfo.ItemID = InID;
-	addedItemInfo.Quantity = InQuantity;
-	addedItemInfo.NumericData = InNumericData;
-
-	if (addedItemInfo.NumericData.bIsStackable)
-	{
-		int32 resultIndex = GetIndexOfNonFullStackByID(addedItemInfo);
-		if (resultIndex == -1)
-		{
-			ResetAdditionalInfo();
-			ItemInfoArray.Add(addedItemInfo);
-		}
-		else
-		{
-			if (CheckMaxStack(addedItemInfo, resultIndex))
-			{
-				int32 addQuantity = ItemInfoArray[resultIndex].NumericData.MaxStackSize - ItemInfoArray[resultIndex].Quantity;
-				ItemInfoArray[resultIndex].Quantity += addQuantity;
-
-				AddtionalItemID = addedItemInfo.ItemID;
-				AddtionalQuantity = addedItemInfo.Quantity - addQuantity;
-				AddtionalNumericData = addedItemInfo.NumericData;
-				AddtionalCallerIndex = InPlayerIndex;
-			}
-			else
-			{
-				ResetAdditionalInfo();
-				ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
-			}
-		}
-	}
-	else
-	{
-		ResetAdditionalInfo();
-		ItemInfoArray.Add(addedItemInfo);
-	}
-
-	if (AddtionalItemID != NAME_None && AddtionalQuantity != -1)
-	{
-		//CDebug::Print(TEXT("조건이 맞음"), FColor::Blue);
-		ClientAddTrigger = !ClientAddTrigger;
-	}
-	else
-		//CDebug::Print(TEXT("조건이 안 맞음"), FColor::Red);
-
-	SharedItemInfoArray = ItemInfoArray;
-
-	BroadCastTrigger = !BroadCastTrigger;
-
-	if (HasAuthority())
-		AddItemInfoToWidget();
+	AddItemInfoToWidget();
 }
 
 void ACStructure_Placeable::AddItemInfoToWidget()
 {
-	//CDebug::Print("AddItemInfoToWidget Called");
-
-	//CDebug::Print("SharedItemInfoArray Number : ", SharedItemInfoArray.Num());
-
+	// 추가하기 전 UCItemBase 배열 초기화
 	ActorInventoryContents.Empty();
 
+	// 리플리케이트된 FItemData의 배열 SharedItemInfoArray를 기반으로 UCItemBase 생성
 	for (int32 tempIndex = 0; tempIndex < SharedItemInfoArray.Num(); tempIndex++)
 	{
 		FName tempID = SharedItemInfoArray[tempIndex].ItemID;
@@ -287,39 +206,27 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 
 			ActorInventoryContents.Add(ItemCopy);
 
-			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-			if (workingBenchWidget)
+			switch (WidgetCaller)
 			{
-				workingBenchWidget->SetWidgetItems(ActorInventoryContents);
-				workingBenchWidget->OnWorkingBenchUpdated.Broadcast();
+			case EWidgetCall::WorkBench:
+			{
+				UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+				if (workingBenchWidget)
+				{
+					// workingBenchWidget의 클래스에 UCItemBase의 배열 전달
+					workingBenchWidget->SetWidgetItems(ActorInventoryContents);
+					workingBenchWidget->RefreshWorkingBenchInventory();
+				}
+			}
 			}
 		}
 		else
 			CDebug::Print("Itemdata is not Valid", FColor::Magenta);
 	}
-
-	//CDebug::Print("Every Item Added by Multicast And Number is : ", ActorInventoryContents.Num(), FColor::Silver);
 }
 
-void ACStructure_Placeable::OnRep_BroadCastTrigger()
+void ACStructure_Placeable::OnRep_WidgetRefreshTrigger()
 {
-	AddItemInfoToWidget();
-}
-
-void ACStructure_Placeable::OnRep_AddTrigger()
-{
-	CDebug::Print("OnRep_AddTrigger Called", FColor::Cyan);
-	//CDebug::Print("AddtionalItemID", AddtionalItemID);
-	//CDebug::Print("AddtionalQuantity", AddtionalQuantity);
-	//CDebug::Print("AddtionalNumericData", AddtionalNumericData.MaxStackSize);
-	//CDebug::Print("AddtionalNumericData", AddtionalCallerIndex);
-	WorkingBenchWidget->OnAdditionalItem.ExecuteIfBound(AddtionalItemID, AddtionalQuantity, AddtionalNumericData, AddtionalCallerIndex);/////////////////
-}
-
-void ACStructure_Placeable::OnRep_TestTrigger()
-{
-	CDebug::Print("OnRep_TestTrigger Called", FColor::Magenta);
-	//PerformAddID(AddtionalItemID, AddtionalQuantity, AddtionalNumericData, 0);
 	AddItemInfoToWidget();
 }
 
@@ -341,28 +248,10 @@ bool ACStructure_Placeable::CheckMaxStack(const FItemInformation InItemInformati
 	return ItemInfoArray[InIndex].Quantity + InItemInformation.Quantity > ItemInfoArray[InIndex].NumericData.MaxStackSize;
 }
 
-void ACStructure_Placeable::ResetAdditionalInfo()
-{
-	AddtionalItemID = NAME_None;
-	AddtionalQuantity = -1;
-	AddtionalNumericData = FItemNumericData();
-}
-
 void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(ACStructure_Placeable, SharedInventoryIDArray);
-	//DOREPLIFETIME(ACStructure_Placeable, SharedInventoryQuantityArray);
-	//DOREPLIFETIME(ACStructure_Placeable, SharedInventoryNumericDataArray);
-	DOREPLIFETIME(ACStructure_Placeable, BroadCastTrigger);
-	DOREPLIFETIME(ACStructure_Placeable, ClientAddTrigger);
-	DOREPLIFETIME(ACStructure_Placeable, TestTrigger);
-
+	DOREPLIFETIME(ACStructure_Placeable, WidgetRefreshTrigger);
 	DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
-
-	DOREPLIFETIME(ACStructure_Placeable, AddtionalItemID);
-	DOREPLIFETIME(ACStructure_Placeable, AddtionalQuantity);
-	DOREPLIFETIME(ACStructure_Placeable, AddtionalNumericData);
-	DOREPLIFETIME(ACStructure_Placeable, AddtionalCallerIndex);
 }

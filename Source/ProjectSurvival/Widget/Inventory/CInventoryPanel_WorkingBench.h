@@ -7,9 +7,6 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "CInventoryPanel_WorkingBench.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnWorkingBenchUpdated);
-DECLARE_DELEGATE_FourParams(FOnAdditionalItemDelegate, FName, int32, FItemNumericData, int32);
-
 UCLASS()
 class PROJECTSURVIVAL_API UCInventoryPanel_WorkingBench : public UUserWidget
 {
@@ -22,21 +19,14 @@ protected:
 
 public:
 	void SetOwnerActor(class ACStructure_Placeable* InActor) { OwnerActor = InActor; }
-	//class AActor* GetOwnerActor() { return OwnerActor; }
 
 	UFUNCTION()
 		void RefreshWorkingBenchInventory();
 
-//	TArray<UCItemBase*> GetWidgetItems() { return  WidgetItems; }
 	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
 
-	FOnWorkingBenchUpdated OnWorkingBenchUpdated;
-	FOnAdditionalItemDelegate OnAdditionalItem;
-
 private:
-	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor, int32 InPlayerIndex);
-	void AddAdditionalItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, int32 InPlayerIndex);
-
+	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -45,8 +35,6 @@ private:
 		TSubclassOf<class UCInventoryItemSlot> InventorySlotClass;
 	UPROPERTY()
 		TArray<UCItemBase*> WidgetItems;
-
-	//TArray<UCItemBase*> ItemArray;
 
 	class ACStructure_Placeable* OwnerActor;
 };

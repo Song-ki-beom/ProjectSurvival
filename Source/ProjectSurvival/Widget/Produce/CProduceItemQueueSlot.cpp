@@ -199,27 +199,139 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 
 void UCProduceItemQueueSlot::CancleProduce()
 {
-	//class UDataTable* itemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
+	class UDataTable* itemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
 	
-	//FItemData* cancleResource1 = itemDataTable->FindRow<FItemData>(ProduceTargetItem, TEXT(""));
-	//if (itemData)
-	//{
-	//	ProduceTargetItem = NewObject<UCItemBase>(StaticClass());
-	//	ProduceTargetItem->ID = ProduceItemID;
-	//	ProduceTargetItem->Quantity = 1;
-	//	ProduceTargetItem->ItemType = itemData->ItemType;
-	//	ProduceTargetItem->TextData = itemData->TextData;
-	//	ProduceTargetItem->ItemStats = itemData->ItemStats;
-	//	ProduceTargetItem->NumericData = itemData->NumericData;
-	//	ProduceTargetItem->AssetData = itemData->AssetData;
-	//	ProduceTargetItem->bIsCopy = true;
-	//}
+	FName resourceID_1 = ProduceWidgetData.ProduceResource_1.ResourceID;
+	FName resourceID_2 = ProduceWidgetData.ProduceResource_2.ResourceID;
+	FName resourceID_3 = ProduceWidgetData.ProduceResource_3.ResourceID;
+	FName resourceID_4 = ProduceWidgetData.ProduceResource_4.ResourceID;
+	FName resourceID_5 = ProduceWidgetData.ProduceResource_5.ResourceID;
 
+	if (resourceID_1 != NAME_None)
+	{
+		FItemData* cancleResourceData = itemDataTable->FindRow<FItemData>(resourceID_1, TEXT(""));
+		if (cancleResourceData)
+		{
+			class UCItemBase* cancleItem = NewObject<UCItemBase>(StaticClass());
+			if (cancleItem)
+			{
+				cancleItem = NewObject<UCItemBase>(StaticClass());
+				cancleItem->ID = ProduceWidgetData.ProduceResource_1.ResourceID;
+				cancleItem->Quantity = ProduceWidgetData.ProduceResource_1.ProduceResourceDemand;
+				cancleItem->ItemType = cancleResourceData->ItemType;
+				cancleItem->TextData = cancleResourceData->TextData;
+				cancleItem->ItemStats = cancleResourceData->ItemStats;
+				cancleItem->NumericData = cancleResourceData->NumericData;
+				cancleItem->AssetData = cancleResourceData->AssetData;
+				cancleItem->bIsCopy = true;
 
+				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+			}
+		}
+	}
 
+	if (resourceID_2 != NAME_None)
+	{
+		FItemData* cancleResourceData = itemDataTable->FindRow<FItemData>(resourceID_2, TEXT(""));
+		if (cancleResourceData)
+		{
+			class UCItemBase* cancleItem = NewObject<UCItemBase>(StaticClass());
+			if (cancleItem)
+			{
+				cancleItem = NewObject<UCItemBase>(StaticClass());
+				cancleItem->ID = ProduceWidgetData.ProduceResource_2.ResourceID;
+				cancleItem->Quantity = ProduceWidgetData.ProduceResource_2.ProduceResourceDemand;
+				cancleItem->ItemType = cancleResourceData->ItemType;
+				cancleItem->TextData = cancleResourceData->TextData;
+				cancleItem->ItemStats = cancleResourceData->ItemStats;
+				cancleItem->NumericData = cancleResourceData->NumericData;
+				cancleItem->AssetData = cancleResourceData->AssetData;
+				cancleItem->bIsCopy = true;
+
+				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+			}
+		}
+	}
+
+	if (resourceID_3 != NAME_None)
+	{
+		FItemData* cancleResourceData = itemDataTable->FindRow<FItemData>(resourceID_3, TEXT(""));
+		if (cancleResourceData)
+		{
+			class UCItemBase* cancleItem = NewObject<UCItemBase>(StaticClass());
+			if (cancleItem)
+			{
+				cancleItem = NewObject<UCItemBase>(StaticClass());
+				cancleItem->ID = ProduceWidgetData.ProduceResource_3.ResourceID;
+				cancleItem->Quantity = ProduceWidgetData.ProduceResource_3.ProduceResourceDemand;
+				cancleItem->ItemType = cancleResourceData->ItemType;
+				cancleItem->TextData = cancleResourceData->TextData;
+				cancleItem->ItemStats = cancleResourceData->ItemStats;
+				cancleItem->NumericData = cancleResourceData->NumericData;
+				cancleItem->AssetData = cancleResourceData->AssetData;
+				cancleItem->bIsCopy = true;
+
+				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+			}
+		}
+	}
+
+	if (resourceID_4 != NAME_None)
+	{
+		FItemData* cancleResourceData = itemDataTable->FindRow<FItemData>(resourceID_4, TEXT(""));
+		if (cancleResourceData)
+		{
+			class UCItemBase* cancleItem = NewObject<UCItemBase>(StaticClass());
+			if (cancleItem)
+			{
+				cancleItem = NewObject<UCItemBase>(StaticClass());
+				cancleItem->ID = ProduceWidgetData.ProduceResource_4.ResourceID;
+				cancleItem->Quantity = ProduceWidgetData.ProduceResource_4.ProduceResourceDemand;
+				cancleItem->ItemType = cancleResourceData->ItemType;
+				cancleItem->TextData = cancleResourceData->TextData;
+				cancleItem->ItemStats = cancleResourceData->ItemStats;
+				cancleItem->NumericData = cancleResourceData->NumericData;
+				cancleItem->AssetData = cancleResourceData->AssetData;
+				cancleItem->bIsCopy = true;
+
+				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+			}
+		}
+	}
+
+	if (resourceID_5 != NAME_None)
+	{
+		FItemData* cancleResourceData = itemDataTable->FindRow<FItemData>(resourceID_5, TEXT(""));
+		if (cancleResourceData)
+		{
+			class UCItemBase* cancleItem = NewObject<UCItemBase>(StaticClass());
+			if (cancleItem)
+			{
+				cancleItem = NewObject<UCItemBase>(StaticClass());
+				cancleItem->ID = ProduceWidgetData.ProduceResource_5.ResourceID;
+				cancleItem->Quantity = ProduceWidgetData.ProduceResource_5.ProduceResourceDemand;
+				cancleItem->ItemType = cancleResourceData->ItemType;
+				cancleItem->TextData = cancleResourceData->TextData;
+				cancleItem->ItemStats = cancleResourceData->ItemStats;
+				cancleItem->NumericData = cancleResourceData->NumericData;
+				cancleItem->AssetData = cancleResourceData->AssetData;
+				cancleItem->bIsCopy = true;
+
+				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+			}
+		}
+	}
+	
 	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
 	if (wrapBox)
 		wrapBox->RemoveChild(this);
 
 	CheckWrapBox(wrapBox);
+
+	ProduceWidget->RefreshProduceDetail();
+}
+
+void UCProduceItemQueueSlot::GetCancleResource(UCItemBase* InItem)
+{
+
 }

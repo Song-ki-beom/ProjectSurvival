@@ -29,6 +29,8 @@ private:
 	UFUNCTION()
 		void CancleProduce();
 
+	void GetCancleResource(class UCItemBase* InItem);
+
 
 private:
 	UPROPERTY(meta = (BindWidget))
