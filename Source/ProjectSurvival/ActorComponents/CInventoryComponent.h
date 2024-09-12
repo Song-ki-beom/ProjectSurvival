@@ -84,7 +84,7 @@ public:
 	//Toggle Menu
 	//void ToggleMenu();
 	void DropItem(class UCItemBase* ItemToDrop, const int32 QuantityToDrop);
-
+	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 
 	//Find
 
@@ -143,7 +143,7 @@ protected:
 	void PerformDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
 	UFUNCTION(Server, Reliable)
 	void RequestDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
-	
+	int32 FindItemIndex(UCItemBase* Item);
 
 
 private:

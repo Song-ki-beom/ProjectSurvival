@@ -158,6 +158,20 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 
 bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
+	//별도로 만든 DragDropOperation 생성 
+	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
+	if (ItemDragDrop->SourceItem) //아이템이 DragDropOperation에서 감지되면 위젯 검사 (아이템이 Drag중이면 )
+	{
+		if (ItemDragDrop->DragStartWidget == this)
+		{
+			return false; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
+		}
+		else
+		{
+			ItemReference->Inventory->SwapItem(ItemReference, ItemDragDrop->SourceItem);
+			return true;
+		}
+	}
 	return false;
 }
 

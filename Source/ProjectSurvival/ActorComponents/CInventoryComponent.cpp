@@ -214,6 +214,16 @@ void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 Quantity
 
 }
 
+void UCInventoryComponent::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
+{
+	int32 idxBase = FindItemIndex(ItemOnBase);
+	int32 idxDrag = FindItemIndex(ItemFromDrag);
+
+	InventoryContents.Swap(idxBase, idxDrag);
+	OnInventoryUpdated.Broadcast();
+
+}
+
 void UCInventoryComponent::PerformDropItem( const  FTransform SpawnTransform, FName ItemID,  const int32 RemovedQuantity)
 {
 	FActorSpawnParameters SpawnParams;
@@ -516,4 +526,14 @@ void UCInventoryComponent::MergeSort(TArray<TWeakObjectPtr<UCItemBase>>& Array, 
 		// 병합
 		Merge(Array, Left, Mid, Right);
 	}
+}
+
+int32 UCInventoryComponent::FindItemIndex(UCItemBase* Item)
+{
+	int32 Index = InventoryContents.IndexOfByPredicate([Item](const TWeakObjectPtr<UCItemBase>& InItem)
+		{
+			return InItem.Get() == Item;
+		});
+
+	return Index;
 }
