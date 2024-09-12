@@ -110,7 +110,6 @@ void UCProduceDetail::ProduceItem()
 							CDebug::Print("itemBase is valid", FColor::Magenta);
 							if (itemBase->ID == recipeWidget->GetResourceID())
 							{
-								
 								if (itemBase->Quantity > usedQuantity)
 								{
 									itemBase->SetQuantity(itemBase->Quantity - usedQuantity);

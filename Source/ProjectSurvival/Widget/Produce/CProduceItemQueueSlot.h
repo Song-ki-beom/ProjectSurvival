@@ -19,6 +19,7 @@ public:
 	void SetProduceTimeText(FText InText);
 	void SetProduceItemName(FText InText);
 	void SetProduceWidgetData(FProduceWidgetData InProduceWidgetData);
+	void InitProduce();
 	void StartProduce();
 	void SetProduceProgress();
 	void PauseProduceProgress();
@@ -44,14 +45,16 @@ private:
 
 	class UCProduceWidget* ProduceWidget;
 
+	bool bIsInitialized = false;
 	FName ProduceItemID;
 	FText ProduceItemName;
 	FProduceWidgetData ProduceWidgetData;
-	bool bIsWaiting = true;
+	bool bIsProducing = false;
 	FTimerHandle ProgressTimerHandle;
 	FTimerHandle PauseProgressTimerHandle;
 	float TotalProduceTime;
 	float RemainProduceTime;
+
 
 	class ACSurvivor* Survivor;
 	class UCItemBase* ProduceTargetItem;

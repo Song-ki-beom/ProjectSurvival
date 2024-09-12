@@ -48,20 +48,9 @@ void UCProduceItemQueueSlot::SetProduceWidgetData(FProduceWidgetData InProduceWi
 	ProduceWidgetData = InProduceWidgetData;
 }
 
-void UCProduceItemQueueSlot::StartProduce()
+void UCProduceItemQueueSlot::InitProduce()
 {
-	CDebug::Print("StartProduce Called");
-	bIsWaiting = false;
-
-	ProduceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
-	if (ProduceWidget)
-	{
-		CDebug::Print("ProduceItemName", ProduceItemName, FColor::Silver);
-		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
-		ProduceWidget->SetProducingItemText(produceItemNameText);
-	}
-	else
-		CDebug::Print("produceWidget is not valid", FColor::Magenta);
+	bIsInitialized = true;
 
 	TotalProduceTime = FCString::Atof(*ProduceTimeText->GetText().ToString());
 	RemainProduceTime = TotalProduceTime;
@@ -83,14 +72,36 @@ void UCProduceItemQueueSlot::StartProduce()
 	Survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 	if (Survivor && ProduceTargetItem)
 	{
-		GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, this, &UCProduceItemQueueSlot::SetProduceProgress, 0.1f, true);
+		GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, this, &UCProduceItemQueueSlot::SetProduceProgress, 0.1f, true, 0.0f);
+		GetWorld()->GetTimerManager().PauseTimer(ProgressTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(PauseProgressTimerHandle, this, &UCProduceItemQueueSlot::PauseProduceProgress, 0.1f, true, 0.0f);
 		GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
 	}
 }
 
+void UCProduceItemQueueSlot::StartProduce()
+{
+	bIsProducing = true;
+
+	CDebug::Print("StartProduce Called");
+
+	ProduceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+	if (ProduceWidget)
+	{
+		CDebug::Print("ProduceItemName", ProduceItemName, FColor::Silver);
+		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
+		ProduceWidget->SetProducingItemText(produceItemNameText);
+	}
+	else
+		CDebug::Print("produceWidget is not valid", FColor::Magenta);
+
+	GetWorld()->GetTimerManager().UnPauseTimer(ProgressTimerHandle);
+}
+
 void UCProduceItemQueueSlot::SetProduceProgress()
 {
+	CDebug::Print("Produce Timer ON", FColor::White);
+
 	int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
 	int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
 	
@@ -121,8 +132,8 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 	if (RemainProduceTime <= 0.0f)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
-		EndProduce();
 		Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
+		EndProduce();
 	}
 }
 
@@ -154,35 +165,18 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 {
 	if (InWrapBox)
 	{
-		const TArray<UWidget*>& children = InWrapBox->GetAllChildren();
+		const TArray<UWidget*>& wrapBoxChildren = InWrapBox->GetAllChildren();
 
-		if (children.Num() > 0)
+		TArray<UCProduceItemQueueSlot*> produceItemQueueSlotArray;
+
+		for (UWidget* warpBoxChild : wrapBoxChildren)
 		{
-			CDebug::Print("Children.Num() > 0: True", FColor::Green);
-
-			UCProduceItemQueueSlot* firstSlot = Cast<UCProduceItemQueueSlot>(children[0]);
-
-			if (firstSlot)
-			{
-				CDebug::Print("First slot found", FColor::Green);
-				if (firstSlot->bIsWaiting)
-				{
-					CDebug::Print("FirstSlot->bIsWaiting: True", FColor::Green);
-					CDebug::Print("UpdateWrapBox And Start Produce for the first slot", FColor::Blue);
-					firstSlot->StartProduce();
-				}
-				else
-				{
-					CDebug::Print("FirstSlot->bIsWaiting: False", FColor::Red);
-					CDebug::Print("First slot is already producing", FColor::Red);
-				}
-			}
-			else
-			{
-				CDebug::Print("FirstSlot is not a UCProduceItemQueueSlot", FColor::Red);
-			}
+			UCProduceItemQueueSlot* produceItemQueueSlot = Cast<UCProduceItemQueueSlot>(warpBoxChild);
+			if (produceItemQueueSlot)
+				produceItemQueueSlotArray.Add(produceItemQueueSlot);
 		}
-		else
+
+		if (!(produceItemQueueSlotArray.Num() > 0))
 		{
 			if (ProduceWidget)
 			{
@@ -193,12 +187,40 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 				CDebug::Print("produceWidget is not valid");
 
 			CDebug::Print("Children.Num() <= 0: False", FColor::Red);
+			return;
+		}
+
+		for (int32 index = 0; index < produceItemQueueSlotArray.Num(); index++)
+		{
+			if (index == 0)
+			{
+				UCProduceItemQueueSlot* firstSlot = produceItemQueueSlotArray[index];
+				if (firstSlot->bIsInitialized)
+					if (firstSlot->bIsProducing)
+						return;
+					else
+						firstSlot->StartProduce();
+				else
+				{
+					firstSlot->InitProduce();
+					firstSlot->StartProduce();
+				}
+			}
+			else
+			{
+				UCProduceItemQueueSlot* otherSlot = produceItemQueueSlotArray[index];
+				if (!otherSlot->bIsInitialized)
+					otherSlot->InitProduce();
+			}
 		}
 	}
 }
 
 void UCProduceItemQueueSlot::CancleProduce()
 {
+	GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(PauseProgressTimerHandle);
+
 	class UDataTable* itemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
 	
 	FName resourceID_1 = ProduceWidgetData.ProduceResource_1.ResourceID;
@@ -206,6 +228,8 @@ void UCProduceItemQueueSlot::CancleProduce()
 	FName resourceID_3 = ProduceWidgetData.ProduceResource_3.ResourceID;
 	FName resourceID_4 = ProduceWidgetData.ProduceResource_4.ResourceID;
 	FName resourceID_5 = ProduceWidgetData.ProduceResource_5.ResourceID;
+
+	CDebug::Print("resourceID_1", resourceID_1);
 
 	if (resourceID_1 != NAME_None)
 	{
@@ -324,7 +348,12 @@ void UCProduceItemQueueSlot::CancleProduce()
 	
 	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
 	if (wrapBox)
+	{
+		CDebug::Print("wrapBox is valid");
 		wrapBox->RemoveChild(this);
+	}
+	else
+		CDebug::Print("wrapBox is not valid");
 
 	CheckWrapBox(wrapBox);
 
