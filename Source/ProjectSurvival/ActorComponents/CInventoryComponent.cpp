@@ -224,6 +224,38 @@ void UCInventoryComponent::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFrom
 
 }
 
+bool UCInventoryComponent::CombineItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
+{
+	int32 AmountLeftToDistribute = ItemFromDrag->Quantity;
+	if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
+	{
+		SwapItem(ItemOnBase , ItemFromDrag);
+		return true;
+	}
+		const int32 AmountToMakeFullStack = ItemOnBase->NumericData.MaxStackSize - ItemOnBase->Quantity; //남은 수납가능 재고량 계산 
+		if (AmountToMakeFullStack >= AmountLeftToDistribute) //재고량이 넘치면 다 넣고 드래그 아이템 삭제
+		{
+			ItemOnBase->SetQuantity(ItemOnBase->Quantity + AmountLeftToDistribute);
+			InventoryContents.RemoveSingle(ItemFromDrag);
+
+		}
+		else if (AmountToMakeFullStack < AmountLeftToDistribute) // 다 넣을수 없으면 일부만 넣기 
+		{
+			//기존 인벤 아이템에 add
+			ItemOnBase->SetQuantity(ItemOnBase->Quantity + AmountToMakeFullStack);
+
+
+			//넣은 개수만큼 기존의 빼오는 아이템 재고에 Subtract 
+			AmountLeftToDistribute -= AmountToMakeFullStack;
+			ItemFromDrag->SetQuantity(AmountLeftToDistribute);
+		}
+
+		OnInventoryUpdated.Broadcast(); //인벤 업뎃 
+		return true;
+
+
+}
+
 void UCInventoryComponent::PerformDropItem( const  FTransform SpawnTransform, FName ItemID,  const int32 RemovedQuantity)
 {
 	FActorSpawnParameters SpawnParams;
@@ -399,8 +431,6 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 	NewItem->Inventory = this;
 	NewItem->SetQuantity(AmountToAdd);
 	NewItem->ItemStats.DamageValue;
-	InItem->GetItemStackWeight();
-	NewItem->GetItemStackWeight();
 	//인벤 TArray에 추가 
 	InventoryContents.Add(NewItem);
 	InventoryTotalWeight += NewItem->GetItemStackWeight();
@@ -432,8 +462,8 @@ int32 UCInventoryComponent::RemoveAmountOfItem(UCItemBase* ItemIn, int32 Desired
 
 bool UCInventoryComponent::SplitExistingStack(UCItemBase* ItemIn, const int32 AmountToSplit)
 {
-	//사용 가능 슬롯이 남아있으면
 	if (ItemIn->Quantity - AmountToSplit <= 0) return false;
+	//사용 가능 슬롯이 남아있으면
 	if (!(InventoryContents.Num() + 1 > InventorySlotsCapacity))
 	{
 		RemoveAmountOfItem(ItemIn, AmountToSplit);

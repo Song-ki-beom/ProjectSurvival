@@ -162,14 +162,27 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 	const UCItemDragDropOperation* ItemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
 	if (ItemDragDrop->SourceItem) //아이템이 DragDropOperation에서 감지되면 위젯 검사 (아이템이 Drag중이면 )
 	{
-		if (ItemDragDrop->DragStartWidget == this)
+		UCItemBase* DragItem  = ItemDragDrop->SourceItem;
+
+		if (ItemDragDrop->DragStartWidget == this) 
 		{
-			return false; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
+			return false; // 드래그가 시작된 인벤과 현재 인벤 이 같으면 취소??
+		}
+
+		if (DragItem == ItemReference)
+		{
+			CDebug::Print(TEXT("Same Item Detected"));
+			return false;
+		}
+		else if (DragItem->ID  == ItemReference->ID)
+		{
+			return ItemReference->Inventory->CombineItem(ItemReference, DragItem);
+			
 		}
 		else
 		{
-			ItemReference->Inventory->SwapItem(ItemReference, ItemDragDrop->SourceItem);
-			return true;
+			 ItemReference->Inventory->SwapItem(ItemReference, DragItem);
+			 return true;
 		}
 	}
 	return false;

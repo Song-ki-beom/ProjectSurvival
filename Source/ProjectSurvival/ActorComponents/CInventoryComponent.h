@@ -85,7 +85,7 @@ public:
 	//void ToggleMenu();
 	void DropItem(class UCItemBase* ItemToDrop, const int32 QuantityToDrop);
 	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
-
+	bool CombineItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	//Find
 
 	//인벤토리에서 동일한 UCItemBase 포인터(데이터 저장소)가 존재하는지 확인
