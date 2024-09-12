@@ -46,6 +46,7 @@ public:
 
 
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
+	void PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
 
 	void AddItemInfoToWidget();
 

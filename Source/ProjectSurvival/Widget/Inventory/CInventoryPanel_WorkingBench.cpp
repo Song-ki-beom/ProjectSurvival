@@ -102,6 +102,11 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 	}
 }
 
+void UCInventoryPanel_WorkingBench::RemoveItem(int32 InUniqueItemIndexInWrapBox)
+{
+	
+}
+
 void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {
 	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(InActor);

@@ -50,6 +50,7 @@ void UCProduceItemQueueSlot::SetProduceWidgetData(FProduceWidgetData InProduceWi
 
 void UCProduceItemQueueSlot::InitProduce()
 {
+	//CDebug::Print("InitProduce Called", FColor::White);
 	bIsInitialized = true;
 
 	TotalProduceTime = FCString::Atof(*ProduceTimeText->GetText().ToString());
@@ -70,6 +71,9 @@ void UCProduceItemQueueSlot::InitProduce()
 		ProduceTargetItem->bIsCopy = true;
 	}
 	Survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+	if (Survivor)
+		CDebug::Print("Survivor is Valid", FColor::White);
+
 	if (Survivor && ProduceTargetItem)
 	{
 		GetWorld()->GetTimerManager().SetTimer(ProgressTimerHandle, this, &UCProduceItemQueueSlot::SetProduceProgress, 0.1f, true, 0.0f);
@@ -77,15 +81,16 @@ void UCProduceItemQueueSlot::InitProduce()
 		GetWorld()->GetTimerManager().SetTimer(PauseProgressTimerHandle, this, &UCProduceItemQueueSlot::PauseProduceProgress, 0.1f, true, 0.0f);
 		GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
 	}
+
+	ProduceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
 }
 
 void UCProduceItemQueueSlot::StartProduce()
 {
+	//CDebug::Print("StartProduce Called", FColor::White);
+
 	bIsProducing = true;
 
-	CDebug::Print("StartProduce Called");
-
-	ProduceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
 	if (ProduceWidget)
 	{
 		CDebug::Print("ProduceItemName", ProduceItemName, FColor::Silver);
@@ -100,7 +105,7 @@ void UCProduceItemQueueSlot::StartProduce()
 
 void UCProduceItemQueueSlot::SetProduceProgress()
 {
-	CDebug::Print("Produce Timer ON", FColor::White);
+	//CDebug::Print("Produce Timer ON", FColor::White);
 
 	int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
 	int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
@@ -167,16 +172,35 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 	{
 		const TArray<UWidget*>& wrapBoxChildren = InWrapBox->GetAllChildren();
 
-		TArray<UCProduceItemQueueSlot*> produceItemQueueSlotArray;
-
-		for (UWidget* warpBoxChild : wrapBoxChildren)
+		for (int index = 0; index < wrapBoxChildren.Num(); index++)
 		{
-			UCProduceItemQueueSlot* produceItemQueueSlot = Cast<UCProduceItemQueueSlot>(warpBoxChild);
+			UCProduceItemQueueSlot* produceItemQueueSlot = Cast<UCProduceItemQueueSlot>(wrapBoxChildren[index]);
 			if (produceItemQueueSlot)
-				produceItemQueueSlotArray.Add(produceItemQueueSlot);
+			{
+				if (index == 0)
+				{
+					if (produceItemQueueSlot->bIsInitialized)
+					{
+						if (!(produceItemQueueSlot->bIsProducing))
+							produceItemQueueSlot->StartProduce();
+					}
+					else
+					{
+						produceItemQueueSlot->InitProduce();
+						produceItemQueueSlot->StartProduce();
+					}
+					
+				}
+				else
+				{
+					if (!produceItemQueueSlot->bIsInitialized)
+						produceItemQueueSlot->InitProduce();
+				}
+
+			}
 		}
 
-		if (!(produceItemQueueSlotArray.Num() > 0))
+		if (!(wrapBoxChildren.Num() > 0))
 		{
 			if (ProduceWidget)
 			{
@@ -188,30 +212,6 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 
 			CDebug::Print("Children.Num() <= 0: False", FColor::Red);
 			return;
-		}
-
-		for (int32 index = 0; index < produceItemQueueSlotArray.Num(); index++)
-		{
-			if (index == 0)
-			{
-				UCProduceItemQueueSlot* firstSlot = produceItemQueueSlotArray[index];
-				if (firstSlot->bIsInitialized)
-					if (firstSlot->bIsProducing)
-						return;
-					else
-						firstSlot->StartProduce();
-				else
-				{
-					firstSlot->InitProduce();
-					firstSlot->StartProduce();
-				}
-			}
-			else
-			{
-				UCProduceItemQueueSlot* otherSlot = produceItemQueueSlotArray[index];
-				if (!otherSlot->bIsInitialized)
-					otherSlot->InitProduce();
-			}
 		}
 	}
 }
@@ -357,7 +357,10 @@ void UCProduceItemQueueSlot::CancleProduce()
 
 	CheckWrapBox(wrapBox);
 
-	ProduceWidget->RefreshProduceDetail();
+	if (ProduceWidget)
+		ProduceWidget->RefreshProduceDetail();
+	else
+		CDebug::Print("ProduceWidget is not Valid", FColor::White);
 }
 
 void UCProduceItemQueueSlot::GetCancleResource(UCItemBase* InItem)

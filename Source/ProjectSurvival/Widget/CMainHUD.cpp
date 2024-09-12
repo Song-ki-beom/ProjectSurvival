@@ -8,6 +8,7 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CEarnInfoPanel.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Chatting/CChattingBox.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
@@ -60,6 +61,20 @@ void ACMainHUD::BeginPlay()
 		EarnInfoPanel->AddToViewport(4);
 		EarnInfoPanel->SetVisibility(ESlateVisibility::Visible);
 		EarnInfoPanel->bIsFocusable = true;
+	}
+
+	if (ChattingBoxClass)
+	{
+		ChattingBox = CreateWidget<UCChattingBox>(GetWorld(), ChattingBoxClass);
+		ChattingBox->AddToViewport(5);
+		ChattingBox->SetVisibility(ESlateVisibility::Visible);
+		ChattingBox->bIsFocusable = true;
+
+		FVector2D widgetSize = FVector2D(500, 200);
+		ChattingBox->SetDesiredSizeInViewport(widgetSize);
+		FVector2D widgetAlignment = FVector2D(-0.02, -4.35);
+		ChattingBox->SetAlignmentInViewport(widgetAlignment);
+		ChattingBox->SetKeyboardFocus();
 	}
 
 

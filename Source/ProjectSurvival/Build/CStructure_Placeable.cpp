@@ -182,6 +182,11 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	AddItemInfoToWidget();
 }
 
+void ACStructure_Placeable::PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
+{
+	
+}
+
 void ACStructure_Placeable::AddItemInfoToWidget()
 {
 	// 추가하기 전 UCItemBase 배열 초기화

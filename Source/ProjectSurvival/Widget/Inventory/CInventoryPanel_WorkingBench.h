@@ -25,6 +25,8 @@ public:
 
 	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
 
+	void RemoveItem(int32 InUniqueItemIndexInWrapBox);
+
 private:
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
 

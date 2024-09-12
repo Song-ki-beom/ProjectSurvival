@@ -13,7 +13,7 @@
 #include "Widget/Produce/CProduceItemSlot.h"
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
-//#include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
+#include "Widget/Chatting/CChattingBox.h"
 #include "Widget/CMainHUD.h"
 #include "Utility/CDebug.h"
 
@@ -45,11 +45,15 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 		return FReply::Handled();
 	}
 
-	//if (InKeyEvent.GetKey() == EKeys::O)
-	//{
-	//	Test_ShowPlaceableInventory();
-	//	return FReply::Handled();
-	//}
+	if (InKeyEvent.GetKey() == EKeys::Enter)
+	{
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+		if (mainHUD)
+		{
+			mainHUD->GetChattingBox()->SetInputMode();
+		}
+		return FReply::Handled();
+	}
 
 	return FReply::Unhandled();
 }
