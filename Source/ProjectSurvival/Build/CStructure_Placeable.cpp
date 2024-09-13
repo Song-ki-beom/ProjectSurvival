@@ -196,6 +196,30 @@ void ACStructure_Placeable::PerformSwapItem(int32 idxBase, int32 idxDrag)
 
 }
 
+void ACStructure_Placeable::PerformCombineItem(int32 idxBase, int32 idxDrag)
+{
+	int32 AmountLeftToDistribute = ItemInfoArray[idxDrag].Quantity;
+	const int32 AmountToMakeFullStack = ItemInfoArray[idxBase].NumericData.MaxStackSize - ItemInfoArray[idxBase].Quantity; //남은 수납가능 재고량 계산 
+	if (AmountToMakeFullStack >= AmountLeftToDistribute) //재고량이 넘치면 다 넣고 드래그 아이템 삭제
+	{
+		ItemInfoArray[idxBase].Quantity += AmountLeftToDistribute;
+		ItemInfoArray.RemoveAt(idxDrag);
+
+	}
+	else if (AmountToMakeFullStack < AmountLeftToDistribute) // 다 넣을수 없으면 일부만 넣기 
+	{
+		//기존 인벤 아이템에 add
+		ItemInfoArray[idxBase].Quantity += AmountToMakeFullStack;
+
+		//넣은 개수만큼 기존의 빼오는 아이템 재고에 Subtract 
+		AmountLeftToDistribute -= AmountToMakeFullStack;
+		ItemInfoArray[idxDrag].Quantity = AmountLeftToDistribute;
+	}
+	SharedItemInfoArray = ItemInfoArray;
+	AddItemInfoToWidget();
+	WidgetRefreshTrigger++;
+}
+
 void ACStructure_Placeable::PerformSplitItem(int32 ItemIdx, int32 AmountToSplit)
 {
 	FItemInformation addedItemInfo;

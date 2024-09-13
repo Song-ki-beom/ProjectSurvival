@@ -54,6 +54,9 @@ public:
 	//Swap
 	void PerformSwapItem(int32 idxBase,int32 idxDrag);
 
+	//Combine
+	void PerformCombineItem(int32 idxBase, int32 idxDrag);
+
 	//Sort
 	void PerformSortInfoWidget();
 	void Merge(TArray<FItemInformation>&  Array, int Left, int Mid, int Right); //분할 후 정복 
@@ -61,6 +64,9 @@ public:
 
 	//Split
 	void PerformSplitItem(int32 ItemIdx, int32 AmountToSplit);
+
+	
+	
 
 
 

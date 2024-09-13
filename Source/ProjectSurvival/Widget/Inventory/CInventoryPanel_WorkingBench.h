@@ -36,6 +36,9 @@ public:
 private:
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
 	int32 FindItemIndex(class UCItemBase* Item);
+	//함수를 객체화하여 생산성 높임 
+	bool PerformActionIfHasAuthority(TFunction<void(class ACStructure_Placeable*)> ServerAction, TFunction<void(class ACSurvivorController*, class ACStructure_Placeable*)> ClientAction);
+
 
 private:
 	UPROPERTY(meta = (BindWidget))

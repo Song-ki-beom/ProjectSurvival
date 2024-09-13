@@ -108,14 +108,30 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 
 bool UCInventoryPanel_WorkingBench::CombineItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
 {
-	int32 AmountLeftToDistribute = ItemFromDrag->Quantity;
-	if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
-	{
-		SwapItem(ItemOnBase, ItemFromDrag);
-		return true;
-	}
+		if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
+		{
+			SwapItem(ItemOnBase, ItemFromDrag);
+			return true;
+		}
+	
+		int32 idxBase = FindItemIndex(ItemOnBase);
+		int32 idxDrag = FindItemIndex(ItemFromDrag);
 
-	return false;
+		
+		return PerformActionIfHasAuthority(
+			// Server
+			[=](ACStructure_Placeable* workingBenchActor)
+			{
+				workingBenchActor->PerformCombineItem(idxBase, idxDrag);
+			},
+			// Client
+				[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+			{
+				playerController->RequestCombineItem(idxBase, idxDrag, workingBenchActor);
+			}
+			);
+
+	
 }
 
 
@@ -125,139 +141,130 @@ void UCInventoryPanel_WorkingBench::RemoveItem(int32 InUniqueItemIndexInWrapBox)
 
 }
 
-void UCInventoryPanel_WorkingBench::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
-{
-	int32 idxBase = FindItemIndex(ItemOnBase);
-	int32 idxDrag = FindItemIndex(ItemFromDrag);
 
-	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
-	if (workingBenchActor)
-	{
-		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor)
-		{
-			if (survivor->HasAuthority())
-				workingBenchActor->PerformSwapItem(idxBase, idxDrag);
-			else
-			{
-				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-				if (playerController)
-				{
-					playerController->RequestSwapItem(idxBase, idxDrag , workingBenchActor);
-				}
-				else
-					CDebug::Print("playerController is not valid");
-			}
-		}
-	}
-
-	
-}
-
-bool UCInventoryPanel_WorkingBench::SplitExistingStack(UCItemBase* ItemIn, int32 AmountToSplit)
-{
-		if (ItemIn->Quantity - AmountToSplit <= 0) return false;
-		//사용 가능 슬롯이 남아있으면
-		int32 ItemIdx = FindItemIndex(ItemIn);
-		
-			ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
-			if (workingBenchActor)
-			{
-				ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-				if (survivor)
-				{
-					if (survivor->HasAuthority())
-						workingBenchActor->PerformSplitItem(ItemIdx, AmountToSplit);
-					else
-					{
-						ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-						if (playerController)
-						{
-							playerController->RequestSplitItem(ItemIdx, AmountToSplit, workingBenchActor);
-						}
-						else
-							CDebug::Print("playerController is not valid");
-					}
-				}
-			
-				
-				return true;
-			}
-			
-		
-
-		return false;
-
-}
 
 
 int32 UCInventoryPanel_WorkingBench::FindItemIndex(UCItemBase * Item)
-	{
+{
 		int32 Index = WidgetItems.IndexOfByPredicate([Item](const UCItemBase* InItem)
 			{
 				return InItem == Item;
 			});
 
 		return Index;
-	}
+}
 
 void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {
-	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(InActor);
-	if (workingBenchActor)
-	{
-		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor)
+
+	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* workingBenchActor)
 		{
-			// 위젯 클래스에서 RPC함수 호출 불가 + workingBenchActor에서 클라이언트가 RPC함수 호출 불가능해서
-			// 클라이언트의 경우 컨트롤러를 통해 RPC를 호출함
-			if (survivor->HasAuthority())
-				workingBenchActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData , InItem->ItemType);
+			workingBenchActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+		{
+			playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData, InItem->ItemType);
+		}
+		);
+
+}
+
+void UCInventoryPanel_WorkingBench::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
+{
+	int32 idxBase = FindItemIndex(ItemOnBase);
+	int32 idxDrag = FindItemIndex(ItemFromDrag);
+
+	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* workingBenchActor)
+		{
+			workingBenchActor->PerformSwapItem(idxBase, idxDrag);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+		{
+			playerController->RequestSwapItem(idxBase, idxDrag, workingBenchActor);
+		}
+		);
+
+}
+
+bool UCInventoryPanel_WorkingBench::SplitExistingStack(UCItemBase* ItemIn, int32 AmountToSplit)
+{
+	if (ItemIn->Quantity - AmountToSplit <= 0) return false;
+	//사용 가능 슬롯이 남아있으면
+	int32 ItemIdx = FindItemIndex(ItemIn);
+
+	return 	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* workingBenchActor)
+		{
+			workingBenchActor->PerformSplitItem(ItemIdx, AmountToSplit);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+		{
+			playerController->RequestSplitItem(ItemIdx, AmountToSplit, workingBenchActor);
+		}
+		);
+
+}
+
+
+//타입(오름) , 수량(내림), ID(오름) 순으로 정렬 
+void UCInventoryPanel_WorkingBench::OnSortInventoryClicked()
+{
+
+	
+	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* workingBenchActor)
+		{
+			workingBenchActor->PerformSortInfoWidget();
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+		{
+			playerController->RequestSortInfoWidget(workingBenchActor);
+		}
+		);
+
+
+}
+
+//함수 매크로
+bool UCInventoryPanel_WorkingBench::PerformActionIfHasAuthority(TFunction<void(ACStructure_Placeable*)> ServerAction, TFunction<void(ACSurvivorController*, ACStructure_Placeable*)> ClientAction)
+{
+	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
+	ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+
+	if (workingBenchActor && survivor)
+	{
+		if (survivor->HasAuthority())
+		{
+			ServerAction(workingBenchActor);
+			return true;
+		}
+		else
+		{
+			ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+			if (playerController)
+			{
+				ClientAction(playerController , workingBenchActor);
+				return true;
+			}
 			else
 			{
-				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-				if (playerController)
-				{
-					playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData, InItem->ItemType);
-				}
-				else
-					CDebug::Print("playerController is not valid");
+				CDebug::Print("playerController is not valid");
 			}
 		}
 	}
 	else
-		CDebug::Print("Widget Owner is not Valid");
-}
-
-
-
-
-//타입 , 수량 순으로 정렬 
-void UCInventoryPanel_WorkingBench::OnSortInventoryClicked()
-{
-
-	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
-	if (workingBenchActor)
 	{
-		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor)
-		{
-			if (survivor->HasAuthority())
-				workingBenchActor->PerformSortInfoWidget();
-			else
-			{
-				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-				if (playerController)
-				{
-					playerController->RequestSortInfoWidget(workingBenchActor);
-				}
-				else
-					CDebug::Print("playerController is not valid");
-			}
-		}
+		CDebug::Print("WorkingBenchActor or Survivor is not valid");
 	}
-
-
+	return false;
 }
-
-

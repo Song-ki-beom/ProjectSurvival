@@ -91,6 +91,9 @@ public:
 		void RequestSortInfoWidget(class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)
 		void RequestSplitItem(int32 ItemIdx, int32 AmountToSplit, class ACStructure_Placeable* InPlaceable);
+	UFUNCTION(Server, Reliable)
+		void RequestCombineItem(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable);
+
 
 };
 

@@ -453,3 +453,9 @@ void ACSurvivorController::RequestSplitItem_Implementation(int32 ItemIdx, int32 
 	InPlaceable->PerformSplitItem(ItemIdx, AmountToSplit);
 
 }
+
+void ACSurvivorController::RequestCombineItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->PerformCombineItem(idxBase, idxDrag);
+}
+
