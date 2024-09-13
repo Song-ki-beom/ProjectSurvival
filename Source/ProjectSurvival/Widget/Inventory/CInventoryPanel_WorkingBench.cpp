@@ -154,6 +154,42 @@ void UCInventoryPanel_WorkingBench::SwapItem(UCItemBase* ItemOnBase, UCItemBase*
 	
 }
 
+bool UCInventoryPanel_WorkingBench::SplitExistingStack(UCItemBase* ItemIn, int32 AmountToSplit)
+{
+		if (ItemIn->Quantity - AmountToSplit <= 0) return false;
+		//사용 가능 슬롯이 남아있으면
+		int32 ItemIdx = FindItemIndex(ItemIn);
+		
+			ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
+			if (workingBenchActor)
+			{
+				ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+				if (survivor)
+				{
+					if (survivor->HasAuthority())
+						workingBenchActor->PerformSplitItem(ItemIdx, AmountToSplit);
+					else
+					{
+						ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+						if (playerController)
+						{
+							playerController->RequestSplitItem(ItemIdx, AmountToSplit, workingBenchActor);
+						}
+						else
+							CDebug::Print("playerController is not valid");
+					}
+				}
+			
+				
+				return true;
+			}
+			
+		
+
+		return false;
+
+}
+
 
 int32 UCInventoryPanel_WorkingBench::FindItemIndex(UCItemBase * Item)
 	{

@@ -31,6 +31,7 @@ public:
 	void RemoveItem(int32 InUniqueItemIndexInWrapBox);
 	bool CombineItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
+	bool SplitExistingStack(class UCItemBase* ItemIn, int32 AmountToSplit);
 
 private:
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);

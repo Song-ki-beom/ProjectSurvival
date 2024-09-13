@@ -85,7 +85,7 @@ protected:
 private:
 	bool bIsTooltipToggled =false;
 	int32 UniqueItemIndexInWrapBox;
-
+	UUserWidget* OwnerWidget;
 
 
 

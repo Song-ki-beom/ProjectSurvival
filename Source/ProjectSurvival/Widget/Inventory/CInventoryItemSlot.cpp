@@ -168,31 +168,8 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 	{
 		UCItemBase* DragItem  = ItemDragDrop->SourceItem;
 
-		//if (ItemDragDrop->DragStartWidget == this )  //
-		//{
 
-		//	/*if (UCInventoryPanel_WorkingBench* InnerDragWidget = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget))
-		//	{
-		//		InnerDragWidget
-		//	}*/
-
-		//	return false;
-		//}
-
-
-		//해당 슬롯을 소유하는 UUserWidget 검사 
-		UUserWidget* OwnerWidget;
-		if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
-		{
-			if (this->GetTypedOuter<UUserWidget>())
-			{
-				OwnerWidget = this->GetTypedOuter<UUserWidget>();
-			}
-			else
-			{
-				OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
-			}
-		}
+	
 
 		//UCInventoryPanel_WorkingBench을 가지고 있는지 검사 
 		bool IsOwnerWorkingBench = false;
@@ -261,10 +238,37 @@ void UCInventoryItemSlot::ToggleTooltip()
 bool UCInventoryItemSlot::Split(int32 InputNum)
 {
 	UCInventoryComponent* InventoryReference = ItemReference->Inventory;
-	bool answer = InventoryReference->SplitExistingStack(ItemReference , InputNum);
+	//bool answer = InventoryReference->SplitExistingStack(ItemReference , InputNum);
 
+	//GetOwnerPanel 
+	//해당 슬롯을 소유하는 UUserWidget 검사 
+	
+	if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
+	{
+		if (this->GetTypedOuter<UUserWidget>())
+		{
+			OwnerWidget = this->GetTypedOuter<UUserWidget>();
+		}
+		else
+		{
+			OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
+		}
+	}
+	if (OwnerWidget)
+	{
+		UCInventoryPanel_WorkingBench* WorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(OwnerWidget);
+		if (WorkingBenchPanel)
+		{
+			return WorkingBenchPanel->SplitExistingStack(ItemReference,InputNum);
+		}
+		else
+		{
+			return InventoryReference->SplitExistingStack(ItemReference, InputNum);;
+		}
 
-	return answer;
+	}
+		
+	return false;
 }
 
 

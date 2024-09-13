@@ -140,7 +140,7 @@ void UCInventorySubMenu::HandleOnBuildButtonClicked()
 
 void UCInventorySubMenu::HandleOnSplitButtonClicked()
 {
-    //OnSplitButtonClicked.Broadcast();
+    
     //Split 구현 부분 
 
     SubMenuSizeBox->SetVisibility(ESlateVisibility::Collapsed);

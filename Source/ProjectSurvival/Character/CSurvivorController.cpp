@@ -435,18 +435,21 @@ void ACSurvivorController::FocusChattingBox()
 
 void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType)
 {
-	CDebug::Print("RequestMessage_Implementation Called");
 	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType);
 }
 
 void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
 {
-	CDebug::Print("RequestSwapItem_Implementation Called");
 	InPlaceable->PerformSwapItem(idxBase, idxDrag);
 };
 
 void ACSurvivorController::RequestSortInfoWidget_Implementation(class ACStructure_Placeable* InPlaceable)
 {
-	CDebug::Print("RequestSortItem_Implementation Called");
 	InPlaceable->PerformSortInfoWidget();
+}
+
+void ACSurvivorController::RequestSplitItem_Implementation(int32 ItemIdx, int32 AmountToSplit, class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->PerformSplitItem(ItemIdx, AmountToSplit);
+
 }

@@ -196,6 +196,34 @@ void ACStructure_Placeable::PerformSwapItem(int32 idxBase, int32 idxDrag)
 
 }
 
+void ACStructure_Placeable::PerformSplitItem(int32 ItemIdx, int32 AmountToSplit)
+{
+	FItemInformation addedItemInfo;
+	addedItemInfo.ItemID = ItemInfoArray[ItemIdx].ItemID;
+	addedItemInfo.Quantity = AmountToSplit;
+	addedItemInfo.NumericData = ItemInfoArray[ItemIdx].NumericData;
+	addedItemInfo.ItemType = ItemInfoArray[ItemIdx].ItemType;
+
+	// 스택이 가능한 아이템인지 검사
+	if (addedItemInfo.NumericData.bIsStackable)
+	{
+
+		ItemInfoArray[ItemIdx].Quantity -= AmountToSplit;
+		ItemInfoArray.Add(addedItemInfo);
+		SharedItemInfoArray = ItemInfoArray;
+		AddItemInfoToWidget();
+		WidgetRefreshTrigger++;
+
+	}
+}
+
+		
+
+
+	
+
+
+
 void ACStructure_Placeable::AddItemInfoToWidget()
 {
 	// 추가하기 전 UCItemBase 배열 초기화
@@ -352,3 +380,5 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 		Merge(Array, Left, Mid, Right);
 	}
 }
+
+

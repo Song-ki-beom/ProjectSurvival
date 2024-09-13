@@ -59,6 +59,9 @@ public:
 	void Merge(TArray<FItemInformation>&  Array, int Left, int Mid, int Right); //분할 후 정복 
 	void MergeSort(TArray<FItemInformation>& Array, int Left, int Right); // 분할 정복 Merges Sort 사용 
 
+	//Split
+	void PerformSplitItem(int32 ItemIdx, int32 AmountToSplit);
+
 
 
 	void AddItemInfoToWidget();
