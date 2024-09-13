@@ -415,7 +415,7 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 	UCItemBase* NewItem;
 
 	//Copy .. 두군데에서의 같은 메모리 참조 방지
-	if (InItem->bIsCopy || InItem->bIsPickup) //World 상의 Item이 참조하는 메모리 주소와 NewItem의 참조 주소가 곂치지 않기 위해 별도의 Copy 인지, PickUp되어 사라질 데이터인지 체크 
+	if ((InItem->bIsCopy || InItem->bIsPickup)&&!InItem->bIsSplit) //World 상의 Item이 참조하는 메모리 주소와 NewItem의 참조 주소가 곂치지 않기 위해 별도의 Copy 인지, PickUp되어 사라질 데이터인지 체크 
 	{
 		
 		NewItem = InItem;
@@ -426,6 +426,8 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 		//World 에서 오는 Item을 참조하는거면 새로 Copy , 또는 아이템을  Split 해야 할 상황이면 Copy
 		NewItem = InItem->CreateItemCopy();
 	}
+
+	InItem->bIsSplit = false;
 
 	//아이템 세팅
 	NewItem->Inventory = this;
@@ -467,6 +469,7 @@ bool UCInventoryComponent::SplitExistingStack(UCItemBase* ItemIn, const int32 Am
 	if (!(InventoryContents.Num() + 1 > InventorySlotsCapacity))
 	{
 		RemoveAmountOfItem(ItemIn, AmountToSplit);
+		ItemIn->bIsSplit = true;
 		AddNewItem(ItemIn, AmountToSplit);
 		return true;
 	}

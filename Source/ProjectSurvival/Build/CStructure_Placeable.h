@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Build/CStructure.h"
 #include "Widget/CMainHUD.h"
+#include "Struct/CItemDataStructures.h"
 #include "CStructure_Placeable.generated.h"
 
 USTRUCT()
@@ -11,6 +12,8 @@ struct FItemInformation
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+		EItemType ItemType;
 	UPROPERTY()
 		FName ItemID;
 
@@ -44,9 +47,19 @@ public:
 	void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
 
-
-	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
+	//Add
+	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType);
 	void PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
+
+	//Swap
+	void PerformSwapItem(int32 idxBase,int32 idxDrag);
+
+	//Sort
+	void PerformSortInfoWidget();
+	void Merge(TArray<FItemInformation>&  Array, int Left, int Mid, int Right); //분할 후 정복 
+	void MergeSort(TArray<FItemInformation>& Array, int Left, int Right); // 분할 정복 Merges Sort 사용 
+
+
 
 	void AddItemInfoToWidget();
 

@@ -22,17 +22,25 @@ public:
 
 	UFUNCTION()
 		void RefreshWorkingBenchInventory();
+	UFUNCTION()
+		void OnSortInventoryClicked();
+
 
 	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
 
 	void RemoveItem(int32 InUniqueItemIndexInWrapBox);
+	bool CombineItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
+	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 
 private:
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
+	int32 FindItemIndex(class UCItemBase* Item);
 
 private:
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* WorkingBenchInventoryPanel;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* SortItemButton;
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UCInventoryItemSlot> InventorySlotClass;
 	UPROPERTY()

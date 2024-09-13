@@ -122,10 +122,14 @@ public:
 
 	//슬롯 개수를 변경할때 호출 
 	FORCEINLINE void SetSlotsCapacity(const int32 NewSlotsCapacity) { InventorySlotsCapacity = NewSlotsCapacity; };
+	//최대 무게 변경 
 	FORCEINLINE void SetWeightCapacity(const int32 NewWeightCapacity) {
 		InventoryWeightCapacity = NewWeightCapacity;
 	};
-
+	//현재 무게 변경  
+	FORCEINLINE void SetInventoryTotalWeight(const float NewTotalWeight) {
+		InventoryTotalWeight = NewTotalWeight;
+	};
 
 	FORCEINLINE class ACMainHUD* GetHUDReference() const { return HUD;}; //현재 소지 용량 
 
