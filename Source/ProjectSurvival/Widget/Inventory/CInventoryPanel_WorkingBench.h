@@ -22,6 +22,9 @@ public:
 
 	UFUNCTION()
 		void RefreshWorkingBenchInventory();
+	UFUNCTION()
+		void OnSortInventoryClicked();
+
 
 	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
 
@@ -36,6 +39,8 @@ private:
 private:
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* WorkingBenchInventoryPanel;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* SortItemButton;
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UCInventoryItemSlot> InventorySlotClass;
 	UPROPERTY()

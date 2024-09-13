@@ -17,6 +17,9 @@ bool UCInventoryPanel_WorkingBench::Initialize()
 {
 	bool Sucess = Super::Initialize();
 
+	if (IsValid(SortItemButton))
+		SortItemButton->OnClicked.AddDynamic(this, &UCInventoryPanel_WorkingBench::OnSortInventoryClicked);
+
 	if (!Sucess)
 		return false;
 
@@ -167,13 +170,13 @@ void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int3
 			// 위젯 클래스에서 RPC함수 호출 불가 + workingBenchActor에서 클라이언트가 RPC함수 호출 불가능해서
 			// 클라이언트의 경우 컨트롤러를 통해 RPC를 호출함
 			if (survivor->HasAuthority())
-				workingBenchActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData);
+				workingBenchActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData , InItem->ItemType);
 			else
 			{
 				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
 				if (playerController)
 				{
-					playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData);
+					playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData, InItem->ItemType);
 				}
 				else
 					CDebug::Print("playerController is not valid");
@@ -183,3 +186,36 @@ void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int3
 	else
 		CDebug::Print("Widget Owner is not Valid");
 }
+
+
+
+
+//타입 , 수량 순으로 정렬 
+void UCInventoryPanel_WorkingBench::OnSortInventoryClicked()
+{
+
+	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
+	if (workingBenchActor)
+	{
+		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+		if (survivor)
+		{
+			if (survivor->HasAuthority())
+				workingBenchActor->PerformSortInfoWidget();
+			else
+			{
+				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+				if (playerController)
+				{
+					playerController->RequestSortInfoWidget(workingBenchActor);
+				}
+				else
+					CDebug::Print("playerController is not valid");
+			}
+		}
+	}
+
+
+}
+
+

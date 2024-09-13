@@ -441,10 +441,10 @@ void ACSurvivorController::HandleMouseWheelDown()
 		Survivor->HandleMouseWheelDown();
 }
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData)
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData , EItemType ItemType)
 {
 	CDebug::Print("RequestMessage_Implementation Called");
-	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData);
+	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType);
 }
 
 void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
@@ -452,3 +452,9 @@ void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  
 	CDebug::Print("RequestSwapItem_Implementation Called");
 	InPlaceable->PerformSwapItem(idxBase, idxDrag);
 };
+
+void ACSurvivorController::RequestSortInfoWidget_Implementation(class ACStructure_Placeable* InPlaceable)
+{
+	CDebug::Print("RequestSortItem_Implementation Called");
+	InPlaceable->PerformSortInfoWidget();
+}

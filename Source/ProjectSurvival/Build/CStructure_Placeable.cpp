@@ -140,13 +140,13 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 		CDebug::Print("Survivor is not valid");
 }
 
-void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
+void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType)
 {
 	FItemInformation addedItemInfo;
 	addedItemInfo.ItemID = InID;
 	addedItemInfo.Quantity = InQuantity;
 	addedItemInfo.NumericData = InNumericData;
-	addedItemInfo.InventoryIndex = WidgetRefreshTrigger;
+	addedItemInfo.ItemType = InItemType;
 	// 스택이 가능한 아이템인지 검사
 	if (addedItemInfo.NumericData.bIsStackable)
 	{
@@ -163,7 +163,7 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 				ItemInfoArray[resultIndex].Quantity += addQuantity;
 
 				// 최대 스택만큼 더하고 남은 양만큼 다시 PerformAddItem 호출
-				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData);
+				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData ,addedItemInfo.ItemType);
 			}
 			else
 				ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
@@ -268,4 +268,87 @@ void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 	DOREPLIFETIME(ACStructure_Placeable, WidgetRefreshTrigger);
 	DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
+}
+
+
+
+//타입 , 수량 순으로 정렬 
+void ACStructure_Placeable::PerformSortInfoWidget()
+{
+	if (ItemInfoArray.Num() == 0) return;
+
+
+	//병합 정렬 사용 
+	MergeSort(ItemInfoArray, 0, ItemInfoArray.Num() - 1);
+	SharedItemInfoArray = ItemInfoArray;
+	AddItemInfoToWidget();
+	WidgetRefreshTrigger++;
+}
+
+
+void ACStructure_Placeable::Merge(TArray<FItemInformation>& Array, int Left, int Mid, int Right)
+{
+	int n1 = Mid - Left + 1; //왼쪽 분할부분 원소 갯수
+	int n2 = Right - Mid; // 오른쪽 분할부분 원소 갯수
+
+	TArray<FItemInformation> LeftArray;
+	TArray<FItemInformation> RightArray;
+
+	for (int i = 0; i < n1; i++)
+		LeftArray.Add(Array[Left + i]);
+	for (int i = 0; i < n2; i++)
+		RightArray.Add(Array[Mid + 1 + i]);
+
+
+	//병합 시작 
+	int i = 0, j = 0, k = Left;
+	while (i < n1 && j < n2)
+	{
+		int32 LeftIDNumber = LeftArray[i].ItemID.GetNumber(); //GetNumber : 아이디(FName)의 적힌 숫자를 가져옴 
+		int32 RightIDNumber = RightArray[j].ItemID.GetNumber();
+
+		if (LeftArray[i].ItemType < RightArray[j].ItemType ||
+			(LeftArray[i].ItemType == RightArray[j].ItemType && LeftArray[i].Quantity < RightArray[j].Quantity)
+			|| (LeftArray[i].ItemType == RightArray[j].ItemType && LeftArray[i].Quantity == RightArray[j].Quantity && LeftIDNumber >= RightIDNumber)) //아이템 타입 Enum 내림차순 , Quantity 내림차순 , 아이템 ID 오름차순으로 정렬 
+		{
+			Array[k] = RightArray[j];
+			j++;
+		}
+		else
+		{
+			Array[k] = LeftArray[i];
+			i++;
+		}
+		k++;
+	}
+
+	// 남은 값 복사
+	while (i < n1)
+	{
+		Array[k] = LeftArray[i];
+		i++;
+		k++;
+	}
+
+	while (j < n2)
+	{
+		Array[k] = RightArray[j];
+		j++;
+		k++;
+	}
+}
+
+void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left, int Right)
+{
+	if (Left < Right)
+	{
+		int Mid = Left + (Right - Left) / 2;
+
+		// 좌우 분할
+		MergeSort(Array, Left, Mid);
+		MergeSort(Array, Mid + 1, Right);
+
+		// 병합
+		Merge(Array, Left, Mid, Right);
+	}
 }
