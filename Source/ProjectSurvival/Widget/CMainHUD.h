@@ -43,6 +43,7 @@ public:
 	void ExtraOptionButtonDown();
 	void AddEarnedInfo(class UObject* EarnedItem);
 	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
+	class UCInventoryMenu* GetSurvivorInventoryWidget() { return SurvivorInventoryWidget; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")

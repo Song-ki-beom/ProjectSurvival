@@ -142,12 +142,15 @@ void UCGameInstance::RemoveAllWidgets()
 			widget->RemoveFromParent();
 		}
 	}
+}
 
+void UCGameInstance::CreateChattingBox()
+{
 	if (ChattingBoxClass)
 	{
 		ChattingBox = CreateWidget<UCChattingBox>(this, ChattingBoxClass);
 
-		ChattingBox->AddToViewport(5);
+		ChattingBox->AddToViewport(6);
 		ChattingBox->SetVisibility(ESlateVisibility::Visible);
 		ChattingBox->bIsFocusable = true;
 

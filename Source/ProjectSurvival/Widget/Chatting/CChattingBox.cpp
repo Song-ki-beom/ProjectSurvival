@@ -1,10 +1,13 @@
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/Chatting/CChattingMessage.h"
+#include "Widget/Menu/CInventoryMenu.h"
+#include "Widget/CMainHUD.h"
 #include "Components/VerticalBox.h"
 #include "Components/Overlay.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/ScrollBox.h"
 #include "CGameInstance.h"
 #include "Character/CSurvivorController.h"
 #include "Character/CSurvivor.h"
@@ -13,6 +16,14 @@
 FReply UCChattingBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
 {
 	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::Enter)
+	{
+		InputMessageBox->SetFocus();
+	
+		return FReply::Handled();
+	}
+
 	return FReply::Unhandled();
 }
 
@@ -60,17 +71,33 @@ void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMet
 {
 	if (CommitMethod == ETextCommit::OnEnter)
 	{
+		ACSurvivor* survivor = Cast<ACSurvivor>(GetOwningPlayerPawn());
+		if (!survivor)
+			return;
+
 		if (!InText.IsEmpty())
 		{
-			ACSurvivor* survivor = Cast<ACSurvivor>(GetOwningPlayerPawn());
-			if (survivor)
-			{
-				FText survivorNameText = FText::Format(FText::FromString("{0}:"), SurvivorName);
-				survivor->ReceiveMessage(survivorNameText, InText);
-			}
+			FText survivorNameText = FText::Format(FText::FromString("{0}:"), SurvivorName);
+			survivor->ReceiveMessage(survivorNameText, InText);
 		}
 
 		InputMessageBox->SetText(FText::GetEmpty());
+		
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+		if (!mainHUD)
+			return;
+
+		ESlateVisibility inventoryVisibility = mainHUD->GetSurvivorInventoryWidget()->GetVisibility();
+
+		if (inventoryVisibility == ESlateVisibility::Visible)
+		{
+			mainHUD->GetSurvivorInventoryWidget()->SetKeyboardFocus();
+			mainHUD->GetSurvivorInventoryWidget()->SetFocus();
+		}
+		else
+			GetOwningPlayer()->SetInputMode(FInputModeGameOnly());
+
+		MessageScrollBox->ScrollToEnd();
 	}
 
 	if (CommitMethod == ETextCommit::OnUserMovedFocus)
@@ -95,6 +122,13 @@ void UCChattingBox::AddMessageToMessageBox(const FText& InSurvivorNameText, cons
 			chattingMessage->SetSurvivorName(InSurvivorNameText, SurvivorNameColor);
 			chattingMessage->SetMessage(InMessageText);
 			MessageBox->AddChild(chattingMessage);
+
+			// 메시지가 100개 이상인 경우 가장 오래된 메시지 삭제
+			if (MessageBox->GetChildrenCount() > 100)
+			{
+				UWidget* oldestMessage = MessageBox->GetChildAt(0);
+				MessageBox->RemoveChild(oldestMessage);
+			}
 		}
 	}
 }

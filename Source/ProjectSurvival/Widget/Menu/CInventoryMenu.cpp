@@ -6,6 +6,8 @@
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Produce/CProduceWidget.h"
+#include "Widget/Chatting/CChattingBox.h"
+#include "CGameInstance.h"
 #include "Character/CSurvivor.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -44,6 +46,24 @@ FReply UCInventoryMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
 		if (mainHUD)
 			mainHUD->GetProduceWidget()->StartProduce();
+		return FReply::Handled();
+	}
+
+	if (InKeyEvent.GetKey() == EKeys::Enter)
+	{
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+		if (gameInstance)
+		{
+			if (gameInstance->ChattingBox)
+			{
+				gameInstance->ChattingBox->SetInputMode();
+			}
+			else
+				CDebug::Print("gameInstance->ChattingBox is not Valid");
+		}
+		else
+			CDebug::Print("gameInstance is not Valid");
+
 		return FReply::Handled();
 	}
 

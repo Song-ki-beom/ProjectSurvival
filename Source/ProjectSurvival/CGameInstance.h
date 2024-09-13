@@ -34,6 +34,8 @@ public:
 		void RenewServerList() override;
 	UFUNCTION(BlueprintCallable)
 		void RemoveAllWidgets();
+	UFUNCTION(BlueprintCallable)
+		void CreateChattingBox();
 
 	void SaveCustomizeRowNames(TArray<FName> InRowNames) { CustomizeRowNames = InRowNames; }
 	TArray<FName> GetCustomizeRowNames() { return CustomizeRowNames; }

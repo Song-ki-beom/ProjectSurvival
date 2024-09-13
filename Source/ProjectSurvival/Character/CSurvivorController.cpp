@@ -13,7 +13,7 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Utility/CDebug.h"
-#include "CGameStateBase.h"
+#include "CGameInstance.h"
 #include "Build/CStructure_Placeable.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
@@ -50,29 +50,6 @@ void ACSurvivorController::BeginPlay()
 	GetSurvivor();
 	SetupInputFunction();
 }
-
-//void ACSurvivorController::OpenActorInventory(TSubclassOf<class UUserWidget> InClass)
-//{
-//	CDebug::Print("OpenActorInventory Called");
-//	if (InClass)
-//	{
-//		UUserWidget* widgetInstance = CreateWidget<UUserWidget>(this, InClass);
-//		if (widgetInstance)
-//		{
-//			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(widgetInstance);
-//			if (workingBenchWidget)
-//			{
-//				ToggleMenu();
-//				workingBenchWidget->AddToViewport(5);
-//				workingBenchWidget->SetVisibility(ESlateVisibility::Visible);
-//			}
-//			else
-//				CDebug::Print("workingBenchWidget is not Valid");
-//		}
-//		else
-//			CDebug::Print("widgetInstance is not Valid");
-//	}
-//}
 
 void ACSurvivorController::GetSurvivor()
 {
@@ -111,6 +88,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("Inventory", IE_Pressed, this, &ACSurvivorController::ShowWidget);
 		InputComponent->BindAction("MouseWheelUp", IE_Pressed, this,&ACSurvivorController::HandleMouseWheelUp);
 		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
+		InputComponent->BindAction("Chat", IE_Pressed,this, &ACSurvivorController::FocusChattingBox);
 
 		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
@@ -431,18 +409,44 @@ void ACSurvivorController::ShowWidget()
 
 void ACSurvivorController::HandleMouseWheelUp()
 {
-	
-		Survivor->HandleMouseWheelUp();
+	Survivor->HandleMouseWheelUp();
 }
 
 void ACSurvivorController::HandleMouseWheelDown()
 {
-	
-		Survivor->HandleMouseWheelDown();
+	Survivor->HandleMouseWheelDown();
 }
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData)
+void ACSurvivorController::FocusChattingBox()
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		if (gameInstance->ChattingBox)
+		{
+			gameInstance->ChattingBox->SetInputMode();
+		}
+		else
+			CDebug::Print("gameInstance->ChattingBox is not Valid");
+	}
+	else
+		CDebug::Print("gameInstance is not Valid");
+}
+
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType)
 {
 	CDebug::Print("RequestMessage_Implementation Called");
-	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData);
+	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType);
+}
+
+void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
+{
+	CDebug::Print("RequestSwapItem_Implementation Called");
+	InPlaceable->PerformSwapItem(idxBase, idxDrag);
+};
+
+void ACSurvivorController::RequestSortInfoWidget_Implementation(class ACStructure_Placeable* InPlaceable)
+{
+	CDebug::Print("RequestSortItem_Implementation Called");
+	InPlaceable->PerformSortInfoWidget();
 }

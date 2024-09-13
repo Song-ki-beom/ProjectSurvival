@@ -51,7 +51,6 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
 		if (gameInstance)
 		{
-			CDebug::Print("CGameInstance is Valid", gameInstance);
 			if (gameInstance->ChattingBox)
 			{
 				gameInstance->ChattingBox->SetInputMode();
@@ -357,8 +356,8 @@ void UCProduceWidget::ClickBuildStructureButton()
 	{
 		CDebug::Print("ProducePanelSwitcher is not Valid");
 	}
-	//CDebug::Print("SetActiveWidgetIndex - 0");
-	//ProducePanelSwitcher->SetActiveWidgetIndex(0);
+
+	BuildStructureSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
 }
 
 void UCProduceWidget::ClickToolButton()
@@ -372,8 +371,8 @@ void UCProduceWidget::ClickToolButton()
 	{
 		CDebug::Print("ProducePanelSwitcher is not Valid");
 	}
-	//CDebug::Print("SetActiveWidgetIndex - 1");
-	//ProducePanelSwitcher->SetActiveWidgetIndex(1);
+
+	ToolSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
 }
 
 void UCProduceWidget::ClickWeaponButton()
@@ -387,6 +386,6 @@ void UCProduceWidget::ClickWeaponButton()
 	{
 		CDebug::Print("ProducePanelSwitcher is not Valid");
 	}
-	//CDebug::Print("SetActiveWidgetIndex - 2");
-	//ProducePanelSwitcher->SetActiveWidgetIndex(2);
+
+	WeaponSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
 }

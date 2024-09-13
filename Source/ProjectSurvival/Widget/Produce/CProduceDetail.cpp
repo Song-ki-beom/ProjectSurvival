@@ -100,9 +100,10 @@ void UCProduceDetail::ProduceItem()
 						CDebug::Print("InventoryComponent is valid", FColor::Magenta);
 
 					TArray<TWeakObjectPtr<UCItemBase>> itemArray = inventoryComponent->GetInventoryContents();
-					
-					// 인벤토리 루프
+
 					int32 usedQuantity = demandQuantity;
+
+					// 인벤토리 루프
 					for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
 					{
 						if (UCItemBase* itemBase = itemBasePtr.Get())
@@ -110,29 +111,27 @@ void UCProduceDetail::ProduceItem()
 							CDebug::Print("itemBase is valid", FColor::Magenta);
 							if (itemBase->ID == recipeWidget->GetResourceID())
 							{
+								float usedItemWeight = itemBase->NumericData.Weight;
+
 								if (itemBase->Quantity > usedQuantity)
 								{
+									float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
+									float usedTotalWeight = usedItemWeight * usedQuantity;
+									float newTotalWeight = inventoryTotalWeight - usedTotalWeight;
+									inventoryComponent->SetInventoryTotalWeight(newTotalWeight);
 									itemBase->SetQuantity(itemBase->Quantity - usedQuantity);
-									{
-										//// TotalWeight Getter - 빠지는 재료무게만큼 구해서 TotalWeight Setter 구현해서 설정 (CInventoryComponent)
-										float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
-										float usedItemWeight = itemBase->NumericData.Weight * usedQuantity;
-										float newTotalWeight = inventoryTotalWeight - usedItemWeight;
-										// inventoryComponent->SetInventoryTotalWeight(newTotalWeight);
-									}
 									inventoryComponent->OnInventoryUpdated.Broadcast();
 									break;
 								}
 								else
 								{
-									usedQuantity -= itemBase->Quantity;
+									usedQuantity = itemBase->Quantity;
+									float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
+									float usedTotalWeight = usedItemWeight * usedQuantity;
+									float newTotalWeight = inventoryTotalWeight - usedTotalWeight;
+									inventoryComponent->SetInventoryTotalWeight(newTotalWeight);
 									itemBase->SetQuantity(0);
-									{
-										//// TotalWeight Getter - 빠지는 재료무게만큼 구해서 TotalWeight Setter 구현해서 설정 (CInventoryComponent)
-										float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
-										float usedItemWeight = itemBase->NumericData.Weight * usedQuantity;
-										float newTotalWeight = inventoryTotalWeight - usedItemWeight;
-									}
+									inventoryComponent->OnInventoryUpdated.Broadcast();
 								}
 							}
 							else

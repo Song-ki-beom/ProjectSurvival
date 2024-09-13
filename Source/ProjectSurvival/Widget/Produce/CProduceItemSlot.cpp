@@ -34,4 +34,6 @@ void UCProduceItemSlot::ClickProduceSlotButton()
 		produceWidget->SetProduceDetail(ItemID);
 	else
 		CDebug::Print("produceWidget is not Vaild");
+
+	this->GetParent()->GetTypedOuter<UUserWidget>()->SetFocus();
 }
