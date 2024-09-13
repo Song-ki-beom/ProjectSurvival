@@ -108,6 +108,12 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 
 bool UCInventoryPanel_WorkingBench::CombineItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
 {
+	int32 AmountLeftToDistribute = ItemFromDrag->Quantity;
+	if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
+	{
+		SwapItem(ItemOnBase, ItemFromDrag);
+		return true;
+	}
 
 	return false;
 }
