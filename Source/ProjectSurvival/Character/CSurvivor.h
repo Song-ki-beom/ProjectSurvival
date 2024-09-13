@@ -26,12 +26,6 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-//private:
-//	//Move
-//	void OnMoveForward(float InAxisValue);
-//	void OnMoveRight(float InAxisValue);
-//	void OnHorizontalLook(float InAxisValue);
-//	void OnVerticalLook(float InAxisValue);
 public:
 	//Weapon
 	void DoAction();
@@ -42,11 +36,6 @@ public:
 	void StartInteract();
 	void FinishInteract();
 
-
-	//Inventory
-	//void ToggleMenu();
-
-
 	//Build
 	void Build();
 	void CancleBuild();
@@ -54,7 +43,6 @@ public:
 	//Mouse Event 
 	void HandleMouseWheelUp();
 	void HandleMouseWheelDown();
-
 
 	class UCWeaponComponent* GetWeaponComponent() { return WeaponComponent; }
 	class UCHarvestComponent* GetHarvestComponent() { return HarvestComponent; }
@@ -79,9 +67,6 @@ public:
 	USkeletalMeshComponent* GetHandsMeshComponent() { return Hands; }
 	USkeletalMeshComponent* GetAccessoryMeshComponent() { return Accessory; }
 
-	
-	
-
 private:
 	//Name  
 	void PerformSetSurvivorName(const FText& InText);
@@ -89,8 +74,6 @@ private:
 		void RequestSetSurvivorName(const FText& InText);
 	void UpdateSurvivorNameWidget();
 
-	
-	
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -115,9 +98,6 @@ private:
 		TSubclassOf<class UUserWidget> SurvivorNameClass;
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* SurvivorNameWidgetComponent;
-	
-
-
 
 	//Name 
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSurvivorName)
@@ -137,11 +117,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UCMovingComponent* MovingComponent;
 
-	
 	//Inventory
 	UPROPERTY(VisibleAnywhere)
 		class UCInteractionComponent* InteractionComponent;
 	UPROPERTY(VisibleAnywhere ,Replicated)
 		class UCInventoryComponent* InventoryComponent;
+
+public:
+	UFUNCTION(Server, Reliable)
+		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION()
+		void ReceiveMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION()
+		void PerformAddMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UPROPERTY()
+		class UCChattingBox* ChattingBox;
 };
 

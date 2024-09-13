@@ -63,10 +63,15 @@ private:
 	UPROPERTY()
 		class UCBuildWidget* BuildWidget;
 
+	//UPROPERTY()
+	//	TSubclassOf<class UUserWidget> ProduceWidgetClass;
+	//UPROPERTY()
+		//class UCProduceWidget* ProduceWidget;
+
 	UPROPERTY()
-		TSubclassOf<class UUserWidget> ProduceWidgetClass;
+		TSubclassOf<class UUserWidget> ChattingBoxClass;
 	UPROPERTY()
-		class UCProduceWidget* ProduceWidget;
+		class UCChattingBox* ChattingBox;
 
 	class UDataTable* BuildStructureData;
 

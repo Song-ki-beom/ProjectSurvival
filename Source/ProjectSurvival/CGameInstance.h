@@ -81,7 +81,11 @@ private:
 	UPROPERTY()
 		float DifficultyCoeff;
 	
-	
+public:
+	UPROPERTY()
+		TSubclassOf<class UUserWidget> ChattingBoxClass;
+	UPROPERTY()
+		class UCChattingBox* ChattingBox;
 };
 
 

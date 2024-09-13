@@ -20,6 +20,11 @@
 #include "Net/UnrealNetwork.h"
 #include "CGameInstance.h"
 #include "Utility/CDebug.h"
+#include "Widget/CMainHUD.h"
+#include "Widget/Chatting/CChattingBox.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/CSurvivorController.h"
+#include "GameFramework/PlayerState.h"
 
 
 ACSurvivor::ACSurvivor()
@@ -142,7 +147,6 @@ void ACSurvivor::BeginPlay()
 	FText tempName = gameInstance->GetLobbySurvivorName();
 	FString stringName = tempName.ToString();
 	CDebug::Print(stringName);
-	//CDebug::Print(gameInstance->GetLobbySurvivorName().ToString());
 
 	if (HasAuthority())
 	{
@@ -157,44 +161,12 @@ void ACSurvivor::BeginPlay()
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	//PlayerInputComponent->BindAxis("MoveForward", this, &ACSurvivor::OnMoveForward);
-	//PlayerInputComponent->BindAxis("MoveRight", this, &ACSurvivor::OnMoveRight);
-	//PlayerInputComponent->BindAxis("HorizontalLook", this, &ACSurvivor::OnHorizontalLook);
-	//PlayerInputComponent->BindAxis("VerticalLook", this, &ACSurvivor::OnVerticalLook);
 }
-
-//void ACSurvivor::OnMoveForward(float InAxisValue)
-//{
-//	FRotator rotator = FRotator(0, this->GetControlRotation().Yaw, 0);
-//	FVector direction = FQuat(rotator).GetForwardVector();
-//
-//	this->AddMovementInput(direction, InAxisValue);
-//}
-//
-//void ACSurvivor::OnMoveRight(float InAxisValue)
-//{
-//	FRotator rotator = FRotator(0, this->GetControlRotation().Yaw, 0);
-//	FVector direction = FQuat(rotator).GetRightVector();
-//
-//	this->AddMovementInput(direction, InAxisValue);
-//}
-//
-//void ACSurvivor::OnHorizontalLook(float InAxisValue)
-//{
-//	this->AddControllerYawInput(InAxisValue * 0.75f);
-//}
-//
-//void ACSurvivor::OnVerticalLook(float InAxisValue)
-//{
-//	this->AddControllerPitchInput(InAxisValue * 0.75f);
-//}
 
 void ACSurvivor::DoAction()
 {
@@ -223,12 +195,6 @@ void ACSurvivor::FinishInteract()
 	InteractionComponent->FinishInteract();
 }
 
-//void ACSurvivor::ToggleMenu()
-//{
-//	InventoryComponent->ToggleMenu();
-//
-//}
-
 void ACSurvivor::Build()
 {
 	BuildComponent->BuildSpawnedStructure();
@@ -249,8 +215,6 @@ void ACSurvivor::HandleMouseWheelDown()
 {
 	InteractionComponent->ExtraOptionButtonDown();
 }
-
-
 
 void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
@@ -363,81 +327,44 @@ void ACSurvivor::OnRep_ReplicatedSurvivorName()
 	UpdateSurvivorNameWidget();
 }
 
+void ACSurvivor::RequestMessage_Implementation(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	BroadcastMessage(InSurvivorNameText, InMessageText);
+}
+
+void ACSurvivor::BroadcastMessage_Implementation(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	PerformAddMessage(InSurvivorNameText, InMessageText);
+}
+
+void ACSurvivor::ReceiveMessage(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	if (HasAuthority())
+		BroadcastMessage(InSurvivorNameText, InMessageText);
+	else
+		RequestMessage(InSurvivorNameText, InMessageText);
+}
+
+void ACSurvivor::PerformAddMessage(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		CDebug::Print("CGameInstance is Valid", gameInstance);
+		if (gameInstance->ChattingBox)
+		{
+			CDebug::Print(TEXT("gameInstance->ChattingBox is Valid"), gameInstance->ChattingBox);
+			gameInstance->ChattingBox->AddMessageToMessageBox(InSurvivorNameText, InMessageText);
+		}
+		else
+			CDebug::Print(TEXT("gameInstance->ChattingBox is is Not Valid"), FColor::Red);
+	}
+	else
+		CDebug::Print(("CGameInstance is Not Valid"), FColor::Red);
+}
+
 void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACSurvivor, ReplicatedSurvivorName);
 }
-
-
-
-//int myint = 32;
-	//float myfloat = 10.0f;
-	//bool mybool = true;
-	//FVector myVector = GetActorLocation();
-	//FRotator myRotator = GetActorRotation();
-	//FQuat myQuat = GetActorQuat();
-	//UObject* myObject = GetWorld()->GetFirstPlayerController();
-	//UClass* myClass = GetWorld()->GetFirstPlayerController()->StaticClass();
-
-	//// 디버그 테스트 시작 //
-	//LogLine;
-	//PrintLine;
-	//PrintLine_Detail(FColor::Green, 5);
-
-	//CDebug::Log(myint);
-	//CDebug::Log(myint, "Test int");
-	//CDebug::Log("Test int", myint);
-	//CDebug::Print(myint);
-	//CDebug::Print(myint, "Test int");
-	//CDebug::Print("Test int", myint);
-
-	//CDebug::Log(myfloat);
-	//CDebug::Log(myfloat, "Test float");
-	//CDebug::Log("Test float", myfloat);
-	//CDebug::Print(myfloat);
-	//CDebug::Print(myfloat, "Test float");
-	//CDebug::Print("Test float", myfloat);
-
-	////CDebug::Log(mybool); 쓰지않음
-	//CDebug::Log(mybool, "Test bool");
-	//CDebug::Log("Test bool", mybool);
-	////CDebug::Print(mybool); 쓰지않음
-	//CDebug::Print(mybool, "Test bool");
-	//CDebug::Print("Test bool", mybool);
-
-	//CDebug::Log(myVector);
-	//CDebug::Log(myVector, "Test Vector");
-	//CDebug::Log("Test Vector", myVector);
-	//CDebug::Print(myVector);
-	//CDebug::Print(myVector, "Test Vector");
-	//CDebug::Print("Test Vector", myVector);
-
-	//CDebug::Log(myRotator);
-	//CDebug::Log(myRotator, "Test Rotator");
-	//CDebug::Log("Test Rotator", myRotator);
-	//CDebug::Print(myRotator);
-	//CDebug::Print(myRotator, "Test Rotator");
-	//CDebug::Print("Test Rotator", myRotator);
-
-	//CDebug::Log(myQuat);
-	//CDebug::Log(myQuat, "Test Quat");
-	//CDebug::Log("Test Quat", myQuat);
-	//CDebug::Print(myQuat);
-	//CDebug::Print(myQuat, "Test Quat");
-	//CDebug::Print("Test Quat", myQuat);
-
-	//CDebug::Log(myObject);
-	//CDebug::Log(myObject, "Test Object");
-	//CDebug::Log("Test Object", myObject);
-	//CDebug::Print(myObject);
-	//CDebug::Print(myObject, "Test Object");
-	//CDebug::Print("Test Object", myObject);
-
-	//CDebug::Log(myClass);
-	//CDebug::Log(myClass, "Test Class");
-	//CDebug::Log("Test Class", myClass);
-	//CDebug::Print(myClass);
-	//CDebug::Print(myClass, "Test Class");
-	//CDebug::Print("Test Class", myClass);
-	//// 디버그 테스트 끝//

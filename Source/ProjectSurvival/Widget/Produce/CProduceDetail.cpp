@@ -84,14 +84,13 @@ void UCProduceDetail::ProduceItem()
 
 	if (recipeNumber == checkNumber)
 	{
-		CDebug::Print("Can Produce");
 		for (UWidget* childWidget : ProduceDetailRecipeScroll->GetAllChildren())
 		{
 			if (UCProduceRecipe* recipeWidget = Cast<UCProduceRecipe>(childWidget))
 			{
-				int32 inventoryQuantity = recipeWidget->GetInventoryQuantity();
+				int32 inventoryTotalQuantity = recipeWidget->GetInventoryQuantity();
 				int32 demandQuantity = recipeWidget->GetDemandQuantity();
-				recipeWidget->SetResourceQuantity(inventoryQuantity - demandQuantity, demandQuantity);
+				recipeWidget->SetResourceQuantity(inventoryTotalQuantity - demandQuantity, demandQuantity);
 
 				ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 				if (survivor)
@@ -102,6 +101,8 @@ void UCProduceDetail::ProduceItem()
 
 					TArray<TWeakObjectPtr<UCItemBase>> itemArray = inventoryComponent->GetInventoryContents();
 					
+					// 인벤토리 루프
+					int32 usedQuantity = demandQuantity;
 					for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
 					{
 						if (UCItemBase* itemBase = itemBasePtr.Get())
@@ -109,9 +110,30 @@ void UCProduceDetail::ProduceItem()
 							CDebug::Print("itemBase is valid", FColor::Magenta);
 							if (itemBase->ID == recipeWidget->GetResourceID())
 							{
-								CDebug::Print("itemBase Set Quantity", FColor::Magenta);
-								itemBase->SetQuantity(inventoryQuantity - demandQuantity);
-								inventoryComponent->OnInventoryUpdated.Broadcast();
+								if (itemBase->Quantity > usedQuantity)
+								{
+									itemBase->SetQuantity(itemBase->Quantity - usedQuantity);
+									{
+										//// TotalWeight Getter - 빠지는 재료무게만큼 구해서 TotalWeight Setter 구현해서 설정 (CInventoryComponent)
+										float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
+										float usedItemWeight = itemBase->NumericData.Weight * usedQuantity;
+										float newTotalWeight = inventoryTotalWeight - usedItemWeight;
+										// inventoryComponent->SetInventoryTotalWeight(newTotalWeight);
+									}
+									inventoryComponent->OnInventoryUpdated.Broadcast();
+									break;
+								}
+								else
+								{
+									usedQuantity -= itemBase->Quantity;
+									itemBase->SetQuantity(0);
+									{
+										//// TotalWeight Getter - 빠지는 재료무게만큼 구해서 TotalWeight Setter 구현해서 설정 (CInventoryComponent)
+										float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
+										float usedItemWeight = itemBase->NumericData.Weight * usedQuantity;
+										float newTotalWeight = inventoryTotalWeight - usedItemWeight;
+									}
+								}
 							}
 							else
 								CDebug::Print("ID not match", FColor::Magenta);

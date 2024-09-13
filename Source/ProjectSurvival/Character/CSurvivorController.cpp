@@ -14,8 +14,9 @@
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Utility/CDebug.h"
 #include "CGameStateBase.h"
-
 #include "Build/CStructure_Placeable.h"
+#include "Widget/CMainHUD.h"
+#include "Widget/Chatting/CChattingBox.h"
 
 
 ACSurvivorController::ACSurvivorController()
@@ -37,14 +38,6 @@ ACSurvivorController::ACSurvivorController()
 	}
 	else
 		CDebug::Print("buildStructureDataFinder Failed", FColor::Red);
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> produceWidgetFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceWidget.WBP_CProduceWidget_C'"));
-	if (produceWidgetFinder.Succeeded())
-	{
-		ProduceWidgetClass = produceWidgetFinder.Class;
-	}
-	else
-		CDebug::Print("produceWidgetFinder Failed", FColor::Red);
 
 	bIsBuildWidgetOn = false;
 	bIsProduceWidgetOn = false;
@@ -419,13 +412,6 @@ void ACSurvivorController::SubAction()
 
 void ACSurvivorController::HoldAxe()
 {
-	//ACSurvivor* controlledCharacter = Cast<ACSurvivor>(this->GetCharacter());
-
-	//if (controlledCharacter)
-	//{
-	//	controlledCharacter->HoldAxe();
-	//}
-
 	if (Survivor)
 	{
 		Survivor->HoldAxe();
@@ -455,39 +441,8 @@ void ACSurvivorController::HandleMouseWheelDown()
 		Survivor->HandleMouseWheelDown();
 }
 
-//void ACSurvivorController::ToggleProduceWidget()
-//{
-//	if (IsValid(ProduceWidget))
-//	{
-//		if (bIsProduceWidgetOn)
-//		{
-//			CDebug::Print("Off Produce Widget");
-//			bIsProduceWidgetOn = false;
-//			ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
-//			//ProduceWidget->bIsFocusable = false;
-//			this->SetInputMode(FInputModeGameOnly());
-//		}
-//		else
-//		{
-//			CDebug::Print("On Produce Widget");
-//			bIsProduceWidgetOn = true;
-//			ProduceWidget->SetVisibility(ESlateVisibility::Visible);
-//			//ProduceWidget->bIsFocusable = true;
-//			this->SetInputMode(FInputModeUIOnly());
-//		}
-//	}
-//	else
-//	{
-//		ProduceWidget = CreateWidget<UCProduceWidget>(this, ProduceWidgetClass);
-//		ProduceWidget->OnProduceWidgetToggled.AddUObject(this, &ACSurvivorController::ToggleProduceWidget);
-//		ProduceWidget->AddToViewport();
-//		bIsProduceWidgetOn = true;
-//		ProduceWidget->bIsFocusable = true;
-//		this->SetInputMode(FInputModeUIOnly());
-//	}
-//}
-
 void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData)
 {
-	InPlaceable->PerformAddID(ItemID, InQuantity, InNumericData);
+	CDebug::Print("RequestMessage_Implementation Called");
+	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData);
 }

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Lobby/CWaitingWidget.h"
@@ -24,17 +24,23 @@ void UCWaitingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (IsValid(LobbyGameMode) && IsValid(LobbySurvivor) && IsValid(DifficultyWidget))
+	if (IsValid(LobbyGameMode))
 	{
-		if (LobbySurvivor->HasAuthority())
+		if (LobbySurvivor)
 		{
-			if (LobbyGameMode->CheckPlayer())
+			if (DifficultyWidget)
 			{
-				DifficultyWidget->ActivateStartButton();
-			}
-			else
-			{
-				DifficultyWidget->DeactivateStartButton();
+				if (LobbySurvivor->HasAuthority())
+				{
+					if (LobbyGameMode->CheckPlayer())
+					{
+						DifficultyWidget->ActivateStartButton();
+					}
+					else
+					{
+						DifficultyWidget->DeactivateStartButton();
+					}
+				}
 			}
 		}
 	}

@@ -3,19 +3,14 @@
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ActorComponents/CActorInventoryComponent.h"
-
 #include "Widget/CMainHUD.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Blueprint/UserWidget.h"
-
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
-
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
-
 #include "ActorComponents/CInventoryComponent.h"
-
 #include "Utility/CDebug.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
@@ -30,9 +25,9 @@ void ACStructure_Placeable::BeginPlay()
 {
 	Super::BeginPlay();
 	ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
-	UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-	if (workingBenchWidget)
-		workingBenchWidget->SetOwnerActor(this);
+	WorkingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+	if (WorkingBenchWidget)
+		WorkingBenchWidget->SetOwnerActor(this);
 }
 
 void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
@@ -86,7 +81,7 @@ void ACStructure_Placeable::CheckCenter()
 {
 	FHitResult centerBoxHitResult;
 	FVector centerBoxLocation = PreviewBox->GetComponentLocation();
-	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0,0,1);
+	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0, 0, 1);
 	FRotator centerBoxOrientation;
 	centerBoxOrientation = this->GetActorRotation();
 	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
@@ -112,7 +107,7 @@ void ACStructure_Placeable::CheckCenter()
 
 void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
-	CDebug::Print("OpenActorInventory Called");
+	//CDebug::Print("OpenActorInventory Called");
 	if (Survivor)
 	{
 		switch (WidgetCaller)
@@ -145,74 +140,123 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 		CDebug::Print("Survivor is not valid");
 }
 
-void ACStructure_Placeable::PerformAddID(FName InID, int32 InQuantity, FItemNumericData InNumericData)
+void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
 {
-	InventoryQuantityArray.Add(InQuantity);
-	SharedInventoryQuantityArray = InventoryQuantityArray;
+	FItemInformation addedItemInfo;
+	addedItemInfo.ItemID = InID;
+	addedItemInfo.Quantity = InQuantity;
+	addedItemInfo.NumericData = InNumericData;
 
-	InventoryIDArray.Add(InID);
-	SharedInventoryIDArray = InventoryIDArray;
+	// 스택이 가능한 아이템인지 검사
+	if (addedItemInfo.NumericData.bIsStackable)
+	{
+		// 최대 스택이 아니면서 ID가 같은 인덱스를 반환, 못 찾을 경우 -1 반환
+		int32 resultIndex = GetIndexOfNonFullStackByID(addedItemInfo);
+		if (resultIndex == -1)
+			ItemInfoArray.Add(addedItemInfo);
+		else
+		{
+			// 더했을 때 최대 스택을 초과하는지 검사
+			if (CheckMaxStack(addedItemInfo, resultIndex))
+			{
+				int32 addQuantity = ItemInfoArray[resultIndex].NumericData.MaxStackSize - ItemInfoArray[resultIndex].Quantity;
+				ItemInfoArray[resultIndex].Quantity += addQuantity;
 
-	InventoryNumericDataArray.Add(InNumericData);
-	SharedInventoryNumericDataArray = InventoryNumericDataArray;
+				// 최대 스택만큼 더하고 남은 양만큼 다시 PerformAddItem 호출
+				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData);
+			}
+			else
+				ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
+		}
+	}
+	else
+		ItemInfoArray.Add(addedItemInfo);
 
-	BroadCastTrigger = !BroadCastTrigger;
+	// 클라이언트에서 AddItemInfoToWidget() 호출하기위한 OnRep_WidgetRefreshTrigger 트리거
+	WidgetRefreshTrigger++;
 
-	if (HasAuthority())
-		AddItemInfoToWidget();
+	// TArray는 리플리케이트 되더라도 특정 인덱스의 내용물만 바꾸는 것으로는 리플리케이트 되지 않음
+	// 새로 초기화 해주거나 행렬 원소 갯수가 변경되어야 리플리케이트가 적용됨
+	SharedItemInfoArray = ItemInfoArray;
+
+	AddItemInfoToWidget();
 }
 
-void ACStructure_Placeable::OnRep_BroadCastTrigger()
+void ACStructure_Placeable::PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
 {
-	AddItemInfoToWidget();
+	
 }
 
 void ACStructure_Placeable::AddItemInfoToWidget()
 {
-	CDebug::Print("BroadCastAddItemInfo_Implementation Called", FColor::Cyan);
-	CDebug::Print("SharedInventoryIDArray.Num() :", SharedInventoryIDArray.Num());
-
+	// 추가하기 전 UCItemBase 배열 초기화
 	ActorInventoryContents.Empty();
 
-	for (int32 tempIndex = 0; tempIndex < SharedInventoryIDArray.Num(); tempIndex++)
+	// 리플리케이트된 FItemData의 배열 SharedItemInfoArray를 기반으로 UCItemBase 생성
+	for (int32 tempIndex = 0; tempIndex < SharedItemInfoArray.Num(); tempIndex++)
 	{
-		FName tempID = SharedInventoryIDArray[tempIndex];
+		FName tempID = SharedItemInfoArray[tempIndex].ItemID;
 		FItemData* itemData = ItemDataTable->FindRow<FItemData>(tempID, TEXT(""));
 		if (itemData)
 		{
 			UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
 			ItemCopy->ID = tempID;
-			ItemCopy->Quantity = SharedInventoryQuantityArray[tempIndex];
+			ItemCopy->Quantity = SharedItemInfoArray[tempIndex].Quantity;
 			ItemCopy->ItemType = itemData->ItemType;
 			ItemCopy->TextData = itemData->TextData;
 			ItemCopy->ItemStats = itemData->ItemStats;
 			ItemCopy->NumericData = itemData->NumericData;
 			ItemCopy->AssetData = itemData->AssetData;
 			ItemCopy->bIsCopy = true;
-	
+
 			ActorInventoryContents.Add(ItemCopy);
-	
-			UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-			if (workingBenchWidget)
+
+			switch (WidgetCaller)
 			{
-				workingBenchWidget->SetWidgetItems(ActorInventoryContents);
-				workingBenchWidget->OnWorkingBenchUpdated.Broadcast();
+			case EWidgetCall::WorkBench:
+			{
+				UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+				if (workingBenchWidget)
+				{
+					// workingBenchWidget의 클래스에 UCItemBase의 배열 전달
+					workingBenchWidget->SetWidgetItems(ActorInventoryContents);
+					workingBenchWidget->RefreshWorkingBenchInventory();
+				}
+			}
 			}
 		}
 		else
 			CDebug::Print("Itemdata is not Valid", FColor::Magenta);
 	}
-	
-	CDebug::Print("Every Item Added by Multicast And Number is : ", ActorInventoryContents.Num(), FColor::Silver);
+}
+
+void ACStructure_Placeable::OnRep_WidgetRefreshTrigger()
+{
+	AddItemInfoToWidget();
+}
+
+int32 ACStructure_Placeable::GetIndexOfNonFullStackByID(const FItemInformation InItemInformation)
+{
+	for (int32 index = 0; index < ItemInfoArray.Num(); ++index)
+	{
+		const FItemInformation& checkItem = ItemInfoArray[index];
+		if ((checkItem.ItemID == InItemInformation.ItemID) && (checkItem.Quantity < checkItem.NumericData.MaxStackSize))
+		{
+			return index;
+		}
+	}
+	return -1;
+}
+
+bool ACStructure_Placeable::CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex)
+{
+	return ItemInfoArray[InIndex].Quantity + InItemInformation.Quantity > ItemInfoArray[InIndex].NumericData.MaxStackSize;
 }
 
 void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryIDArray);
-	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryQuantityArray);
-	DOREPLIFETIME(ACStructure_Placeable, SharedInventoryNumericDataArray);
-	DOREPLIFETIME(ACStructure_Placeable, BroadCastTrigger);
-	
+	DOREPLIFETIME(ACStructure_Placeable, WidgetRefreshTrigger);
+	DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
 }

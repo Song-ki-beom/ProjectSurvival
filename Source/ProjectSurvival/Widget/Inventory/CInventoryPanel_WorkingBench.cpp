@@ -20,8 +20,6 @@ bool UCInventoryPanel_WorkingBench::Initialize()
 	if (!Sucess)
 		return false;
 
-	OnWorkingBenchUpdated.AddUObject(this, &UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory);
-
 	return true;
 }
 
@@ -65,6 +63,7 @@ bool UCInventoryPanel_WorkingBench::NativeOnDrop(const FGeometry& InGeometry, co
 				if (inventoryPanel)
 				{
 					AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor);
+
 					inventoryPanel->RemoveItem();
 				}
 			}
@@ -101,51 +100,37 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 			CDebug::Print("tempItem is not Valid", FColor::Magenta);
 		}
 	}
+}
 
-
-	//ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
-	//if (IsValid(survivorController))
-	//{
-	//	survivorController->RefreshWorkingBenchInventory(InIndex);
-	//}
-	//else
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("lobbySurvivorController is not valid - ACLobbySurvivor"));
-	//}
-
+void UCInventoryPanel_WorkingBench::RemoveItem(int32 InUniqueItemIndexInWrapBox)
+{
+	
 }
 
 void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {
-	//UCItemBase* NewItem;
-
-	//NewItem = InItem->CreateItemCopy();
-
 	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(InActor);
 	if (workingBenchActor)
 	{
-		//CDebug::Print("Widget Owner : ", workingBenchActor->GetName());
-		//CDebug::Print("Widget Viewer", this->GetOwningPlayerPawn());
 		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-		if (survivor->HasAuthority())
+		if (survivor)
 		{
-			workingBenchActor->PerformAddID(InItem->ID, QuantityToAdd, InItem->NumericData);
-		}
-		else
-		{
-			ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-			if (playerController)
-			{
-				playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData);
-			}
+			// 위젯 클래스에서 RPC함수 호출 불가 + workingBenchActor에서 클라이언트가 RPC함수 호출 불가능해서
+			// 클라이언트의 경우 컨트롤러를 통해 RPC를 호출함
+			if (survivor->HasAuthority())
+				workingBenchActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData);
 			else
-				CDebug::Print("playerController is not valid");
+			{
+				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+				if (playerController)
+				{
+					playerController->RequestAddItem(InItem->ID, QuantityToAdd, workingBenchActor, InItem->NumericData);
+				}
+				else
+					CDebug::Print("playerController is not valid");
+			}
 		}
 	}
 	else
 		CDebug::Print("Widget Owner is not Valid");
-
-
-
 }
-

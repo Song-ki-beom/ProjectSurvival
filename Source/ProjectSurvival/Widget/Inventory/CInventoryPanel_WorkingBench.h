@@ -7,8 +7,6 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "CInventoryPanel_WorkingBench.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnWorkingBenchUpdated);
-
 UCLASS()
 class PROJECTSURVIVAL_API UCInventoryPanel_WorkingBench : public UUserWidget
 {
@@ -21,19 +19,16 @@ protected:
 
 public:
 	void SetOwnerActor(class ACStructure_Placeable* InActor) { OwnerActor = InActor; }
-	//class AActor* GetOwnerActor() { return OwnerActor; }
 
 	UFUNCTION()
 		void RefreshWorkingBenchInventory();
 
-//	TArray<UCItemBase*> GetWidgetItems() { return  WidgetItems; }
 	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
 
-	FOnWorkingBenchUpdated OnWorkingBenchUpdated;
+	void RemoveItem(int32 InUniqueItemIndexInWrapBox);
 
 private:
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
-
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -42,8 +37,6 @@ private:
 		TSubclassOf<class UCInventoryItemSlot> InventorySlotClass;
 	UPROPERTY()
 		TArray<UCItemBase*> WidgetItems;
-
-	//TArray<UCItemBase*> ItemArray;
 
 	class ACStructure_Placeable* OwnerActor;
 };

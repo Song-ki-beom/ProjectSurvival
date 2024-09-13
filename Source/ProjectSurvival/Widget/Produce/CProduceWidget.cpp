@@ -13,8 +13,9 @@
 #include "Widget/Produce/CProduceItemSlot.h"
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
-//#include "Widget/Inventory/CInventoryPanel_WorkingBench.h" //TEMP
+#include "Widget/Chatting/CChattingBox.h"
 #include "Widget/CMainHUD.h"
+#include "CGameInstance.h"
 #include "Utility/CDebug.h"
 
 void UCProduceWidget::NativeConstruct()
@@ -45,11 +46,24 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 		return FReply::Handled();
 	}
 
-	//if (InKeyEvent.GetKey() == EKeys::O)
-	//{
-	//	Test_ShowPlaceableInventory();
-	//	return FReply::Handled();
-	//}
+	if (InKeyEvent.GetKey() == EKeys::Enter)
+	{
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+		if (gameInstance)
+		{
+			CDebug::Print("CGameInstance is Valid", gameInstance);
+			if (gameInstance->ChattingBox)
+			{
+				gameInstance->ChattingBox->SetInputMode();
+			}
+			else
+				CDebug::Print("gameInstance->ChattingBox is not Valid");
+		}
+		else
+			CDebug::Print("gameInstance is not Valid");
+
+		return FReply::Handled();
+	}
 
 	return FReply::Unhandled();
 }
@@ -156,8 +170,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_1.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -178,8 +191,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_2.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -200,8 +212,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_3.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -221,8 +232,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_4.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -242,8 +252,7 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 				{
 					if (itemBase->ID == itemData->ProduceData.ProduceResource_5.ResourceID)
 					{
-						inventoryQuantity = itemBase->Quantity;
-						break;
+						inventoryQuantity += itemBase->Quantity;
 					}
 				}
 			}
@@ -271,6 +280,12 @@ void UCProduceWidget::RefreshProduceDetail()
 
 void UCProduceWidget::StartProduce()
 {
+	if (ProduceQueue->GetChildrenCount() > 5)
+	{
+		// 대기열 가득참
+		return;
+	}
+
 	ProduceDetail->ProduceItem();
 }
 
@@ -298,6 +313,9 @@ void UCProduceWidget::AddProduceItemToQueue()
 				FText produceItemName = itemData->TextData.Name;
 				produceItemQueueSlot->SetProduceItemName(produceItemName);
 
+				FProduceWidgetData produceWidgetData = itemData->ProduceData;
+				produceItemQueueSlot->SetProduceWidgetData(produceWidgetData);
+
 				ProduceQueue->AddChildToWrapBox(produceItemQueueSlot);
 				produceItemQueueSlot->CheckWrapBox(ProduceQueue);
 			}
@@ -305,9 +323,10 @@ void UCProduceWidget::AddProduceItemToQueue()
 	}
 }
 
-void UCProduceWidget::SetProducingItemText(FText InText)
+void UCProduceWidget::SetProducingItemText(FText InText, FLinearColor InLinearColor)
 {
 	ProducingItemText->SetText(InText);
+	ProducingItemText->SetColorAndOpacity(FSlateColor(InLinearColor));
 }
 
 //void UCProduceWidget::Test_ShowPlaceableInventory()

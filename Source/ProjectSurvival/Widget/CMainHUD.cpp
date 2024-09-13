@@ -8,6 +8,7 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CEarnInfoPanel.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Chatting/CChattingBox.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
@@ -34,9 +35,7 @@ void ACMainHUD::BeginPlay()
 		SurvivorInventoryWidget = CreateWidget<UCInventoryMenu>(GetWorld(), InventoryMenuClass);
 		SurvivorInventoryWidget->AddToViewport(5); //그려지는 zOrder 최상위 , 최우선으로 Interact 하기 위해 
 		SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
-		//SurvivorInventoryWidget->OnMainMenuToggled.AddUObject(this, &ACMainHUD::ToggleMenu);
 		SurvivorInventoryWidget->bIsFocusable = true;
-
 	}
 	
 	//위젯들 등록 
@@ -61,8 +60,6 @@ void ACMainHUD::BeginPlay()
 		EarnInfoPanel->SetVisibility(ESlateVisibility::Visible);
 		EarnInfoPanel->bIsFocusable = true;
 	}
-
-
 }
 
 void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor)
@@ -173,8 +170,6 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 				}
 				else
 					CDebug::Print("InActor is not Valid");
-
-
 			}
 			else
 				CDebug::Print("workingBenchInventory is not Valid", FColor::Red);
@@ -182,7 +177,6 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 		}
 	}
 }
-
 
 void ACMainHUD::ShowInteractionWidget()
 {
@@ -200,7 +194,6 @@ void ACMainHUD::HideInteractionWidget()
 	}
 }
 
-
 //InteractionComponent에서 트레이스 후 새로운 상호작용 가능 액터를 검출할때마다 UI 갱신
 void ACMainHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
 {
@@ -214,7 +207,6 @@ void ACMainHUD::UpdateInteractionWidget(const FInteractableData* InteractableDat
 		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }
-
 
 void ACMainHUD::ShowSubMenu(FVector2D Position , UCInventoryItemSlot* InSlotReference)
 {
@@ -250,9 +242,6 @@ void ACMainHUD::ToggleHiddenMenu()
 	InteractionWidget->ToggleHiddenMenu();
 }
 
-
-
-
 void ACMainHUD::ShowHiddenMenu()
 {
 	InteractionWidget->ShowHiddenMenu();
@@ -277,7 +266,3 @@ void ACMainHUD::AddEarnedInfo(UObject* EarnedItem)
 {
 	EarnInfoPanel->AddEarnedItemSlot(EarnedItem);
 }
-
-
-
-
