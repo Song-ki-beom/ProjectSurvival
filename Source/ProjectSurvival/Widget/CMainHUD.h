@@ -19,6 +19,7 @@ UCLASS()
 class PROJECTSURVIVAL_API ACMainHUD : public AHUD
 {
 	GENERATED_BODY()
+
 public:
 	ACMainHUD();
 
@@ -42,7 +43,6 @@ public:
 	void ExtraOptionButtonDown();
 	void AddEarnedInfo(class UObject* EarnedItem);
 	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
-	class UCChattingBox* GetChattingBox() { return ChattingBox; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -55,8 +55,6 @@ public:
 	TSubclassOf<class UCProduceWidget> ProduceWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCEarnInfoPanel> EarnInfoPanelClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<class UCChattingBox> ChattingBoxClass;
 
 protected:
 	UPROPERTY()
@@ -71,10 +69,4 @@ protected:
 		class UUserWidget* ActorInventoryWidget;
 	UPROPERTY()
 		class UCEarnInfoPanel* EarnInfoPanel;
-	UPROPERTY()
-		class UCChattingBox* ChattingBox;
-public:
-	//bool bIsMenuVisible;
-	
-
 };

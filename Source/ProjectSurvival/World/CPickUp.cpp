@@ -46,6 +46,7 @@ void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	OnRequestDesroyCalled.Clear(); // CPickUp 파괴되기 전에 델리게이트 바인드한 목록 삭제 
 }
 
+#if WITH_EDITOR
 // 에디터 내에서 변수 값이 바뀌었을때 델리게이트로 호출됨 (언리얼 Built-in 함수)
 void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
@@ -66,6 +67,7 @@ void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 		}
 	}
 }
+#endif
 
 void ACPickUp::BeginFocus()
 {

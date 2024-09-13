@@ -1,10 +1,13 @@
 #include "Widget/Chatting/CChattingBox.h"
+#include "Widget/Chatting/CChattingMessage.h"
 #include "Components/VerticalBox.h"
 #include "Components/Overlay.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "CGameInstance.h"
+#include "Character/CSurvivorController.h"
+#include "Character/CSurvivor.h"
 #include "Utility/CDebug.h"
 
 FReply UCChattingBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -29,6 +32,8 @@ bool UCChattingBox::Initialize()
 	if (gameInstance)
 		SurvivorName = gameInstance->GetLobbySurvivorName();
 
+	SurvivorNameColor = FLinearColor::White;
+
 	return true;
 }
 
@@ -39,7 +44,16 @@ void UCChattingBox::SetInputMode()
 
 void UCChattingBox::ClickSendButton()
 {
-
+	//if (!InputMessageBox->GetText().IsEmpty())
+	//{
+	//	if (this->GetOwningPlayer()->HasAuthority())
+	//		SurvivorController->BroadcastMessage(InputMessageBox->GetText());
+	//	else
+	//		SurvivorController->RequestMessage(InputMessageBox->GetText());
+	//}
+	//	//AddMessageToMessageBox(InputMessageBox->GetText());
+	//
+	//InputMessageBox->SetText(FText::GetEmpty());
 }
 
 void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMethod)
@@ -47,7 +61,14 @@ void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMet
 	if (CommitMethod == ETextCommit::OnEnter)
 	{
 		if (!InText.IsEmpty())
-			AddMessageToMessageBox(InText);
+		{
+			ACSurvivor* survivor = Cast<ACSurvivor>(GetOwningPlayerPawn());
+			if (survivor)
+			{
+				FText survivorNameText = FText::Format(FText::FromString("{0}:"), SurvivorName);
+				survivor->ReceiveMessage(survivorNameText, InText);
+			}
+		}
 
 		InputMessageBox->SetText(FText::GetEmpty());
 	}
@@ -59,7 +80,21 @@ void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMet
 	}
 }
 
-void UCChattingBox::AddMessageToMessageBox(const FText& InText)
+void UCChattingBox::ChangeSurvivorNameColor(const FLinearColor& InLinearColor)
 {
+	SurvivorNameColor = InLinearColor;
+}
 
+void UCChattingBox::AddMessageToMessageBox(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	if (ChattingMessageClass)
+	{
+		UCChattingMessage* chattingMessage = CreateWidget<UCChattingMessage>(this, ChattingMessageClass);
+		if (chattingMessage)
+		{
+			chattingMessage->SetSurvivorName(InSurvivorNameText, SurvivorNameColor);
+			chattingMessage->SetMessage(InMessageText);
+			MessageBox->AddChild(chattingMessage);
+		}
+	}
 }

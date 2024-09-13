@@ -15,6 +15,8 @@
 #include "Environment/CDestructibleActor.h"
 #include "DestructibleComponent.h"
 
+#include "Widget/Chatting/CChattingBox.h"
+
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
@@ -37,6 +39,10 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 		DestructibleDataTable = DataTable_BP.Object;
 	}
 
+
+	ConstructorHelpers::FClassFinder<UUserWidget> chattingBoxClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Chatting/WBP_ChattingBox.WBP_ChattingBox_C'"));
+	if (chattingBoxClassFinder.Succeeded())
+		ChattingBoxClass = chattingBoxClassFinder.Class;
 }
 
 void UCGameInstance::Init()
@@ -135,6 +141,21 @@ void UCGameInstance::RemoveAllWidgets()
 		{
 			widget->RemoveFromParent();
 		}
+	}
+
+	if (ChattingBoxClass)
+	{
+		ChattingBox = CreateWidget<UCChattingBox>(this, ChattingBoxClass);
+
+		ChattingBox->AddToViewport(5);
+		ChattingBox->SetVisibility(ESlateVisibility::Visible);
+		ChattingBox->bIsFocusable = true;
+
+		FVector2D widgetSize = FVector2D(500, 200);
+		ChattingBox->SetDesiredSizeInViewport(widgetSize);
+		FVector2D widgetAlignment = FVector2D(-0.02, -4.35);
+		ChattingBox->SetAlignmentInViewport(widgetAlignment);
+		ChattingBox->SetKeyboardFocus();
 	}
 }
 

@@ -15,15 +15,21 @@ protected:
 
 public:
 	void SetInputMode();
+	void AddMessageToMessageBox(const FText& InSurvivorNameText, const FText& InMessageText);
 
 private:
-	void ClickSendButton();
+	UFUNCTION()
+		void ClickSendButton();
 	UFUNCTION()
 		void SendMessage(const FText& InText, ETextCommit::Type CommitMethod);
-
-	void AddMessageToMessageBox(const FText& InText);
+	UFUNCTION()
+		void ChangeSurvivorNameColor(const FLinearColor& InLinearColor);
 
 private:
+	class ACSurvivorController* SurvivorController;
+
+	UPROPERTY(meta = (BindWidget))
+		class UScrollBox* MessageScrollBox;
 	UPROPERTY(meta = (BindWidget))
 		class UVerticalBox* MessageBox;
 	UPROPERTY(meta = (BindWidget))
@@ -33,5 +39,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* SendButton;
 	
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UCChattingMessage> ChattingMessageClass;
+
 	FText SurvivorName;
+	FLinearColor SurvivorNameColor;
 };

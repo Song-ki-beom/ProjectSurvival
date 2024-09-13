@@ -15,6 +15,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/CMainHUD.h"
+#include "CGameInstance.h"
 #include "Utility/CDebug.h"
 
 void UCProduceWidget::NativeConstruct()
@@ -47,11 +48,20 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 
 	if (InKeyEvent.GetKey() == EKeys::Enter)
 	{
-		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
-		if (mainHUD)
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+		if (gameInstance)
 		{
-			mainHUD->GetChattingBox()->SetInputMode();
+			CDebug::Print("CGameInstance is Valid", gameInstance);
+			if (gameInstance->ChattingBox)
+			{
+				gameInstance->ChattingBox->SetInputMode();
+			}
+			else
+				CDebug::Print("gameInstance->ChattingBox is not Valid");
 		}
+		else
+			CDebug::Print("gameInstance is not Valid");
+
 		return FReply::Handled();
 	}
 
