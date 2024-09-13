@@ -86,9 +86,12 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
 		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mousePosition.X, mousePosition.Y);
 
-		
-		HUDReference->ShowSubMenu(FVector2D(mousePosition.X+10, mousePosition.Y+15), this);
-		ToggleTooltip();
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+		if (mainHUD)
+		{
+			mainHUD->ShowSubMenu(FVector2D(mousePosition.X + 10, mousePosition.Y + 15), this);
+			ToggleTooltip();
+		}
 		
 		return Reply.Handled(); // 오른쪽 클릭 처리 완료
 	}
