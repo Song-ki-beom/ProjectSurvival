@@ -12,6 +12,8 @@ struct FItemInformation
 
 public:
 	UPROPERTY()
+		int32 InventoryIndex;
+	UPROPERTY()
 		FName ItemID;
 
 	UPROPERTY()
@@ -44,9 +46,13 @@ public:
 	void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
 
-
+	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
 	void PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
+
+	//Swap
+	void PerformSwapItem(int32 idxBase,int32 idxDrag);
+
 
 	void AddItemInfoToWidget();
 

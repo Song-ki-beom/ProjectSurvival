@@ -446,3 +446,9 @@ void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQ
 	CDebug::Print("RequestMessage_Implementation Called");
 	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData);
 }
+
+void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
+{
+	CDebug::Print("RequestSwapItem_Implementation Called");
+	InPlaceable->PerformSwapItem(idxBase, idxDrag);
+};

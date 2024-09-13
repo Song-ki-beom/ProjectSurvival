@@ -146,7 +146,7 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	addedItemInfo.ItemID = InID;
 	addedItemInfo.Quantity = InQuantity;
 	addedItemInfo.NumericData = InNumericData;
-
+	addedItemInfo.InventoryIndex = WidgetRefreshTrigger;
 	// 스택이 가능한 아이템인지 검사
 	if (addedItemInfo.NumericData.bIsStackable)
 	{
@@ -185,6 +185,15 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 void ACStructure_Placeable::PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
 {
 	
+}
+
+void ACStructure_Placeable::PerformSwapItem(int32 idxBase, int32 idxDrag)
+{
+	ItemInfoArray.Swap(idxBase, idxDrag);
+	SharedItemInfoArray = ItemInfoArray;
+	AddItemInfoToWidget();
+	WidgetRefreshTrigger++;
+
 }
 
 void ACStructure_Placeable::AddItemInfoToWidget()

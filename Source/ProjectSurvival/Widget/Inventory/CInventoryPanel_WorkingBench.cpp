@@ -102,10 +102,59 @@ void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()
 	}
 }
 
+
+bool UCInventoryPanel_WorkingBench::CombineItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
+{
+
+	return false;
+}
+
+
 void UCInventoryPanel_WorkingBench::RemoveItem(int32 InUniqueItemIndexInWrapBox)
 {
+
+
+}
+
+void UCInventoryPanel_WorkingBench::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
+{
+	int32 idxBase = FindItemIndex(ItemOnBase);
+	int32 idxDrag = FindItemIndex(ItemFromDrag);
+
+	ACStructure_Placeable* workingBenchActor = Cast<ACStructure_Placeable>(OwnerActor);
+	if (workingBenchActor)
+	{
+		ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+		if (survivor)
+		{
+			if (survivor->HasAuthority())
+				workingBenchActor->PerformSwapItem(idxBase, idxDrag);
+			else
+			{
+				ACSurvivorController* playerController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+				if (playerController)
+				{
+					playerController->RequestSwapItem(idxBase, idxDrag , workingBenchActor);
+				}
+				else
+					CDebug::Print("playerController is not valid");
+			}
+		}
+	}
+
 	
 }
+
+
+int32 UCInventoryPanel_WorkingBench::FindItemIndex(UCItemBase * Item)
+	{
+		int32 Index = WidgetItems.IndexOfByPredicate([Item](const UCItemBase* InItem)
+			{
+				return InItem == Item;
+			});
+
+		return Index;
+	}
 
 void UCInventoryPanel_WorkingBench::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {

@@ -6,6 +6,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CDragItemVisual.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Widget/CMainHUD.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Components/Image.h"
@@ -167,24 +168,70 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 	{
 		UCItemBase* DragItem  = ItemDragDrop->SourceItem;
 
-		if (ItemDragDrop->DragStartWidget == this) 
+		//if (ItemDragDrop->DragStartWidget == this )  //
+		//{
+
+		//	/*if (UCInventoryPanel_WorkingBench* InnerDragWidget = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget))
+		//	{
+		//		InnerDragWidget
+		//	}*/
+
+		//	return false;
+		//}
+
+
+		//해당 슬롯을 소유하는 UUserWidget 검사 
+		UUserWidget* OwnerWidget;
+		if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
 		{
-			return false; // 드래그가 시작된 인벤과 현재 인벤 이 같으면 취소??
+			if (this->GetTypedOuter<UUserWidget>())
+			{
+				OwnerWidget = this->GetTypedOuter<UUserWidget>();
+			}
+			else
+			{
+				OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
+			}
 		}
+
+		//UCInventoryPanel_WorkingBench을 가지고 있는지 검사 
+		bool IsOwnerWorkingBench = false;
+		UCInventoryPanel_WorkingBench* WorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
+		if (WorkingBenchPanel)
+		{
+			IsOwnerWorkingBench = true;
+		}
+			
+
 
 		if (DragItem == ItemReference)
 		{
 			CDebug::Print(TEXT("Same Item Detected"));
 			return false;
 		}
+
 		else if ( (DragItem != ItemReference)&&(DragItem->ID  == ItemReference->ID))
 		{
-			return ItemReference->Inventory->CombineItem(ItemReference, DragItem);
-			
+			if (IsOwnerWorkingBench)
+			{
+				return WorkingBenchPanel->CombineItem(ItemReference, DragItem);
+			}
+			else
+			{
+				return ItemReference->Inventory->CombineItem(ItemReference, DragItem);
+			}
 		}
 		else
 		{
-			 ItemReference->Inventory->SwapItem(ItemReference, DragItem);
+			if (IsOwnerWorkingBench)
+			{
+				WorkingBenchPanel->SwapItem(ItemReference, DragItem);
+			}
+			else
+			{
+				ItemReference->Inventory->SwapItem(ItemReference, DragItem);
+
+			}
 			 return true;
 		}
 	}
