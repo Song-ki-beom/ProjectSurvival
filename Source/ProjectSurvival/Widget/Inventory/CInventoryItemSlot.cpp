@@ -177,7 +177,7 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 			CDebug::Print(TEXT("Same Item Detected"));
 			return false;
 		}
-		else if (DragItem->ID  == ItemReference->ID)
+		else if ( (DragItem != ItemReference)&&(DragItem->ID  == ItemReference->ID))
 		{
 			return ItemReference->Inventory->CombineItem(ItemReference, DragItem);
 			
