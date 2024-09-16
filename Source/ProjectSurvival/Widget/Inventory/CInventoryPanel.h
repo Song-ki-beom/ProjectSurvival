@@ -19,7 +19,7 @@ public:
 	UFUNCTION()
 	void RefreshInventory();
 
-	void RemoveItem();
+	void RemoveItem(class UCItemBase* ItemToRemove);
 
 
 

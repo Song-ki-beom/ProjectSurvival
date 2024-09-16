@@ -49,8 +49,9 @@ public:
 
 	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType);
-	void PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData);
-
+	//Remove
+	void PerformRemoveItem(int32 idxRemove);
+	void PerformRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove);
 	//Swap
 	void PerformSwapItem(int32 idxBase,int32 idxDrag);
 

@@ -28,7 +28,8 @@ public:
 
 	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
 
-	void RemoveItem(int32 InUniqueItemIndexInWrapBox);
+	void RemoveItem(class UCItemBase* ItemToRemove);
+	void RemoveAmountOfItem(class UCItemBase* ItemToRemove, int32 AmountToRemove);
 	bool CombineItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	bool SplitExistingStack(class UCItemBase* ItemIn, int32 AmountToSplit);

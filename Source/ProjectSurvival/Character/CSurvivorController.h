@@ -93,7 +93,10 @@ public:
 		void RequestSplitItem(int32 ItemIdx, int32 AmountToSplit, class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)
 		void RequestCombineItem(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable);
-
+	UFUNCTION(Server, Reliable)
+		void RequestRemoveItem(int32 idxRemove,class ACStructure_Placeable* InPlaceable);
+	UFUNCTION(Server, Reliable)
+		void RequestRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove, class ACStructure_Placeable* InPlaceable);
 
 };
 

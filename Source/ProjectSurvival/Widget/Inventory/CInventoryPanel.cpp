@@ -3,6 +3,7 @@
 
 #include "Widget/Inventory/CInventoryPanel.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Character/CSurvivor.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Components/WrapBox.h"
@@ -27,6 +28,7 @@ void UCInventoryPanel::NativeOnInitialized()
             SetInfoText();
 
 
+
         }
 
     }
@@ -36,9 +38,10 @@ void UCInventoryPanel::NativeOnInitialized()
 }
 
 
-void UCInventoryPanel::RemoveItem()
+void UCInventoryPanel::RemoveItem(UCItemBase* ItemToRemove)
 {
-    //CDebug::Print("TestCalled");
+    InventoryReference->RemoveSingleItem(ItemToRemove);
+
 }
 
 //인벤토리로부터 수량과 용량 정보 업데이트 
@@ -88,14 +91,40 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
             CDebug::Print("DragStartWidget is Same");
             return true; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
         }
+
+        if (ItemDragDrop->DragStartWidget->GetName().Contains(TEXT("WBP_CInventoryPanel_WorkingBench")))
+        {
+            UCInventoryPanel_WorkingBench* inventoryPanel_WorkBench = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
+            if (inventoryPanel_WorkBench)
+            {
+                FItemAddResult AddResult = InventoryReference->HandleAddItem(ItemDragDrop->SourceItem);
+                if (AddResult.OperationResult == EItemAddResult::NoItemAdded)
+                {
+                    return false;
+                }
+                else if (AddResult.OperationResult == EItemAddResult::PartialItemAdded)
+                {
+                 
+                    inventoryPanel_WorkBench->RemoveAmountOfItem(ItemDragDrop->SourceItem , AddResult.ActualAmountAdded);
+
+                }
+                else if (AddResult.OperationResult == EItemAddResult::AllItemAdded)
+                {
+                    inventoryPanel_WorkBench->RemoveItem(ItemDragDrop->SourceItem);
+                }
+
+                return true;
+            }
+        }
         else
         {
-            CDebug::Print("StartWidget : ", ItemDragDrop->DragStartWidget);
-            CDebug::Print(TEXT("옮기는 함수"));
-            return true;
+            CDebug::Print("NotContain");
+            CDebug::Print(ItemDragDrop->DragStartWidget->GetName());
         }
+
     }
-    return false; 
+    return false;
+
 }
 
 bool UCInventoryPanel::Initialize()
