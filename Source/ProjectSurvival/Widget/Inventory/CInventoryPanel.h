@@ -13,7 +13,6 @@ UCLASS()
 class PROJECTSURVIVAL_API UCInventoryPanel : public UUserWidget
 {
 	GENERATED_BODY()
-	
 
 public:
 	UFUNCTION()
@@ -58,6 +57,8 @@ public:
 	UPROPERTY()
 	class UCInventoryComponent* InventoryReference;
 
+	UPROPERTY()
+	class UCQuickSlot* QuickSlotReference;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UCInventoryItemSlot> InventorySlotClass;

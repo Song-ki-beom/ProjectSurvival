@@ -60,23 +60,17 @@ bool UCInventoryPanel_WorkingBench::NativeOnDrop(const FGeometry& InGeometry, co
 		}
 		else
 		{
-			if (ItemDragDrop->DragStartWidget->GetName().Contains(TEXT("WBP_InventoryPanel")))
+			UCInventoryPanel* inventoryPanel = Cast<UCInventoryPanel>(ItemDragDrop->DragStartWidget);
+			if (inventoryPanel)
 			{
-				UCInventoryPanel* inventoryPanel = Cast<UCInventoryPanel>(ItemDragDrop->DragStartWidget);
-				if (inventoryPanel)
-				{
-					AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor); //공유 인벤토리에 아이템 추가 
-					inventoryPanel->RemoveItem(ItemDragDrop->SourceItem); //개인 인벤토리 아이템 제거 
-				}
+				AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor); //공유 인벤토리에 아이템 추가 
+				inventoryPanel->RemoveItem(ItemDragDrop->SourceItem); //개인 인벤토리 아이템 제거 
 			}
 			else
 			{
 				CDebug::Print("NotContain");
 				CDebug::Print(ItemDragDrop->DragStartWidget->GetName());
 			}
-
-			
-			//CDebug::Print("DragStartWidget is Different");
 			return false;
 		}
 	}

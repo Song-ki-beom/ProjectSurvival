@@ -22,7 +22,7 @@ public:
 	void SwapItemInfo(class UCItemBase* DragStartWidgetItem, class UCItemBase* OwnerWidgetItem);
 	void ProcessDragToInventoryMenu(UCItemBase* InItem);
 	void ProcessDragToInventoryPanel(UCItemBase* InItem);
-
+	int32 GetQuickSlotTotalWeight();
 
 	TArray<USizeBox*> GetSizeBoxArray() { return SizeBoxes; }
 

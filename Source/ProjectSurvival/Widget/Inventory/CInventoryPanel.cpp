@@ -32,11 +32,7 @@ void UCInventoryPanel::NativeOnInitialized()
 
 
         }
-
     }
-
-
-
 }
 
 
@@ -49,9 +45,25 @@ void UCInventoryPanel::RemoveItem(UCItemBase* ItemToRemove)
 //인벤토리로부터 수량과 용량 정보 업데이트 
 void UCInventoryPanel::SetInfoText()
 {
-    WeightInfo->SetText(FText::FromString(FString::SanitizeFloat(InventoryReference->GetInventoryTotalWeight()) + "/" + FString::SanitizeFloat(InventoryReference->GetWeightCapacity())));
+    int32 quickSlotWeight = 0;
+
+    if (QuickSlotReference)
+    {
+        for (USizeBox* sizeBox : QuickSlotReference->GetSizeBoxArray())
+        {
+
+            UCInventoryItemSlot* tempItemSlot = Cast<UCInventoryItemSlot>(sizeBox->GetChildAt(0));
+            if (tempItemSlot)
+                quickSlotWeight += tempItemSlot->GetItemReference()->GetItemSingleWeight();
+        }
+
+        CDebug::Print("weight : ", quickSlotWeight, FColor::Magenta);
+    }
+
+    WeightInfo->SetText(FText::FromString(FString::SanitizeFloat(InventoryReference->GetInventoryTotalWeight() + quickSlotWeight) + "/" + FString::SanitizeFloat(InventoryReference->GetWeightCapacity())));
 
     CapacityInfo->SetText(FText::Format(FText::FromString("{0}/{1}"), InventoryReference->GetInventoryContents().Num(), InventoryReference->GetSlotsCapacity()));
+
 }
 
 
@@ -106,29 +118,23 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
             return true; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
         }
 
-        if (ItemDragDrop->DragStartWidget->GetName().Contains(TEXT("WBP_CInventoryPanel_WorkingBench")))
+        UCInventoryPanel_WorkingBench* workingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
+        if (workingBenchPanel)
         {
-            UCInventoryPanel_WorkingBench* inventoryPanel_WorkBench = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
-            if (inventoryPanel_WorkBench)
+            FItemAddResult AddResult = InventoryReference->HandleAddItem(ItemDragDrop->SourceItem);
+            if (AddResult.OperationResult == EItemAddResult::NoItemAdded)
             {
-                FItemAddResult AddResult = InventoryReference->HandleAddItem(ItemDragDrop->SourceItem);
-                if (AddResult.OperationResult == EItemAddResult::NoItemAdded)
-                {
-                    return false;
-                }
-                else if (AddResult.OperationResult == EItemAddResult::PartialItemAdded)
-                {
-
-                    inventoryPanel_WorkBench->RemoveAmountOfItem(ItemDragDrop->SourceItem, AddResult.ActualAmountAdded);
-
-                }
-                else if (AddResult.OperationResult == EItemAddResult::AllItemAdded)
-                {
-                    inventoryPanel_WorkBench->RemoveItem(ItemDragDrop->SourceItem);
-                }
-
-                return true;
+                return false;
             }
+            else if (AddResult.OperationResult == EItemAddResult::PartialItemAdded)
+            {
+                workingBenchPanel->RemoveAmountOfItem(ItemDragDrop->SourceItem, AddResult.ActualAmountAdded);
+            }
+            else if (AddResult.OperationResult == EItemAddResult::AllItemAdded)
+            {
+                workingBenchPanel->RemoveItem(ItemDragDrop->SourceItem);
+            }
+            return true;
         }
         else
         {
@@ -142,8 +148,6 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
                         mainHUD->GetQuickSlotWidget()->ProcessDragToInventoryPanel(ItemDragDrop->SourceItem);
                 }
             }
-            CDebug::Print("StartWidget : ", ItemDragDrop->DragStartWidget);
-            CDebug::Print(TEXT("옮기는 함수"));
             return true;
         }
 

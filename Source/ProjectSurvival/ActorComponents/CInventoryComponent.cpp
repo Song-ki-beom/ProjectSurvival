@@ -445,6 +445,7 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 void UCInventoryComponent::RemoveSingleItem(UCItemBase* ItemIn)
 {
 	InventoryContents.RemoveSingle(ItemIn);
+	InventoryTotalWeight -= ItemIn->GetItemSingleWeight() * ItemIn->Quantity;
 	OnInventoryUpdated.Broadcast();
 }
 

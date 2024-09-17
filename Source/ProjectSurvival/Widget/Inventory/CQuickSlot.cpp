@@ -9,6 +9,7 @@
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
+#include "Widget/Inventory/CInventoryPanel.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/CMainHUD.h"
@@ -72,6 +73,17 @@ bool UCQuickSlot::Initialize()
     SizeBoxes.Add(SizeBox_8);
     SizeBoxes.Add(SizeBox_9);
 
+    ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+    if (mainHUD)
+    {
+        UUserWidget* inventoryPanel = mainHUD->GetSurvivorInventoryWidget()->GetInventoryPanel();
+        if (inventoryPanel)
+        {
+            UCInventoryPanel* castedInventoryPanel = Cast<UCInventoryPanel>(inventoryPanel);
+            if (castedInventoryPanel)
+                castedInventoryPanel->QuickSlotReference = this;
+        }
+    }
 	return true;
 }
 
@@ -162,6 +174,13 @@ void UCQuickSlot::ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex)
             break;
         }
     }
+
+    ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+    if (survivor)
+    {
+        survivor->GetInventoryComponent()->RemoveSingleItem(InItem);
+        survivor->GetInventoryComponent()->OnInventoryUpdated.Broadcast();
+    }
 }
 
 void UCQuickSlot::ProcessConsumableItemInfo(class UCItemBase* InItem, int32 InIndex)
@@ -234,8 +253,8 @@ void UCQuickSlot::SwapItemInfo(class UCItemBase* DragStartWidgetItem, class UCIt
     //else if (DragStartWidgetItem->ItemType == EItemType::Hunt && OwnerWidgetItem->ItemType == EItemType::Hunt)
     //    SwapHuntWithHunt(DragStartWidgetItem, OwnerWidgetItem);
 
-    int32 dragStartItemIndex;
-    int32 ownerWidgetItemIndex;
+    int32 dragStartItemIndex = INDEX_NONE;
+    int32 ownerWidgetItemIndex = INDEX_NONE;
 
     for (int32 i = 0; i < SizeBoxes.Num(); i++)
     {
@@ -301,6 +320,7 @@ void UCQuickSlot::ProcessDragToInventoryMenu(UCItemBase* InItem)
 
         //퀵슬롯에서 제거하는 함수
         RemoveQuickSlotItem(InItem);
+        survivor->GetInventoryComponent()->OnInventoryUpdated.Broadcast();
 
         // FItemData ItemToDropData = ItemToDrop->CreateFItemData(ItemToDrop);
         FName ItemID = InItem->ID;
@@ -321,11 +341,20 @@ void UCQuickSlot::ProcessDragToInventoryPanel(UCItemBase* InItem)
 {
     if (InItem->ItemType == EItemType::Hunt)
     {
-        //퀵슬롯에서 제거하는 함수
-        //RemoveQuickSlotItem(InItem);
+        ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+        if (!survivor)
+            return;
+
+        RemoveQuickSlotItem(InItem);
+        survivor->GetInventoryComponent()->HandleAddItem(InItem);
     }
     else if (InItem->ItemType == EItemType::Consumable)
         RemoveQuickSlotItem(InItem);
+}
+
+int32 UCQuickSlot::GetQuickSlotTotalWeight()
+{
+    return 0;
 }
 
 class UCItemBase* UCQuickSlot::CreateItem(class UCItemBase* InItem)
