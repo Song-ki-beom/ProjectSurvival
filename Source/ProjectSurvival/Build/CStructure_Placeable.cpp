@@ -182,9 +182,20 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	AddItemInfoToWidget();
 }
 
-void ACStructure_Placeable::PerformRemoveItem(FName InID, int32 InQuantity, FItemNumericData InNumericData)
+void ACStructure_Placeable::PerformRemoveItem(int32 idxRemove)
 {
-	
+	ItemInfoArray.RemoveAt(idxRemove);
+	SharedItemInfoArray = ItemInfoArray;
+	AddItemInfoToWidget();
+	WidgetRefreshTrigger++;
+}
+
+void ACStructure_Placeable::PerformRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove)
+{
+	ItemInfoArray[idxRemove].Quantity -= AmountToRemove;
+	SharedItemInfoArray = ItemInfoArray;
+	AddItemInfoToWidget();
+	WidgetRefreshTrigger++;
 }
 
 void ACStructure_Placeable::PerformSwapItem(int32 idxBase, int32 idxDrag)
@@ -271,24 +282,28 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 			ItemCopy->bIsCopy = true;
 
 			ActorInventoryContents.Add(ItemCopy);
-
-			switch (WidgetCaller)
-			{
-			case EWidgetCall::WorkBench:
-			{
-				UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-				if (workingBenchWidget)
-				{
-					// workingBenchWidget의 클래스에 UCItemBase의 배열 전달
-					workingBenchWidget->SetWidgetItems(ActorInventoryContents);
-					workingBenchWidget->RefreshWorkingBenchInventory();
-				}
-			}
-			}
 		}
 		else
 			CDebug::Print("Itemdata is not Valid", FColor::Magenta);
 	}
+
+	//UI 위젯에 아이템 인벤토리 변경사항 업데이트 
+	switch (WidgetCaller)
+	{
+	case EWidgetCall::WorkBench:
+	{
+		UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+		if (workingBenchWidget)
+		{
+			// workingBenchWidget의 클래스에 UCItemBase의 배열 전달
+			workingBenchWidget->SetWidgetItems(ActorInventoryContents);
+			workingBenchWidget->RefreshWorkingBenchInventory();
+		}
+	}
+	}
+
+
+
 }
 
 void ACStructure_Placeable::OnRep_WidgetRefreshTrigger()

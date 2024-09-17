@@ -9,7 +9,7 @@ public class ProjectSurvival : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore", "HeadMountedDisplay", "UMG", "OnlineSubsystem", "OnlineSubsystemSteam", "Steamworks", "Networking", "Sockets", "ApexDestruction", "LandScape" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Slate", "SlateCore", "HeadMountedDisplay", "UMG", "OnlineSubsystem", "OnlineSubsystemSteam", "Steamworks", "Networking", "Sockets", "ApexDestruction", "LandScape", "AIModule" , "GameplayTasks", "NavigationSystem" });
         //PublicIncludePaths.AddRange(new string[] { "ApexDestruction/Public", "ApexDestruction/Private" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystemUtils" });

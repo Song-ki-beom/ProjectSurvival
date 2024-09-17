@@ -535,3 +535,12 @@ void ACSurvivorController::RequestCombineItem_Implementation(int32 idxBase, int3
 	InPlaceable->PerformCombineItem(idxBase, idxDrag);
 }
 
+void ACSurvivorController::RequestRemoveItem_Implementation(int32 idxRemove, class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->PerformRemoveItem(idxRemove);
+}
+
+void ACSurvivorController::RequestRemoveAmountOfItem_Implementation(int32 idxRemove, int32 AmountToRemove, class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->PerformRemoveAmountOfItem(idxRemove, AmountToRemove);
+}

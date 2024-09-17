@@ -65,9 +65,8 @@ bool UCInventoryPanel_WorkingBench::NativeOnDrop(const FGeometry& InGeometry, co
 				UCInventoryPanel* inventoryPanel = Cast<UCInventoryPanel>(ItemDragDrop->DragStartWidget);
 				if (inventoryPanel)
 				{
-					AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor);
-
-					inventoryPanel->RemoveItem();
+					AddItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, OwnerActor); //공유 인벤토리에 아이템 추가 
+					inventoryPanel->RemoveItem(ItemDragDrop->SourceItem); //개인 인벤토리 아이템 제거 
 				}
 			}
 			else
@@ -135,11 +134,45 @@ bool UCInventoryPanel_WorkingBench::CombineItem(UCItemBase* ItemOnBase, UCItemBa
 }
 
 
-void UCInventoryPanel_WorkingBench::RemoveItem(int32 InUniqueItemIndexInWrapBox)
+void UCInventoryPanel_WorkingBench::RemoveItem(UCItemBase* ItemToRemove)
 {
+	int32 idxRemove = FindItemIndex(ItemToRemove);
+	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* workingBenchActor)
+		{
+			workingBenchActor->PerformRemoveItem(idxRemove);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+		{
+			playerController->RequestRemoveItem(idxRemove, workingBenchActor);
+		}
+		);
+
+}
+
+void UCInventoryPanel_WorkingBench::RemoveAmountOfItem(UCItemBase* ItemToRemove, int32 AmountToRemove)
+{
+	int32 idxRemove = FindItemIndex(ItemToRemove);
+	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* workingBenchActor)
+		{
+			workingBenchActor->PerformRemoveAmountOfItem(idxRemove , AmountToRemove);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* workingBenchActor)
+		{
+			playerController->RequestRemoveAmountOfItem(idxRemove, AmountToRemove,workingBenchActor);
+		}
+		
+		);
 
 
 }
+
+
 
 
 
