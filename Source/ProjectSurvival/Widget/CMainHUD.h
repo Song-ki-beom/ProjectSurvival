@@ -44,6 +44,7 @@ public:
 	void AddEarnedInfo(class UObject* EarnedItem);
 	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
 	class UCInventoryMenu* GetSurvivorInventoryWidget() { return SurvivorInventoryWidget; }
+	class UCQuickSlot* GetQuickSlotWidget() { return QuickSlot; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -56,6 +57,8 @@ public:
 	TSubclassOf<class UCProduceWidget> ProduceWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCEarnInfoPanel> EarnInfoPanelClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UCQuickSlot> QuickSlotClass;
 
 protected:
 	UPROPERTY()
@@ -70,4 +73,6 @@ protected:
 		class UUserWidget* ActorInventoryWidget;
 	UPROPERTY()
 		class UCEarnInfoPanel* EarnInfoPanel;
+	UPROPERTY()
+		class UCQuickSlot* QuickSlot;
 };

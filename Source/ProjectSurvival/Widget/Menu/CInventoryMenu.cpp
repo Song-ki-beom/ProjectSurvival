@@ -5,6 +5,7 @@
 #include "Widget/CMainHUD.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CQuickSlot.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "CGameInstance.h"
@@ -79,7 +80,18 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 		if (ItemDragDrop->DragStartWidget == WBP_InventoryPanel)
 			PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
 		else
-			CDebug::Print("DragStartWidget is not WBP_InventoryPanel", FColor::Red);
+		{
+			ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+			if (mainHUD)
+			{
+				UUserWidget* quickSlot = Cast<UUserWidget>(mainHUD->GetQuickSlotWidget());
+				if (quickSlot)
+				{
+					if (ItemDragDrop->DragStartWidget == quickSlot)
+						mainHUD->GetQuickSlotWidget()->ProcessDragToInventoryMenu(ItemDragDrop->SourceItem);
+				}
+			}
+		}
 
 		return true; 
 	}

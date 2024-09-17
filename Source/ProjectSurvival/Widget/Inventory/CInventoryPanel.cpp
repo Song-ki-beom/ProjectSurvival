@@ -10,6 +10,8 @@
 #include "Components/Button.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
+#include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/CMainHUD.h"
 #include "Utility/CDebug.h"
 
 void UCInventoryPanel::NativeOnInitialized()
@@ -73,6 +75,18 @@ void UCInventoryPanel::RefreshInventory()
 
 
     }
+
+    ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetOwningPlayer()->GetHUD());
+    if (mainHUD)
+    {
+        UCQuickSlot* quickSlot = Cast<UCQuickSlot>(mainHUD->GetQuickSlotWidget());
+        if (quickSlot)
+            quickSlot->RefreshConsumableQuantity();
+        else
+            CDebug::Print("quickSlot is not Valid");
+    }
+    else
+        CDebug::Print("mainHUD is not Valid");
 }
 
 
@@ -90,6 +104,17 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
         }
         else
         {
+            ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
+            if (mainHUD)
+            {
+                UUserWidget* quickSlot = Cast<UUserWidget>(mainHUD->GetQuickSlotWidget());
+                if (quickSlot)
+                {
+                    if (ItemDragDrop->DragStartWidget == quickSlot)
+                        mainHUD->GetQuickSlotWidget()->ProcessDragToInventoryPanel(ItemDragDrop->SourceItem);
+                }
+            }
+
             CDebug::Print("StartWidget : ", ItemDragDrop->DragStartWidget);
             CDebug::Print(TEXT("옮기는 함수"));
             return true;

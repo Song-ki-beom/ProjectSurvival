@@ -57,6 +57,18 @@ private:
 	//Chatting
 	void FocusChattingBox();
 
+	//QuickSlot
+	void PressQuickSlot1();
+	void PressQuickSlot2();
+	void PressQuickSlot3();
+	void PressQuickSlot4();
+	void PressQuickSlot5();
+	void PressQuickSlot6();
+	void PressQuickSlot7();
+	void PressQuickSlot8();
+	void PressQuickSlot9();
+	void PressQuickSlot10();
+
 
 private:
 	class ACSurvivor* Survivor;

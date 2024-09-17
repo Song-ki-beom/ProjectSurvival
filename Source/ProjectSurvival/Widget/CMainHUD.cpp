@@ -9,6 +9,7 @@
 #include "Widget/Inventory/CEarnInfoPanel.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Chatting/CChattingBox.h"
+#include "Widget/Inventory/CQuickSlot.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
@@ -59,6 +60,22 @@ void ACMainHUD::BeginPlay()
 		EarnInfoPanel->AddToViewport(4);
 		EarnInfoPanel->SetVisibility(ESlateVisibility::Visible);
 		EarnInfoPanel->bIsFocusable = true;
+	}
+
+	if (QuickSlotClass)
+	{
+		QuickSlot = CreateWidget<UCQuickSlot>(GetWorld(), QuickSlotClass);
+
+		FVector2D widgetSize = FVector2D(845, 80);
+		FVector2D viewportSize;
+		QuickSlot->SetDesiredSizeInViewport(widgetSize);
+		GEngine->GameViewport->GetViewportSize(viewportSize);
+		QuickSlot->SetAlignmentInViewport(FVector2D(0.5f, 1.0f));
+		QuickSlot->SetPositionInViewport(FVector2D(viewportSize.X/2, viewportSize.Y - 1.0f));
+
+		QuickSlot->AddToViewport(5);
+		QuickSlot->SetVisibility(ESlateVisibility::Visible);
+		QuickSlot->bIsFocusable = true;
 	}
 }
 

@@ -6,7 +6,9 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CDragItemVisual.h"
 #include "Widget/Inventory/CItemDragDropOperation.h"
+#include "Widget/Inventory/CInventoryPanel.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Widget/Inventory/CQuickSlot.h"
 #include "Widget/CMainHUD.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Components/Image.h"
@@ -24,6 +26,18 @@ void UCInventoryItemSlot::NativeOnInitialized() //위젯 생성될때 호출
 		ToolTip->InventorySlotBeingHovered = this;
 		ToggleTooltip();
 		
+	}
+
+	if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
+	{
+		if (this->GetTypedOuter<UUserWidget>())
+		{
+			OwnerWidget = this->GetTypedOuter<UUserWidget>();
+		}
+		else
+		{
+			OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
+		}
 	}
 }
 
@@ -171,23 +185,119 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 
 	
 
-		//UCInventoryPanel_WorkingBench을 가지고 있는지 검사 
-		bool IsOwnerWorkingBench = false;
-		UCInventoryPanel_WorkingBench* WorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
-		if (WorkingBenchPanel)
+		////UCInventoryPanel_WorkingBench을 가지고 있는지 검사 
+		//bool IsOwnerWorkingBench = false;
+		//UCInventoryPanel_WorkingBench* WorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
+		//if (WorkingBenchPanel)
+		//{
+		//	IsOwnerWorkingBench = true;
+		//}
+
+		if (DragItem == ItemReference)
 		{
-			IsOwnerWorkingBench = true;
+			CDebug::Print("Same Item Detected");
+			return false;
+		}
+		else
+		{
+			UCInventoryPanel* dragStartInventoryPanel = Cast<UCInventoryPanel>(ItemDragDrop->DragStartWidget);
+			UCInventoryPanel_WorkingBench* dragStartWorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
+			UCQuickSlot* dragStartQuickSlot = Cast<UCQuickSlot>(ItemDragDrop->DragStartWidget);
+
+			UCInventoryPanel* ownerInventoryPanel = Cast<UCInventoryPanel>(OwnerWidget);
+			UCInventoryPanel_WorkingBench* ownerWorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(OwnerWidget);
+			UCQuickSlot* ownerQuickSlot = Cast<UCQuickSlot>(OwnerWidget);
+
+			// 드래그 시작 위젯과 오너 위젯의 타입을 확인 후 결과 결정
+			if (dragStartInventoryPanel)
+			{
+				if (ownerInventoryPanel)
+					DragDropResult = EDragDropResult::InventoryToInventory;
+				else if (ownerWorkingBenchPanel)
+					DragDropResult = EDragDropResult::InventoryToWorkingBench;
+				else if (ownerQuickSlot)
+					DragDropResult = EDragDropResult::InventoryToQuickSlot;
+			}
+			else if (dragStartWorkingBenchPanel)
+			{
+				if (ownerInventoryPanel)
+					DragDropResult = EDragDropResult::WorkingBenchToInventory;
+				else if (ownerWorkingBenchPanel)
+					DragDropResult = EDragDropResult::WorkingBenchToWorkingBench;
+				else if (ownerQuickSlot)
+					DragDropResult = EDragDropResult::WorkingBenchToQuickSlot;
+			}
+			else if (dragStartQuickSlot)
+			{
+				if (ownerInventoryPanel)
+					DragDropResult = EDragDropResult::QuickSlotToInventory;
+				else if (ownerWorkingBenchPanel)
+					DragDropResult = EDragDropResult::QuickSlotToWorkingBench;
+				else if (ownerQuickSlot)
+					DragDropResult = EDragDropResult::QuickSlotToQuickSlot;
+			}
+
+			FString EnumString = UEnum::GetValueAsString(DragDropResult);
+			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("DragDropResult: %s"), *EnumString));
 		}
 			
 
 
-		if (DragItem == ItemReference)
-		{
-			CDebug::Print(TEXT("Same Item Detected"));
-			return false;
-		}
+		//if (DragItem == ItemReference)
+		//{
+		//	CDebug::Print(TEXT("Same Item Detected"));
+		//	return false;
+		//}
+		//else
+		//{
+			switch (DragDropResult)
+			{
+			case EDragDropResult::InventoryToInventory:
+			{
+				if ((DragItem != ItemReference) && (DragItem->ID == ItemReference->ID))
+					ItemReference->Inventory->CombineItem(ItemReference, DragItem);
+				else
+					ItemReference->Inventory->SwapItem(ItemReference, DragItem);
+				break;
+			}
+			case EDragDropResult::InventoryToWorkingBench:
+				// 아무일X (workingbench자체 drop함수 실행되게)
+				break;
+			case EDragDropResult::InventoryToQuickSlot:
+				// 장비일경우 스왑, 소비일경우 정보교환, 같은ID면 아무일X
+				break;
+			case EDragDropResult::WorkingBenchToWorkingBench:
+			{
+				UCInventoryPanel_WorkingBench* ownerWorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(OwnerWidget);
+				if ((DragItem != ItemReference) && (DragItem->ID == ItemReference->ID))
+					ownerWorkingBenchPanel->CombineItem(ItemReference, DragItem);
+				else
+					ownerWorkingBenchPanel->SwapItem(ItemReference, DragItem);
+				break;
+			}
+			case EDragDropResult::WorkingBenchToInventory:
+				// 아무일X (inventory자체 drop함수 실행되게)
+				break;
+			case EDragDropResult::WorkingBenchToQuickSlot:
+				// 아무일X - 퀵슬롯은 인벤토리에서만 등록 가능하게
+				break;
+			case EDragDropResult::QuickSlotToQuickSlot:
+			{
+				UCQuickSlot* ownerQuickSlot = Cast<UCQuickSlot>(OwnerWidget);
+				ownerQuickSlot->SwapItemInfo(DragItem, ItemReference);
+				break;
+			}
+			case EDragDropResult::QuickSlotToInventory:
+				// 장비일경우 스왑, 소비일경우 정보교환, 같은ID면 아무일X
+				break;
+			case EDragDropResult::QuickSlotToWorkingBench:
+				// 아무일X - workingbench 관련 이동은 인벤토리에서만 가능하게
+				break;
+			}
 
-		else if ( (DragItem != ItemReference)&&(DragItem->ID  == ItemReference->ID))
+		//}
+
+		/*else if ( (DragItem != ItemReference)&&(DragItem->ID  == ItemReference->ID))
 		{
 			if (IsOwnerWorkingBench)
 			{
@@ -210,7 +320,7 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 
 			}
 			 return true;
-		}
+		}*/
 	}
 	return false;
 }
@@ -243,17 +353,17 @@ bool UCInventoryItemSlot::Split(int32 InputNum)
 	//GetOwnerPanel 
 	//해당 슬롯을 소유하는 UUserWidget 검사 
 	
-	if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
-	{
-		if (this->GetTypedOuter<UUserWidget>())
-		{
-			OwnerWidget = this->GetTypedOuter<UUserWidget>();
-		}
-		else
-		{
-			OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
-		}
-	}
+	//if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
+	//{
+	//	if (this->GetTypedOuter<UUserWidget>())
+	//	{
+	//		OwnerWidget = this->GetTypedOuter<UUserWidget>();
+	//	}
+	//	else
+	//	{
+	//		OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
+	//	}
+	//}
 	if (OwnerWidget)
 	{
 		UCInventoryPanel_WorkingBench* WorkingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(OwnerWidget);
@@ -265,10 +375,14 @@ bool UCInventoryItemSlot::Split(int32 InputNum)
 		{
 			return InventoryReference->SplitExistingStack(ItemReference, InputNum);;
 		}
-
 	}
 		
 	return false;
+}
+ 
+void UCInventoryItemSlot::SetItemQuantityText(int32 InQuantity)
+{
+	ItemQuantity->SetText(FText::AsNumber(InQuantity));
 }
 
 

@@ -6,9 +6,20 @@
 #include "Blueprint/UserWidget.h"
 #include "CInventoryItemSlot.generated.h"
 
-/**
- * 
- */
+UENUM()
+enum class EDragDropResult : uint8
+{
+	InventoryToInventory,
+	InventoryToWorkingBench,
+	InventoryToQuickSlot,
+	WorkingBenchToWorkingBench,
+	WorkingBenchToInventory,
+	WorkingBenchToQuickSlot,
+	QuickSlotToQuickSlot,
+	QuickSlotToInventory,
+	QuickSlotToWorkingBench
+};
+
 UCLASS()
 class PROJECTSURVIVAL_API UCInventoryItemSlot : public UUserWidget
 {
@@ -53,6 +64,7 @@ public:
 
 	int32 GetUniqueItemIndexInWrapBox() { return UniqueItemIndexInWrapBox; }
 	void SetUniqueItemIndexInWrapBox(int32 InIndex) { UniqueItemIndexInWrapBox = InIndex; }
+	void SetItemQuantityText(int32 InQuantity);
 
 protected:
 
@@ -86,7 +98,7 @@ private:
 	bool bIsTooltipToggled =false;
 	int32 UniqueItemIndexInWrapBox;
 	UUserWidget* OwnerWidget;
-
+	EDragDropResult DragDropResult;
 
 
 };

@@ -96,8 +96,6 @@ void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMet
 		}
 		else
 			GetOwningPlayer()->SetInputMode(FInputModeGameOnly());
-
-		MessageScrollBox->ScrollToEnd();
 	}
 
 	if (CommitMethod == ETextCommit::OnUserMovedFocus)
@@ -129,6 +127,8 @@ void UCChattingBox::AddMessageToMessageBox(const FText& InSurvivorNameText, cons
 				UWidget* oldestMessage = MessageBox->GetChildAt(0);
 				MessageBox->RemoveChild(oldestMessage);
 			}
+
+			MessageScrollBox->ScrollToEnd();
 		}
 	}
 }

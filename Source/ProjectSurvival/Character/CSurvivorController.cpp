@@ -17,7 +17,9 @@
 #include "Build/CStructure_Placeable.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
-
+#include "Widget/Inventory/CQuickSlot.h"
+#include "Components/SizeBox.h"
+#include "Widget/Inventory/CInventoryItemSlot.h"
 
 ACSurvivorController::ACSurvivorController()
 {
@@ -89,6 +91,16 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("MouseWheelUp", IE_Pressed, this,&ACSurvivorController::HandleMouseWheelUp);
 		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
 		InputComponent->BindAction("Chat", IE_Pressed,this, &ACSurvivorController::FocusChattingBox);
+		InputComponent->BindAction("QuickSlot1", IE_Pressed, this, &ACSurvivorController::PressQuickSlot1);
+		InputComponent->BindAction("QuickSlot2", IE_Pressed, this, &ACSurvivorController::PressQuickSlot2);
+		InputComponent->BindAction("QuickSlot3", IE_Pressed, this, &ACSurvivorController::PressQuickSlot3);
+		InputComponent->BindAction("QuickSlot4", IE_Pressed, this, &ACSurvivorController::PressQuickSlot4);
+		InputComponent->BindAction("QuickSlot5", IE_Pressed, this, &ACSurvivorController::PressQuickSlot5);
+		InputComponent->BindAction("QuickSlot6", IE_Pressed, this, &ACSurvivorController::PressQuickSlot6);
+		InputComponent->BindAction("QuickSlot7", IE_Pressed, this, &ACSurvivorController::PressQuickSlot7);
+		InputComponent->BindAction("QuickSlot8", IE_Pressed, this, &ACSurvivorController::PressQuickSlot8);
+		InputComponent->BindAction("QuickSlot9", IE_Pressed, this, &ACSurvivorController::PressQuickSlot9);
+		InputComponent->BindAction("QuickSlot10", IE_Pressed, this, &ACSurvivorController::PressQuickSlot10);
 
 		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
@@ -431,6 +443,70 @@ void ACSurvivorController::FocusChattingBox()
 	}
 	else
 		CDebug::Print("gameInstance is not Valid");
+}
+
+void ACSurvivorController::PressQuickSlot1()
+{
+	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
+	if (!mainHUD)
+		return;
+
+	UCQuickSlot* quickSlot = mainHUD->GetQuickSlotWidget();
+	if (!quickSlot)
+		return;
+
+	USizeBox* sizeBox = quickSlot->GetSizeBoxArray()[0];
+	if (!sizeBox)
+		return;
+
+	UCInventoryItemSlot* quickSlotItemWidget = Cast<UCInventoryItemSlot>(sizeBox->GetChildAt(0));
+	if (!quickSlotItemWidget)
+		return;
+
+	UCItemBase* quickSlotItem = quickSlotItemWidget->GetItemReference();
+	if (!quickSlotItem)
+		return;
+
+	if (quickSlotItem->ItemType == EItemType::Hunt)
+		CDebug::Print("quickSlot1 Item ID : ", quickSlotItem->ID, FColor::Blue);
+
+	// ID나 여러타입에 따른 스위치문함수 필요
+}
+
+void ACSurvivorController::PressQuickSlot2()
+{
+}
+
+void ACSurvivorController::PressQuickSlot3()
+{
+}
+
+void ACSurvivorController::PressQuickSlot4()
+{
+}
+
+void ACSurvivorController::PressQuickSlot5()
+{
+}
+
+void ACSurvivorController::PressQuickSlot6()
+{
+}
+
+void ACSurvivorController::PressQuickSlot7()
+{
+}
+
+void ACSurvivorController::PressQuickSlot8()
+{
+}
+
+void ACSurvivorController::PressQuickSlot9()
+{
+}
+
+void ACSurvivorController::PressQuickSlot10()
+{
 }
 
 void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType)

@@ -71,6 +71,8 @@ class PROJECTSURVIVAL_API UCInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+friend class UCQuickSlot;
+
 public:	
 	UCInventoryComponent();
 
