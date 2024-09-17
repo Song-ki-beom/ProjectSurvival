@@ -1,4 +1,5 @@
 #include "ActorComponents/CMovingComponent.h"
+#include  "GameFramework/CharacterMovementComponent.h"
 #include "Character/CSurvivor.h"
 
 // Sets default values for this component's properties
@@ -17,7 +18,7 @@ void UCMovingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CSurvivor = Cast<ACSurvivor>(this->GetOwner());
+	OwnerCharacter = Cast<ACharacter>(this->GetOwner());
 }
 
 
@@ -26,31 +27,66 @@ void UCMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 }
 
 void UCMovingComponent::OnMoveForward(float InAxisValue)
 {
-	FRotator rotator = FRotator(0, CSurvivor->GetControlRotation().Yaw, 0);
+	FRotator rotator = FRotator(0, OwnerCharacter->GetControlRotation().Yaw, 0);
 	FVector direction = FQuat(rotator).GetForwardVector();
 
-	CSurvivor->AddMovementInput(direction, InAxisValue);
+	OwnerCharacter->AddMovementInput(direction, InAxisValue);
 }
 
 void UCMovingComponent::OnMoveRight(float InAxisValue)
 {
-	FRotator rotator = FRotator(0, CSurvivor->GetControlRotation().Yaw, 0);
+	FRotator rotator = FRotator(0, OwnerCharacter->GetControlRotation().Yaw, 0);
 	FVector direction = FQuat(rotator).GetRightVector();
 
-	CSurvivor->AddMovementInput(direction, InAxisValue);
+	OwnerCharacter->AddMovementInput(direction, InAxisValue);
 }
 
 void UCMovingComponent::OnHorizontalLook(float InAxisValue)
 {
-	CSurvivor->AddControllerYawInput(InAxisValue * 0.75f);
+	OwnerCharacter->AddControllerYawInput(InAxisValue * 0.75f);
 }
 
 void UCMovingComponent::OnVerticalLook(float InAxisValue)
 {
-	CSurvivor->AddControllerPitchInput(InAxisValue * 0.75f);
+	OwnerCharacter->AddControllerPitchInput(InAxisValue * 0.75f);
+}
+
+void UCMovingComponent::EnableControlRotation()
+{
+	OwnerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	//OwnerCharacter->bUseControllerRotationYaw = true;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false; //캐릭터가 이동 방향에 따라 자동으로 회전하지 않음 
+}
+
+void UCMovingComponent::DisableControlRotation()
+{
+	// 캐릭터가 컨트롤러의 회전을 따르지 않도록 설정
+	OwnerCharacter->bUseControllerRotationYaw = false;
+	OwnerCharacter->GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = true; //캐릭터가 이동 방향에 따라 자동으로 회전하지 않음 
+}
+
+void UCMovingComponent::SetSpeed(ESpeedType InType)
+{
+	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetWalkSpeed();
+
+}
+
+void UCMovingComponent::OnWalk()
+{
+	SetSpeed(ESpeedType::Walk);
+}
+
+void UCMovingComponent::OnRun()
+{
+	SetSpeed(ESpeedType::Run);
+}
+
+void UCMovingComponent::OnSprint()
+{
+	SetSpeed(ESpeedType::Sprint);
 }

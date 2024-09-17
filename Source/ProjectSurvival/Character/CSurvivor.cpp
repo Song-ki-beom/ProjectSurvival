@@ -7,6 +7,7 @@
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CInteractionComponent.h"
 #include "ActorComponents/CInventoryComponent.h"
+#include "ActorComponents/CStatusComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -52,6 +53,8 @@ ACSurvivor::ACSurvivor()
 	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("Moving"));
 	CustomizeComponent->SetIsReplicated(true);
 	BuildComponent->SetIsReplicated(true);
+	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("Status"));
+	StatusComponent->SetIsReplicated(true);
 
 	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
@@ -274,6 +277,16 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 		break;
 	}
 	}
+}
+
+void ACSurvivor::Damage(ACharacter* Attacker, AActor* Causer, FHitData HitData)
+{
+
+	if (StatusComponent != nullptr)
+	{
+		StatusComponent->TakeDamage(HitData.Power);
+	}
+
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
