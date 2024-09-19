@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Patrol")
 		float AcceptanceDistance = 50;
 	UPROPERTY(EditAnywhere, Category = "Patrol")
-		float RandomRadius = 20;
+		float RandomRadius = 1200;
 
 private:
 	void  DrawDebug(UWorld* InWorld, FVector InLocation);
