@@ -56,7 +56,7 @@ private:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed")
-		float Speed[(int32)ESpeedType::Max] = { 200,450,600 };
+		float Speed[(int32)ESpeedType::Max] = { 200,450,500 };
 
 public:
 	FORCEINLINE bool CanMove() { return bCanMove; }
@@ -73,6 +73,6 @@ public:
 
 private:
 	class ACharacter* OwnerCharacter;
-
-
+	float TargetSpeed = Speed[(int32)ESpeedType::Run]; //목표로 설정한 Max Walk Speed;
+	float SpeedInterpRate = 5.0f; //속도변환 보간 Speed;
 };

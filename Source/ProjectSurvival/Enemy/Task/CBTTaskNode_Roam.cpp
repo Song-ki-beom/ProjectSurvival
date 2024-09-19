@@ -67,32 +67,13 @@ void UCBTTaskNode_Roam::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
         FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
         break;
     case EPathFollowingRequestResult::AlreadyAtGoal: 
-        UNavigationSystemV1* naviSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(Enemy->GetWorld());
-        location = Enemy->GetActorLocation();
-        FNavLocation point(location);
-        while (true)
-        {
-            if (naviSystem->GetRandomPointInNavigableRadius(location, RandomRadius, point)) //RandomRadius 안에 랜덤 포인트 지점을 잡음
-                break;
-
-        }
-        AIComponent->SetRoamingLocation(point.Location);
-        FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
+        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
     break;
     }
 
 
 
-    //Move To
- /*   ACharacter* character = AIComponent->GetTarget();
-    if(character == nullptr) return;
-
-    float distance = Enemy->GetDistanceTo(character);
-    if (distance <= AcceptanceDistance)
-    {
-        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-    }*/
-
+   
 
 }
 

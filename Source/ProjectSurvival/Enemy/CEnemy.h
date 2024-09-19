@@ -49,7 +49,7 @@ private:
 	//Component
 		class UCStatusComponent* StatusComponent;
 		class UCMovingComponent* MovingComponent;
-
+		class UCStateComponent* StateComponent;
 		
 
 

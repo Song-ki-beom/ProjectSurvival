@@ -26,6 +26,12 @@ void UCMovingComponent::BeginPlay()
 void UCMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	float CurrentSpeed = OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed;
+	if (CurrentSpeed  != TargetSpeed)
+	{
+		float NewSpeed = FMath::FInterpTo(CurrentSpeed, TargetSpeed, DeltaTime, SpeedInterpRate);
+		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+	}
 
 }
 
@@ -72,7 +78,20 @@ void UCMovingComponent::DisableControlRotation()
 
 void UCMovingComponent::SetSpeed(ESpeedType InType)
 {
-	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetWalkSpeed();
+	switch (InType)
+	{
+	case ESpeedType::Walk:
+		TargetSpeed = GetWalkSpeed();
+		break;
+	case ESpeedType::Run:
+		TargetSpeed = GetRunSpeed();
+		break;
+	case ESpeedType::Sprint:
+		TargetSpeed = GetSprintSpeed();
+		break;
+	}
+
+	
 
 }
 

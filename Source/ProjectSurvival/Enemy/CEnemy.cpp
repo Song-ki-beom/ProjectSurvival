@@ -4,6 +4,7 @@
 #include "ActorComponents/CStatusComponent.h"
 #include "ActorComponents/CEnemyAIComponent.h"
 #include "ActorComponents/CMovingComponent.h"
+#include "ActorComponents/CStateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
@@ -30,15 +31,23 @@ ACEnemy::ACEnemy()
 	}
 
 	//Component Setting & Replicate
-	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("Status"));
+	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("StatusComponent"));
 	StatusComponent->SetIsReplicated(true);
 
-	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("Move"));
+	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("MoveComponent"));
 	MovingComponent->SetIsReplicated(true);
 	
 
-	AIComponent = CreateDefaultSubobject<UCEnemyAIComponent>(TEXT("AIBehavior"));
+	AIComponent = CreateDefaultSubobject<UCEnemyAIComponent>(TEXT("AIComponent"));
 	AIComponent->SetIsReplicated(true);
+
+	StateComponent = CreateDefaultSubobject<UCStateComponent>(TEXT("StateComponent"));
+	StateComponent->SetIsReplicated(true);
+
+
+
+
+	
 
 	//Mesh Setting
 	{

@@ -15,8 +15,8 @@
 
 UCBTService_Bear::UCBTService_Bear()
 {
-    this->NodeName = "Bear_Service";  // ���񽺸�
-    this->Interval = 0.1f;     // Tick���� 0.1�ʸ���
+    this->NodeName = "Bear_Service";  
+    this->Interval = 0.1f;     
     this->RandomDeviation = 0.0f;
 }
 void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

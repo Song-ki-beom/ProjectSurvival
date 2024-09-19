@@ -25,7 +25,7 @@ ACEnemyAIController::ACEnemyAIController()
         Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
         Sight->SightRadius = 1000;      
         Sight->LoseSightRadius = 1200;  
-        Sight->PeripheralVisionAngleDegrees = 60; // 인식하는 시야 범위 
+        Sight->PeripheralVisionAngleDegrees = 90; // 인식하는 시야 범위 
         Sight->SetMaxAge(5);  //인식한 상대를 기억하는 시간 
     }
 

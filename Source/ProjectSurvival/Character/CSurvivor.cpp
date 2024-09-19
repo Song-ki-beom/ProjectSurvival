@@ -132,6 +132,7 @@ ACSurvivor::ACSurvivor()
 	SurvivorNameWidgetComponent->InitWidget();
 
 
+	MovingComponent->SetSpeed(ESpeedType::Run);
 
 }
 
