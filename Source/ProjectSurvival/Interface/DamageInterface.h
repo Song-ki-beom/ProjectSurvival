@@ -28,6 +28,7 @@ class PROJECTSURVIVAL_API IDamageInterface
 
 public:
 	virtual void Damage(ACharacter* Attacker , class AActor* Causer , FHitData HitData)=0;
+	
 	 
 
 

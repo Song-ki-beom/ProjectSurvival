@@ -112,7 +112,7 @@ ACSurvivor::ACSurvivor()
 	SpringArm->TargetArmLength = 400;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
-
+	//SpringArm->;
 	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
 	if (survivorNameClassFinder.Succeeded())
 	{

@@ -27,15 +27,14 @@ protected:
     virtual void BeginPlay() override;
 
 public:
+    void ChangeType(EStateType InType);
+
+private:
     void SetIdleMode();
     void SetEquipMode();
     void SetHitMode();
     void SetActionMode();
     void SetDeadMode();
-
-
-private:
-    void ChangeType(EStateType InType);
 
 public:
     FStateTypeChanged OnStateTypeChanged;

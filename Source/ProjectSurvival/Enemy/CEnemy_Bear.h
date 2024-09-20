@@ -16,6 +16,9 @@ class PROJECTSURVIVAL_API ACEnemy_Bear : public ACEnemy
 
 public:
 	ACEnemy_Bear();
+	virtual void DoAction() override;
+	virtual void EndDoAction() override;
+
 
 protected:
 	virtual void BeginPlay() override;

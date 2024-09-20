@@ -12,6 +12,21 @@ ACEnemy_Bear::ACEnemy_Bear()
 
 }
 
+void ACEnemy_Bear::DoAction()
+{
+	Super::DoAction();
+	//Attack 몽타주 실행부분 
+
+
+}
+
+void ACEnemy_Bear::EndDoAction()
+{
+	Super::EndDoAction();
+
+	//Attack 몽타주 중단부분
+}
+
 void ACEnemy_Bear::BeginPlay()
 {
 	Super::BeginPlay();

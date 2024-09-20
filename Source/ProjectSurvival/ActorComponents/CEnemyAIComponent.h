@@ -40,10 +40,10 @@ public:
 	class  ACharacter* GetTarget();
 	FVector GetRoamingLocation();
 	void    SetRoamingLocation(const FVector& InLocation);
-
+	void    ChangeType(EAIStateType InType);
 private:
 	EAIStateType  GetType();
-	void          ChangeType(EAIStateType InType);
+	
 
 public:
 	bool IsWaitMode();

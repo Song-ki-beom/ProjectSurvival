@@ -5,6 +5,7 @@
 #include "ActorComponents/CEnemyAIComponent.h"
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CStateComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
@@ -44,9 +45,8 @@ ACEnemy::ACEnemy()
 	StateComponent = CreateDefaultSubobject<UCStateComponent>(TEXT("StateComponent"));
 	StateComponent->SetIsReplicated(true);
 
-
-
-
+	MontageComponent = CreateDefaultSubobject<UCMontageComponent>(TEXT("MontageComponent"));
+	MontageComponent->SetIsReplicated(true);
 	
 
 	//Mesh Setting
@@ -124,6 +124,18 @@ void ACEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void ACEnemy::DoAction()
+{
+	MontageComponent->PlayAnimMontage(EStateType::Action);
+}
+
+void ACEnemy::EndDoAction()
+{
+
+}
+
+
 
 void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

@@ -50,7 +50,10 @@ void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         return;
     }
     if (target != nullptr)
+    {
         AIComponent->SetApproachMode();
+        return;
+    }
 
 
 }

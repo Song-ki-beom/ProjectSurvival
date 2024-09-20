@@ -21,6 +21,6 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Action")
-		float ActionRange = 150.0f;  
+		float ActionRange = 250.0f;  
 
 };

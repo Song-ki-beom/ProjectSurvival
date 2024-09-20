@@ -22,6 +22,9 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void DoAction();
+	virtual void EndDoAction();
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 //Damage Interface Override
 	virtual void Damage(ACharacter* Attacker, class AActor* Causer, FHitData HitData) override;
@@ -47,10 +50,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class ACEnemyAIController* AIController;
 	//Component
+		UPROPERTY(VisibleAnywhere)
 		class UCStatusComponent* StatusComponent;
+		UPROPERTY(VisibleAnywhere)
 		class UCMovingComponent* MovingComponent;
+		UPROPERTY(VisibleAnywhere)
 		class UCStateComponent* StateComponent;
-		
+		UPROPERTY(VisibleAnywhere)
+		class UCMontageComponent* MontageComponent;
+
 
 
 public:
