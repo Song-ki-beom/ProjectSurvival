@@ -20,37 +20,42 @@ void UCInventoryTooltip::NativeConstruct()
 		switch (ItemBeingHovered->ItemType)
 		{
 		case EItemType::Build:
-			ItemType->SetText(FText::FromString("Build Item"));
+			ItemType->SetText(FText::FromString(TEXT("건축물")));
 			DamageValue->SetVisibility(ESlateVisibility::Collapsed);
+			break;
 
+		case EItemType::Consumable:
+			ItemType->SetText(FText::FromString(TEXT("소모품")));
+			DamageValue->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+
+		case EItemType::Container:
+			ItemType->SetText(FText::FromString(TEXT("구조물")));
+			DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 
 		case EItemType::Harvest:
-			ItemType->SetText(FText::FromString("Harvest Tool"));
+			ItemType->SetText(FText::FromString(TEXT("재료")));
 			DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 
-
 		case EItemType::Hunt:
-			ItemType->SetText(FText::FromString("Hunting Tool"));
+			ItemType->SetText(FText::FromString(TEXT("장비")));
 			break;
-
-
 		}
+
 		ItemName->SetText(ItemBeingHovered->TextData.Name);
-		DamageValue->SetText(FText::AsNumber(ItemBeingHovered->ItemStats.DamageValue));
-		ItemDescription->SetText(ItemBeingHovered->TextData.Description);
 
 		const FString WeightInfo = TEXT("무게: ") + FString::SanitizeFloat(ItemBeingHovered->GetItemStackWeight());
-
-
 		StackWeight->SetText(FText::FromString(WeightInfo));
 
-
-		const FString StackInfo = TEXT("최대 허용 수량: ") + FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize);
-
-
+		const FString StackInfo = TEXT("슬롯당 최대 수량: ") + FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize);
 		MaxStackSize->SetText(FText::FromString(StackInfo));
+
+		const FString DamageInfo = TEXT("데미지: ") + FString::SanitizeFloat(ItemBeingHovered->ItemStats.DamageValue);
+		DamageValue->SetText(FText::FromString(DamageInfo));
+
+		ItemDescription->SetText(ItemBeingHovered->TextData.Description);
 	}
 	
 	

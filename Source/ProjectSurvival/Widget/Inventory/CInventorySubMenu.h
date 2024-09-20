@@ -55,7 +55,7 @@ public:
 
 public:
 	UFUNCTION()
-	void UpdateSubMenu();
+	void UpdateSubMenu(ERightClickStartWidget InRightClickStartWidget, bool bIsStackable);
 
 private:
 	UFUNCTION()
@@ -93,6 +93,7 @@ public:
 
 private:
 	EItemType TextItemType;
+	bool bBeforeHideActionButton = false;
 
 
 

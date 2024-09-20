@@ -322,39 +322,44 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 			switch (ItemData->ItemType)
 			{
 			case EItemType::Build:
-				ItemType->SetText(FText::FromString("Build"));
+				ItemType->SetText(FText::FromString(TEXT("건축물")));
 				DamageValue->SetVisibility(ESlateVisibility::Collapsed);
-
-				break;
-
-			case EItemType::Harvest:
-				ItemType->SetText(FText::FromString("Harvest"));
-				DamageValue->SetVisibility(ESlateVisibility::Collapsed);
-				break;
-
-
-			case EItemType::Hunt:
-				ItemType->SetText(FText::FromString("Hunting Tool"));
 				break;
 
 			case EItemType::Consumable:
-				ItemType->SetText(FText::FromString("Consumable"));
+				ItemType->SetText(FText::FromString(TEXT("소모품")));
 				DamageValue->SetVisibility(ESlateVisibility::Collapsed);
 				break;
 
+			case EItemType::Container:
+				ItemType->SetText(FText::FromString(TEXT("구조물")));
+				DamageValue->SetVisibility(ESlateVisibility::Collapsed);
+				break;
+
+			case EItemType::Harvest:
+				ItemType->SetText(FText::FromString(TEXT("재료")));
+				DamageValue->SetVisibility(ESlateVisibility::Collapsed);
+				break;
+
+			case EItemType::Hunt:
+				ItemType->SetText(FText::FromString(TEXT("장비")));
+				DamageValue->SetVisibility(ESlateVisibility::Visible);
+				break;
 
 			}
+
 			ItemName->SetText(ItemData->TextData.Name);
-			DamageValue->SetText(FText::AsNumber(ItemData->ItemStats.DamageValue));
-			ItemDescription->SetText(ItemData->TextData.Description);
 
 			const FString WeightInfo = TEXT("무게: ") + FString::SanitizeFloat(InteractableData->Quantity * ItemData->NumericData.Weight); //총합 Weight 
 			StackWeight->SetText(FText::FromString(WeightInfo));
 
-
 			const FString StackInfo = TEXT("최대 허용 수량: ") + FString::FromInt(ItemData->NumericData.MaxStackSize);
 			MaxStackSize->SetText(FText::FromString(StackInfo));
 
+			const FString DamageInfo = TEXT("데미지: ") + FString::SanitizeFloat(ItemData->ItemStats.DamageValue);
+			DamageValue->SetText(FText::FromString(DamageInfo));
+
+			ItemDescription->SetText(ItemData->TextData.Description);
 		}
 
 	//}

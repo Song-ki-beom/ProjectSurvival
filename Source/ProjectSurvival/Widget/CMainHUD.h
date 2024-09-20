@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Interface/InteractionInterface.h"
+#include "Widget/Inventory/CInventoryItemSlot.h"
 #include "CMainHUD.generated.h"
 
 UENUM()
@@ -34,7 +35,7 @@ public:
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
-	void ShowSubMenu(FVector2D Position,class UCInventoryItemSlot* InSlotReference);
+	void ShowSubMenu(FVector2D Position, class UCInventoryItemSlot* InSlotReference, ERightClickStartWidget InRightClickStartWidget, bool bIsStackable);
 	void HideSubMenu();
 	void ToggleHiddenMenu();
 	void ShowHiddenMenu();
@@ -45,6 +46,7 @@ public:
 	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
 	class UCInventoryMenu* GetSurvivorInventoryWidget() { return SurvivorInventoryWidget; }
 	class UCQuickSlot* GetQuickSlotWidget() { return QuickSlot; }
+	class UCInventorySubMenu* GetInventorySubMenu() { return InventorySubMenuWidget; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
