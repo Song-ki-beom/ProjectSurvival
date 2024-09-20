@@ -75,7 +75,7 @@ public:
 		int32 ItemQuantity;
 
 
-	UPROPERTY(VisibleAnywhere, Category = "Pickup")
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Pickup")
 		UStaticMeshComponent* PickupMesh;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Pickup")

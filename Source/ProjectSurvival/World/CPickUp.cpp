@@ -73,7 +73,10 @@ void ACPickUp::BeginFocus()
 {
 	if (PickupMesh)
 	{
-		PickupMesh->SetRenderCustomDepth(true);
+		PickupMesh->SetRenderCustomDepth(true); //깊이 버퍼에 메쉬를 등록 
+		//PickupMesh->bRenderCustomDepth = true;
+		PickupMesh->SetCustomDepthStencilValue(252);
+		//PickupMesh->MarkRenderStateDirty();
 	}
 }
 
@@ -82,6 +85,9 @@ void ACPickUp::EndFocus()
 	if (PickupMesh)
 	{
 		PickupMesh->SetRenderCustomDepth(false);
+		//PickupMesh->bRenderCustomDepth = false;
+		PickupMesh->SetCustomDepthStencilValue(0);
+		//PickupMesh->MarkRenderStateDirty();
 	}
 }
 
