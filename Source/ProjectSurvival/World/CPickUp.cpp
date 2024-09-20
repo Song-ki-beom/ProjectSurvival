@@ -74,9 +74,7 @@ void ACPickUp::BeginFocus()
 	if (PickupMesh)
 	{
 		PickupMesh->SetRenderCustomDepth(true); //깊이 버퍼에 메쉬를 등록 
-		//PickupMesh->bRenderCustomDepth = true;
 		PickupMesh->SetCustomDepthStencilValue(252);
-		//PickupMesh->MarkRenderStateDirty();
 	}
 }
 
@@ -85,9 +83,7 @@ void ACPickUp::EndFocus()
 	if (PickupMesh)
 	{
 		PickupMesh->SetRenderCustomDepth(false);
-		//PickupMesh->bRenderCustomDepth = false;
 		PickupMesh->SetCustomDepthStencilValue(0);
-		//PickupMesh->MarkRenderStateDirty();
 	}
 }
 
@@ -298,26 +294,7 @@ void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Acto
 	// Container 클래스 자체에서 함수내용 구현
 }
 
-//void ACPickUp::RequestDestroy_Implementation()
-//{
-//	if (this->HasAuthority())
-//		Destroy();
-//}
 
-//void ACPickUp::BeginFocus()
-//{
-//	if (PickupMesh)
-//	{
-//		PickupMesh->SetRenderCustomDepth(true);
-//
-//	}
-//
-//}
-
-//void ACPickUp::EndFocus()
-//{
-//
-//}
 
 void ACPickUp::SetTransform()
 {
