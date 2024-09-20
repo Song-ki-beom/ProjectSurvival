@@ -522,21 +522,21 @@ void UCInventoryComponent::Merge(TArray<TWeakObjectPtr<UCItemBase>>& Array, int 
 		int32 LeftIDNumber = LeftArray[i]->ID.GetNumber(); //GetNumber : 아이디(FName)의 적힌 숫자를 가져옴 
 		int32 RightIDNumber = RightArray[j]->ID.GetNumber();
 
-		if (LeftArray[i]->ItemType < RightArray[j]->ItemType ||
-			(LeftArray[i]->ItemType == RightArray[j]->ItemType && LeftArray[i]->Quantity < RightArray[j]->Quantity)
-			||(LeftArray[i]->ItemType == RightArray[j]->ItemType && LeftArray[i]->Quantity == RightArray[j]->Quantity&& LeftIDNumber >= RightIDNumber)) //아이템 타입 Enum 내림차순 , Quantity 내림차순 , 아이템 ID 오름차순으로 정렬 
-		{
-			Array[k] = RightArray[j];
-			j++;
-		}
-		else
+		if (LeftArray[i]->ItemType > RightArray[j]->ItemType ||
+			(LeftArray[i]->ItemType == RightArray[j]->ItemType && LeftIDNumber < RightIDNumber)
+			||(LeftArray[i]->ItemType == RightArray[j]->ItemType && LeftIDNumber == RightIDNumber && LeftArray[i]->Quantity > RightArray[j]->Quantity)) //아이템 타입 Enum 내림차순 , 아이템 ID 오름차순,Quantity 내림차순으로 정렬 
 		{
 			Array[k] = LeftArray[i];
 			i++;
 		}
+		else
+		{
+			Array[k] = RightArray[j];
+			j++;
+		}
 		k++;
 	}
-
+	
 	// 남은 값 복사
 	while (i < n1)
 	{
