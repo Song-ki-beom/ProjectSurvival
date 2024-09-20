@@ -9,6 +9,7 @@
 #include "Widget/Inventory/CInventoryPanel.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Inventory/CInventorySubMenu.h"
 #include "Widget/CMainHUD.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Components/Image.h"
@@ -94,20 +95,40 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		return  Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton); //드래그 감지 실행 , TakeWidget() <<- 이 메서드는 현재 위젯이 드래그 가능한 객체임을 반환함 
 	}
 
-	else if(InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton) // 오른쪽 클릭 이벤트 처리
+	else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton) // 오른쪽 클릭 이벤트 처리
 	{
+		// 생존자 인벤토리, 작업대 인벤토리가 아닐 경우 취소
+		UCInventoryPanel* survivorInventoryPanel = Cast<UCInventoryPanel>(OwnerWidget);
 
-		FVector2D mousePosition(0,0);
+		if (survivorInventoryPanel)
+			RightClickStartWidget = ERightClickStartWidget::SurvivorInventory;
 
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mousePosition.X, mousePosition.Y);
+		if (!survivorInventoryPanel)
+		{
+			UCInventoryPanel_WorkingBench* workingBenchInventoryPanel = Cast<UCInventoryPanel_WorkingBench>(OwnerWidget);
 
-		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+			if (workingBenchInventoryPanel)
+				RightClickStartWidget = ERightClickStartWidget::HideActionButtonWidget;
+			else
+			{
+				RightClickStartWidget = ERightClickStartWidget::None;
+				return Reply.Unhandled();
+			}
+		}
+
+		if (RightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget && !this->GetItemReference()->NumericData.bIsStackable)
+			return Reply.Unhandled();
+
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetOwningPlayer()->GetHUD());
 		if (mainHUD)
 		{
-			mainHUD->ShowSubMenu(FVector2D(mousePosition.X + 10, mousePosition.Y + 15), this);
-			ToggleTooltip();
+			FVector2D mousePosition(0, 0);
+			UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mousePosition.X, mousePosition.Y);
+			bool bIsStackable = this->GetItemReference()->NumericData.bIsStackable;
+			if (!mainHUD->GetInventorySubMenu()->IsInViewport())
+				ToggleTooltip();
+			mainHUD->ShowSubMenu(FVector2D(mousePosition.X + 10, mousePosition.Y + 15), this, RightClickStartWidget, bIsStackable);
 		}
-		
 		return Reply.Handled(); // 오른쪽 클릭 처리 완료
 	}
 

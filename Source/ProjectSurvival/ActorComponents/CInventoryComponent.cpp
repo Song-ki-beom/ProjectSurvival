@@ -129,7 +129,7 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 		const int32 InitialRequestedAddAmount = InItem->Quantity;
 		//Stack 가능한 아이템이 아닐 때, 기존에 아이템이 없음
 		if (!InItem->NumericData.bIsStackable)
-		{
+		{	
 			return HandleNonStackableItems(InItem, InitialRequestedAddAmount);
 		}
 		
@@ -308,6 +308,12 @@ FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn,
 
 
 	}
+
+	//EarnedItem UI 표시
+	UCItemBase* EarnedItem = ItemIn->CreateItemCopy();
+	EarnedItem->Quantity = 1;
+	HUD->AddEarnedInfo(EarnedItem);
+
 	AddNewItem(ItemIn, 1);
 	return FItemAddResult::AddedAll(RequestedAddAmount,FText::Format(FText::FromString("Successfully put  {0} X{1} Item into Inventoty"), ItemIn->TextData.Name, RequestedAddAmount));
 

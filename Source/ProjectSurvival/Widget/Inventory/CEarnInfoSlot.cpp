@@ -5,6 +5,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+#include "Utility/CDebug.h"
 
 void UCEarnInfoSlot::NativeConstruct()
 {
@@ -17,7 +18,12 @@ void UCEarnInfoSlot::NativeOnListItemObjectSet(UObject* ListItemObject)
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
 	const UCItemBase* ItemReference = Cast<UCItemBase>(ListItemObject);
-	if (ItemReference == nullptr)	return;
+	if (ItemReference == nullptr)
+		return;
+	else
+		CDebug::Print("ItemReference is not Valid");
+		
+	CDebug::Print("Earn");
 
 	ItemName->SetText(FText(ItemReference->TextData.Name));
 	ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);

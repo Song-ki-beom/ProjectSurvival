@@ -69,12 +69,12 @@ bool UCInventorySubMenu::Initialize()
 
 
 
-void UCInventorySubMenu::UpdateSubMenu()
+void UCInventorySubMenu::UpdateSubMenu(ERightClickStartWidget InRightClickStartWidget, bool bIsStackable)
 {
     SubMenuSizeBox->SetVisibility(ESlateVisibility::Visible);
     SplitMenuSizeBox->SetVisibility(ESlateVisibility::Collapsed);
 
-    if (SlotReference && TextItemType != SlotReference->GetItemReference()->ItemType)
+    if (SlotReference)
     {
         ActionButton->OnClicked.Clear();
         TextItemType = SlotReference->GetItemReference()->ItemType;
@@ -83,38 +83,84 @@ void UCInventorySubMenu::UpdateSubMenu()
         {
         case EItemType::Harvest:
             ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+            if (IsValid(SplitButton))
+            {
+                if (bIsStackable)
+                    SplitButton->SetVisibility(ESlateVisibility::Visible);
+                else
+                    SplitButton->SetVisibility(ESlateVisibility::Collapsed);
+            }
             break;
         case EItemType::Hunt:
             if (IsValid(ActionButton))
             {
-                ActionButton->SetVisibility(ESlateVisibility::Visible);
-                ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+                if (InRightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget)
+                {
+                    CDebug::Print("Collapsed ActionButton : ", FColor::Cyan);
+                    ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+                }
+                else
+                {
+                    ActionButton->SetVisibility(ESlateVisibility::Visible);
+                    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+                    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+                }
             }
-            ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+            if (IsValid(SplitButton))
+            {
+                if (bIsStackable)
+                    SplitButton->SetVisibility(ESlateVisibility::Visible);
+                else
+                    SplitButton->SetVisibility(ESlateVisibility::Collapsed);
+            }
             break;
 
         case EItemType::Consumable:
-            if (IsValid(ActionButton)) 
+            if (IsValid(ActionButton))
             {
-                ActionButton->SetVisibility(ESlateVisibility::Visible);
-                ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+                if (InRightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget)
+                    ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+                else
+                {
+                    ActionButton->SetVisibility(ESlateVisibility::Visible);
+                    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+                    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+                }
             }
-            ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+            if (IsValid(SplitButton))
+            {
+                if (bIsStackable)
+                    SplitButton->SetVisibility(ESlateVisibility::Visible);
+                else
+                    SplitButton->SetVisibility(ESlateVisibility::Collapsed);
+            }
             break;
         case EItemType::Build:
-            if (IsValid(ActionButton)) 
+            if (IsValid(ActionButton))
             {
-                ActionButton->SetVisibility(ESlateVisibility::Visible);
-                ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnBuildButtonClicked);
-
+                if (InRightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget)
+                    ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+                else
+                {
+                    ActionButton->SetVisibility(ESlateVisibility::Visible);
+                    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+                    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+                }
             }
-            ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+            if (IsValid(SplitButton))
+            {
+                if (bIsStackable)
+                    SplitButton->SetVisibility(ESlateVisibility::Visible);
+                else
+                    SplitButton->SetVisibility(ESlateVisibility::Collapsed);
+            }
             break;
         default:
             break;
         }
-
     }
+    else
+        CDebug::Print("Slot Reference is not valid", FColor::White);
 
 }
 

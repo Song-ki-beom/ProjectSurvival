@@ -7,6 +7,14 @@
 #include "CInventoryItemSlot.generated.h"
 
 UENUM()
+enum class ERightClickStartWidget : uint8
+{
+	SurvivorInventory,
+	HideActionButtonWidget,
+	None
+};
+
+UENUM()
 enum class EDragDropResult : uint8
 {
 	InventoryToInventory,
@@ -99,6 +107,5 @@ private:
 	int32 UniqueItemIndexInWrapBox;
 	UUserWidget* OwnerWidget;
 	EDragDropResult DragDropResult;
-
-
+	ERightClickStartWidget RightClickStartWidget = ERightClickStartWidget::None;
 };

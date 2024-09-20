@@ -225,11 +225,10 @@ void ACMainHUD::UpdateInteractionWidget(const FInteractableData* InteractableDat
 	}
 }
 
-void ACMainHUD::ShowSubMenu(FVector2D Position , UCInventoryItemSlot* InSlotReference)
+void ACMainHUD::ShowSubMenu(FVector2D Position, class UCInventoryItemSlot* InSlotReference, ERightClickStartWidget InRightClickStartWidget, bool bIsStackable)
 {
 	if (InventorySubMenuWidget && !InventorySubMenuWidget->IsInViewport())
 	{
-		
 		//CDebug::Print(FText::Format(FText::FromString("{0} , {1}"), Position.X, Position.Y).ToString());
 		// 서브메뉴의 위치를 설정
 
@@ -239,7 +238,7 @@ void ACMainHUD::ShowSubMenu(FVector2D Position , UCInventoryItemSlot* InSlotRefe
 		InventorySubMenuWidget->bIsFocusable = true;
 		InventorySubMenuWidget->SetKeyboardFocus();
 		InventorySubMenuWidget->SetSlotReference(InSlotReference);
-		InventorySubMenuWidget->UpdateSubMenu();
+		InventorySubMenuWidget->UpdateSubMenu(InRightClickStartWidget, bIsStackable);
 	}
 
 }
