@@ -22,8 +22,17 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+
 	virtual void DoAction();
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void BroadcastDoAction(int32 InAttackIdx);
+	UFUNCTION(Server, Reliable)
+	virtual void RequestDoAction();
+	virtual void PerformDoAction(int32 InAttackIdx);
 	virtual void EndDoAction();
+	
+
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 //Damage Interface Override
@@ -39,6 +48,10 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	FString AnimInstancePath; 
 	FString BBAssetPath;
 
+	//DoAction
+	UPROPERTY(EditAnywhere)
+	TArray<FDoActionData> DoActionDatas;
+
 private:
 	//AI 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
@@ -50,15 +63,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class ACEnemyAIController* AIController;
 	//Component
-		UPROPERTY(VisibleAnywhere)
-		class UCStatusComponent* StatusComponent;
-		UPROPERTY(VisibleAnywhere)
-		class UCMovingComponent* MovingComponent;
-		UPROPERTY(VisibleAnywhere)
-		class UCStateComponent* StateComponent;
-		UPROPERTY(VisibleAnywhere)
-		class UCMontageComponent* MontageComponent;
-
+	UPROPERTY(VisibleAnywhere)
+	class UCStatusComponent* StatusComponent;
+	UPROPERTY(VisibleAnywhere)
+	class UCMovingComponent* MovingComponent;
+	UPROPERTY(VisibleAnywhere)
+	class UCStateComponent* StateComponent;
+	UPROPERTY(VisibleAnywhere)
+	class UCMontageComponent* MontageComponent;
 
 
 public:

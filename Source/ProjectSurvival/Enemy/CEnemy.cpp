@@ -13,6 +13,7 @@
 #include "Animation/CEnemyAnimInstance.h"
 #include "Animation/AnimInstance.h"
 #include "Enemy/CEnemyAIController.h"
+#include "Net/UnrealNetwork.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "Utility/CDebug.h"
 
@@ -127,7 +128,39 @@ void ACEnemy::Tick(float DeltaTime)
 
 void ACEnemy::DoAction()
 {
-	MontageComponent->PlayAnimMontage(EStateType::Action);
+	if (HasAuthority())
+	{
+		int32 AttackIdx = FMath::RandRange(0, DoActionDatas.Num() - 1);
+		BroadcastDoAction(AttackIdx);
+	}
+	
+}
+
+void ACEnemy::BroadcastDoAction_Implementation(int32 InAttackIdx)
+{
+	PerformDoAction(InAttackIdx);
+}
+
+
+void ACEnemy::RequestDoAction_Implementation()
+{
+	DoAction();
+}
+
+void ACEnemy::PerformDoAction(int32 InAttackIdx)
+{
+	MovingComponent->EnableControlRotation();
+	StateComponent->ChangeType(EStateType::Action);
+	if (this->HasAuthority()) 
+	{
+		CDebug::Print(TEXT(" On Server Attack Index has Changed To :") + FString::FromInt(InAttackIdx));
+
+	}
+	else
+	{
+		CDebug::Print(TEXT("On Client Attack Index has Changed To :")+ FString::FromInt(InAttackIdx));
+	}
+	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
 }
 
 void ACEnemy::EndDoAction()
@@ -152,4 +185,10 @@ void ACEnemy::Damage(ACharacter* Attacker, AActor* Causer, FHitData HitData)
 
 
 
+//void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//	DOREPLIFETIME(ACEnemy, AttackIdx);
+//	
+//}
 

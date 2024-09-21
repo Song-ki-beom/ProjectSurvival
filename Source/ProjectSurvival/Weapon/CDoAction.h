@@ -63,7 +63,7 @@ protected:
 
 protected:
 	TArray<FDoActionData> DoActionDatas;
-	//TArray<FHitData>      HitDatas;
+	TArray<FHitData>      HitDatas;
 protected:
 	bool  bInAction = false;   
 	bool  bBeginAction = false;   

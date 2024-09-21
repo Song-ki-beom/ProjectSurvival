@@ -18,7 +18,7 @@ public:
 	ACEnemy_Bear();
 	virtual void DoAction() override;
 	virtual void EndDoAction() override;
-
+	
 
 protected:
 	virtual void BeginPlay() override;

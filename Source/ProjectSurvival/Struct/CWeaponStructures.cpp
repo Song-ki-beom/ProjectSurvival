@@ -3,14 +3,13 @@
 
 #include "Struct/CWeaponStructures.h"
 #include "GameFramework/Character.h"
-//#include "Components/CStateComponent.h"
-//#include "Components/CMovementComponent.h"
+#include "ActorComponents/CStateComponent.h"
+#include "ActorComponents/CMovingComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Components/CapsuleComponent.h"
-
-//#include "Components/CMontagesComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 
 
 void FDoActionData::DoAction(ACharacter* InOwner)

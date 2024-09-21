@@ -46,6 +46,18 @@ public:
 
 };
 
+USTRUCT()
+struct FDamageData
+{
+	GENERATED_BODY()
+public:
+	float power = 0.0f;
+	class ACharacter* Character;
+	class AActor* Causer;
+	struct FActionDamageEvent* Event;
+};
+
+
 // Hit에 관련된 데이터
 USTRUCT()
 struct FHitData
