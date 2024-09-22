@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "ActorComponents/CStateComponent.h"
 #include "ActorComponents/CMovingComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
@@ -14,23 +15,24 @@
 
 void FDoActionData::DoAction(ACharacter* InOwner)
 {
-	/*UCMovementComponent* movement = CHelpers::GetComponent<UCMovementComponent>(InOwner);
-	if (!!movement)
+	UCMovingComponent* movingComponent = Cast<UCMovingComponent>(InOwner->GetComponentByClass(UCMovingComponent::StaticClass()));
+	if (!!movingComponent)
 	{
 		if (this->bFixedCamera)
-			movement->EnableFixedCamera();
-		if (this->bCanMove)
-			movement->Stop();
-	}*/
+			movingComponent->EnableFixedCamera();
+		if (!this->bCanMove)
+			movingComponent->Stop();
+	}
+
 	if (this->Montage)
 	{
-		/*UCMontagesComponent* montagesComponent;
-		montagesComponent = CHelpers::GetComponent<UCMontagesComponent>(InOwner);
-		if (!!montagesComponent)
-			montagesComponent->Montage_Play(this->Montage, this->PlayRate);*/
+		UCMontageComponent* montageComponent;
+		montageComponent = Cast<UCMontageComponent>(InOwner->GetComponentByClass(UCMontageComponent::StaticClass()));
+		if (!!montageComponent)
+			montageComponent->Montage_Play(this->Montage, this->PlayRate);
 
-		//몽타주 컴포넌트 구현 전까지 사용할 플레이 몽타주
-			InOwner->PlayAnimMontage(this->Montage, this->PlayRate);
+			//몽타주 컴포넌트가 없을 시 플레이 
+			//InOwner->PlayAnimMontage(this->Montage, this->PlayRate);
 	}
 }
 

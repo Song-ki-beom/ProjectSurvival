@@ -21,7 +21,7 @@ protected:
 	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 protected:
 	UPROPERTY(EditAnywhere, Category = "Approach")
-		float AcceptanceDistance = 300;
+		float AcceptanceDistance = 200;
 
 private:
 	class ACEnemyAIController* controller;

@@ -30,7 +30,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	virtual void RequestDoAction();
 	virtual void PerformDoAction(int32 InAttackIdx);
-	virtual void EndDoAction();
+	virtual void AttackTraceHit();
+	virtual void Begin_DoAction();
+	virtual void End_DoAction();
 	
 
 
@@ -73,6 +75,10 @@ private:
 	class UCMontageComponent* MontageComponent;
 
 
+	//Attack
+	float TraceDistance = 45.0f;
+	float TraceOffset = 200.0f;
+	int32 AttackIdx = 0;
 public:
 //ForceInline Getter & Settter
 FORCEINLINE uint8 GetTeamID() { return TeamID; }

@@ -13,6 +13,7 @@
 #include "Animation/CEnemyAnimInstance.h"
 #include "Animation/AnimInstance.h"
 #include "Enemy/CEnemyAIController.h"
+#include "DrawDebugHelpers.h"
 #include "Net/UnrealNetwork.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "Utility/CDebug.h"
@@ -118,6 +119,7 @@ void ACEnemy::BeginPlay()
 	MovingComponent->DisableControlRotation();
 	// 이동 방향에 따라 회전하도록 설정
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+
 }
 
 void ACEnemy::Tick(float DeltaTime)
@@ -130,8 +132,8 @@ void ACEnemy::DoAction()
 {
 	if (HasAuthority())
 	{
-		int32 AttackIdx = FMath::RandRange(0, DoActionDatas.Num() - 1);
-		BroadcastDoAction(AttackIdx);
+		int32 NewAttackIdx = FMath::RandRange(0, DoActionDatas.Num() - 1); //플레이할 몽타주 랜덤 넘버 설정
+		BroadcastDoAction(NewAttackIdx);
 	}
 	
 }
@@ -149,31 +151,70 @@ void ACEnemy::RequestDoAction_Implementation()
 
 void ACEnemy::PerformDoAction(int32 InAttackIdx)
 {
+	AttackIdx = InAttackIdx;
 	MovingComponent->EnableControlRotation();
-	StateComponent->ChangeType(EStateType::Action);
-	if (this->HasAuthority()) 
-	{
-		CDebug::Print(TEXT(" On Server Attack Index has Changed To :") + FString::FromInt(InAttackIdx));
-
-	}
-	else
-	{
-		CDebug::Print(TEXT("On Client Attack Index has Changed To :")+ FString::FromInt(InAttackIdx));
-	}
 	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
 }
 
-void ACEnemy::EndDoAction()
+void ACEnemy::AttackTraceHit()
 {
 
+	//Trace 관련 세팅
+	FVector ForwardVector = GetActorForwardVector();
+	FVector Start = FVector(GetActorLocation().X, GetActorLocation().Y,GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
+	FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
+	FQuat Rot = FQuat(GetActorRotation());
+
+	FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 1.0f, TraceDistance / 1.0f);
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+
+	//BoxTrace 
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		Rot,
+		ECC_WorldStatic,
+		FCollisionShape::MakeBox(HalfSize),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
+	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+
+
+	if (bHit)
+	{
+		FString hitObjectName = *HitResult.Component->GetName();
+
+	}
+
 }
+
+void ACEnemy::Begin_DoAction()
+{
+	StateComponent->ChangeType(EStateType::Action);
+	if (!DoActionDatas[AttackIdx].bCanMove)
+		MovingComponent->Stop();
+}
+
+void ACEnemy::End_DoAction()
+{
+	
+	StateComponent->ChangeType(EStateType::Idle);
+	if (!DoActionDatas[AttackIdx].bCanMove)
+		MovingComponent->Move();
+}
+
 
 
 
 void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ACEnemy::Damage(ACharacter* Attacker, AActor* Causer, FHitData HitData)

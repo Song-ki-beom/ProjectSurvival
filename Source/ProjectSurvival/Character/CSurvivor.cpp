@@ -8,6 +8,8 @@
 #include "ActorComponents/CInteractionComponent.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "ActorComponents/CStatusComponent.h"
+#include "ActorComponents/CStateComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/InputComponent.h"
@@ -55,7 +57,10 @@ ACSurvivor::ACSurvivor()
 	BuildComponent->SetIsReplicated(true);
 	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("Status"));
 	StatusComponent->SetIsReplicated(true);
-
+	StateComponent = CreateDefaultSubobject<UCStateComponent>(TEXT("State"));
+	StateComponent->SetIsReplicated(true);
+	MontageComponent = CreateDefaultSubobject<UCMontageComponent>(TEXT("Montage"));
+	MontageComponent->SetIsReplicated(true);
 	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
 	Head->SetIsReplicated(true);

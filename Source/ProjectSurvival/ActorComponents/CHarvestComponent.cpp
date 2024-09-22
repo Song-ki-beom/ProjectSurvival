@@ -87,14 +87,10 @@ void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
 		DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
 		DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
 
-		//커밋 테스트(09.03)
-
 		if (bHit)
 		{
 			FString hitObjectName = *HitResult.Component->GetName();
 
-			//기존 
-			//FString hitIndex = *HitResult.Component->GetName().Right(2);
 
 			int32 StringLength = hitObjectName.Len();
 
@@ -169,7 +165,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 void UCHarvestComponent::RemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
 {
 	
-	//InInstanceToRemove->RemoveInstance(InInstanceIndex);
+	
 	
 	if (OwnerCharacter->HasAuthority()) 
 	{
@@ -180,11 +176,7 @@ void UCHarvestComponent::RemoveFoliageInstance(UInstancedStaticMeshComponent* In
 
 }
 
-//void UCHarvestComponent::RequestRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
-//{
-//	
-//	RemoveFoliageInstance(InInstanceToRemove, InInstanceIndex);
-//}
+
 
 void UCHarvestComponent::BroadCastRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
 {

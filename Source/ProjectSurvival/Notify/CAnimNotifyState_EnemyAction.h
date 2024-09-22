@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
-#include "CAnimNotifyState_ActionState.generated.h"
+#include "CAnimNotifyState_EnemyAction.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTSURVIVAL_API UCAnimNotifyState_ActionState : public UAnimNotifyState
+class PROJECTSURVIVAL_API UCAnimNotifyState_EnemyAction : public UAnimNotifyState
 {
 	GENERATED_BODY()
 public:
@@ -18,4 +18,7 @@ public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
+private:
+	class ACEnemy* Enemy;
+	
 };

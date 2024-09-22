@@ -124,6 +124,11 @@ private:
 		class UCMovingComponent* MovingComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCStatusComponent* StatusComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCStateComponent* StateComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCMontageComponent* MontageComponent;
+		
 
 
 	//Inventory

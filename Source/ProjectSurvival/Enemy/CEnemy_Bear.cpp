@@ -20,9 +20,15 @@ void ACEnemy_Bear::DoAction()
 
 }
 
-void ACEnemy_Bear::EndDoAction()
+void ACEnemy_Bear::Begin_DoAction()
 {
-	Super::EndDoAction();
+	Super::Begin_DoAction();
+
+}
+
+void ACEnemy_Bear::End_DoAction()
+{
+	Super::End_DoAction();
 
 	//Attack 몽타주 중단부분
 }
