@@ -31,7 +31,7 @@ void UCProduceItemSlot::ClickProduceSlotButton()
 {
 	UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
 	if (produceWidget)
-		produceWidget->SetProduceDetail(ItemID);
+		produceWidget->SetProduceDetail(ItemID, produceWidget->GetProducePanelSwitcherIndex(), produceWidget->GetWidgetCall());
 	else
 		CDebug::Print("produceWidget is not Vaild");
 

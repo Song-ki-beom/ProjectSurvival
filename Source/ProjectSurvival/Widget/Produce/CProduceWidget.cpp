@@ -15,6 +15,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/CMainHUD.h"
+#include "Build/CStructure_Placeable.h"
 #include "CGameInstance.h"
 #include "Utility/CDebug.h"
 
@@ -25,6 +26,26 @@ void UCProduceWidget::NativeConstruct()
 	Survivor = Cast<ACSurvivor>(GetOwningPlayerPawn());
 	if (Survivor)
 		InventoryComponent = Survivor->GetInventoryComponent();
+
+	UClass* produceItemSlotClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemSlot.WBP_CProduceItemSlot_C'"));
+
+	switch (WidgetCall)
+	{
+	case EWidgetCall::Survivor:
+		if (Survivor)
+		{
+			SetProduceWindowName(FText::FromString(TEXT("제작 - 생존자")));
+			CreateBuildProduceItemSlot(1, 15);
+			CreateToolProduceItemSlot(1, 2);
+			CreateWeaponProduceItemSlot(3, 4);
+		}
+		else
+			CDebug::Print("Survivor is Not Valid");
+		break;
+	case EWidgetCall::WorkBench:
+		RefreshProduceDetail();
+		break;
+	}
 }
 
 FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -84,51 +105,123 @@ bool UCProduceWidget::Initialize()
 	WeaponSelectButton->OnClicked.AddDynamic(this, &UCProduceWidget::ClickWeaponButton);
 
 	ItemData = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
-	if (IsValid(ItemData))
-		CDebug::Print("ItemData is Valid");
-	else
+	if (!IsValid(ItemData))
 		CDebug::Print("ItemData is not Valid");
-
-	// 범위기반 for loop에 사용될 Build_ 뒤에 문자열로 추가할 정수형 변수
-	int32 itemNumber = 1;
-
-	// ProduceItemSlot에 텍스처 이미지 설정 및 ID 부여
-	for (UWidget* buildChildren : BuildPanel->GetAllChildren())
-	{
-		UCProduceItemSlot* produceItemSlot = Cast<UCProduceItemSlot>(buildChildren);
-		if (IsValid(produceItemSlot))
-		{
-			FName itemRowName = FName(*FString::Printf(TEXT("Build_%d"), itemNumber));
-			FItemData* itemData = ItemData->FindRow<FItemData>(itemRowName, TEXT(""));
-			if (itemData)
-			{
-				CDebug::Print("Valid");
-				UTexture2D* itemIcon = itemData->AssetData.Icon;
-				produceItemSlot->SetProduceSlotIcon(itemIcon);
-				produceItemSlot->SetProduceSlotID(itemRowName);
-				CDebug::Print("Texture : ", itemIcon);
-				itemNumber++;
-			}
-			else
-				CDebug::Print("Not Valid");
-		}
-
-	}
-
-	CDebug::Print("Initialize Success");
 
 	return true;
 }
 
-void UCProduceWidget::SetWidgetSwitcherIndex(int32 InIndex)
+void UCProduceWidget::SetProduceWindowName(FText InText)
 {
-	ProduceWidgetSwitcher->SetActiveWidgetIndex(InIndex);
+	ProduceWindowName->SetText(InText);
 }
 
-void UCProduceWidget::SetProduceDetail(FName InID)
+void UCProduceWidget::CreateBuildProduceItemSlot(int32 StartIndex, int32 EndIndex)
 {
-	SelectedID = InID;
-	FItemData* itemData = ItemData->FindRow<FItemData>(InID, TEXT(""));
+	UClass* produceItemSlotClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemSlot.WBP_CProduceItemSlot_C'"));
+	
+	// DT_Items 변동사항 발생 시 수정 필요, Build 관련 ProduceItemSlot추가
+	for (int32 i = StartIndex; i <= EndIndex; i++)
+	{
+		UCProduceItemSlot* produceItemSlot = CreateWidget<UCProduceItemSlot>(this, produceItemSlotClass);
+		if (produceItemSlot)
+		{
+			FName itemRowName = FName(*FString::Printf(TEXT("Build_%d"), i));
+			FItemData* itemData = ItemData->FindRow<FItemData>(itemRowName, TEXT(""));
+			if (itemData)
+			{
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemSlot->SetProduceSlotIcon(itemIcon);
+				produceItemSlot->SetProduceSlotID(itemRowName);
+				BuildPanel->AddChild(produceItemSlot);
+			}
+			else
+				CDebug::Print("itemData is Not Valid");
+
+		}
+		else
+			CDebug::Print("produceItemSlot is Not Valid");
+	}
+}
+
+void UCProduceWidget::CreateToolProduceItemSlot(int32 StartIndex, int32 EndIndex)
+{
+	UClass* produceItemSlotClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemSlot.WBP_CProduceItemSlot_C'"));
+
+	// DT_Items 변동사항 발생 시 수정 필요, Hunt(Tool) 관련 ProduceItemSlot추가
+	for (int32 i = StartIndex; i <= EndIndex; i++)
+	{
+		UCProduceItemSlot* produceItemSlot = CreateWidget<UCProduceItemSlot>(this, produceItemSlotClass);
+		if (produceItemSlot)
+		{
+			FName itemRowName = FName(*FString::Printf(TEXT("Hunt_%d"), i));
+			FItemData* itemData = ItemData->FindRow<FItemData>(itemRowName, TEXT(""));
+			if (itemData)
+			{
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemSlot->SetProduceSlotIcon(itemIcon);
+				produceItemSlot->SetProduceSlotID(itemRowName);
+				ToolPanel->AddChild(produceItemSlot);
+			}
+			else
+				CDebug::Print("itemData is Not Valid");
+
+		}
+		else
+			CDebug::Print("produceItemSlot is Not Valid");
+	}
+}
+
+void UCProduceWidget::CreateWeaponProduceItemSlot(int32 StartIndex, int32 EndIndex)
+{
+	UClass* produceItemSlotClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemSlot.WBP_CProduceItemSlot_C'"));
+
+	// DT_Items 변동사항 발생 시 수정 필요, Hunt(Weapon) 관련 ProduceItemSlot추가
+	for (int32 i = StartIndex; i <= EndIndex; i++)
+	{
+		UCProduceItemSlot* produceItemSlot = CreateWidget<UCProduceItemSlot>(this, produceItemSlotClass);
+		if (produceItemSlot)
+		{
+			FName itemRowName = FName(*FString::Printf(TEXT("Hunt_%d"), i));
+			FItemData* itemData = ItemData->FindRow<FItemData>(itemRowName, TEXT(""));
+			if (itemData)
+			{
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemSlot->SetProduceSlotIcon(itemIcon);
+				produceItemSlot->SetProduceSlotID(itemRowName);
+				WeaponPanel->AddChild(produceItemSlot);
+			}
+			else
+				CDebug::Print("itemData is Not Valid");
+
+		}
+		else
+			CDebug::Print("produceItemSlot is Not Valid");
+	}
+}
+
+void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall InWidgetCall)
+{
+	FItemData* itemData = nullptr;
+
+	switch (InIndex)
+	{
+	case 0:
+		SelectedBuildID = InID;
+		itemData = ItemData->FindRow<FItemData>(SelectedBuildID, TEXT(""));
+		break;
+	case 1:
+		SelectedToolID = InID;
+		itemData = ItemData->FindRow<FItemData>(SelectedToolID, TEXT(""));
+		break;
+	case 2:
+		SelectedWeaponID = InID;
+		itemData = ItemData->FindRow<FItemData>(SelectedWeaponID, TEXT(""));
+		break;
+	default:
+		break;
+	}
+
 	if (itemData)
 	{
 		UTexture2D* itemIcon = itemData->AssetData.Icon;
@@ -145,9 +238,25 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 		ProduceDetail->SetProduceDetailWeight(itemWeightText);
 
 		float itemProduceTime = itemData->ProduceData.ProduceTime;
-		FText itemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime));
-		ProduceDetail->SetProduceDetailTime(itemProduceTimeText);
-
+		switch (InWidgetCall)
+		{
+		case EWidgetCall::Survivor:
+		{
+			FText survivorItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime));
+			ProduceDetail->SetProduceDetailTime(survivorItemProduceTimeText);
+			break;
+		}
+		case EWidgetCall::WorkBench:
+		{
+			FText workBenchItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime / 2));
+			ProduceDetail->SetProduceDetailTime(workBenchItemProduceTimeText);
+			break;
+		}
+		default:
+		{
+			break;
+		}
+		}
 		FText itemProduceMethod = itemData->ProduceData.ProduceMethod;
 		FText itemProduceMethodText = FText::Format(FText::FromString(TEXT("제작 방법: {0}")), itemProduceMethod);
 		ProduceDetail->SetProduceDetailMethod(itemProduceMethodText);
@@ -158,109 +267,225 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 		// 초기화 해서 요구 재료 스크롤 박스 자손 제거
 		ProduceDetail->ClearRecipeScrollBox();
 
+
+
 		// 조합식은 현재까지 넉넉하게 5가지만 생각 중. 더 다양하게 조합하고 싶을 경우 추가하면 됨
-		if (itemData->ProduceData.ProduceResource_1.ResourceIcon)
+		switch (InWidgetCall)
 		{
-			int32 inventoryQuantity = 0;
-			TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
-			for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
+		case EWidgetCall::Survivor:
+		{
+			if (itemData->ProduceData.ProduceResource_1.ResourceIcon)
 			{
-				if (UCItemBase* itemBase = itemBasePtr.Get())
+				int32 inventoryQuantity = 0;
+				TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
+				for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
 				{
-					if (itemBase->ID == itemData->ProduceData.ProduceResource_1.ResourceID)
+					if (UCItemBase* itemBase = itemBasePtr.Get())
 					{
-						inventoryQuantity += itemBase->Quantity;
+						if (itemBase->ID == itemData->ProduceData.ProduceResource_1.ResourceID)
+						{
+							inventoryQuantity += itemBase->Quantity;
+						}
 					}
 				}
+				FName resourceID = itemData->ProduceData.ProduceResource_1.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_1.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_1.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_1.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
 			}
-			FName resourceID = itemData->ProduceData.ProduceResource_1.ResourceID;
-			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_1.ResourceIcon;
-			FText resourceName = itemData->ProduceData.ProduceResource_1.ResourceName;
-			int32 demandQuantity = itemData->ProduceData.ProduceResource_1.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+
+			if (itemData->ProduceData.ProduceResource_2.ResourceIcon)
+			{
+				int32 inventoryQuantity = 0;
+				TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
+				for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
+				{
+					if (UCItemBase* itemBase = itemBasePtr.Get())
+					{
+						if (itemBase->ID == itemData->ProduceData.ProduceResource_2.ResourceID)
+						{
+							inventoryQuantity += itemBase->Quantity;
+						}
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_2.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_2.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_2.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_2.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			}
+
+			if (itemData->ProduceData.ProduceResource_3.ResourceIcon)
+			{
+				int32 inventoryQuantity = 0;
+				TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
+				for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
+				{
+					if (UCItemBase* itemBase = itemBasePtr.Get())
+					{
+						if (itemBase->ID == itemData->ProduceData.ProduceResource_3.ResourceID)
+						{
+							inventoryQuantity += itemBase->Quantity;
+						}
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_3.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_3.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_3.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_3.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			}
+			if (itemData->ProduceData.ProduceResource_4.ResourceIcon)
+			{
+				int32 inventoryQuantity = 0;
+				TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
+				for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
+				{
+					if (UCItemBase* itemBase = itemBasePtr.Get())
+					{
+						if (itemBase->ID == itemData->ProduceData.ProduceResource_4.ResourceID)
+						{
+							inventoryQuantity += itemBase->Quantity;
+						}
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_4.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_4.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_4.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_4.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			}
+			if (itemData->ProduceData.ProduceResource_5.ResourceIcon)
+			{
+				int32 inventoryQuantity = 0;
+				TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
+				for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
+				{
+					if (UCItemBase* itemBase = itemBasePtr.Get())
+					{
+						if (itemBase->ID == itemData->ProduceData.ProduceResource_5.ResourceID)
+						{
+							inventoryQuantity += itemBase->Quantity;
+						}
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_5.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_5.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_5.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_5.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
+			}
+			break;
+		}
+		case EWidgetCall::WorkBench:
+		{
+			if (itemData->ProduceData.ProduceResource_1.ResourceIcon)
+			{
+				int32 workBenchInventoryQuantity = 0;
+				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
+
+				for (FItemInformation itemInfo : itemInfoArray)
+				{
+					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_1.ResourceID)
+					{
+						workBenchInventoryQuantity += itemInfo.Quantity;
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_1.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_1.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_1.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_1.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+			}
+
+			if (itemData->ProduceData.ProduceResource_2.ResourceIcon)
+			{
+				int32 workBenchInventoryQuantity = 0;
+				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
+
+				for (FItemInformation itemInfo : itemInfoArray)
+				{
+					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_2.ResourceID)
+					{
+						workBenchInventoryQuantity += itemInfo.Quantity;
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_2.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_2.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_2.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_2.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+			}
+
+			if (itemData->ProduceData.ProduceResource_3.ResourceIcon)
+			{
+				int32 workBenchInventoryQuantity = 0;
+				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
+
+				for (FItemInformation itemInfo : itemInfoArray)
+				{
+					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_2.ResourceID)
+					{
+						workBenchInventoryQuantity += itemInfo.Quantity;
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_3.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_3.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_3.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_3.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+			}
+
+			if (itemData->ProduceData.ProduceResource_4.ResourceIcon)
+			{
+				int32 workBenchInventoryQuantity = 0;
+				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
+
+				for (FItemInformation itemInfo : itemInfoArray)
+				{
+					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_4.ResourceID)
+					{
+						workBenchInventoryQuantity += itemInfo.Quantity;
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_4.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_4.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_4.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_4.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+			}
+
+			if (itemData->ProduceData.ProduceResource_5.ResourceIcon)
+			{
+				int32 workBenchInventoryQuantity = 0;
+				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
+
+				for (FItemInformation itemInfo : itemInfoArray)
+				{
+					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_5.ResourceID)
+					{
+						workBenchInventoryQuantity += itemInfo.Quantity;
+					}
+				}
+				FName resourceID = itemData->ProduceData.ProduceResource_5.ResourceID;
+				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_5.ResourceIcon;
+				FText resourceName = itemData->ProduceData.ProduceResource_5.ResourceName;
+				int32 demandQuantity = itemData->ProduceData.ProduceResource_5.ProduceResourceDemand;
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+			}
+
+			break;
+		}
+		default:
+		{
+			break;
+		}
 		}
 
-		if (itemData->ProduceData.ProduceResource_2.ResourceIcon)
-		{
-			int32 inventoryQuantity = 0;
-			TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
-			for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
-			{
-				if (UCItemBase* itemBase = itemBasePtr.Get())
-				{
-					if (itemBase->ID == itemData->ProduceData.ProduceResource_2.ResourceID)
-					{
-						inventoryQuantity += itemBase->Quantity;
-					}
-				}
-			}
-			FName resourceID = itemData->ProduceData.ProduceResource_2.ResourceID;
-			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_2.ResourceIcon;
-			FText resourceName = itemData->ProduceData.ProduceResource_2.ResourceName;
-			int32 demandQuantity = itemData->ProduceData.ProduceResource_2.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
-		}
 
-		if (itemData->ProduceData.ProduceResource_3.ResourceIcon)
-		{
-			int32 inventoryQuantity = 0;
-			TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
-			for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
-			{
-				if (UCItemBase* itemBase = itemBasePtr.Get())
-				{
-					if (itemBase->ID == itemData->ProduceData.ProduceResource_3.ResourceID)
-					{
-						inventoryQuantity += itemBase->Quantity;
-					}
-				}
-			}
-			FName resourceID = itemData->ProduceData.ProduceResource_3.ResourceID;
-			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_3.ResourceIcon;
-			FText resourceName = itemData->ProduceData.ProduceResource_3.ResourceName;
-			int32 demandQuantity = itemData->ProduceData.ProduceResource_3.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
-		}
-		if (itemData->ProduceData.ProduceResource_4.ResourceIcon)
-		{
-			int32 inventoryQuantity = 0;
-			TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
-			for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
-			{
-				if (UCItemBase* itemBase = itemBasePtr.Get())
-				{
-					if (itemBase->ID == itemData->ProduceData.ProduceResource_4.ResourceID)
-					{
-						inventoryQuantity += itemBase->Quantity;
-					}
-				}
-			}
-			FName resourceID = itemData->ProduceData.ProduceResource_4.ResourceID;
-			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_4.ResourceIcon;
-			FText resourceName = itemData->ProduceData.ProduceResource_4.ResourceName;
-			int32 demandQuantity = itemData->ProduceData.ProduceResource_4.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
-		}
-		if (itemData->ProduceData.ProduceResource_5.ResourceIcon)
-		{
-			int32 inventoryQuantity = 0;
-			TArray<TWeakObjectPtr<UCItemBase>> itemArray = InventoryComponent->GetInventoryContents();
-			for (TWeakObjectPtr<UCItemBase> itemBasePtr : itemArray)
-			{
-				if (UCItemBase* itemBase = itemBasePtr.Get())
-				{
-					if (itemBase->ID == itemData->ProduceData.ProduceResource_5.ResourceID)
-					{
-						inventoryQuantity += itemBase->Quantity;
-					}
-				}
-			}
-			FName resourceID = itemData->ProduceData.ProduceResource_5.ResourceID;
-			UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_5.ResourceIcon;
-			FText resourceName = itemData->ProduceData.ProduceResource_5.ResourceName;
-			int32 demandQuantity = itemData->ProduceData.ProduceResource_5.ProduceResourceDemand;
-			ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, inventoryQuantity, demandQuantity);
-		}
+
+		
 	}
 	else
 		CDebug::Print("itemData is not Valid");
@@ -268,12 +493,37 @@ void UCProduceWidget::SetProduceDetail(FName InID)
 
 void UCProduceWidget::RefreshProduceDetail()
 {
-	if (!SelectedID.IsNone())
-		SetProduceDetail(SelectedID);
-	else
+	switch (ProducePanelSwitcher->GetActiveWidgetIndex())
 	{
-		FName initialID = "Build_1";
-		SetProduceDetail(initialID);
+	case 0:
+		if (!SelectedBuildID.IsNone())
+			SetProduceDetail(SelectedBuildID, 0, WidgetCall);
+		else
+		{
+			SelectedBuildID = "Build_1";
+			SetProduceDetail(SelectedBuildID, 0, WidgetCall);
+		}
+		break;
+	case 1:
+		if (!SelectedToolID.IsNone())
+			SetProduceDetail(SelectedToolID, 1, WidgetCall);
+		else
+		{
+			SelectedToolID = "Hunt_1";
+			SetProduceDetail(SelectedToolID, 1, WidgetCall);
+		}
+		break;
+	case 2:
+		if (!SelectedWeaponID.IsNone())
+			SetProduceDetail(SelectedWeaponID, 2, WidgetCall);
+		else
+		{
+			SelectedWeaponID = "Hunt_3";
+			SetProduceDetail(SelectedWeaponID, 2, WidgetCall);
+		}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -285,10 +535,42 @@ void UCProduceWidget::StartProduce()
 		return;
 	}
 
-	ProduceDetail->ProduceItem();
+	switch (WidgetCall)
+	{
+	case EWidgetCall::Survivor:
+		switch (ProducePanelSwitcher->GetActiveWidgetIndex())
+		{
+		case 0:
+			ProduceDetail->ProduceSurvivorItem(SelectedBuildID);
+			break;
+		case 1:
+			ProduceDetail->ProduceSurvivorItem(SelectedToolID);
+			break;
+		case 2:
+			ProduceDetail->ProduceSurvivorItem(SelectedWeaponID);
+			break;
+		default:
+			break;
+		}
+		break;
+	case EWidgetCall::WorkBench:
+		switch (ProducePanelSwitcher->GetActiveWidgetIndex())
+		{
+		case 0:
+			ProduceDetail->ProduceWorkingBenchItem(SelectedBuildID, OwnerActor);
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		default:
+			break;
+		}
+		break;
+	}
 }
 
-void UCProduceWidget::AddProduceItemToQueue()
+void UCProduceWidget::AddProduceItemToQueue(FName InID)
 {
 	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemQueueSlot.WBP_CProduceItemQueueSlot_C'"));
 	if (widgetClass)
@@ -296,7 +578,7 @@ void UCProduceWidget::AddProduceItemToQueue()
 		UCProduceItemQueueSlot* produceItemQueueSlot = CreateWidget<UCProduceItemQueueSlot>(GetWorld(), widgetClass);
 		if (produceItemQueueSlot)
 		{
-			FItemData* itemData = ItemData->FindRow<FItemData>(SelectedID, TEXT(""));
+			FItemData* itemData = ItemData->FindRow<FItemData>(InID, TEXT(""));
 			if (itemData)
 			{
 				FName itemID = itemData->ID;
@@ -328,6 +610,11 @@ void UCProduceWidget::SetProducingItemText(FText InText, FLinearColor InLinearCo
 	ProducingItemText->SetColorAndOpacity(FSlateColor(InLinearColor));
 }
 
+int32 UCProduceWidget::GetProducePanelSwitcherIndex()
+{
+	return ProducePanelSwitcher->GetActiveWidgetIndex();
+}
+
 //void UCProduceWidget::Test_ShowPlaceableInventory()
 //{
 //	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Inventory/WBP_CInventoryPanel_WorkingBench.WBP_CInventoryPanel_WorkingBench_C'"));
@@ -350,12 +637,10 @@ void UCProduceWidget::ClickBuildStructureButton()
 	if (IsValid(ProducePanelSwitcher))
 	{
 		ProducePanelSwitcher->SetActiveWidgetIndex(0);
-		CDebug::Print("SetActiveWidgetIndex - 0");
+		RefreshProduceDetail();
 	}
 	else
-	{
 		CDebug::Print("ProducePanelSwitcher is not Valid");
-	}
 
 	BuildStructureSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
 }
@@ -365,12 +650,10 @@ void UCProduceWidget::ClickToolButton()
 	if (IsValid(ProducePanelSwitcher))
 	{
 		ProducePanelSwitcher->SetActiveWidgetIndex(1);
-		CDebug::Print("SetActiveWidgetIndex - 1");
+		RefreshProduceDetail();
 	}
 	else
-	{
 		CDebug::Print("ProducePanelSwitcher is not Valid");
-	}
 
 	ToolSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
 }
@@ -380,12 +663,10 @@ void UCProduceWidget::ClickWeaponButton()
 	if (IsValid(ProducePanelSwitcher))
 	{
 		ProducePanelSwitcher->SetActiveWidgetIndex(2);
-		CDebug::Print("SetActiveWidgetIndex - 2");
+		RefreshProduceDetail();
 	}
 	else
-	{
 		CDebug::Print("ProducePanelSwitcher is not Valid");
-	}
 
 	WeaponSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
 }

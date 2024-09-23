@@ -49,6 +49,7 @@ void ACMainHUD::BeginPlay()
 	if (ProduceWidgetClass)
 	{
 		ProduceWidget = CreateWidget<UCProduceWidget>(GetWorld(), ProduceWidgetClass);
+		ProduceWidget->SetOwnerActor(nullptr, EWidgetCall::Survivor);
 		ProduceWidget->AddToViewport(5);
 		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
 		ProduceWidget->bIsFocusable = true;
@@ -79,15 +80,14 @@ void ACMainHUD::BeginPlay()
 	}
 }
 
-void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor)
+void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InActorInventoryWidget, class UUserWidget* InActorProduceWidget, class AActor* InActor)
 {
-	CDebug::Print("SetWidgetVisibility Called");
+	//CDebug::Print("SetWidgetVisibility Called");
 
 	switch (InWidgetCall)
 	{
 	case EWidgetCall::Survivor:
 	{
-		CDebug::Print("EWidgetCall::Survivor");
 		DisplaySurvivorInventoryWidget();
 		DisplayProduceWidget(InWidgetCall);
 		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
@@ -98,8 +98,8 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 	case EWidgetCall::WorkBench:
 	{
 		DisplaySurvivorInventoryWidget();
-		DisplayProduceWidget(InWidgetCall);
-		DisplayActorInventory(InWidgetCall, InWidget, InActor);
+		DisplayProduceWidget(InWidgetCall, InActorProduceWidget, InActor);
+		DisplayActorInventory(InWidgetCall, InActorInventoryWidget, InActor);
 		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
@@ -123,6 +123,13 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 			ActorInventoryWidget->RemoveFromViewport();
 			ActorInventoryWidget = nullptr;
 		}
+
+		if (ActorProduceWidget)
+		{
+			ActorProduceWidget->RemoveFromViewport();
+			ActorProduceWidget = nullptr;
+		}
+
 		const FInputModeGameOnly InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(false);
@@ -135,7 +142,6 @@ void ACMainHUD::DisplaySurvivorInventoryWidget()
 {
 	if (SurvivorInventoryWidget)
 	{
-		CDebug::Print("SurvivorInventoryWidget is valid");
 		SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Visible);
 		SurvivorInventoryWidget->SetKeyboardFocus();
 	}
@@ -143,17 +149,37 @@ void ACMainHUD::DisplaySurvivorInventoryWidget()
 		CDebug::Print("SurvivorInventoryWidget is not valid");
 }
 
-void ACMainHUD::DisplayProduceWidget(EWidgetCall InWidgetCall)
+void ACMainHUD::DisplayProduceWidget(EWidgetCall InWidgetCall, class UUserWidget* InActorProduceWidget, class AActor* InActor)
 {
-	if (ProduceWidget)
+	switch (InWidgetCall)
 	{
-		FVector2D widgetSize = FVector2D(580, 850);
-		ProduceWidget->SetDesiredSizeInViewport(widgetSize);
-		ProduceWidget->SetVisibility(ESlateVisibility::Visible);
-		ProduceWidget->SetKeyboardFocus();
-		ProduceWidget->RefreshProduceDetail();
-		ProduceWidget->SetWidgetSwitcherIndex(static_cast<int32>(InWidgetCall)); // 0번 : 생존자, 1번: 작업대
+	case EWidgetCall::Survivor:
+		if (ProduceWidget)
+		{
+			FVector2D widgetSize = FVector2D(580, 850);
+			ProduceWidget->SetDesiredSizeInViewport(widgetSize);
+			ProduceWidget->SetVisibility(ESlateVisibility::Visible);
+			ProduceWidget->SetKeyboardFocus();
+			ProduceWidget->RefreshProduceDetail();
+		}
+		break;
+	case EWidgetCall::WorkBench:
+		if (InActorProduceWidget)
+		{
+			ActorProduceWidget = InActorProduceWidget;
+			if (ActorProduceWidget)
+			{
+				FVector2D widgetSize = FVector2D(580, 850);
+				ActorProduceWidget->SetDesiredSizeInViewport(widgetSize);
+				ActorProduceWidget->SetVisibility(ESlateVisibility::Visible);
+				ActorProduceWidget->bIsFocusable = true;
+				ActorProduceWidget->AddToViewport(5);
+			}
+		}
+		break;
 	}
+
+
 }
 
 void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor)

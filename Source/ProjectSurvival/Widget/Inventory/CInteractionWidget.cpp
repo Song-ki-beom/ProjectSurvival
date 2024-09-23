@@ -101,7 +101,6 @@ void UCInteractionWidget::MoveFocusToNextButton()
 		HoveredStyle.Normal = HoveredStyle.Hovered;
 
 		ExtraButtonArray[NewIndex]->SetStyle(HoveredStyle);
-
 	}
 }
 
@@ -135,7 +134,7 @@ void UCInteractionWidget::OnRecallButtonClicked()
 {
 	if (PlayerReference)
 	{
-		PlayerReference->GetInteractionComponent()->RecallInteract();
+		PlayerReference->GetInteractionComponent()->RecallInteract(true);
 	}
 
 	return;
@@ -160,8 +159,8 @@ void UCInteractionWidget::OnRepairButtonClicked()
 
 void UCInteractionWidget::ShowHiddenMenu()
 {
-	
-	if (InteractType == EInteractableType::Build && !bIsDropMesh)
+	CDebug::Print("ShowHiddenMenu", FColor::Magenta);
+	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{
@@ -189,7 +188,7 @@ void UCInteractionWidget::ShowHiddenMenu()
 
 void UCInteractionWidget::HideHiddenMenu()
 {
-	if (InteractType == EInteractableType::Build)
+	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Visible && !bIsDropMesh)
 		{
@@ -197,7 +196,6 @@ void UCInteractionWidget::HideHiddenMenu()
 		ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(DefaultButtonStyle);
 		ExtraButtonArray[ExtraButtonFoucsIndex]->OnClicked.Broadcast();
 		ExtraButtonFoucsIndex = 0;
-
 		}
 	}
 	else
@@ -211,9 +209,10 @@ void UCInteractionWidget::HideHiddenMenu()
 
 void UCInteractionWidget::ToggleHiddenMenu()
 {
-
-	if (InteractType == EInteractableType::Build && !bIsDropMesh)
+	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
+		CDebug::Print("ToggleHiddenMenu", FColor::Magenta);
+
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{
 		ExtraOptionBox->SetVisibility(ESlateVisibility::Visible);
@@ -277,8 +276,19 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	case EInteractableType::Container:
-		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
+		if (bIsDropMesh)
+		{
+			ActionText->SetText(FText::FromString(TEXT("줍기"))); //상호작용 Text
+		}
+		else
+		{
+			ActionText->SetText(FText::FromString(TEXT("인벤토리"))); //상호작용 Text
+
+		}
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 		break;
+		//InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
+		//break;
 	case EInteractableType::Build:
 		if (bIsDropMesh)
 		{
@@ -287,10 +297,9 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 		else
 		{
 			ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
-
 		}
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-
+		break;
 	default:;
 	}
 

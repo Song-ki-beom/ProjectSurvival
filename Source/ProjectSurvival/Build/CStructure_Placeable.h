@@ -34,6 +34,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
 public:
 	void CheckDown_FoundationAndCeiling();
@@ -44,7 +45,6 @@ public:
 
 	float GetPlaceableHeight() { return PlaceableHeight; }
 
-	void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
 
 	//Add
@@ -76,6 +76,15 @@ public:
 	UFUNCTION()
 		void OnRep_WidgetRefreshTrigger();
 
+	//Produce
+	TArray<FItemInformation> GetItemInfoArray() { return SharedItemInfoArray; }
+
+	class UCInventoryPanel_WorkingBench* GetWorkingBenchInventory() { return WorkingBenchWidget; }
+	class UCProduceWidget* GetWorkingBenchProduceWidget() { return WorkingBenchProduceWidget; }
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
+
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
 	bool CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex);
@@ -90,11 +99,18 @@ protected:
 
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UUserWidget> ActorInventoryWidgetClass;
-	UPROPERTY(EditAnywhere)
 		EWidgetCall WidgetCaller;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> ActorInventoryWidgetClass;
 	UPROPERTY()
 		class UUserWidget* ActorInventoryWidget;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> ActorProduceWidgetClass;
+	UPROPERTY()
+		class UUserWidget* ActorProduceWidget;
+
 
 private:
 	UPROPERTY()
@@ -107,4 +123,6 @@ private:
 		TArray<FItemInformation> SharedItemInfoArray;
 	UPROPERTY()
 		TArray<FItemInformation> ItemInfoArray;
+	UPROPERTY()
+		class UCProduceWidget* WorkingBenchProduceWidget;
 };

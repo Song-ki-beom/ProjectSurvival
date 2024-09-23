@@ -54,13 +54,14 @@ public:
 	void UpdatePartialAdded(int32 InQuantity);
 
 	void UpdateInteractableData(); //PickUp 의 Quantity 일부만 가져갈 때의 상황을 가정하면 매번 데이터 업데이트 함수가 필요함 
-	virtual void Interact(class ACSurvivor* PlayerCharacter) override; // 인터렉트가 준비되면 바로 Interact 시작 
+	void Interact(class ACSurvivor* PlayerCharacter, bool bIsLongPressed) override; // 인터렉트가 준비되면 바로 Interact 시작 
+	//virtual void Interact(class ACSurvivor* PlayerCharacter) override; // 인터렉트가 준비되면 바로 Interact 시작 
 
 	//플레이어의 인벤토리와 상호작용하는 함수 
 	void TakePickup(const class ACSurvivor* Taker);
-	virtual void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor);
 
 protected:
+	virtual void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor);
 	void SetTransform();
 
 public:

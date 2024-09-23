@@ -2,7 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Widget/CMainHUD.h"
 #include "CProduceWidget.generated.h"
+
+UENUM()
+enum class EOwnerActorType : uint8
+{
+	Survivor,
+	WorkingBench,
+	None
+};
 
 UCLASS()
 class PROJECTSURVIVAL_API UCProduceWidget : public UUserWidget
@@ -15,13 +24,19 @@ protected:
 	virtual bool Initialize() override;
 
 public:
-	void SetWidgetSwitcherIndex(int32 InIndex);
-	void SetProduceDetail(FName InID);
+	void SetOwnerActor(class ACStructure_Placeable* InActor, EWidgetCall InWidgetCall) { OwnerActor = InActor; WidgetCall = InWidgetCall; }
+	void SetProduceWindowName(FText InText);
+	void CreateBuildProduceItemSlot(int32 StartIndex, int32 EndIndex);
+	void CreateToolProduceItemSlot(int32 StartIndex, int32 EndIndex);
+	void CreateWeaponProduceItemSlot(int32 StartIndex, int32 EndIndex);
+	void SetProduceDetail(FName InID, int32 InIndex, EWidgetCall InWidgetCall);
 	void RefreshProduceDetail();
 	void StartProduce();
-	void AddProduceItemToQueue();
+	void AddProduceItemToQueue(FName InID);
 	void SetProducingItemText(FText InText, FLinearColor InLinearColor = FLinearColor::White);
-	//void Test_ShowPlaceableInventory();
+	int32 GetProducePanelSwitcherIndex();
+	EWidgetCall GetWidgetCall() { return WidgetCall; }
+	class ACStructure_Placeable* GetOwnerActor() { return OwnerActor; }
 
 private:
 	UFUNCTION()
@@ -33,7 +48,7 @@ private:
 
 private:
 	UPROPERTY(meta = (BindWidget))
-		class UWidgetSwitcher* ProduceWidgetSwitcher;
+		class UTextBlock* ProduceWindowName;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* BuildStructureSelectButton;
 	UPROPERTY(meta = (BindWidget))
@@ -43,11 +58,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* ProducePanelSwitcher;
 	UPROPERTY(meta = (BindWidget))
-		class UGridPanel* BuildPanel;
+		class UWrapBox* BuildPanel;
 	UPROPERTY(meta = (BindWidget))
-		class UGridPanel* ToolPanel;
+		class UWrapBox* ToolPanel;
 	UPROPERTY(meta = (BindWidget))
-		class UGridPanel* WeaponPanel;
+		class UWrapBox* WeaponPanel;
 	UPROPERTY(meta = (BindWidget))
 		class UCProduceDetail* ProduceDetail;
 	UPROPERTY(meta = (BindWidget))
@@ -55,9 +70,18 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ProducingItemText;
 	UPROPERTY()
+		class UCProduceItemSlot* ProduceItemSlotClass;
+	UPROPERTY()
 		class UDataTable* ItemData;
+
+	EWidgetCall WidgetCall;
+
+	class ACStructure_Placeable* OwnerActor;
 
 	class ACSurvivor* Survivor;
 	class UCInventoryComponent* InventoryComponent;
-	FName SelectedID;
+
+	FName SelectedBuildID;
+	FName SelectedToolID;
+	FName SelectedWeaponID;
 };

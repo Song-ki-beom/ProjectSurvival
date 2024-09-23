@@ -1,6 +1,7 @@
 #include "Build/CStructure.h"
 #include "Components/BoxComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Utility/CDebug.h"
 
 ACStructure::ACStructure()
 {
@@ -23,6 +24,12 @@ void ACStructure::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+//void ACStructure::OpenActorInventory(const ACSurvivor* Survivor, AActor* Actor)
+//{
+//	Super::OpenActorInventory(Survivor, Actor);
+//	CDebug::Print(TEXT("비긴인터랙트 ACStructure"), FColor::Cyan);
+//}
+
 
 void ACStructure::BeginFocus()
 {
@@ -44,10 +51,10 @@ void ACStructure::EndInteract()
 	Super::EndInteract();
 }
 
-void ACStructure::Interact(ACSurvivor* PlayerCharacter)
-{
-	Super::Interact(PlayerCharacter);
-}
+//void ACStructure::Interact(ACSurvivor* PlayerCharacter)
+//{
+//	Super::Interact(PlayerCharacter);
+//}
 
 void ACStructure::BroadcastDestroyPreviewBox_Implementation()
 {

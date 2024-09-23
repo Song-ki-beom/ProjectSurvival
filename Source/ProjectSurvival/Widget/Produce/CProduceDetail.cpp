@@ -5,8 +5,11 @@
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
 #include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Build/CStructure_Placeable.h"
 #include "Utility/CDebug.h"
 
 void UCProduceDetail::SetProduceDetailIcon(UTexture2D* InTexture2D)
@@ -61,7 +64,7 @@ void UCProduceDetail::ClearRecipeScrollBox()
 	ProduceDetailRecipeScroll->ClearChildren();
 }
 
-void UCProduceDetail::ProduceItem()
+void UCProduceDetail::ProduceSurvivorItem(FName InID)
 {
 	int32 recipeNumber = ProduceDetailRecipeScroll->GetAllChildren().Num();
 	int32 checkNumber = 0;
@@ -111,6 +114,9 @@ void UCProduceDetail::ProduceItem()
 							CDebug::Print("itemBase is valid", FColor::Magenta);
 							if (itemBase->ID == recipeWidget->GetResourceID())
 							{
+								if (usedQuantity == 0)
+									break;
+
 								float usedItemWeight = itemBase->NumericData.Weight;
 
 								if (itemBase->Quantity > usedQuantity)
@@ -125,12 +131,13 @@ void UCProduceDetail::ProduceItem()
 								}
 								else
 								{
-									usedQuantity = itemBase->Quantity;
+									int32 partialUsedQuantity = itemBase->Quantity;
 									float inventoryTotalWeight = inventoryComponent->GetInventoryTotalWeight();
-									float usedTotalWeight = usedItemWeight * usedQuantity;
+									float usedTotalWeight = usedItemWeight * partialUsedQuantity;
 									float newTotalWeight = inventoryTotalWeight - usedTotalWeight;
 									inventoryComponent->SetInventoryTotalWeight(newTotalWeight);
 									itemBase->SetQuantity(0);
+									usedQuantity -= partialUsedQuantity;
 									inventoryComponent->OnInventoryUpdated.Broadcast();
 								}
 							}
@@ -147,9 +154,95 @@ void UCProduceDetail::ProduceItem()
 		}
 		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
 		if (produceWidget)
-			produceWidget->AddProduceItemToQueue();
+			produceWidget->AddProduceItemToQueue(InID);
 		else
 			CDebug::Print("produceWidget : is not valid", FColor::Magenta);
+	}
+	else
+		CDebug::Print("Can't Produce");
+}
+
+void UCProduceDetail::ProduceWorkingBenchItem(FName InID, class ACStructure_Placeable* InOwner)
+{
+	int32 recipeNumber = ProduceDetailRecipeScroll->GetAllChildren().Num();
+	int32 checkNumber = 0;
+	for (UWidget* childWidget : ProduceDetailRecipeScroll->GetAllChildren())
+	{
+		if (UCProduceRecipe* recipeWidget = Cast<UCProduceRecipe>(childWidget))
+		{
+			if (recipeWidget->CheckProduceable())
+			{
+				CDebug::Print("Enough Resource");
+				checkNumber++;
+			}
+			else
+			{
+				CDebug::Print("Not Enough Resource");
+				break;
+			}
+		}
+	}
+
+	if (recipeNumber == checkNumber)
+	{
+		for (UWidget* childWidget : ProduceDetailRecipeScroll->GetAllChildren())
+		{
+			if (UCProduceRecipe* recipeWidget = Cast<UCProduceRecipe>(childWidget))
+			{
+				int32 inventoryTotalQuantity = recipeWidget->GetInventoryQuantity();
+				int32 demandQuantity = recipeWidget->GetDemandQuantity();
+				recipeWidget->SetResourceQuantity(inventoryTotalQuantity - demandQuantity, demandQuantity);
+
+				if (InOwner)
+				{
+					int32 usedQuantity = demandQuantity;
+
+					for (UCItemBase* tempItem : InOwner->GetWorkingBenchInventory()->GetWidgetItems())
+					{
+						if (tempItem)
+						{
+							if (tempItem->ID == recipeWidget->GetResourceID())
+							{
+								if (usedQuantity == 0)
+									break;
+
+								if (tempItem->Quantity > usedQuantity)
+								{
+									InOwner->GetWorkingBenchInventory()->RemoveAmountOfItem(tempItem, usedQuantity);
+									break;
+								}
+								else
+								{
+									int32 partialUsedQuantity = tempItem->Quantity;
+									InOwner->GetWorkingBenchInventory()->RemoveItem(tempItem);
+									usedQuantity -= partialUsedQuantity;
+								}
+							}
+						}
+						else
+							CDebug::Print("tempItem is not Valid");
+					}
+					if (this->GetOwningPlayer()->HasAuthority())
+					{
+						InOwner->BroadcastAddProduceItemToQueue(InID, nullptr);
+					}
+					else
+					{
+						ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+						if (survivorController)
+							survivorController->RequestAddProduceItemToQueue(InID, InOwner);
+					}
+
+				}
+				else
+					CDebug::Print("InOwner is not Valid", FColor::Magenta);
+			}
+		}
+		//UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
+		//if (produceWidget)
+		//	produceWidget->AddProduceItemToQueue(InID);
+		//else
+		//	CDebug::Print("produceWidget : is not valid", FColor::Magenta);
 	}
 	else
 		CDebug::Print("Can't Produce");

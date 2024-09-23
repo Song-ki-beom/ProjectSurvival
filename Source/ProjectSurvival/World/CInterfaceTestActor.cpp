@@ -70,7 +70,7 @@ void ACInterfaceTestActor::EndInteract()
 
 }
 
-void ACInterfaceTestActor::Interact(class ACSurvivor* PlayerCharacter)
+void ACInterfaceTestActor::Interact(class ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 {
 	CDebug::Print("Do Interaction!!");
 

@@ -26,7 +26,7 @@ public:
 	void UpdateInteractionWidget() const;
 	void ExtraOptionButtonUp();
 	void ExtraOptionButtonDown();
-	void RecallInteract();
+	void RecallInteract(bool bIsLongPressed);
 protected:
 	virtual void BeginPlay() override;
 	void PerformInteractionCheck();
@@ -34,7 +34,7 @@ protected:
 	void NoInteractableFound();
 	void BeginInteract();
 	void EndInteract();
-	void Interact();
+	void Interact(bool bIsLongPressed);
 	void InteractAroundPlayer();
 	void GatherAround();
 	void ToggleHiddenMenu();

@@ -3,6 +3,8 @@
 #include "Character/CSurvivor.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Build/CStructure_Placeable.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
@@ -137,7 +139,21 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 	if (RemainProduceTime <= 0.0f)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
-		Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
+		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+		if (produceWidget)
+		{
+			switch (produceWidget->GetWidgetCall())
+			{
+			case EWidgetCall::Survivor:
+				Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
+				break;
+			
+			case EWidgetCall::WorkBench:
+				if (this->GetOwningPlayer()->HasAuthority())
+					produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType);
+				break;
+			}
+		}
 		EndProduce();
 	}
 }

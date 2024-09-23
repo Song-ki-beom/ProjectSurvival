@@ -19,12 +19,13 @@ protected:
 public:
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 //	void OpenActorInventory(TSubclassOf<class UUserWidget> InClass);
+	void SetupBuildWidget();
 
 
 private:
 	// Init
 	void GetSurvivor();
-	void SetupBuildWidget();
+
 	void SetupInputFunction();
 	// Build
 	void ToggleBuildWidget();
@@ -38,8 +39,6 @@ private:
 	void SelectZ();
 	void SelectX();
 	void SelectC();
-	// Build TempFunction
-	void TestP();
 
 	// DoAction + Harvest
 	void DoAction();
@@ -88,7 +87,7 @@ private:
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;
 
-	class UDataTable* BuildStructureData;
+	//class UDataTable* BuildStructureData;
 
 	bool bIsBuildWidgetOn;
 	bool bIsProduceWidgetOn;
@@ -109,6 +108,7 @@ public:
 		void RequestRemoveItem(int32 idxRemove,class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)
 		void RequestRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove, class ACStructure_Placeable* InPlaceable);
-
+	UFUNCTION(Server, Reliable)
+		void RequestAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
 };
 

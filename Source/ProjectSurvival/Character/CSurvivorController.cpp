@@ -32,14 +32,14 @@ ACSurvivorController::ACSurvivorController()
 	else
 		CDebug::Print("buildWidgetFinder Failed", FColor::Red);
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> buildStructureDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Build/DT_BuildStructureInfo.DT_BuildStructureInfo'"));
-	if (buildStructureDataFinder.Succeeded())
-	{
-		BuildStructureData = buildStructureDataFinder.Object;
-		//CDebug::Print("buildStructureDataFinder Succeeded", FColor::Green);
-	}
-	else
-		CDebug::Print("buildStructureDataFinder Failed", FColor::Red);
+	//static ConstructorHelpers::FObjectFinder<UDataTable> buildStructureDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Build/DT_BuildStructureInfo.DT_BuildStructureInfo'"));
+	//if (buildStructureDataFinder.Succeeded())
+	//{
+	//	BuildStructureData = buildStructureDataFinder.Object;
+	//	//CDebug::Print("buildStructureDataFinder Succeeded", FColor::Green);
+	//}
+	//else
+	//	CDebug::Print("buildStructureDataFinder Failed", FColor::Red);
 
 	bIsBuildWidgetOn = false;
 	bIsProduceWidgetOn = false;
@@ -51,6 +51,7 @@ void ACSurvivorController::BeginPlay()
 	this->SetInputMode(FInputModeGameOnly());
 	GetSurvivor();
 	SetupInputFunction();
+	//SetupBuildWidget();
 }
 
 void ACSurvivorController::GetSurvivor()
@@ -60,7 +61,7 @@ void ACSurvivorController::GetSurvivor()
 
 void ACSurvivorController::SetupBuildWidget()
 {
-	if (!IsValid(BuildWidget))
+	if (!BuildWidget)
 	{
 		BuildWidget = CreateWidget<UCBuildWidget>(this, BuildWidgetClass);
 		BuildWidget->AddToViewport();
@@ -86,7 +87,6 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("SelectZ", IE_Pressed, this, &ACSurvivorController::SelectZ);
 		InputComponent->BindAction("SelectX", IE_Pressed, this, &ACSurvivorController::SelectX);
 		InputComponent->BindAction("SelectC", IE_Pressed, this, &ACSurvivorController::SelectC);
-		InputComponent->BindKey(EKeys::P, IE_Pressed, this, &ACSurvivorController::TestP);
 		InputComponent->BindAction("Inventory", IE_Pressed, this, &ACSurvivorController::ShowWidget);
 		InputComponent->BindAction("MouseWheelUp", IE_Pressed, this,&ACSurvivorController::HandleMouseWheelUp);
 		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
@@ -319,61 +319,6 @@ void ACSurvivorController::SelectC()
 	}
 }
 
-void ACSurvivorController::TestP()
-{
-	// 빌드 위젯 이미지변경하는 임시함수
-	// 우클릭해서 등록할때 구조물 이름 및 저장위치 정보 가져와야함
-	CDebug::Print("Test Called");
-	SetupBuildWidget();
-	FBuildStructureInfo* structureInfo = BuildStructureData->FindRow<FBuildStructureInfo>("WoodFoundation", TEXT("WoodFoundation"));
-	UTexture2D* texture = structureInfo->StructureTexture;
-	TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;
-	EBuildStructureElement structureElem = structureInfo->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::Q, texture, structureClass, structureElem);
-
-	FBuildStructureInfo* structureInfo2 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodWall", TEXT("WoodWall"));
-	UTexture2D* texture2 = structureInfo2->StructureTexture;
-	TSubclassOf<ACStructure> structureClass2 = structureInfo2->StructureClass;
-	EBuildStructureElement structureElem2 = structureInfo2->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::W, texture2, structureClass2, structureElem2);
-
-	FBuildStructureInfo* structureInfo3 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodCeiling", TEXT("WoodCeiling"));
-	UTexture2D* texture3 = structureInfo3->StructureTexture;
-	TSubclassOf<ACStructure> structureClass3 = structureInfo3->StructureClass;
-	EBuildStructureElement structureElem3 = structureInfo3->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::E, texture3, structureClass3, structureElem3);
-
-	FBuildStructureInfo* structureInfo4 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodRamp", TEXT("WoodRamp"));
-	UTexture2D* texture4 = structureInfo4->StructureTexture;
-	TSubclassOf<ACStructure> structureClass4 = structureInfo4->StructureClass;
-	EBuildStructureElement structureElem4 = structureInfo4->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::A, texture4, structureClass4, structureElem4);
-
-	FBuildStructureInfo* structureInfo5 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodDoorFrame", TEXT("WoodDoorFrame"));
-	UTexture2D* texture5 = structureInfo5->StructureTexture;
-	TSubclassOf<ACStructure> structureClass5 = structureInfo5->StructureClass;
-	EBuildStructureElement structureElem5 = structureInfo5->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::S, texture5, structureClass5, structureElem5);
-
-	FBuildStructureInfo* structureInfo6 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodDoor", TEXT("WoodDoor"));
-	UTexture2D* texture6 = structureInfo6->StructureTexture;
-	TSubclassOf<ACStructure> structureClass6 = structureInfo6->StructureClass;
-	EBuildStructureElement structureElem6 = structureInfo6->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::D, texture6, structureClass6, structureElem6);
-
-	FBuildStructureInfo* structureInfo7 = BuildStructureData->FindRow<FBuildStructureInfo>("WoodStair", TEXT("WoodStair"));
-	UTexture2D* texture7 = structureInfo7->StructureTexture;
-	TSubclassOf<ACStructure> structureClass7 = structureInfo7->StructureClass;
-	EBuildStructureElement structureElem7 = structureInfo7->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::Z, texture7, structureClass7, structureElem7);
-
-	FBuildStructureInfo* structureInfo8 = BuildStructureData->FindRow<FBuildStructureInfo>("WorkingBench", TEXT("WorkingBench"));
-	UTexture2D* texture8 = structureInfo8->StructureTexture;
-	TSubclassOf<ACStructure> structureClass8 = structureInfo8->StructureClass;
-	EBuildStructureElement structureElem8 = structureInfo8->StructureElement;
-	BuildWidget->SaveStructureInfo(ESelectedStructure::X, texture8, structureClass8, structureElem8);
-}
-
 void ACSurvivorController::DoAction()
 {
 	if (Survivor)
@@ -543,4 +488,9 @@ void ACSurvivorController::RequestRemoveItem_Implementation(int32 idxRemove, cla
 void ACSurvivorController::RequestRemoveAmountOfItem_Implementation(int32 idxRemove, int32 AmountToRemove, class ACStructure_Placeable* InPlaceable)
 {
 	InPlaceable->PerformRemoveAmountOfItem(idxRemove, AmountToRemove);
+}
+
+void ACSurvivorController::RequestAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->BroadcastAddProduceItemToQueue(ItemID, InPlaceable);
 }
