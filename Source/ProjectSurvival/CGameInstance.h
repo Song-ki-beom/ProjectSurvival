@@ -61,6 +61,8 @@ public:
 		FName currentSessionName;
 	UPROPERTY()
 		UDataTable* DestructibleDataTable;
+	UPROPERTY()
+		UDataTable* HitDataTable;
 
 private:
 	UPROPERTY()

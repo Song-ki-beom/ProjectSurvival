@@ -66,14 +66,14 @@ void UCMontageComponent::Montage_Play_Section(UAnimMontage* InMontage, FName Sec
 
 void UCMontageComponent::PlayAnimMontage(EStateType InType)
 {
+	if (InType == EStateType::Action) return;
 	if(OwnerCharacter == nullptr) return;
-
+	
 	FMontagesData* data = MontageDatas[(int32)InType];
 	if (data == nullptr)
 	{
 		return;
 	}
-	//	OwnerCharacter->PlayAnimMontage(data->Montage, data->PlayRate);
 	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(data->Montage, data->PlayRate);
 }
 void UCMontageComponent::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)

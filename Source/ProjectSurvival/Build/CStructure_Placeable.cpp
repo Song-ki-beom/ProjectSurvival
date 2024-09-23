@@ -107,7 +107,7 @@ void ACStructure_Placeable::CheckCenter()
 
 void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
-	//CDebug::Print("OpenActorInventory Called");
+	CDebug::Print("OpenActorInventory Called");
 	if (Survivor)
 	{
 		switch (WidgetCaller)

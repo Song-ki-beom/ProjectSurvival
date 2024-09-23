@@ -26,6 +26,7 @@
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Character/CSurvivorController.h"
 #include "GameFramework/PlayerState.h"
 
@@ -286,15 +287,73 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 	}
 }
 
-void ACSurvivor::Damage(ACharacter* Attacker, AActor* Causer, FHitData HitData)
+float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
 {
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (StatusComponent != nullptr)
+	DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
+	DamageData.Causer = DamageCauser;
+	DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
+
+
+	if (!DamageData.HitID.IsNone())
 	{
-		StatusComponent->TakeDamage(HitData.Power);
+		ApplyHitData();
 	}
 
+	return damage;
+
+	
+
 }
+
+void ACSurvivor::ApplyHitData()
+{
+
+
+	//StatusComponent->ApplyDamage(DamageData.power);
+	//DamageData.power = 0;
+
+
+	//if (!!DamageData.Event && !!Damage.Event->HitData)
+	//{
+	//	// Montage
+	//	Damage.Event->HitData->PlayMontage(this);
+	//	// HitStop
+	//	Damage.Event->HitData->PlayHitStop(GetWorld());
+	//	// Sound 
+	//	Damage.Event->HitData->PlaySoundWave(this);
+	//	// Effect 
+	//	Damage.Event->HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
+
+	//	if (!StatusComponent->IsDead())
+	//	{
+	//		FVector start = GetActorLocation();
+	//		FVector target = Damage.Character->GetActorLocation();
+	//		FVector direction = target - start; 
+	//		direction = direction.GetSafeNormal();
+
+	//		LaunchCharacter(-direction * Damage.Event->HitData->Launch, false, false);
+	//		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	//	}
+	//	if (Status->IsDead())
+	//	{
+	//		State->SetDeadMode();
+	//		return;
+	//	}
+	//}
+	////	Damage.Character = nullptr;
+	//Damage.Causer = nullptr;
+	//Damage.Event = nullptr;
+
+
+	///*if (StatusComponent != nullptr)
+	//{
+	//	StatusComponent->ApplyDamage(DamageAmount);
+	//}*/
+}
+
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {

@@ -7,7 +7,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
-#include "Interface/DamageInterface.h"
+//#include "Interface/DamageInterface.h"
+#include "Struct/CWeaponStructures.h"
 #include "CustomDataType/BuildStructureDataType.h"
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
@@ -15,7 +16,7 @@
 
 
 UCLASS()
-class PROJECTSURVIVAL_API ACSurvivor : public ACharacter , public IDamageInterface
+class PROJECTSURVIVAL_API ACSurvivor : public ACharacter 
 {
 	GENERATED_BODY()
 
@@ -69,8 +70,10 @@ public:
 	USkeletalMeshComponent* GetAccessoryMeshComponent() { return Accessory; }
 
 
-	//Damage Interface Override
-	virtual void Damage(ACharacter* Attacker, class AActor* Causer, FHitData HitData) override;
+	//Damage
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator, AActor* DamageCauser) override;
+	void ApplyHitData();
 
 
 private:
@@ -128,14 +131,15 @@ private:
 		class UCStateComponent* StateComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCMontageComponent* MontageComponent;
-		
-
-
+	
 	//Inventory
 	UPROPERTY(VisibleAnywhere)
 		class UCInteractionComponent* InteractionComponent;
 	UPROPERTY(VisibleAnywhere ,Replicated)
 		class UCInventoryComponent* InventoryComponent;
+
+	//Damage
+	FDamageData DamageData;
 
 public:
 	UFUNCTION(Server, Reliable)

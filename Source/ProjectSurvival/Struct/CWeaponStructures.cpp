@@ -39,23 +39,21 @@ void FDoActionData::DoAction(ACharacter* InOwner)
 void FHitData::SendDamage(ACharacter* InAttacker, AActor* InAttackCauser, ACharacter* InOther)
 {
 
-
-
 	FActionDamageEvent e;
-	e.HitData = this;
-	// 현재Hit된 구조체를 보냄
-	InOther->TakeDamage(this->Power, e, InAttacker->GetController(), InAttackCauser);
+	e.HitID = ID;
+	InOther->TakeDamage(this->DamageAmount, e, InAttacker->GetController(), InAttackCauser);
 }
 
 void FHitData::PlayMontage(ACharacter* InOwner)
 {
-	/*if(Montage= nullptr ) return;
-	if(InOwner = nullptr) return;
+	if(Montage== nullptr ) return;
+	if(InOwner == nullptr) return;
 
-	UCMontagesComponent* montagesComponent;
-	montagesComponent = CHelpers::GetComponent<UCMontagesComponent>(InOwner);
+	UCMontageComponent* montagesComponent;
+	montagesComponent = Cast<UCMontageComponent>(InOwner->GetComponentByClass(UCMontageComponent::StaticClass()));
+
 	if (!!montagesComponent)
-		montagesComponent->Montage_Play(this->Montage, this->PlayRate);*/
+		montagesComponent->Montage_Play(this->Montage, this->PlayRate);
 
 }
 

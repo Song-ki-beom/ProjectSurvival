@@ -232,6 +232,7 @@ void UCWeaponComponent::SetModeReplicate()
 	if (PrevType != EWeaponType::Max)
 		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
 
+	if (Datas[(int32)Type]->GetEquipment() == nullptr) return;
 	Datas[(int32)Type]->GetEquipment()->Equip();
 	
 

@@ -14,6 +14,8 @@
 #include "Animation/AnimInstance.h"
 #include "Enemy/CEnemyAIController.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "CGameInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "Utility/CDebug.h"
@@ -22,6 +24,8 @@ ACEnemy::ACEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true; //리플리케이트 설정 
+
+	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 
 
@@ -166,18 +170,18 @@ void ACEnemy::AttackTraceHit()
 	FQuat Rot = FQuat(GetActorRotation());
 
 	FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 1.0f, TraceDistance / 1.0f);
-	FHitResult HitResult;
+	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
 
 	//BoxTrace 
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
 		Start,
 		End,
 		Rot,
-		ECC_WorldStatic,
+		ECC_Visibility,
 		FCollisionShape::MakeBox(HalfSize),
 		CollisionParams
 	);
@@ -186,12 +190,22 @@ void ACEnemy::AttackTraceHit()
 	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
 
 
+	TArray<ACharacter*> HitPlayers;
+
 	if (bHit)
 	{
-		FString hitObjectName = *HitResult.Component->GetName();
+		for (const FHitResult& Hit : HitResults)
+		{
+			ACharacter* HitPlayer;
+			if ((Hit.GetActor() != nullptr) && (HitPlayer = Cast<ACharacter>(Hit.GetActor())))
+			{
+				FActionDamageEvent e;
+				e.HitID = DoActionDatas[AttackIdx].ActionID;
+				HitPlayer->TakeDamage(0, e, this->GetController(),this);
 
+			}
+		}
 	}
-
 }
 
 void ACEnemy::Begin_DoAction()
@@ -203,7 +217,6 @@ void ACEnemy::Begin_DoAction()
 
 void ACEnemy::End_DoAction()
 {
-	
 	StateComponent->ChangeType(EStateType::Idle);
 	if (!DoActionDatas[AttackIdx].bCanMove)
 		MovingComponent->Move();
@@ -217,15 +230,98 @@ void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void ACEnemy::Damage(ACharacter* Attacker, AActor* Causer, FHitData HitData)
+float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser) 
+{
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
+	DamageData.Causer = DamageCauser;
+	DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
+
+	
+	if (!DamageData.HitID.IsNone())
+	{
+		ApplyHitData();
+	}
+
+	return damage;
+
+}
+
+void ACEnemy::ApplyHitData()
+{
+	UDataTable* HitDataTable = nullptr;
+	if (GameInstance)
+	{
+		HitDataTable = GameInstance->HitDataTable;
+	}
+
+	if (HitDataTable != nullptr)
+	{
+		FHitData* Row = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		if (Row && Row->Montage)
+		{
+			MontageComponent->Montage_Play(Row->Montage, Row->PlayRate);
+		}
+	}
+	//StatusComponent->ApplyDamage(Damage.power);
+	//Damage.power = 0;
+
+	//// ���󺯰�
+	//{
+	//	Change_Color(this, FLinearColor::Red);
+	//	FTimerDelegate  timerDelegate;
+	//	timerDelegate.BindUFunction(this, "RestoreColor");
+	//	GetWorld()->GetTimerManager().SetTimer(RestoreColor_TimerHandle, timerDelegate, 0.2f, false);
+	//}
+
+	//// Montage->HitStop->Sound->Effect
+
+	//if (!!Damage.Event && !!Damage.Event->HitData)
+	//{
+	//	// Montage
+	//	Damage.Event->HitData->PlayMontage(this);
+	//	// HitStop
+	//	Damage.Event->HitData->PlayHitStop(GetWorld());
+	//	// Sound 
+	//	Damage.Event->HitData->PlaySoundWave(this);
+	//	// Effect 
+	//	Damage.Event->HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
+
+	//	if (!Status->IsDead())
+	//	{
+	//		FVector start = GetActorLocation();
+	//		FVector target = Damage.Character->GetActorLocation();
+	//		FVector direction = target - start; direction = direction.GetSafeNormal();
+
+	//		LaunchCharacter(-direction * Damage.Event->HitData->Launch, false, false);
+	//		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	//	}
+	//	if (Status->IsDead())
+	//	{
+	//		State->SetDeadMode();
+	//		return;
+	//	}
+	//}
+	////	Damage.Character = nullptr;
+	//Damage.Causer = nullptr;
+	//Damage.Event = nullptr;
+
+
+}
+
+void ACEnemy::Die()
 {
 
-	StatusComponent->TakeDamage(HitData.Power);
 
 }
 
 
 
+
+
+//리플리케이트 변수 선언부분 
 //void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 //{
 //	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

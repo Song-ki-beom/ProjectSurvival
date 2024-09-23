@@ -29,7 +29,7 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 }
 
-void UCStatusComponent::TakeDamage(float InAmount)
+void UCStatusComponent::ApplyDamage(float InAmount)
 {
 	Health -= InAmount;
 	Health = FMath::Clamp(Health, 0.0f, MaxHealth);

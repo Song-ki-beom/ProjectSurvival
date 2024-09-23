@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Interface/DamageInterface.h"
+//#include "Interface/DamageInterface.h"
+#include "Struct/CWeaponStructures.h"
 #include "CEnemy.generated.h"
 
 UCLASS()
-class PROJECTSURVIVAL_API ACEnemy : public ACharacter, public IDamageInterface
+class PROJECTSURVIVAL_API ACEnemy : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -38,11 +39,14 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 //Damage Interface Override
-	virtual void Damage(ACharacter* Attacker, class AActor* Causer, FHitData HitData) override;
+	//virtual void Damage(FDamageData* DamageData) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator, AActor* DamageCauser) override;
 
 
-
-public:
+protected:
+	virtual void ApplyHitData();
+	virtual void Die();
 	
 protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Protected 설정
 	//Mesh
@@ -53,8 +57,13 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	//DoAction
 	UPROPERTY(EditAnywhere)
 	TArray<FDoActionData> DoActionDatas;
+	UPROPERTY(EditAnywhere)
+	TArray<FHitData> HitDatas;
 
 private:
+	//GameInstance <<- for HitData reference
+	class UCGameInstance* GameInstance;
+	
 	//AI 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
@@ -79,6 +88,9 @@ private:
 	float TraceDistance = 45.0f;
 	float TraceOffset = 200.0f;
 	int32 AttackIdx = 0;
+
+	//Damage
+	FDamageData DamageData;
 public:
 //ForceInline Getter & Settter
 FORCEINLINE uint8 GetTeamID() { return TeamID; }
