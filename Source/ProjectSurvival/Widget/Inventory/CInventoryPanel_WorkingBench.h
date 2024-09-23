@@ -34,6 +34,8 @@ public:
 	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	bool SplitExistingStack(class UCItemBase* ItemIn, int32 AmountToSplit);
 
+	TArray<UCItemBase*> GetWidgetItems() { return WidgetItems; }
+
 private:
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
 	int32 FindItemIndex(class UCItemBase* Item);

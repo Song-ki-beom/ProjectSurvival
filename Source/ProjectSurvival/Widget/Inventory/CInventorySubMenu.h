@@ -68,6 +68,29 @@ private:
 	void HandleOnFinalSplitButtonClicked();
 	UFUNCTION()
 	void HandleOnCancelButtonClicked();
+	UFUNCTION()
+	void HandleBuildRegisterButton();
+
+	UFUNCTION()
+	void SelectQ();
+	UFUNCTION()
+	void SelectW();
+	UFUNCTION()
+	void SelectE();
+	UFUNCTION()
+	void SelectA();
+	UFUNCTION()
+	void SelectS();
+	UFUNCTION()
+	void SelectD();
+	UFUNCTION()
+	void SelectZ();
+	UFUNCTION()
+	void SelectX();
+	UFUNCTION()
+	void SelectC();
+
+	void SetButtonStyle(class UButton* InSelectedButton);
 
 public:
 	FOnFocusOnSubMenuEnded OnFocusOnSubMenuEnded;
@@ -91,9 +114,40 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UEditableText* SplitQuantityEditText;
 
+	UPROPERTY(meta = (BindWidget))
+		class USizeBox* BuildRegisterMenuSizeBox;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_Q;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_W;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_E;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_A;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_S;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_D;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_Z;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_X;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_C;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* BuildRegisterCancelButton;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* BuildRegisterButton;
+	
 private:
+	TArray<UButton*> BuildButtons;
+	class ACSurvivorController* SurvivorController;
+	class UDataTable* BuildStructureData;
+	ESelectedStructure SelectedStructureKey = ESelectedStructure::None;
 	EItemType TextItemType;
 	bool bBeforeHideActionButton = false;
+	FSlateBrush ButtonNormalBrush;
+	FSlateBrush ButtonPressedBrush;
 
 
 

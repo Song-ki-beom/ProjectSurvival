@@ -9,6 +9,7 @@
 #include "ActorComponents/CInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Build/CStructure_Placeable.h"
 
 // Sets default values
 ACPickUp::ACPickUp()
@@ -89,7 +90,6 @@ void ACPickUp::EndFocus()
 
 void ACPickUp::BeginInteract()
 {
-
 }
 
 void ACPickUp::EndInteract()
@@ -216,6 +216,9 @@ void ACPickUp::UpdateInteractableData()
 	case EItemType::Build:
 		InstanceInteractableData.InteractableType = EInteractableType::Build;
 		break;
+	case EItemType::Container:
+		InstanceInteractableData.InteractableType = EInteractableType::Container;
+		break;
 	default:
 		InstanceInteractableData.InteractableType = EInteractableType::Pickup;
 		break;
@@ -228,13 +231,16 @@ void ACPickUp::UpdateInteractableData()
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
 }
 
-void ACPickUp::Interact(ACSurvivor* PlayerCharacter)
+void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 {
 	if (PlayerCharacter)
 	{
 		if (ItemReference->ItemType == EItemType::Container)
 		{
-			OpenActorInventory(PlayerCharacter, this);
+			if (bIsLongPressed)
+				TakePickup(PlayerCharacter);
+			else
+				OpenActorInventory(PlayerCharacter, this);
 		}
 		else
 		{
@@ -292,6 +298,7 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
 	// Container 클래스 자체에서 함수내용 구현
+	CDebug::Print(TEXT("비긴인터랙트 ACPickUp"), FColor::Cyan);
 }
 
 

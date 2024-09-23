@@ -3,14 +3,15 @@
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ActorComponents/CActorInventoryComponent.h"
-#include "Widget/CMainHUD.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Blueprint/UserWidget.h"
-#include "Net/UnrealNetwork.h"
+#include "ActorComponents/CInventoryComponent.h"
+#include "Widget/CMainHUD.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
-#include "ActorComponents/CInventoryComponent.h"
+#include "Widget/Produce/CProduceWidget.h"
+#include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
@@ -24,10 +25,29 @@ ACStructure_Placeable::ACStructure_Placeable()
 void ACStructure_Placeable::BeginPlay()
 {
 	Super::BeginPlay();
-	ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
-	WorkingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-	if (WorkingBenchWidget)
-		WorkingBenchWidget->SetOwnerActor(this);
+
+	switch (WidgetCaller)
+	{
+	case EWidgetCall::WorkBench:
+		ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
+		WorkingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
+		if (WorkingBenchWidget)
+			WorkingBenchWidget->SetOwnerActor(this);
+
+		ActorProduceWidget = CreateWidget<UUserWidget>(GetWorld(), ActorProduceWidgetClass);
+		WorkingBenchProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
+		if (WorkingBenchProduceWidget)
+		{
+			WorkingBenchProduceWidget->SetOwnerActor(this, WidgetCaller);
+			WorkingBenchProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
+			WorkingBenchProduceWidget->CreateBuildProduceItemSlot(1, 15);
+			WorkingBenchProduceWidget->CreateToolProduceItemSlot(1, 2);
+			WorkingBenchProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+		}
+		break;
+	}
+
+
 }
 
 void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
@@ -107,7 +127,10 @@ void ACStructure_Placeable::CheckCenter()
 
 void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
+	//Super::OpenActorInventory(Survivor, Actor);
 	//CDebug::Print("OpenActorInventory Called");
+	CDebug::Print(TEXT("비긴인터랙트 ACStructure_Placeable"), FColor::Cyan);
+
 	if (Survivor)
 	{
 		switch (WidgetCaller)
@@ -124,7 +147,7 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
 						if (mainHUD)
 						{
-							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget, Actor);
+							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget, ActorProduceWidget, Actor);
 						}
 					}
 				}
@@ -299,6 +322,12 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 			workingBenchWidget->SetWidgetItems(ActorInventoryContents);
 			workingBenchWidget->RefreshWorkingBenchInventory();
 		}
+
+		UCProduceWidget* workingBenchProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
+		if (workingBenchProduceWidget)
+		{
+			workingBenchProduceWidget->RefreshProduceDetail();
+		}
 	}
 	}
 
@@ -420,4 +449,14 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 	}
 }
 
+void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
+{
+	//CDebug::Print("BroadcastCalled", FColor::Magenta);
+	//InPlaceable->GetWorkingBenchProduceWidget()->AddProduceItemToQueue(ItemID);
+	WorkingBenchProduceWidget->AddProduceItemToQueue(ItemID);
+}
 
+//void ACStructure_Placeable::RequestAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
+//{
+//	BroadcastAddProduceItemToQueue(ItemID, InPlaceable);
+//}

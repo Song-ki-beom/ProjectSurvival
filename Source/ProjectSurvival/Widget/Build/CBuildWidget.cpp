@@ -8,6 +8,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	{
 	case ESelectedStructure::Q:
 	{
+		StructureImageQ->SetVisibility(ESlateVisibility::Visible);
 		StructureImageQ->SetBrushFromTexture(InTexture);
 		StructureQ = InClass;
 		ElementQ = InElement;
@@ -15,6 +16,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::W:
 	{
+		StructureImageW->SetVisibility(ESlateVisibility::Visible);
 		StructureImageW->SetBrushFromTexture(InTexture);
 		StructureW = InClass;
 		ElementW = InElement;
@@ -22,6 +24,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::E:
 	{
+		StructureImageE->SetVisibility(ESlateVisibility::Visible);
 		StructureImageE->SetBrushFromTexture(InTexture);
 		StructureE = InClass;
 		ElementE = InElement;
@@ -29,6 +32,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::A:
 	{
+		StructureImageA->SetVisibility(ESlateVisibility::Visible);
 		StructureImageA->SetBrushFromTexture(InTexture);
 		StructureA = InClass;
 		ElementA = InElement;
@@ -36,6 +40,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::S:
 	{
+		StructureImageS->SetVisibility(ESlateVisibility::Visible);
 		StructureImageS->SetBrushFromTexture(InTexture);
 		StructureS = InClass;;
 		ElementS = InElement;
@@ -43,6 +48,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::D:
 	{
+		StructureImageD->SetVisibility(ESlateVisibility::Visible);
 		StructureImageD->SetBrushFromTexture(InTexture);
 		StructureD = InClass;
 		ElementD = InElement;
@@ -50,6 +56,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::Z:
 	{
+		StructureImageZ->SetVisibility(ESlateVisibility::Visible);
 		StructureImageZ->SetBrushFromTexture(InTexture);
 		StructureZ = InClass;
 		ElementZ = InElement;
@@ -57,6 +64,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::X:
 	{
+		StructureImageX->SetVisibility(ESlateVisibility::Visible);
 		StructureImageX->SetBrushFromTexture(InTexture);
 		StructureX = InClass;
 		ElementX = InElement;
@@ -64,6 +72,7 @@ void UCBuildWidget::SaveStructureInfo(ESelectedStructure
 	}
 	case ESelectedStructure::C:
 	{
+		StructureImageC->SetVisibility(ESlateVisibility::Visible);
 		StructureImageC->SetBrushFromTexture(InTexture);
 		StructureC = InClass;
 		ElementC = InElement;

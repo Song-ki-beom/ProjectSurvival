@@ -8,7 +8,7 @@
 UENUM()
 enum class ESelectedStructure : uint8
 {
-	Q, W, E, A, S, D, Z, X, C
+	Q, W, E, A, S, D, Z, X, C, None
 };
 
 UENUM()

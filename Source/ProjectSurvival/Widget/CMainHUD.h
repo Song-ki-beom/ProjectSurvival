@@ -28,9 +28,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InWidget = nullptr, class AActor* InActor = nullptr);
+	void SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InActorInventoryWidget = nullptr, class UUserWidget* InActorProduceWidget = nullptr, class AActor* InActor = nullptr);
 	void DisplaySurvivorInventoryWidget();
-	void DisplayProduceWidget(EWidgetCall InWidgetCall);
+	void DisplayProduceWidget(EWidgetCall InWidgetCall, class UUserWidget* InActorProduceWidget = nullptr, class AActor* InActor = nullptr);
 	void DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidget* InWidget, class AActor* InActor);
 	void ShowInteractionWidget();
 	void HideInteractionWidget();
@@ -73,6 +73,8 @@ protected:
 		class UCProduceWidget* ProduceWidget;
 	UPROPERTY()
 		class UUserWidget* ActorInventoryWidget;
+	UPROPERTY()
+		class UUserWidget* ActorProduceWidget;
 	UPROPERTY()
 		class UCEarnInfoPanel* EarnInfoPanel;
 	UPROPERTY()

@@ -162,8 +162,6 @@ void UCInventoryPanel_WorkingBench::RemoveAmountOfItem(UCItemBase* ItemToRemove,
 		}
 		
 		);
-
-
 }
 
 

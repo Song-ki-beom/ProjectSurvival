@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 #include "Character/CSurvivor.h"
+#include "Utility/CDebug.h"
 
 UCInteractionComponent::UCInteractionComponent()
 {
@@ -92,6 +93,16 @@ void UCInteractionComponent::FinishInteract()
 			HUD->HideHiddenMenu();
 			EndInteract();
 		}
+		else if (InteractableData->InteractableType == EInteractableType::Container && !InteractableData->bIsDropMesh)
+		{
+			if (ElapsedTime < 0.25f && ElapsedTime >= 0) //0.25 초 내의 짧은 E 키 Released 면 
+				BeginInteract();
+			else
+			{
+				HUD->HideHiddenMenu();
+				EndInteract();
+			}
+		}
 		else
 		{
 			if (ElapsedTime < 0.25f && ElapsedTime >= 0) //0.25 초 내의 짧은 E 키 Released 면 
@@ -145,9 +156,9 @@ void UCInteractionComponent::ExtraOptionButtonDown()
 		HUD->ExtraOptionButtonDown();
 }
 
-void UCInteractionComponent::RecallInteract()
+void UCInteractionComponent::RecallInteract(bool bIsLongPressed)
 {
-	Interact();
+	Interact(bIsLongPressed);
 }
 
 
@@ -279,12 +290,10 @@ void UCInteractionComponent::BeginInteract()
 	{
 		if (IsValid(TargetInteractable.GetObject()))
 		{
-			TargetInteractable->BeginInteract();
+			TargetInteractable->BeginInteract(); // 이후 지울것
 		}
-			Interact();
-		
+		Interact(false);
 	}
-
 }
 
 
@@ -302,7 +311,7 @@ void UCInteractionComponent::EndInteract()
 
 
 
-void UCInteractionComponent::Interact()
+void UCInteractionComponent::Interact(bool bIsLongPressed)
 {
 	OwnerCharacter->GetWorldTimerManager().ClearTimer(LongPressTimerHandle);
 	if (IsValid(TargetInteractable.GetObject()))
@@ -312,9 +321,8 @@ void UCInteractionComponent::Interact()
 		{
 			TargetInteractable->OnRequestDesroyCalled.AddUObject(this, &UCInteractionComponent::RequestDestroy);
 			TargetInteractable->OnUpdatePartialAdded.AddUObject(this, &UCInteractionComponent::RequestUpdatePartialAdded);
-			TargetInteractable->Interact(playerCharacter);
+			TargetInteractable->Interact(playerCharacter, bIsLongPressed);
 		}
-			
 	}
 }
 
@@ -361,7 +369,7 @@ void UCInteractionComponent::GatherAround()
 				
 				TargetInteractable = Hit.GetActor();
 				RequestUpdateTarget(Hit.GetActor());
-				Interact();
+				Interact(false);
 			}
 		}
 	}
