@@ -39,7 +39,7 @@ ACSurvivor::ACSurvivor()
 	//인터렉션 세팅
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
 
-
+	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 	//컴포넌트 세팅
 	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
@@ -310,6 +310,20 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 
 void ACSurvivor::ApplyHitData()
 {
+	UDataTable* HitDataTable = nullptr;
+	if (GameInstance)
+	{
+		HitDataTable = GameInstance->HitDataTable;
+	}
+
+	if (HitDataTable != nullptr)
+	{
+		FHitData* Row = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		if (Row && Row->Montage)
+		{
+			MontageComponent->Montage_Play(Row->Montage, Row->PlayRate);
+		}
+	}
 
 
 	//StatusComponent->ApplyDamage(DamageData.power);

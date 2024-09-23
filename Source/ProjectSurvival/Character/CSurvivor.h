@@ -140,7 +140,8 @@ private:
 
 	//Damage
 	FDamageData DamageData;
-
+	//GameInstance <<- for HitData reference
+	class UCGameInstance* GameInstance;
 public:
 	UFUNCTION(Server, Reliable)
 		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);

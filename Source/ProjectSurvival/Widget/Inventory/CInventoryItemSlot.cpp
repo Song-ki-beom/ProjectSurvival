@@ -15,6 +15,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Utility/CDebug.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -122,8 +123,18 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetOwningPlayer()->GetHUD());
 		if (mainHUD)
 		{
+			FInputModeGameAndUI InputMode;
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);  // 마우스가 자유롭게 움직일 수 있게 설정
+			APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			
+
 			FVector2D mousePosition(0, 0);
-			UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mousePosition.X, mousePosition.Y);
+			GetWorld()->GetGameViewport()->GetMousePosition(mousePosition); //현재 화면 ViewPort 에 따른 마우스 위치 가져오기 
+
+			//마우스 위치 디버그
+			//CDebug::Print(TEXT("mousePosition X:"),mousePosition.X);
+			//CDebug::Print(TEXT("mousePosition Y:"), mousePosition.Y);
+
 			bool bIsStackable = this->GetItemReference()->NumericData.bIsStackable;
 			if (!mainHUD->GetInventorySubMenu()->IsInViewport())
 				ToggleTooltip();

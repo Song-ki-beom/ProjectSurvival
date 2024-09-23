@@ -181,7 +181,7 @@ void ACEnemy::AttackTraceHit()
 		Start,
 		End,
 		Rot,
-		ECC_Visibility,
+		ECC_Pawn,
 		FCollisionShape::MakeBox(HalfSize),
 		CollisionParams
 	);
