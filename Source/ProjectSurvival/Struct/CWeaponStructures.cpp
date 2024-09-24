@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Components/CapsuleComponent.h"
+#include "Utility/CDebug.h"
 #include "Engine/NetworkObjectList.h"
 #include "Engine/PackageMapClient.h"
 #include "ActorComponents/CMontageComponent.h"
@@ -60,6 +61,12 @@ void FHitData::PlayMontage(ACharacter* InOwner)
 
 void FHitData::PlayHitStop(UWorld* InWorld)
 {
+	if (InWorld == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InWorld is nullptr"));
+		return;
+	}
+
 	StopPawns.Empty();
 	if(FMath::IsNearlyZero(StopTime)==true) return;
 
@@ -68,21 +75,22 @@ void FHitData::PlayHitStop(UWorld* InWorld)
 		APawn* pawn = Cast<ACharacter>(actor);
 		if (!!pawn)
 		{
-			pawn->CustomTimeDilation = 1e-3f; 
+			pawn->CustomTimeDilation = 0.01f; 
 			StopPawns.Add(pawn);
 		}
 	}
 
-	FTimerDelegate timerDelegate;
+	
 	timerDelegate.BindLambda([=]()
 		{
+
 			for (APawn* pawn : StopPawns)
 			{
-				pawn->CustomTimeDilation = 1;
+				pawn->CustomTimeDilation = 1.0f;
 			}
-
+			CDebug::Print("Back To Normal:", StopPawns.Num());
 		});
-	FTimerHandle handle;
+	
 	InWorld->GetTimerManager().SetTimer(handle, timerDelegate, StopTime, false);
 }
 

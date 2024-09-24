@@ -346,7 +346,7 @@ void ACSurvivor::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
-		FHitData* HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
 		if (HitData && HitData->Montage)
 		{
 			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
@@ -354,7 +354,7 @@ void ACSurvivor::ApplyHitData()
 			{
 				StatusComponent->ApplyDamage(HitData->DamageAmount);
 			}
-			HitData->PlayHitStop(GetWorld());
+			if(this->HasAuthority()) HitData->PlayHitStop(GetWorld());
 			HitData->PlaySoundWave(this);
 			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
 		}
@@ -368,9 +368,9 @@ void ACSurvivor::ApplyHitData()
 			FVector target = targetActor->GetActorLocation();
 			FVector direction = target - start;
 			direction = direction.GetSafeNormal();
-			FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
-			FRotator NewRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
-			SetActorRotation(NewRotation);
+			/*FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
+			LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
+			SetActorRotation(LookAtRotation);*/
 			LaunchCharacter(-direction*HitData->Launch, false, false);
 		}
 		if (StatusComponent->IsDead())

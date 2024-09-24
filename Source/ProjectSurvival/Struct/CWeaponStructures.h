@@ -112,6 +112,9 @@ public:
 
 public:
 	TArray<APawn*> StopPawns;
+private:
+	FTimerHandle handle;
+	FTimerDelegate timerDelegate;
 };
 
 

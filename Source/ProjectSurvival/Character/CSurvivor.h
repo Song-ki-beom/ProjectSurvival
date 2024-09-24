@@ -146,7 +146,7 @@ private:
 	//Damage
 	UPROPERTY(EditAnywhere, Category = "HitData")
 	FDamageData DamageData;
-	
+	FHitData* HitData;
 public:
 	UFUNCTION(Server, Reliable)
 		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);
