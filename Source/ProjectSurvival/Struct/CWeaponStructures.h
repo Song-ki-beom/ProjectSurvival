@@ -4,6 +4,9 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Engine/DataTable.h"
+#include "Engine/NetDriver.h"    // UNetDriver 및 FNetGUIDCache가 포함된 헤더
+#include "Misc/NetworkGuid.h" //FNetworkGUID 정의가 포함된 헤더 파일
+#include "Net/UnrealNetwork.h"
 #include "CWeaponStructures.generated.h"
 
 
@@ -63,8 +66,11 @@ struct FDamageData
 {
 	GENERATED_BODY()
 public:
-	class ACharacter* Character;
-	class AActor* Causer;
+	UPROPERTY()
+	uint32 CharacterID;
+	UPROPERTY()
+	uint32 CauserID;
+	UPROPERTY()
 	FName HitID;
 };
 
@@ -102,6 +108,7 @@ public:
 	void PlayHitStop(UWorld* InWorld);
 	void PlaySoundWave(class ACharacter* InOwner);
 	void PlayEffect(UWorld* InWorld, const FVector& InLocation, const FRotator& InRotation, USkeletalMeshComponent* InMesh = nullptr, FName InSocketName = NAME_None);
+	AActor* FindActorByNetGUID(FNetworkGUID NetGUID, UWorld* World);
 
 public:
 	TArray<APawn*> StopPawns;

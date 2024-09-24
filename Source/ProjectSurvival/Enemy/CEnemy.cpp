@@ -18,15 +18,15 @@
 #include "CGameInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "Engine/PackageMapClient.h"
 #include "Utility/CDebug.h"
 
 ACEnemy::ACEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true; //리플리케이트 설정 
-
+	SetReplicates(true);
 	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
-
 
 
 	//AI 세팅
@@ -70,6 +70,8 @@ void ACEnemy::BeginPlay()
 {
 
 	Super::BeginPlay();
+	NetUpdateFrequency = 50.0f;
+	NetPriority = 3.0f;
 
 	//동적 리소스 로딩을 위한 에셋 로더 생성
 	FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
@@ -129,7 +131,49 @@ void ACEnemy::BeginPlay()
 void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	//if (HasAuthority())
+	//{
+	//	if (GetIsReplicated())
+	//	{
 
+	//		UWorld* World = this->GetWorld();
+	//		// NetDriver 가져오기
+	//		UNetDriver* NetDriver = World->GetNetDriver();
+	//		if (NetDriver && NetDriver->GuidCache)
+	//		{
+	//			FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
+	//			
+
+	//			if (InstigatorNetGUID.IsValid())
+	//			{
+	//				int32 ClientValue = InstigatorNetGUID.Value;
+	//				CDebug::Print(TEXT("Server NetGUID is valid:"), ClientValue);
+	//				DamageData.CharacterID = InstigatorNetGUID;
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("This actor is NOT being replicated."));
+	//	}
+	//}
+	//else
+	//{
+	//	UWorld* World = this->GetWorld();
+	//	// NetDriver 가져오기
+	//	UNetDriver* NetDriver = World->GetNetDriver();
+	//	if (NetDriver && NetDriver->GuidCache)
+	//	{
+	//		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
+	//		if (InstigatorNetGUID.IsValid())
+	//		{
+	//			int32 ClientValue = InstigatorNetGUID.Value;
+	//			CDebug::Print(TEXT("Client NetGUID is valid:") , ClientValue);
+	//		}
+	//	}
+
+	//}
 }
 
 void ACEnemy::DoAction()
@@ -235,14 +279,15 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
-	DamageData.Causer = DamageCauser;
+	/*DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
+	DamageData.Causer = DamageCauser;*/
 	DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
 
 	
 	if (!DamageData.HitID.IsNone())
 	{
-		ApplyHitData();
+		if (HasAuthority())
+			ApplyHitData();
 	}
 
 	return damage;

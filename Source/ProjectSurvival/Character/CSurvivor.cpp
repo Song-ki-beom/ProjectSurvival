@@ -20,7 +20,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputCoreTypes.h"
 #include "DrawDebugHelpers.h"
-#include "Net/UnrealNetwork.h"
+#include "Net/UnrealNetwork.h" //리플리케이트를 위한 헤더 파일 
+#include "Engine/NetSerialization.h" 
+#include "Engine/NetDriver.h"    // UNetDriver 및 FNetGUIDCache가 포함된 헤더
+#include "Misc/NetworkGuid.h" //FNetworkGUID 정의가 포함된 헤더 파일
 #include "CGameInstance.h"
 #include "Utility/CDebug.h"
 #include "Widget/CMainHUD.h"
@@ -31,11 +34,15 @@
 #include "GameFramework/PlayerState.h"
 
 
+#include "Engine/PackageMapClient.h"
+
+
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
+	SetReplicates(true);
 	//인터렉션 세팅
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
 
@@ -147,6 +154,7 @@ void ACSurvivor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	NetDriver = GetWorld()->GetNetDriver();
 
 	Pants->SetMasterPoseComponent(GetMesh());
 	Boots->SetMasterPoseComponent(GetMesh());
@@ -172,6 +180,8 @@ void ACSurvivor::BeginPlay()
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -290,22 +300,40 @@ void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructu
 float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser)
 {
+
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	
+	if (this->HasAuthority()) 
+	{
+		//네트워크에서 액터 ID 식별하는 과정
+		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(EventInstigator->GetPawn());
+		if (!InstigatorNetGUID.IsValid()) return -1;
+		DamageData.CharacterID = InstigatorNetGUID.Value;
+		FNetworkGUID CauserNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(DamageCauser);
+		if (!CauserNetGUID.IsValid()) return -1;
+		DamageData.CauserID = CauserNetGUID.Value;
+		DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
 
-	DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
-	DamageData.Causer = DamageCauser;
-	DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
 
+
+	}
 
 	if (!DamageData.HitID.IsNone())
 	{
-		ApplyHitData();
+		BroadCastApplyHitData(DamageData);
 	}
 
 	return damage;
 
-	
+}
 
+void ACSurvivor::BroadCastApplyHitData_Implementation(FDamageData InDamageData)
+{
+	if (!HasAuthority())
+	{
+		DamageData = InDamageData;
+	}
+	ApplyHitData();
 }
 
 void ACSurvivor::ApplyHitData()
@@ -318,55 +346,47 @@ void ACSurvivor::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
-		FHitData* Row = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
-		if (Row && Row->Montage)
+		FHitData* HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		if (HitData && HitData->Montage)
 		{
-			MontageComponent->Montage_Play(Row->Montage, Row->PlayRate);
+			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
+			if (StatusComponent != nullptr)
+			{
+				StatusComponent->ApplyDamage(HitData->DamageAmount);
+			}
+			HitData->PlayHitStop(GetWorld());
+			HitData->PlaySoundWave(this);
+			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
 		}
+		
+
+		if (!StatusComponent->IsDead())
+		{
+			FVector start = GetActorLocation();
+			UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);  
+			AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
+			FVector target = targetActor->GetActorLocation();
+			FVector direction = target - start;
+			direction = direction.GetSafeNormal();
+			FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
+			FRotator NewRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
+			SetActorRotation(NewRotation);
+			LaunchCharacter(-direction*HitData->Launch, false, false);
+		}
+		if (StatusComponent->IsDead())
+		{
+			//StatusComponent->SetDeadMode();
+			return;
+		}
+
+		DamageData.CharacterID = 0;
+		DamageData.CauserID = 0;
+		DamageData.HitID = "";
+
 	}
-
-
-	//StatusComponent->ApplyDamage(DamageData.power);
-	//DamageData.power = 0;
-
-
-	//if (!!DamageData.Event && !!Damage.Event->HitData)
-	//{
-	//	// Montage
-	//	Damage.Event->HitData->PlayMontage(this);
-	//	// HitStop
-	//	Damage.Event->HitData->PlayHitStop(GetWorld());
-	//	// Sound 
-	//	Damage.Event->HitData->PlaySoundWave(this);
-	//	// Effect 
-	//	Damage.Event->HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
-
-	//	if (!StatusComponent->IsDead())
-	//	{
-	//		FVector start = GetActorLocation();
-	//		FVector target = Damage.Character->GetActorLocation();
-	//		FVector direction = target - start; 
-	//		direction = direction.GetSafeNormal();
-
-	//		LaunchCharacter(-direction * Damage.Event->HitData->Launch, false, false);
-	//		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
-	//	}
-	//	if (Status->IsDead())
-	//	{
-	//		State->SetDeadMode();
-	//		return;
-	//	}
-	//}
-	////	Damage.Character = nullptr;
-	//Damage.Causer = nullptr;
-	//Damage.Event = nullptr;
-
-
-	///*if (StatusComponent != nullptr)
-	//{
-	//	StatusComponent->ApplyDamage(DamageAmount);
-	//}*/
+	
 }
+
 
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
@@ -460,4 +480,5 @@ void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACSurvivor, ReplicatedSurvivorName);
+
 }

@@ -86,6 +86,9 @@ void ACDestructibleActor::AccumulateDamage(float DamageAmount)
 		}
 
 	}
+
+
+
 	
 }
 

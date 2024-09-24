@@ -10,8 +10,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/NetworkObjectList.h"
+#include "Engine/PackageMapClient.h"
 #include "ActorComponents/CMontageComponent.h"
-
 
 void FDoActionData::DoAction(ACharacter* InOwner)
 {
@@ -112,4 +113,21 @@ void FHitData::PlayEffect(UWorld* InWorld, const FVector& InLocation, const FRot
 	if (!!particle)   
 		UGameplayStatics::SpawnEmitterAttached(particle, InMesh, InSocketName, location, rotation, scale);
 
+}
+
+AActor* FHitData::FindActorByNetGUID(FNetworkGUID NetGUID , UWorld* World)
+{
+	UNetDriver* NetDriver = World->GetNetDriver();
+
+	
+	if (NetDriver && NetDriver->GuidCache)
+	{
+		UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(NetGUID, true);  // bIgnoreFailures = true
+		AActor* FoundActor = Cast<AActor>(FoundObject);
+		if (FoundActor)
+			return FoundActor;
+		else 
+			return nullptr;
+	}
+	return nullptr;
 }

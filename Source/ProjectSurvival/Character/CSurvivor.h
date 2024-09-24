@@ -74,6 +74,8 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser) override;
 	void ApplyHitData();
+	UFUNCTION(NetMulticast,Reliable)
+	void BroadCastApplyHitData(FDamageData InDamageData);
 
 
 private:
@@ -84,6 +86,9 @@ private:
 	void UpdateSurvivorNameWidget();
 
 private:
+	class UCGameInstance* GameInstance;
+	class UNetDriver* NetDriver;
+
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere)
@@ -139,9 +144,9 @@ private:
 		class UCInventoryComponent* InventoryComponent;
 
 	//Damage
+	UPROPERTY(EditAnywhere, Category = "HitData")
 	FDamageData DamageData;
-	//GameInstance <<- for HitData reference
-	class UCGameInstance* GameInstance;
+	
 public:
 	UFUNCTION(Server, Reliable)
 		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);

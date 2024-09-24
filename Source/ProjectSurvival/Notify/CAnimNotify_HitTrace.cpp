@@ -6,7 +6,7 @@
 
 FString  UCAnimNotify_HitTrace::GetNotifyName_Implementation() const
 {
-	return "HitTrace";
+	return "AttackHitTrace";
 
 }
 
@@ -21,6 +21,8 @@ void UCAnimNotify_HitTrace::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 
 
 	if (Enemy == nullptr) return;
-	Enemy->AttackTraceHit();
+	if(Enemy->HasAuthority())
+		Enemy->AttackTraceHit();
+	
 
 }
