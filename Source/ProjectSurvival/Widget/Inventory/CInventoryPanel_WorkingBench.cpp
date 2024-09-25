@@ -9,6 +9,7 @@
 #include "Build/CStructure_Placeable.h"
 #include "Components/WrapBox.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "CGameStateBase.h"
 #include "Utility/CDebug.h"
 #include "Character/CSurvivorController.h"
@@ -75,6 +76,11 @@ bool UCInventoryPanel_WorkingBench::NativeOnDrop(const FGeometry& InGeometry, co
 		}
 	}
 	return false;
+}
+
+void UCInventoryPanel_WorkingBench::SetInventoryWindowName(FText InText)
+{
+	InventoryWindowName->SetText(InText);
 }
 
 void UCInventoryPanel_WorkingBench::RefreshWorkingBenchInventory()

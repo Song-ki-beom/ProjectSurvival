@@ -58,11 +58,8 @@ ACSurvivor::ACSurvivor()
 
 	//커스터마이즈 메쉬 세팅 
 	Head = GetMesh();
-	Head->SetIsReplicated(true);
 	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
-	Pants->SetIsReplicated(true);
 	Boots = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Boots"));
-	Boots->SetIsReplicated(true);
 	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
@@ -221,61 +218,61 @@ void ACSurvivor::HandleMouseWheelDown()
 	InteractionComponent->ExtraOptionButtonDown();
 }
 
-void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void ACSurvivor::SelectStructure(ESelectedStructure InKey, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	switch (InKey)
 	{
 	case ESelectedStructure::Q:
 	{
-		BuildComponent->SelectQ(InClass, InElement);
+		BuildComponent->SelectQ(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::W:
 	{
-		BuildComponent->SelectW(InClass, InElement);
+		BuildComponent->SelectW(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::E:
 	{
-		BuildComponent->SelectE(InClass, InElement);
+		BuildComponent->SelectE(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::A:
 	{
-		BuildComponent->SelectA(InClass, InElement);
+		BuildComponent->SelectA(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::S:
 	{
-		BuildComponent->SelectS(InClass, InElement);
+		BuildComponent->SelectS(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::D:
 	{
-		BuildComponent->SelectD(InClass, InElement);
+		BuildComponent->SelectD(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::Z:
 	{
-		BuildComponent->SelectZ(InClass, InElement);
+		BuildComponent->SelectZ(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::X:
 	{
-		BuildComponent->SelectX(InClass, InElement);
+		BuildComponent->SelectX(InClass, InElement, InItemID);
 		break;
 	}
 
 	case ESelectedStructure::C:
 	{
-		BuildComponent->SelectC(InClass, InElement);
+		BuildComponent->SelectC(InClass, InElement, InItemID);
 		break;
 	}
 	}

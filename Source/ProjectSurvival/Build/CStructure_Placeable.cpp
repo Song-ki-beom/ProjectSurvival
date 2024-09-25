@@ -14,6 +14,10 @@
 #include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
 
+#include "Engine/World.h"
+#include "Engine/NetDriver.h"
+#include "Engine/PackageMapClient.h"
+
 ACStructure_Placeable::ACStructure_Placeable()
 {
 	//bReplicates = true;
@@ -32,22 +36,49 @@ void ACStructure_Placeable::BeginPlay()
 		ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
 		WorkingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
 		if (WorkingBenchWidget)
+		{
 			WorkingBenchWidget->SetOwnerActor(this);
+
+			switch (PlaceableStructureType)
+			{
+			case EPlaceableStructureType::WorkingBench:
+				WorkingBenchWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 작업대")));
+				break;
+			case EPlaceableStructureType::Furnace:
+				WorkingBenchWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
+				break;
+			default:
+				break;
+			}
+		}
+
+
 
 		ActorProduceWidget = CreateWidget<UUserWidget>(GetWorld(), ActorProduceWidgetClass);
 		WorkingBenchProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
 		if (WorkingBenchProduceWidget)
 		{
 			WorkingBenchProduceWidget->SetOwnerActor(this, WidgetCaller);
-			WorkingBenchProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
-			WorkingBenchProduceWidget->CreateBuildProduceItemSlot(1, 15);
-			WorkingBenchProduceWidget->CreateToolProduceItemSlot(1, 2);
-			WorkingBenchProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+
+			switch (PlaceableStructureType)
+			{
+			case EPlaceableStructureType::WorkingBench:
+				WorkingBenchProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
+				// 생산 아이템 추가
+				WorkingBenchProduceWidget->CreateBuildProduceItemSlot(1, 15);
+				WorkingBenchProduceWidget->CreateToolProduceItemSlot(1, 2);
+				WorkingBenchProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+				break;
+			case EPlaceableStructureType::Furnace:
+				WorkingBenchProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
+				break;
+			default:
+				break;
+			}
+
 		}
 		break;
 	}
-
-
 }
 
 void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
@@ -104,7 +135,7 @@ void ACStructure_Placeable::CheckCenter()
 	FVector centerBoxSize = PreviewBox->GetScaledBoxExtent() - FVector(0, 0, 1);
 	FRotator centerBoxOrientation;
 	centerBoxOrientation = this->GetActorRotation();
-	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery3;
 	bool bCenterBoxTraceComplex = false;
 	TArray<AActor*> centerBoxActorsToIgnore;
 	TArray<FHitResult> centerBoxHitResults;
@@ -127,10 +158,6 @@ void ACStructure_Placeable::CheckCenter()
 
 void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
-	//Super::OpenActorInventory(Survivor, Actor);
-	//CDebug::Print("OpenActorInventory Called");
-	CDebug::Print(TEXT("비긴인터랙트 ACStructure_Placeable"), FColor::Cyan);
-
 	if (Survivor)
 	{
 		switch (WidgetCaller)
@@ -330,9 +357,6 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 		}
 	}
 	}
-
-
-
 }
 
 void ACStructure_Placeable::OnRep_WidgetRefreshTrigger()
@@ -451,12 +475,5 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 
 void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
 {
-	//CDebug::Print("BroadcastCalled", FColor::Magenta);
-	//InPlaceable->GetWorkingBenchProduceWidget()->AddProduceItemToQueue(ItemID);
 	WorkingBenchProduceWidget->AddProduceItemToQueue(ItemID);
 }
-
-//void ACStructure_Placeable::RequestAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
-//{
-//	BroadcastAddProduceItemToQueue(ItemID, InPlaceable);
-//}

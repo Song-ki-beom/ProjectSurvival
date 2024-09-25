@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Lobby/CCustomizeWidget.h"
@@ -257,8 +257,12 @@ void UCCustomizeWidget::CreateSurvivor()
 		lobbySurvivorController->SetVisibleWaitingWidget();
 	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
-	gameInstance->SaveSurvivorName(SurvivorName->GetText());
-	gameInstance->SaveCustomizeRowNames(LobbySurvivor->GetCustomizeRowNames());
+	if (gameInstance)
+	{
+		gameInstance->SaveSurvivorName(SurvivorName->GetText());
+		gameInstance->SaveCustomizeRowNames(LobbySurvivor->GetCustomizeRowNames());
+		gameInstance->CreateChattingBox();
+	}
 }
 
 void UCCustomizeWidget::ExitGame()

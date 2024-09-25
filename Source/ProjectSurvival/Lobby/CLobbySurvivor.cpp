@@ -11,6 +11,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "CGameInstance.h"
+#include "Widget/Chatting/CChattingBox.h"
 #include "Utility/CDebug.h"
 
 ACLobbySurvivor::ACLobbySurvivor()
@@ -19,11 +21,11 @@ ACLobbySurvivor::ACLobbySurvivor()
 	bReplicates = true;
 
 	Head = GetMesh();
-	Head->SetIsReplicated(true);
+	//Head->SetIsReplicated(true);
 	Pants = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants"));
-	Pants->SetIsReplicated(true);
+	//Pants->SetIsReplicated(true);
 	Boots = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Boots"));
-	Boots->SetIsReplicated(true);
+	//Boots->SetIsReplicated(true);
 	Accessory = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Accessory"));
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
@@ -168,6 +170,7 @@ void ACLobbySurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACLobbySurvivor::OnMoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACLobbySurvivor::OnMoveRight);
+	PlayerInputComponent->BindAction("Chat", IE_Pressed, this, &ACLobbySurvivor::FocusChattingBox);
 }
 
 void ACLobbySurvivor::InitCustomize()
@@ -753,6 +756,58 @@ void ACLobbySurvivor::ClientDifficultyUpdate()
 {
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 	lobbySurvivorController->UpdateClientDifficulty();
+}
+
+void ACLobbySurvivor::FocusChattingBox()
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		if (gameInstance->ChattingBox)
+		{
+			gameInstance->ChattingBox->SetInputMode();
+		}
+		else
+			CDebug::Print("gameInstance->ChattingBox is not Valid");
+	}
+	else
+		CDebug::Print("gameInstance is not Valid");
+}
+
+void ACLobbySurvivor::RequestMessage_Implementation(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	BroadcastMessage(InSurvivorNameText, InMessageText);
+}
+
+void ACLobbySurvivor::BroadcastMessage_Implementation(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	PerformAddMessage(InSurvivorNameText, InMessageText);
+}
+
+void ACLobbySurvivor::ReceiveMessage(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	if (HasAuthority())
+		BroadcastMessage(InSurvivorNameText, InMessageText);
+	else
+		RequestMessage(InSurvivorNameText, InMessageText);
+}
+
+void ACLobbySurvivor::PerformAddMessage(const FText& InSurvivorNameText, const FText& InMessageText)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		CDebug::Print("CGameInstance is Valid", gameInstance);
+		if (gameInstance->ChattingBox)
+		{
+			CDebug::Print(TEXT("gameInstance->ChattingBox is Valid"), gameInstance->ChattingBox);
+			gameInstance->ChattingBox->AddMessageToMessageBox(InSurvivorNameText, InMessageText);
+		}
+		else
+			CDebug::Print(TEXT("gameInstance->ChattingBox is is Not Valid"), FColor::Red);
+	}
+	else
+		CDebug::Print(("CGameInstance is Not Valid"), FColor::Red);
 }
 
 void ACLobbySurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -6,6 +6,12 @@
 #include "Struct/CItemDataStructures.h"
 #include "CStructure_Placeable.generated.h"
 
+UENUM()
+enum class EPlaceableStructureType : uint8
+{
+	WorkingBench, Furnace, None
+};
+
 USTRUCT()
 struct FItemInformation
 {
@@ -44,8 +50,6 @@ public:
 	bool GetPlaceableCenterHit() { return bCenterHit; }
 
 	float GetPlaceableHeight() { return PlaceableHeight; }
-
-
 
 	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType);
@@ -97,6 +101,8 @@ protected:
 	float PlaceableHeight;
 	FRotator CenterRotation;
 
+	UPROPERTY(EditAnywhere)
+		EPlaceableStructureType PlaceableStructureType;
 
 	UPROPERTY(EditAnywhere)
 		EWidgetCall WidgetCaller;

@@ -21,21 +21,21 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectE(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectA(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectS(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectD(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectZ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectX(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
-	void SelectC(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectE(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectA(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectS(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectD(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectZ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectX(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
+	void SelectC(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
 	void BuildSpawnedStructure();
 	void ClearSpawnedStructure();
 	bool CheckIsBuilding() { return bIsBuilding; }
 
 private:
-	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
 	void BuildStartFoundation();
 	void BuildStartWall();
 	void BuildStartCeiling();
@@ -52,8 +52,8 @@ private:
 private:
 	class ACSurvivor* Survivor;
 
-	UPROPERTY()
-		class UCBuildWidget* BuildWidget;
+	//UPROPERTY()
+	//	class UCBuildWidget* BuildWidget;
 	UPROPERTY(Replicated)
 		class ACStructure* SpawnedStructure;
 	UPROPERTY()
@@ -72,6 +72,8 @@ private:
 		class ACStructure_Stair* SpawnedStair;
 	UPROPERTY()
 		class ACStructure_Placeable* SpawnedPlaceable;
+	UPROPERTY()
+		class UDataTable* ItemDataTable;
 
 	UMaterialInstance* RedMaterial;
 	UMaterialInstance* GreenMaterial;

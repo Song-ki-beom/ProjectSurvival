@@ -1,4 +1,5 @@
 #include "ActorComponents/CBuildComponent.h"
+#include "ActorComponents/CInventoryComponent.h"
 #include "Build/CStructure_Foundation.h"
 #include "Build/CStructure_Wall.h"
 #include "Build/CStructure_Ceiling.h"
@@ -10,9 +11,14 @@
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/Build/CBuildWidget.h"
+#include "Widget/Build/CBuildItemSlot.h"
+#include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInventoryPanel.h"
+#include "Widget/Menu/CInventoryMenu.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/DataTable.h"
 #include "Utility/CDebug.h"
 
 UCBuildComponent::UCBuildComponent()
@@ -38,10 +44,8 @@ void UCBuildComponent::BeginPlay()
 	Super::BeginPlay();
 	Survivor = Cast<ACSurvivor>(this->GetOwner());
 	ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
-	if (IsValid(survivorController) && IsValid(BuildWidget))
-	{
-		BuildWidget = survivorController->GetBuildWidget();
-	}
+
+	ItemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
 }
 
 void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -51,19 +55,10 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	if (IsValid(SpawnedStructure))
 	{
 		if (!bIsBuilding)
-		{
 			bIsBuilding = true;
-			CDebug::Print("Set bIsBuilding : ", bIsBuilding, FColor::Red);
-		}
 	}
 	else
-	{
-		if (bIsBuilding)
-		{
-			bIsBuilding = false;
-			CDebug::Print("Set bIsBuilding : ", bIsBuilding, FColor::Red);
-		}
-	}
+		bIsBuilding = false;
 
 	switch (StructureElement)
 	{
@@ -132,67 +127,67 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	}
 }
 
-void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectQ");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectW");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectE(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectE(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectE");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectA(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectA(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectA");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectS(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectS(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectS");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectD(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectD(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectD");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectZ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectZ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectZ");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectX(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectX(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectX");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
-void UCBuildComponent::SelectC(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SelectC(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	CDebug::Print("SelectC");
 
-	SpawnBuildStructureElement(InClass, InElement);
+	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::BuildSpawnedStructure()
@@ -202,6 +197,53 @@ void UCBuildComponent::BuildSpawnedStructure()
 		CDebug::Print("You Can't Build There", FColor::Cyan);
 		return;
 	}
+
+	//SubStructureQuantity();
+	FName itemID = SpawnedStructure->GetBuildStructureID();
+
+	for (TWeakObjectPtr<UCItemBase> itemPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+	{
+		if (itemPtr->ID == itemID)
+		{
+			float inventoryTotalWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
+			float usedTotalWeight = itemPtr->NumericData.Weight;
+			float newTotalWeight = inventoryTotalWeight - usedTotalWeight;
+			Survivor->GetInventoryComponent()->SetInventoryTotalWeight(newTotalWeight);
+			itemPtr->SetQuantity(itemPtr->Quantity - 1);
+			Survivor->GetInventoryComponent()->OnInventoryUpdated.Broadcast();
+			
+			ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+			if (survivorController)
+			{
+				for (UCBuildItemSlot* buildItemSlot : survivorController->GetBuildWidget()->GetBuildItemSlotArray())
+				{
+					if (!buildItemSlot)
+						continue;
+
+					if (buildItemSlot->GetBuildItemSlotID() == itemID)
+					{
+						buildItemSlot->SubStructureQuantity();
+						break;
+					}
+				}
+			}
+			//for (UCBuildItemSlot* buildItemSlot : BuildWidget->GetBuildItemSlotArray())
+			//{
+			//	if (!buildItemSlot)
+			//		continue;
+			//
+			//	if (buildItemSlot->GetBuildItemSlotID() == itemID)
+			//	{
+			//		buildItemSlot->SubStructureQuantity();
+			//		break;
+			//	}
+			//}
+
+			//if (BuildWidget)
+			//	CDebug::Print("BuildWidget ISVALID");
+		}
+	}
+
 
 	if (IsValid(SpawnedStructure))
 		SpawnedStructure->SetReplicates(true);
@@ -218,6 +260,10 @@ void UCBuildComponent::BuildSpawnedStructure()
 		StructureTransform = SpawnedStructure->GetActorTransform();
 		RequestBuild(StructureClass, StructureTransform);
 	}
+
+
+
+	//Survivor->GetInventoryComponent()->
 }
 
 void UCBuildComponent::ClearSpawnedStructure()
@@ -227,7 +273,7 @@ void UCBuildComponent::ClearSpawnedStructure()
 	bIsSnapped = false;
 }
 
-void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
 	StructureClass = InClass;
 	StructureElement = InElement;
@@ -370,8 +416,11 @@ void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InCla
 		break;
 	}
 
-	if(IsValid(SpawnedStructure))
+	if (IsValid(SpawnedStructure))
+	{
+		SpawnedStructure->SetBuildStructureID(InItemID);
 		SpawnedStructure->SetReplicates(false);
+	}
 }
 
 void UCBuildComponent::BuildStartFoundation()
@@ -1184,9 +1233,7 @@ void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform
 		bIsSnapped = false;
 	}
 	else
-	{
 		CDebug::Print("InClass Is Not Valid");
-	}
 }
 
 void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InClass, FTransform InTransform)

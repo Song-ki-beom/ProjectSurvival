@@ -31,13 +31,15 @@ public:
 	virtual void EndInteract() override;
 	//virtual void Interact(class ACSurvivor* PlayerCharacter) override; // 인터렉트가 준비되면 바로 Interact 시작 
 
+	void SetBuildStructureID(FName InItemID) { BuildStructureID = InItemID; }
+	FName GetBuildStructureID() { return BuildStructureID; }
 
 protected:
 	void SaveOriginMaterial();
 
 protected:
-	//UPROPERTY(EditAnywhere)
-	//	class UStaticMeshComponent* StaticMesh;
+	FName BuildStructureID;
+
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;
 

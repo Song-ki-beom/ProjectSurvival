@@ -19,6 +19,7 @@ protected:
 
 public:
 	void SetOwnerActor(class ACStructure_Placeable* InActor) { OwnerActor = InActor; }
+	void SetInventoryWindowName(FText InText);
 
 	UFUNCTION()
 		void RefreshWorkingBenchInventory();
@@ -44,6 +45,8 @@ private:
 
 
 private:
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* InventoryWindowName;
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* WorkingBenchInventoryPanel;
 	UPROPERTY(meta = (BindWidget))

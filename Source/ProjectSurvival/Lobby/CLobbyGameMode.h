@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "CMainGameMode.h"
@@ -9,7 +9,7 @@
 */
 
 UCLASS()
-class PROJECTSURVIVAL_API ACLobbyGameMode : public ACMainGameMode
+class PROJECTSURVIVAL_API ACLobbyGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
@@ -30,4 +30,3 @@ private:
 	int32 NumberOfReadySurvivors = 0;
 
 };
-

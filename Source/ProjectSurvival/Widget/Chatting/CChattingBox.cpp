@@ -11,6 +11,7 @@
 #include "CGameInstance.h"
 #include "Character/CSurvivorController.h"
 #include "Character/CSurvivor.h"
+#include "Lobby/CLobbySurvivor.h"
 #include "Utility/CDebug.h"
 
 FReply UCChattingBox::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -55,16 +56,7 @@ void UCChattingBox::SetInputMode()
 
 void UCChattingBox::ClickSendButton()
 {
-	//if (!InputMessageBox->GetText().IsEmpty())
-	//{
-	//	if (this->GetOwningPlayer()->HasAuthority())
-	//		SurvivorController->BroadcastMessage(InputMessageBox->GetText());
-	//	else
-	//		SurvivorController->RequestMessage(InputMessageBox->GetText());
-	//}
-	//	//AddMessageToMessageBox(InputMessageBox->GetText());
-	//
-	//InputMessageBox->SetText(FText::GetEmpty());
+	SendMessage(InputMessageBox->GetText(), ETextCommit::OnEnter);
 }
 
 void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMethod)
@@ -73,7 +65,32 @@ void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMet
 	{
 		ACSurvivor* survivor = Cast<ACSurvivor>(GetOwningPlayerPawn());
 		if (!survivor)
-			return;
+		{
+			ACLobbySurvivor* lobbySurvivor = Cast<ACLobbySurvivor>(GetOwningPlayerPawn());
+			if (lobbySurvivor)
+			{
+				if (!InText.IsEmpty())
+				{
+					FText survivorNameText = FText::Format(FText::FromString("{0}:"), SurvivorName);
+					lobbySurvivor->ReceiveMessage(survivorNameText, InText);
+				}
+
+				InputMessageBox->SetText(FText::GetEmpty());
+				if (GetOwningPlayer()->HasAuthority())
+				{
+					FInputModeGameAndUI inputMode;
+					inputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+					inputMode.SetHideCursorDuringCapture(false);
+					inputMode.SetWidgetToFocus(this->TakeWidget());
+
+					GetOwningPlayer()->SetInputMode(inputMode);
+					GetOwningPlayer()->bShowMouseCursor = true;
+				}
+				else
+					GetOwningPlayer()->SetInputMode(FInputModeGameOnly());
+				return;
+			}
+		}
 
 		if (!InText.IsEmpty())
 		{

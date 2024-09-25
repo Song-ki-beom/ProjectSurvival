@@ -183,6 +183,8 @@ private:
 	UFUNCTION()
 		void ClientDifficultyUpdate();
 
+	void FocusChattingBox();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -252,4 +254,20 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedSurvivorName)
 		FText ReplicatedSurvivorName;
+
+public:
+	UFUNCTION(Server, Reliable)
+		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION()
+		void ReceiveMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION()
+		void PerformAddMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UPROPERTY()
+		class UCChattingBox* ChattingBox;
 };

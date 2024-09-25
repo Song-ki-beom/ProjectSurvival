@@ -10,6 +10,7 @@
 #include "ActorComponents/CMovingComponent.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Build/CBuildWidget.h"
+#include "Widget/Build/CBuildItemSlot.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
 #include "Utility/CDebug.h"
@@ -153,7 +154,9 @@ void ACSurvivorController::SelectQ()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::Q);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::Q);
-			Survivor->SelectStructure(ESelectedStructure::Q, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			CDebug::Print("Q ID : ", structureID);
+			Survivor->SelectStructure(ESelectedStructure::Q, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -171,7 +174,9 @@ void ACSurvivorController::SelectW()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::W);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::W);
-			Survivor->SelectStructure(ESelectedStructure::W, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotW()->GetBuildItemSlotID();
+			CDebug::Print("W ID : ", structureID);
+			Survivor->SelectStructure(ESelectedStructure::W, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -189,7 +194,8 @@ void ACSurvivorController::SelectE()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::E);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::E);
-			Survivor->SelectStructure(ESelectedStructure::E, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::E, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -219,7 +225,8 @@ void ACSurvivorController::SelectA()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::A);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::A);
-			Survivor->SelectStructure(ESelectedStructure::A, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::A, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -237,7 +244,8 @@ void ACSurvivorController::SelectS()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::S);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::S);
-			Survivor->SelectStructure(ESelectedStructure::S, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::S, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -255,7 +263,8 @@ void ACSurvivorController::SelectD()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::D);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::D);
-			Survivor->SelectStructure(ESelectedStructure::D, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::D, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -273,7 +282,8 @@ void ACSurvivorController::SelectZ()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::Z);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::Z);
-			Survivor->SelectStructure(ESelectedStructure::Z, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::Z, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -291,7 +301,8 @@ void ACSurvivorController::SelectX()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::X);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::X);
-			Survivor->SelectStructure(ESelectedStructure::X, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::X, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else
@@ -309,7 +320,8 @@ void ACSurvivorController::SelectC()
 		{
 			TSubclassOf<ACStructure> structureClass = BuildWidget->GetStructureClass(ESelectedStructure::C);
 			EBuildStructureElement structureElement = BuildWidget->GetStructureElement(ESelectedStructure::C);
-			Survivor->SelectStructure(ESelectedStructure::C, structureClass, structureElement);
+			FName structureID = BuildWidget->GetBuildItemSlotQ()->GetBuildItemSlotID();
+			Survivor->SelectStructure(ESelectedStructure::C, structureClass, structureElement, structureID);
 			ToggleBuildWidget();
 		}
 		else

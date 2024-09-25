@@ -40,6 +40,7 @@ class PROJECTSURVIVAL_API UCDifficultyWidget : public UUserWidget
 
 protected:
 	virtual bool Initialize() override;
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
 public:
 	void ActivateStartButton();

@@ -71,7 +71,8 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 		//아이템 중첩이 가능한 종류의 경우 
 		if (ItemReference->NumericData.bIsStackable)
 		{
-			ItemQuantity->SetText(FText::AsNumber(ItemReference->Quantity));
+			FText quantityText = FText::Format(FText::FromString("x{0}"), ItemReference->Quantity);
+			ItemQuantity->SetText(quantityText);
 		}
 		else
 		{

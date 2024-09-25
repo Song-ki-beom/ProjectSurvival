@@ -7,7 +7,29 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "Widget/Chatting/CChattingBox.h"
 #include "CGameInstance.h"
+
+FReply UCDifficultyWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+
+	if (InKeyEvent.GetKey() == EKeys::Enter)
+	{
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+		if (gameInstance)
+		{
+			if (gameInstance->ChattingBox)
+			{
+				gameInstance->ChattingBox->SetInputMode();
+			}
+		}
+
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
 
 bool UCDifficultyWidget::Initialize()
 {
@@ -140,6 +162,8 @@ void UCDifficultyWidget::OnEasy()
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(0.75f);
 
+	if (GetOwningPlayer()->HasAuthority())
+		this->GetTypedOuter<UUserWidget>()->SetFocus();
 }
 
 void UCDifficultyWidget::OnNormal()
@@ -153,6 +177,9 @@ void UCDifficultyWidget::OnNormal()
 	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(1.0f);
+
+	if (GetOwningPlayer()->HasAuthority())
+		this->GetTypedOuter<UUserWidget>()->SetFocus();
 }
 
 void UCDifficultyWidget::OnHard()
@@ -166,6 +193,9 @@ void UCDifficultyWidget::OnHard()
 	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(1.5f);
+
+	if (GetOwningPlayer()->HasAuthority())
+		this->GetTypedOuter<UUserWidget>()->SetFocus();
 }
 
 void UCDifficultyWidget::OnExtreme()
@@ -179,6 +209,9 @@ void UCDifficultyWidget::OnExtreme()
 	}
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	gameInstance->SetDifficultyCoeff(2.5f);
+
+	if (GetOwningPlayer()->HasAuthority())
+		this->GetTypedOuter<UUserWidget>()->SetFocus();
 }
 
 void UCDifficultyWidget::OnStart()
