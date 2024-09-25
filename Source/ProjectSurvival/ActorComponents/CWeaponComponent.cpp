@@ -1,4 +1,5 @@
 #include "ActorComponents/CWeaponComponent.h"
+#include "ActorComponents/CStateComponent.h"
 #include "CWeaponComponent.h"
 #include "Weapon/CWeaponAsset.h"
 #include "Weapon/CWeaponData.h"
@@ -55,13 +56,13 @@ void UCWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 void UCWeaponComponent::SetUnarmedMode()
 {
-	//if(!IsIdleMode()) return;   
+	if(!IsIdleMode()) return;   
 	SetMode(EWeaponType::Max);
 }
 
 void UCWeaponComponent::SetAxeMode()
 {
-	//if(!IsIdleMode()) return;
+	if(!IsIdleMode()) return;
 	SetMode(EWeaponType::Axe);
 }
 
@@ -77,9 +78,9 @@ bool UCWeaponComponent::IsAxeMode()
 
 bool UCWeaponComponent::IsIdleMode()
 {
-	//return Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
-	 return true;
-
+	UCStateComponent* StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
+	return StateComponent->IsIdleMode();
+	 
 }
 
 void UCWeaponComponent::DoAction()
@@ -231,6 +232,7 @@ void UCWeaponComponent::SetModeReplicate()
 	if (PrevType != EWeaponType::Max)
 		Datas[(int32)PrevType]->GetEquipment()->UnEquip();
 
+	if (Datas[(int32)Type]->GetEquipment() == nullptr) return;
 	Datas[(int32)Type]->GetEquipment()->Equip();
 	
 

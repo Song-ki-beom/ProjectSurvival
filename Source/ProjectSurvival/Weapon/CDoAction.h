@@ -54,20 +54,21 @@ public:
 protected: 
 	UPROPERTY()  
 		class ACharacter* OwnerCharacter;
-	//UPROPERTY()
-	//	class UCMovementComponent* Movement;
-	//UPROPERTY()
-	//	class UCStateComponent* State;
+	UPROPERTY()
+		class UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class UCStateComponent* StateComponent;
 	UPROPERTY()
 		class UWorld* World;
 
 protected:
 	TArray<FDoActionData> DoActionDatas;
-	//TArray<FHitData>      HitDatas;
+	TArray<FHitData>      HitDatas;
+	int32 ActionIdx = 0;
+
 protected:
 	bool  bInAction = false;   
 	bool  bBeginAction = false;   
-
 
 
 

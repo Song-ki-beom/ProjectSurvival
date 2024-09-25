@@ -18,7 +18,7 @@ class UDamageInterface : public UInterface
 };
 
 
-
+//현재 TakeDamage 기본 함수로 인해 사용할 필요가 없어짐 
 class ACharacter;
 class PROJECTSURVIVAL_API IDamageInterface
 {
@@ -27,7 +27,7 @@ class PROJECTSURVIVAL_API IDamageInterface
 
 
 public:
-	virtual void Damage(ACharacter* Attacker , class AActor* Causer , FHitData HitData)=0;
+	virtual void Damage(FDamageData* DamageData)=0;
 	
 	 
 

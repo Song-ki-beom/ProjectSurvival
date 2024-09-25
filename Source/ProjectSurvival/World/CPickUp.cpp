@@ -15,6 +15,7 @@
 ACPickUp::ACPickUp()
 {
 	bReplicates = true;
+	SetReplicates(true);
 	PrimaryActorTick.bCanEverTick = false;
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
 	PickupMesh->SetSimulatePhysics(false);
@@ -90,6 +91,7 @@ void ACPickUp::EndFocus()
 
 void ACPickUp::BeginInteract()
 {
+	
 }
 
 void ACPickUp::EndInteract()

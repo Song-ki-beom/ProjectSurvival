@@ -57,7 +57,6 @@ public:
 
 private:
 	FMontagesData* MontageDatas[(int32)EStateType::Max];  
-
 private:
-	class ACharacter* OwnerCharacter;              //������Ʈ ������ Parrent�� ����
+	class ACharacter* OwnerCharacter;              
 };

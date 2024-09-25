@@ -30,7 +30,7 @@ private:
 	float Health = 0.0f;
 
 public:
-	void  TakeDamage(float InAmount);
+	void  ApplyDamage(float InAmount);
 public:
 	FORCEINLINE float GetMaxHealth() { return MaxHealth; }
 	FORCEINLINE void SetMaxHealth(float NewMaxHealth) {  MaxHealth = NewMaxHealth; }

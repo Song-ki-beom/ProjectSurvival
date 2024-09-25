@@ -7,13 +7,16 @@
 #include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
 #include "ActorComponents/CHarvestComponent.h"
+#include "ActorComponents/CStateComponent.h"
 
 
 void UCDoAction_Axe::DoAction()
 {
 	Super::DoAction();
+	if(StateComponent->IsActionMode()) return;
+
 	if (DoActionDatas.Num() > 0)
-		DoActionDatas[0].DoAction(OwnerCharacter);
+		DoActionDatas[ActionIdx].DoAction(OwnerCharacter);
 	
 }
 
@@ -25,7 +28,13 @@ void UCDoAction_Axe::DoAction()
 void UCDoAction_Axe::Begin_DoAction()
 {
 	Super::Begin_DoAction();
-	Slash();
+	
+}
+
+void UCDoAction_Axe::End_DoAction()
+{
+	Super::End_DoAction();
+
 }
 
 

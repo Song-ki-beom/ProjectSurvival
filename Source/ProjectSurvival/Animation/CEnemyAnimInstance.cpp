@@ -19,6 +19,7 @@ void UCEnemyAnimInstance::NativeInitializeAnimation()
 		return;
 	}
 	bCastEnded = true;
+	RootMotionMode = ERootMotionMode::IgnoreRootMotion;;
 
 	
 }

@@ -3,63 +3,70 @@
 
 #include "Struct/CWeaponStructures.h"
 #include "GameFramework/Character.h"
-//#include "Components/CStateComponent.h"
-//#include "Components/CMovementComponent.h"
+#include "ActorComponents/CStateComponent.h"
+#include "ActorComponents/CMovingComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Components/CapsuleComponent.h"
-
-//#include "Components/CMontagesComponent.h"
-
+#include "Utility/CDebug.h"
+#include "Engine/NetworkObjectList.h"
+#include "Engine/PackageMapClient.h"
+#include "ActorComponents/CMontageComponent.h"
 
 void FDoActionData::DoAction(ACharacter* InOwner)
 {
-	/*UCMovementComponent* movement = CHelpers::GetComponent<UCMovementComponent>(InOwner);
-	if (!!movement)
+	UCMovingComponent* movingComponent = Cast<UCMovingComponent>(InOwner->GetComponentByClass(UCMovingComponent::StaticClass()));
+	if (!!movingComponent)
 	{
 		if (this->bFixedCamera)
-			movement->EnableFixedCamera();
-		if (this->bCanMove)
-			movement->Stop();
-	}*/
+			movingComponent->EnableFixedCamera();
+		if (!this->bCanMove)
+			movingComponent->Stop();
+	}
+
 	if (this->Montage)
 	{
-		/*UCMontagesComponent* montagesComponent;
-		montagesComponent = CHelpers::GetComponent<UCMontagesComponent>(InOwner);
-		if (!!montagesComponent)
-			montagesComponent->Montage_Play(this->Montage, this->PlayRate);*/
+		UCMontageComponent* montageComponent;
+		montageComponent = Cast<UCMontageComponent>(InOwner->GetComponentByClass(UCMontageComponent::StaticClass()));
+		if (!!montageComponent)
+			montageComponent->Montage_Play(this->Montage, this->PlayRate);
 
-		//몽타주 컴포넌트 구현 전까지 사용할 플레이 몽타주
-			InOwner->PlayAnimMontage(this->Montage, this->PlayRate);
+			//몽타주 컴포넌트가 없을 시 플레이 
+			//InOwner->PlayAnimMontage(this->Montage, this->PlayRate);
 	}
 }
 
 void FHitData::SendDamage(ACharacter* InAttacker, AActor* InAttackCauser, ACharacter* InOther)
 {
 
-
-
 	FActionDamageEvent e;
-	e.HitData = this;
-	// 현재Hit된 구조체를 보냄
-	InOther->TakeDamage(this->Power, e, InAttacker->GetController(), InAttackCauser);
+	e.HitID = ID;
+	InOther->TakeDamage(this->DamageAmount, e, InAttacker->GetController(), InAttackCauser);
 }
 
 void FHitData::PlayMontage(ACharacter* InOwner)
 {
-	/*if(Montage= nullptr ) return;
-	if(InOwner = nullptr) return;
+	if(Montage== nullptr ) return;
+	if(InOwner == nullptr) return;
 
-	UCMontagesComponent* montagesComponent;
-	montagesComponent = CHelpers::GetComponent<UCMontagesComponent>(InOwner);
+	UCMontageComponent* montagesComponent;
+	montagesComponent = Cast<UCMontageComponent>(InOwner->GetComponentByClass(UCMontageComponent::StaticClass()));
+
 	if (!!montagesComponent)
-		montagesComponent->Montage_Play(this->Montage, this->PlayRate);*/
+		montagesComponent->Montage_Play(this->Montage, this->PlayRate);
 
 }
 
 void FHitData::PlayHitStop(UWorld* InWorld)
 {
+	if (InWorld == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InWorld is nullptr"));
+		return;
+	}
+
 	StopPawns.Empty();
 	if(FMath::IsNearlyZero(StopTime)==true) return;
 
@@ -68,21 +75,22 @@ void FHitData::PlayHitStop(UWorld* InWorld)
 		APawn* pawn = Cast<ACharacter>(actor);
 		if (!!pawn)
 		{
-			pawn->CustomTimeDilation = 1e-3f; 
+			pawn->CustomTimeDilation = 0.01f; 
 			StopPawns.Add(pawn);
 		}
 	}
 
-	FTimerDelegate timerDelegate;
+	
 	timerDelegate.BindLambda([=]()
 		{
+
 			for (APawn* pawn : StopPawns)
 			{
-				pawn->CustomTimeDilation = 1;
+				pawn->CustomTimeDilation = 1.0f;
 			}
-
+			CDebug::Print("Back To Normal:", StopPawns.Num());
 		});
-	FTimerHandle handle;
+	
 	InWorld->GetTimerManager().SetTimer(handle, timerDelegate, StopTime, false);
 }
 
@@ -113,4 +121,21 @@ void FHitData::PlayEffect(UWorld* InWorld, const FVector& InLocation, const FRot
 	if (!!particle)   
 		UGameplayStatics::SpawnEmitterAttached(particle, InMesh, InSocketName, location, rotation, scale);
 
+}
+
+AActor* FHitData::FindActorByNetGUID(FNetworkGUID NetGUID , UWorld* World)
+{
+	UNetDriver* NetDriver = World->GetNetDriver();
+
+	
+	if (NetDriver && NetDriver->GuidCache)
+	{
+		UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(NetGUID, true);  // bIgnoreFailures = true
+		AActor* FoundActor = Cast<AActor>(FoundObject);
+		if (FoundActor)
+			return FoundActor;
+		else 
+			return nullptr;
+	}
+	return nullptr;
 }

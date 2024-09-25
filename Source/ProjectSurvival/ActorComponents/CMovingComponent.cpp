@@ -37,6 +37,7 @@ void UCMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 void UCMovingComponent::OnMoveForward(float InAxisValue)
 {
+	if (!bCanMove) return;
 	FRotator rotator = FRotator(0, OwnerCharacter->GetControlRotation().Yaw, 0);
 	FVector direction = FQuat(rotator).GetForwardVector();
 
@@ -45,6 +46,7 @@ void UCMovingComponent::OnMoveForward(float InAxisValue)
 
 void UCMovingComponent::OnMoveRight(float InAxisValue)
 {
+	if (!bCanMove) return;
 	FRotator rotator = FRotator(0, OwnerCharacter->GetControlRotation().Yaw, 0);
 	FVector direction = FQuat(rotator).GetRightVector();
 

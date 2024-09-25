@@ -9,6 +9,7 @@
 #include "ActorComponents/CStateComponent.h"
 #include "Utility/CDebug.h"
 #include "Enemy/CEnemyAIController.h"
+#include "Net/UnrealNetwork.h"
 #include "NavigationSystem.h"
 
 UCBTTaskNode_Attack::UCBTTaskNode_Attack()
@@ -19,33 +20,33 @@ UCBTTaskNode_Attack::UCBTTaskNode_Attack()
 EBTNodeResult::Type UCBTTaskNode_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     Super::ExecuteTask(OwnerComp, NodeMemory);
-    count += 1;
 
     Controller = Cast<ACEnemyAIController>(OwnerComp.GetOwner());
     if (Controller == nullptr) return EBTNodeResult::Failed;
     Enemy = Cast<ACEnemy>(Controller->GetPawn());
     AIComponent = Cast<UCEnemyAIComponent>(Enemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
-    MovingComponent = Cast<UCMovingComponent>(Enemy->GetComponentByClass(UCMovingComponent::StaticClass()));
-    UCStateComponent* state = Cast<UCStateComponent>(Enemy->GetComponentByClass(UCStateComponent::StaticClass()));
-
     ACharacter* Target = AIComponent->GetTarget();
-    CDebug::Print(TEXT("Attack Is Playing"));
     if (Target)
     {
         Controller->SetFocus(Target);
     }
-
-    MovingComponent->EnableControlRotation();
     Controller->StopMovement();
-    state->ChangeType(EStateType::Action);
+
     Enemy->DoAction();
+        
+    
+   
+
+   
     return EBTNodeResult::InProgress;
 }
+
+
 
 EBTNodeResult::Type UCBTTaskNode_Attack::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     Super::AbortTask(OwnerComp, NodeMemory);
-    Enemy->EndDoAction();
+    Enemy->End_DoAction();
     return EBTNodeResult::Succeeded;
 
 }
@@ -56,12 +57,10 @@ void UCBTTaskNode_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 
     
-    //UCWeaponComponent* weapon = CHelpers::GetComponent<UCWeaponComponent>(ai);
-    UCStateComponent* state = Cast<UCStateComponent>(Enemy->GetComponentByClass(UCStateComponent::StaticClass()));
-    //CDebug::Print(state->S)
-    if (state->IsIdleMode())
+    UCStateComponent* StateComponent = Cast<UCStateComponent>(Enemy->GetComponentByClass(UCStateComponent::StaticClass()));
+    if (StateComponent->IsIdleMode())
     {
-        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //FinishLatentTask : ExecuteTask 에 대해서 InProgress 인 작업을 지연 종료 시킴ㄴ  
+        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //FinishLatentTask : ExecuteTask 에 대해서 InProgress 인 작업을 지연 종료 시킴  
         return;
     }
 

@@ -32,12 +32,22 @@ EBTNodeResult::Type UCBTTaskNode_Roam::ExecuteTask(UBehaviorTreeComponent& Owner
     FVector location = Enemy->GetActorLocation();
     FNavLocation point(location);
 
-    while (true)
+    const int32 MaxAttempts = 10;  // 최대 시도 횟수
+    int32 AttemptCnt = 0;
+
+    while (AttemptCnt < MaxAttempts)
     {
         if (naviSystem->GetRandomPointInNavigableRadius(location, RandomRadius, point)) //RandomRadius 안에 랜덤 포인트 지점을 잡음
             break;
-
+        AttemptCnt++;
     }
+
+    if (AttemptCnt >= MaxAttempts)
+    {
+        // 실패 처리 (예: 특정 로그를 출력하거나 실패를 반환)
+        return EBTNodeResult::Failed;
+    }
+
     AIComponent->SetRoamingLocation(point.Location);
     DrawDebug(Enemy->GetWorld(), point.Location);
     return EBTNodeResult::InProgress;

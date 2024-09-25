@@ -13,14 +13,20 @@
 #include "Animation/CEnemyAnimInstance.h"
 #include "Animation/AnimInstance.h"
 #include "Enemy/CEnemyAIController.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "CGameInstance.h"
+#include "Net/UnrealNetwork.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "Engine/PackageMapClient.h"
 #include "Utility/CDebug.h"
 
 ACEnemy::ACEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true; //리플리케이트 설정 
-
+	SetReplicates(true);
+	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 
 	//AI 세팅
@@ -64,6 +70,8 @@ void ACEnemy::BeginPlay()
 {
 
 	Super::BeginPlay();
+	NetUpdateFrequency = 50.0f;
+	NetPriority = 3.0f;
 
 	//동적 리소스 로딩을 위한 에셋 로더 생성
 	FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
@@ -117,39 +125,252 @@ void ACEnemy::BeginPlay()
 	MovingComponent->DisableControlRotation();
 	// 이동 방향에 따라 회전하도록 설정
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+
 }
 
 void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	//if (HasAuthority())
+	//{
+	//	if (GetIsReplicated())
+	//	{
 
+	//		UWorld* World = this->GetWorld();
+	//		// NetDriver 가져오기
+	//		UNetDriver* NetDriver = World->GetNetDriver();
+	//		if (NetDriver && NetDriver->GuidCache)
+	//		{
+	//			FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
+	//			
+
+	//			if (InstigatorNetGUID.IsValid())
+	//			{
+	//				int32 ClientValue = InstigatorNetGUID.Value;
+	//				CDebug::Print(TEXT("Server NetGUID is valid:"), ClientValue);
+	//				DamageData.CharacterID = InstigatorNetGUID;
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("This actor is NOT being replicated."));
+	//	}
+	//}
+	//else
+	//{
+	//	UWorld* World = this->GetWorld();
+	//	// NetDriver 가져오기
+	//	UNetDriver* NetDriver = World->GetNetDriver();
+	//	if (NetDriver && NetDriver->GuidCache)
+	//	{
+	//		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
+	//		if (InstigatorNetGUID.IsValid())
+	//		{
+	//			int32 ClientValue = InstigatorNetGUID.Value;
+	//			CDebug::Print(TEXT("Client NetGUID is valid:") , ClientValue);
+	//		}
+	//	}
+
+	//}
 }
 
 void ACEnemy::DoAction()
 {
-	MontageComponent->PlayAnimMontage(EStateType::Action);
+	if (HasAuthority())
+	{
+		int32 NewAttackIdx = FMath::RandRange(0, DoActionDatas.Num() - 1); //플레이할 몽타주 랜덤 넘버 설정
+		BroadcastDoAction(NewAttackIdx);
+	}
+	
 }
 
-void ACEnemy::EndDoAction()
+void ACEnemy::BroadcastDoAction_Implementation(int32 InAttackIdx)
+{
+	PerformDoAction(InAttackIdx);
+}
+
+
+void ACEnemy::RequestDoAction_Implementation()
+{
+	DoAction();
+}
+
+void ACEnemy::PerformDoAction(int32 InAttackIdx)
+{
+	AttackIdx = InAttackIdx;
+	MovingComponent->EnableControlRotation();
+	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
+}
+
+void ACEnemy::AttackTraceHit()
 {
 
+	//Trace 관련 세팅
+	FVector ForwardVector = GetActorForwardVector();
+	FVector Start = FVector(GetActorLocation().X, GetActorLocation().Y,GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
+	FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
+	FQuat Rot = FQuat(GetActorRotation());
+
+	FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 1.0f, TraceDistance / 1.0f);
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+
+	//BoxTrace 
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		Start,
+		End,
+		Rot,
+		ECC_Pawn,
+		FCollisionShape::MakeBox(HalfSize),
+		CollisionParams
+	);
+
+	DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
+	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+
+
+	TArray<ACharacter*> HitPlayers;
+
+	if (bHit)
+	{
+		for (const FHitResult& Hit : HitResults)
+		{
+			ACharacter* HitPlayer;
+			if ((Hit.GetActor() != nullptr) && (HitPlayer = Cast<ACharacter>(Hit.GetActor())))
+			{
+				FActionDamageEvent e;
+				e.HitID = DoActionDatas[AttackIdx].ActionID;
+				HitPlayer->TakeDamage(0, e, this->GetController(),this);
+
+			}
+		}
+	}
 }
+
+void ACEnemy::Begin_DoAction()
+{
+	StateComponent->ChangeType(EStateType::Action);
+	if (!DoActionDatas[AttackIdx].bCanMove)
+		MovingComponent->Stop();
+}
+
+void ACEnemy::End_DoAction()
+{
+	StateComponent->ChangeType(EStateType::Idle);
+	if (!DoActionDatas[AttackIdx].bCanMove)
+		MovingComponent->Move();
+}
+
 
 
 
 void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser) 
+{
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	/*DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
+	DamageData.Causer = DamageCauser;*/
+	DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
+
+	
+	if (!DamageData.HitID.IsNone())
+	{
+		if (HasAuthority())
+			ApplyHitData();
+	}
+
+	return damage;
 
 }
 
-void ACEnemy::Damage(ACharacter* Attacker, AActor* Causer, FHitData HitData)
+void ACEnemy::ApplyHitData()
+{
+	UDataTable* HitDataTable = nullptr;
+	if (GameInstance)
+	{
+		HitDataTable = GameInstance->HitDataTable;
+	}
+
+	if (HitDataTable != nullptr)
+	{
+		FHitData* Row = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		if (Row && Row->Montage)
+		{
+			MontageComponent->Montage_Play(Row->Montage, Row->PlayRate);
+		}
+	}
+	//StatusComponent->ApplyDamage(Damage.power);
+	//Damage.power = 0;
+
+	//// ���󺯰�
+	//{
+	//	Change_Color(this, FLinearColor::Red);
+	//	FTimerDelegate  timerDelegate;
+	//	timerDelegate.BindUFunction(this, "RestoreColor");
+	//	GetWorld()->GetTimerManager().SetTimer(RestoreColor_TimerHandle, timerDelegate, 0.2f, false);
+	//}
+
+	//// Montage->HitStop->Sound->Effect
+
+	//if (!!Damage.Event && !!Damage.Event->HitData)
+	//{
+	//	// Montage
+	//	Damage.Event->HitData->PlayMontage(this);
+	//	// HitStop
+	//	Damage.Event->HitData->PlayHitStop(GetWorld());
+	//	// Sound 
+	//	Damage.Event->HitData->PlaySoundWave(this);
+	//	// Effect 
+	//	Damage.Event->HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
+
+	//	if (!Status->IsDead())
+	//	{
+	//		FVector start = GetActorLocation();
+	//		FVector target = Damage.Character->GetActorLocation();
+	//		FVector direction = target - start; direction = direction.GetSafeNormal();
+
+	//		LaunchCharacter(-direction * Damage.Event->HitData->Launch, false, false);
+	//		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+	//	}
+	//	if (Status->IsDead())
+	//	{
+	//		State->SetDeadMode();
+	//		return;
+	//	}
+	//}
+	////	Damage.Character = nullptr;
+	//Damage.Causer = nullptr;
+	//Damage.Event = nullptr;
+
+
+}
+
+void ACEnemy::Die()
 {
 
-	StatusComponent->TakeDamage(HitData.Power);
 
 }
 
 
 
+
+
+//리플리케이트 변수 선언부분 
+//void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//	DOREPLIFETIME(ACEnemy, AttackIdx);
+//	
+//}
 
