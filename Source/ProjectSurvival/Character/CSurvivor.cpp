@@ -376,7 +376,6 @@ void ACSurvivor::ApplyHitData()
 }
 
 
-
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {
 	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)

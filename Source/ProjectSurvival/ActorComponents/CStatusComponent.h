@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Camera/CameraShake.h"
 #include "CStatusComponent.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, NewHealthRatio);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdated, float, NewStaminaRatio);
+DECLARE_MULTICAST_DELEGATE(FOnLowHealthDetected);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -37,7 +39,9 @@ protected:
 public:
 	FOnHealthUpdated OnHealthUpdated;
 	FOnStaminaUpdated OnStaminaUpdated;
+	FOnLowHealthDetected OnLowHealthDetected;
 	FTimerHandle StaminaReductionTimerHandle;
+	FTimerHandle StarvationTimerHandle;
 
 private:
 	class ACharacter* OwnerCharacter;
@@ -50,12 +54,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Stamina")
 	float MaxStamina = 100.0f;
 	UPROPERTY(EditAnywhere, Category = "Health")
-	float StaminaDecreaseAmount = 5.0f;
+	float StaminaDecreaseAmount = 1.0f;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UMatineeCameraShake> StarveCameraShakeClass; //허기로 인한 Starve 이펙트 카메라 쉐이크 
+
 	float CurrentStamina = 200.0f;
-	
+	float TimeSinceStarvation = 0.0f;
 
 	//DifficultyCoef;
 	float DifficultyCoef = 1.0f;
+
 
 public:
 	FORCEINLINE float GetMaxHealth() { return MaxHealth; }

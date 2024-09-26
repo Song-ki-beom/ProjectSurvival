@@ -18,22 +18,46 @@ void UCStatusComponent::BeginPlay()
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance != nullptr)
 	{
-		DifficultyCoef = gameInstance->GetDifficultyCoeff();
+		DifficultyCoef = FMath::Clamp(gameInstance->GetDifficultyCoeff(),0.75f,5.0f);
 	}
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	CurrentHealth = MaxHealth;
 	CurrentStamina = MaxStamina;
-	if(GetOwner()->HasAuthority()) //서버만 실행 
-		GetWorld()->GetTimerManager().SetTimer(StaminaReductionTimerHandle, this, &UCStatusComponent::ReduceStaminaByTime, 5.0f, true); //5초마다 반복해서 실행 
+	if (GetOwner()->HasAuthority()) //서버만 실행 
+	{
+		GetWorld()->GetTimerManager().SetTimer(StaminaReductionTimerHandle, this, &UCStatusComponent::ReduceStaminaByTime, 1.0f, true); //1초마다 반복해서 실행 
+	}
+		
 }
 
 
 void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (CurrentStamina <= 0)
+	{
+		TimeSinceStarvation += DeltaTime;
 
-
+		// 5초가 지났을 때마다 Starvation데미지 적용
+		if (TimeSinceStarvation >= 5.0f)
+		{
+			if (GetOwner()->HasAuthority())
+			{
+				ApplyDamage(7.0f);
+			}
+			APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
+			if (PlayerController && PlayerController->IsLocalController())
+			{
+				PlayerController->ClientStartCameraShake(StarveCameraShakeClass, 1.0f);
+			}
+			// 타이머 리셋
+			TimeSinceStarvation = 0.0f;
+		}
+	}
+		
 }
+
+
 
 void UCStatusComponent::ReduceStaminaByTime()
 {
@@ -43,6 +67,7 @@ void UCStatusComponent::ReduceStaminaByTime()
 		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina); 
 		BroadcastUpdateStamina(NewStamina);
 	}
+
 }
 
 void UCStatusComponent::ApplyDamage(float InAmount)
@@ -50,6 +75,11 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 	float NewHealth = CurrentHealth -(InAmount*DifficultyCoef);
 	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
 	BroadcastUpdateHealth(NewHealth);
+	
+	if(NewHealth/ MaxHealth <0.3f)
+	{
+		OnLowHealthDetected.Broadcast();
+	}
 }
 
 void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
