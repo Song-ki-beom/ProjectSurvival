@@ -6,10 +6,12 @@
 #include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Build/CBuildWidget.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "CGameInstance.h"
 #include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Input/Reply.h"
@@ -83,6 +85,17 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 			ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
 			if (mainHUD)
 				mainHUD->GetProduceWidget()->RefreshProduceDetail();
+
+			ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+			if (survivorController)
+			{
+				if (survivorController->GetBuildWidget())
+					survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemDragDrop->SourceItem->ID);
+				else
+					CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+			}
+			else
+				CDebug::Print("survivorController is not Valid", FColor::Red);
 		}
 		else
 		{

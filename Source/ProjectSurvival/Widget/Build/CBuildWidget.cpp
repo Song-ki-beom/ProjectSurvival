@@ -2,6 +2,7 @@
 #include "Widget/Build/CBuildItemSlot.h"
 #include "Character/CSurvivor.h"
 #include "ActorComponents/CInventoryComponent.h"
+#include "ActorComponents/CBuildComponent.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -22,31 +23,71 @@ void UCBuildWidget::NativeConstruct()
 	Survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 }
 
-void UCBuildWidget::SaveStructureInfo(ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
+void UCBuildWidget::SaveStructureInfo(FName InItemID, ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement)
 {
 	switch (InKey)
 	{
 	case ESelectedStructure::Q:
 	{
-		//TEST
-		FName tempID = "Build_1";
-		//TEST
-
-		RemoveSameBuildItemSlot(tempID);
-		int32 slotQuantity = GetSameItemQuantity(tempID);
-		BuildItemSlotQ->SetBuildItemSlotInfo(InTexture, tempID, slotQuantity, InClass, InElement);
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotQ->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
 		break;
 	}
 	case ESelectedStructure::W:
 	{
-		//TEST
-		FName tempID = "Build_16";
-		//TEST
-
-		RemoveSameBuildItemSlot(tempID);
-		int32 slotQuantity = GetSameItemQuantity(tempID);
-		CDebug::Print("Saved tempID = ", tempID);
-		BuildItemSlotW->SetBuildItemSlotInfo(InTexture, tempID, slotQuantity, InClass, InElement);
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotW->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::E:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotE->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::A:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotA->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::S:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotS->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::D:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotD->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::Z:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotZ->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::X:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotX->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
+		break;
+	}
+	case ESelectedStructure::C:
+	{
+		RemoveSameBuildItemSlot(InItemID);
+		int32 slotQuantity = GetSameItemQuantity(InItemID);
+		BuildItemSlotC->SetBuildItemSlotInfo(InTexture, InItemID, slotQuantity, InClass, InElement);
 		break;
 	}
 	default:
@@ -259,16 +300,35 @@ EBuildStructureElement UCBuildWidget::GetStructureElement(ESelectedStructure InK
 	return EBuildStructureElement::None;
 }
 
-void UCBuildWidget::RefreshBuildWidget()
+void UCBuildWidget::RefreshBuildWidgetQuantity(FName InItemID)
 {
 	for (UCBuildItemSlot* itemSlot : BuildItemSlotArray)
 	{
-		if (itemSlot->GetBuildItemSlotID().IsNone())
-			continue;
-		
-		if (itemSlot->GetBuildItemSlotQuantity() == 0)
+		if (itemSlot)
 		{
-			itemSlot->ClearBuildItemSlotInfo();
+			if (itemSlot->GetBuildItemSlotID() == InItemID)
+			{
+				int32 newQuantity = 0;
+				for (TWeakObjectPtr<UCItemBase> itemPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+				{
+					if (itemPtr.Get()->ID == InItemID)
+						newQuantity += itemPtr.Get()->Quantity;
+				}
+				if (newQuantity == 0)
+				{
+					ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+					if (survivor)
+					{
+						if (survivor->GetBuildComponent()->CheckIsBuilding())
+						{
+							survivor->CancleBuild();
+						}
+					}
+				}
+				CDebug::Print("newQuantity : ", newQuantity);
+				itemSlot->SetStructureQuantity(newQuantity);
+				break;
+			}
 		}
 	}
 }
@@ -299,23 +359,3 @@ int32 UCBuildWidget::GetSameItemQuantity(FName InItemID)
 	}
 	return 0;
 }
-//
-//void UCBuildWidget::RefreshBuildWidget(FName InItemID)
-//{
-//	for (FStructureInfo structureInfo : StructureInfo_Array)
-//	{
-//		if (structureInfo.StructureID.IsNone() || structureInfo.StructureID != InItemID)
-//			continue;
-//
-//		if (Survivor)
-//		{
-//			int32 quantity = 0;
-//			for (TWeakObjectPtr<UCItemBase> itemPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
-//			{
-//				if (itemPtr->ID == InItemID)
-//					quantity += itemPtr->Quantity;
-//			}
-//			structureInfo.StructureQuantity = quantity;
-//		}
-//	}
-//}

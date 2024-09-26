@@ -3,7 +3,7 @@
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Widget/Inventory/CInventorySubMenu.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CEarnInfoPanel.h"
@@ -95,7 +95,7 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 		GetOwningPlayerController()->SetShowMouseCursor(true);
 		break;
 	}
-	case EWidgetCall::WorkBench:
+	case EWidgetCall::Placeable:
 	{
 		DisplaySurvivorInventoryWidget();
 		DisplayProduceWidget(InWidgetCall, InActorProduceWidget, InActor);
@@ -163,7 +163,7 @@ void ACMainHUD::DisplayProduceWidget(EWidgetCall InWidgetCall, class UUserWidget
 			ProduceWidget->RefreshProduceDetail();
 		}
 		break;
-	case EWidgetCall::WorkBench:
+	case EWidgetCall::Placeable:
 		if (InActorProduceWidget)
 		{
 			ActorProduceWidget = InActorProduceWidget;
@@ -190,7 +190,7 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 
 		switch (InWidgetCall)
 		{
-		case EWidgetCall::WorkBench:
+		case EWidgetCall::Placeable:
 		{
 			FVector2D widgetSize = FVector2D(590, 440);
 			FVector2D viewportSize;
@@ -201,21 +201,6 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 			ActorInventoryWidget->bIsFocusable = true;
 			ActorInventoryWidget->SetVisibility(ESlateVisibility::Visible);
 			ActorInventoryWidget->AddToViewport(5);
-
-			UCInventoryPanel_WorkingBench* workingBenchInventory = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-			if (workingBenchInventory)
-			{
-				CDebug::Print("workingBenchInventory is Valid", FColor::Green);
-
-				if (InActor)
-				{
-					//workingBenchInventory->SetOwnerActor(InActor);
-				}
-				else
-					CDebug::Print("InActor is not Valid");
-			}
-			else
-				CDebug::Print("workingBenchInventory is not Valid", FColor::Red);
 		}
 		}
 	}

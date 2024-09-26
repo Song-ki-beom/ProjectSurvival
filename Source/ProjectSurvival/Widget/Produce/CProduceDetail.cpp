@@ -8,7 +8,7 @@
 #include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Build/CStructure_Placeable.h"
 #include "Utility/CDebug.h"
 
@@ -162,7 +162,7 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 		CDebug::Print("Can't Produce");
 }
 
-void UCProduceDetail::ProduceWorkingBenchItem(FName InID, class ACStructure_Placeable* InOwner)
+void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeable* InOwner)
 {
 	int32 recipeNumber = ProduceDetailRecipeScroll->GetAllChildren().Num();
 	int32 checkNumber = 0;
@@ -197,7 +197,7 @@ void UCProduceDetail::ProduceWorkingBenchItem(FName InID, class ACStructure_Plac
 				{
 					int32 usedQuantity = demandQuantity;
 
-					for (UCItemBase* tempItem : InOwner->GetWorkingBenchInventory()->GetWidgetItems())
+					for (UCItemBase* tempItem : InOwner->GetPlaceableInventoryWidget()->GetWidgetItems())
 					{
 						if (tempItem)
 						{
@@ -208,13 +208,13 @@ void UCProduceDetail::ProduceWorkingBenchItem(FName InID, class ACStructure_Plac
 
 								if (tempItem->Quantity > usedQuantity)
 								{
-									InOwner->GetWorkingBenchInventory()->RemoveAmountOfItem(tempItem, usedQuantity);
+									InOwner->GetPlaceableInventoryWidget()->RemoveAmountOfItem(tempItem, usedQuantity);
 									break;
 								}
 								else
 								{
 									int32 partialUsedQuantity = tempItem->Quantity;
-									InOwner->GetWorkingBenchInventory()->RemoveItem(tempItem);
+									InOwner->GetPlaceableInventoryWidget()->RemoveItem(tempItem);
 									usedQuantity -= partialUsedQuantity;
 								}
 							}
@@ -222,27 +222,22 @@ void UCProduceDetail::ProduceWorkingBenchItem(FName InID, class ACStructure_Plac
 						else
 							CDebug::Print("tempItem is not Valid");
 					}
-					if (this->GetOwningPlayer()->HasAuthority())
-					{
-						InOwner->BroadcastAddProduceItemToQueue(InID, nullptr);
-					}
-					else
-					{
-						ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-						if (survivorController)
-							survivorController->RequestAddProduceItemToQueue(InID, InOwner);
-					}
-
 				}
 				else
 					CDebug::Print("InOwner is not Valid", FColor::Magenta);
 			}
 		}
-		//UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
-		//if (produceWidget)
-		//	produceWidget->AddProduceItemToQueue(InID);
-		//else
-		//	CDebug::Print("produceWidget : is not valid", FColor::Magenta);
+
+		if (this->GetOwningPlayer()->HasAuthority())
+		{
+			InOwner->BroadcastAddProduceItemToQueue(InID, nullptr);
+		}
+		else
+		{
+			ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+			if (survivorController)
+				survivorController->RequestAddProduceItemToQueue(InID, InOwner);
+		}
 	}
 	else
 		CDebug::Print("Can't Produce");

@@ -3,12 +3,14 @@
 
 #include "World/CPickUp.h"
 #include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Utility/CDebug.h"
 #include "Engine/DataTable.h"
 #include "ActorComponents/CInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Build/CBuildWidget.h"
 #include "Build/CStructure_Placeable.h"
 
 // Sets default values
@@ -294,13 +296,23 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 			}
 			CDebug::Print(AddResult.ResultMessage.ToString());
 		}
+
+		ACSurvivorController* survivorController = Cast<ACSurvivorController>(Taker->GetController());
+		if (survivorController)
+		{
+			if (survivorController->GetBuildWidget())
+				survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemReference->ID);
+			else
+				CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+		}
+		else
+			CDebug::Print("survivorController is not Valid", FColor::Red);
 	}
 }
 
 void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
 	// Container 클래스 자체에서 함수내용 구현
-	CDebug::Print(TEXT("비긴인터랙트 ACPickUp"), FColor::Cyan);
 }
 
 

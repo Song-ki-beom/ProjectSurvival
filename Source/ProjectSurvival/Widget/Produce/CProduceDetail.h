@@ -19,7 +19,7 @@ public:
 	void AddResourceToProduceRecipeScroll(FName InID, UTexture2D* InTexture2D, FText InResourceName, int32 InventoryQuantity, int32 InDemandQuantity);
 	void ClearRecipeScrollBox();
 	void ProduceSurvivorItem(FName InID);
-	void ProduceWorkingBenchItem(FName InID, class ACStructure_Placeable* InOwner);
+	void ProducePlaceableItem(FName InID, class ACStructure_Placeable* InOwner);
 
 private:
 	UPROPERTY(meta = (BindWidget))

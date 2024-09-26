@@ -20,13 +20,8 @@ void UCEarnInfoSlot::NativeOnListItemObjectSet(UObject* ListItemObject)
 	const UCItemBase* ItemReference = Cast<UCItemBase>(ListItemObject);
 	if (ItemReference == nullptr)
 		return;
-	else
-		CDebug::Print("ItemReference is not Valid");
-		
-	CDebug::Print("Earn");
 
 	ItemName->SetText(FText(ItemReference->TextData.Name));
 	ItemIcon->SetBrushFromTexture(ItemReference->AssetData.Icon);
 	QuantityText->SetText(FText::AsNumber(ItemReference->Quantity));
-
 }

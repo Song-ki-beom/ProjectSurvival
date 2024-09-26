@@ -18,14 +18,14 @@ UENUM()
 enum class EDragDropResult : uint8
 {
 	InventoryToInventory,
-	InventoryToWorkingBench,
+	InventoryToPlaceable,
 	InventoryToQuickSlot,
-	WorkingBenchToWorkingBench,
-	WorkingBenchToInventory,
-	WorkingBenchToQuickSlot,
+	PlaceableToPlaceable,
+	PlaceableToInventory,
+	PlaceableToQuickSlot,
 	QuickSlotToQuickSlot,
 	QuickSlotToInventory,
-	QuickSlotToWorkingBench
+	QuickSlotToPlaceable
 };
 
 UCLASS()

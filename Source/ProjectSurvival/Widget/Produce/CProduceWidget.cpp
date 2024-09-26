@@ -42,7 +42,7 @@ void UCProduceWidget::NativeConstruct()
 		else
 			CDebug::Print("Survivor is Not Valid");
 		break;
-	case EWidgetCall::WorkBench:
+	case EWidgetCall::Placeable:
 		RefreshProduceDetail();
 		break;
 	}
@@ -246,10 +246,10 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 			ProduceDetail->SetProduceDetailTime(survivorItemProduceTimeText);
 			break;
 		}
-		case EWidgetCall::WorkBench:
+		case EWidgetCall::Placeable:
 		{
-			FText workBenchItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime / 2));
-			ProduceDetail->SetProduceDetailTime(workBenchItemProduceTimeText);
+			FText placeableItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime / 2));
+			ProduceDetail->SetProduceDetailTime(placeableItemProduceTimeText);
 			break;
 		}
 		default:
@@ -378,101 +378,101 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 			}
 			break;
 		}
-		case EWidgetCall::WorkBench:
+		case EWidgetCall::Placeable:
 		{
 			if (itemData->ProduceData.ProduceResource_1.ResourceIcon)
 			{
-				int32 workBenchInventoryQuantity = 0;
+				int32 placeableInventoryQuantity = 0;
 				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
 
 				for (FItemInformation itemInfo : itemInfoArray)
 				{
 					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_1.ResourceID)
 					{
-						workBenchInventoryQuantity += itemInfo.Quantity;
+						placeableInventoryQuantity += itemInfo.Quantity;
 					}
 				}
 				FName resourceID = itemData->ProduceData.ProduceResource_1.ResourceID;
 				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_1.ResourceIcon;
 				FText resourceName = itemData->ProduceData.ProduceResource_1.ResourceName;
 				int32 demandQuantity = itemData->ProduceData.ProduceResource_1.ProduceResourceDemand;
-				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, placeableInventoryQuantity, demandQuantity);
 			}
 
 			if (itemData->ProduceData.ProduceResource_2.ResourceIcon)
 			{
-				int32 workBenchInventoryQuantity = 0;
+				int32 placeableInventoryQuantity = 0;
 				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
 
 				for (FItemInformation itemInfo : itemInfoArray)
 				{
 					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_2.ResourceID)
 					{
-						workBenchInventoryQuantity += itemInfo.Quantity;
+						placeableInventoryQuantity += itemInfo.Quantity;
 					}
 				}
 				FName resourceID = itemData->ProduceData.ProduceResource_2.ResourceID;
 				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_2.ResourceIcon;
 				FText resourceName = itemData->ProduceData.ProduceResource_2.ResourceName;
 				int32 demandQuantity = itemData->ProduceData.ProduceResource_2.ProduceResourceDemand;
-				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, placeableInventoryQuantity, demandQuantity);
 			}
 
 			if (itemData->ProduceData.ProduceResource_3.ResourceIcon)
 			{
-				int32 workBenchInventoryQuantity = 0;
+				int32 placeableInventoryQuantity = 0;
 				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
 
 				for (FItemInformation itemInfo : itemInfoArray)
 				{
 					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_2.ResourceID)
 					{
-						workBenchInventoryQuantity += itemInfo.Quantity;
+						placeableInventoryQuantity += itemInfo.Quantity;
 					}
 				}
 				FName resourceID = itemData->ProduceData.ProduceResource_3.ResourceID;
 				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_3.ResourceIcon;
 				FText resourceName = itemData->ProduceData.ProduceResource_3.ResourceName;
 				int32 demandQuantity = itemData->ProduceData.ProduceResource_3.ProduceResourceDemand;
-				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, placeableInventoryQuantity, demandQuantity);
 			}
 
 			if (itemData->ProduceData.ProduceResource_4.ResourceIcon)
 			{
-				int32 workBenchInventoryQuantity = 0;
+				int32 placeableInventoryQuantity = 0;
 				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
 
 				for (FItemInformation itemInfo : itemInfoArray)
 				{
 					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_4.ResourceID)
 					{
-						workBenchInventoryQuantity += itemInfo.Quantity;
+						placeableInventoryQuantity += itemInfo.Quantity;
 					}
 				}
 				FName resourceID = itemData->ProduceData.ProduceResource_4.ResourceID;
 				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_4.ResourceIcon;
 				FText resourceName = itemData->ProduceData.ProduceResource_4.ResourceName;
 				int32 demandQuantity = itemData->ProduceData.ProduceResource_4.ProduceResourceDemand;
-				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, placeableInventoryQuantity, demandQuantity);
 			}
 
 			if (itemData->ProduceData.ProduceResource_5.ResourceIcon)
 			{
-				int32 workBenchInventoryQuantity = 0;
+				int32 placeableInventoryQuantity = 0;
 				TArray<FItemInformation> itemInfoArray = OwnerActor->GetItemInfoArray();
 
 				for (FItemInformation itemInfo : itemInfoArray)
 				{
 					if (itemInfo.ItemID == itemData->ProduceData.ProduceResource_5.ResourceID)
 					{
-						workBenchInventoryQuantity += itemInfo.Quantity;
+						placeableInventoryQuantity += itemInfo.Quantity;
 					}
 				}
 				FName resourceID = itemData->ProduceData.ProduceResource_5.ResourceID;
 				UTexture2D* resourceIcon = itemData->ProduceData.ProduceResource_5.ResourceIcon;
 				FText resourceName = itemData->ProduceData.ProduceResource_5.ResourceName;
 				int32 demandQuantity = itemData->ProduceData.ProduceResource_5.ProduceResourceDemand;
-				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, workBenchInventoryQuantity, demandQuantity);
+				ProduceDetail->AddResourceToProduceRecipeScroll(resourceID, resourceIcon, resourceName, placeableInventoryQuantity, demandQuantity);
 			}
 
 			break;
@@ -553,11 +553,11 @@ void UCProduceWidget::StartProduce()
 			break;
 		}
 		break;
-	case EWidgetCall::WorkBench:
+	case EWidgetCall::Placeable:
 		switch (ProducePanelSwitcher->GetActiveWidgetIndex())
 		{
 		case 0:
-			ProduceDetail->ProduceWorkingBenchItem(SelectedBuildID, OwnerActor);
+			ProduceDetail->ProducePlaceableItem(SelectedBuildID, OwnerActor);
 			break;
 		case 1:
 			break;
@@ -621,7 +621,7 @@ int32 UCProduceWidget::GetProducePanelSwitcherIndex()
 //	
 //	if (widgetClass)
 //	{
-//		UCInventoryPanel_WorkingBench* workingBenchPanelWidget = CreateWidget<UCInventoryPanel_WorkingBench>(GetWorld(), widgetClass);
+//		UCInventoryPanel_Placeable* workingBenchPanelWidget = CreateWidget<UCInventoryPanel_Placeable>(GetWorld(), widgetClass);
 //		if (workingBenchPanelWidget)
 //		{
 //			workingBenchPanelWidget->AddToViewport(5);

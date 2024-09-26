@@ -14,6 +14,7 @@ public:
 	void SetBuildItemSlotInfo(class UTexture2D* InTexture, FName InItemID, int32 InQuantity, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	void ClearBuildItemSlotInfo();
 	void SubStructureQuantity();
+	void SetStructureQuantity(int32 InQuantity);
 
 	FName GetBuildItemSlotID() { return StructureID; }
 	int32 GetBuildItemSlotQuantity() { return StructureQuantity; }

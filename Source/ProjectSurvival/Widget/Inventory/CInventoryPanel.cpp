@@ -3,16 +3,18 @@
 
 #include "Widget/Inventory/CInventoryPanel.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
-#include "Character/CSurvivor.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
+#include "Widget/Inventory/CItemDragDropOperation.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Build/CBuildWidget.h"
+#include "Widget/CMainHUD.h"
+#include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "Components/WrapBox.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "ActorComponents/CInventoryComponent.h"
-#include "Widget/Inventory/CItemDragDropOperation.h"
-#include "Widget/Inventory/CQuickSlot.h"
-#include "Widget/CMainHUD.h"
 #include "Utility/CDebug.h"
 
 void UCInventoryPanel::NativeOnInitialized()
@@ -118,8 +120,8 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
             return true; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
         }
 
-        UCInventoryPanel_WorkingBench* workingBenchPanel = Cast<UCInventoryPanel_WorkingBench>(ItemDragDrop->DragStartWidget);
-        if (workingBenchPanel)
+        UCInventoryPanel_Placeable* placeablePanel = Cast<UCInventoryPanel_Placeable>(ItemDragDrop->DragStartWidget);
+        if (placeablePanel)
         {
             FItemAddResult AddResult = InventoryReference->HandleAddItem(ItemDragDrop->SourceItem);
             if (AddResult.OperationResult == EItemAddResult::NoItemAdded)
@@ -128,12 +130,24 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
             }
             else if (AddResult.OperationResult == EItemAddResult::PartialItemAdded)
             {
-                workingBenchPanel->RemoveAmountOfItem(ItemDragDrop->SourceItem, AddResult.ActualAmountAdded);
+                placeablePanel->RemoveAmountOfItem(ItemDragDrop->SourceItem, AddResult.ActualAmountAdded);
             }
             else if (AddResult.OperationResult == EItemAddResult::AllItemAdded)
             {
-                workingBenchPanel->RemoveItem(ItemDragDrop->SourceItem);
+                placeablePanel->RemoveItem(ItemDragDrop->SourceItem);
             }
+
+            ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+            if (survivorController)
+            {
+                if (survivorController->GetBuildWidget())
+                    survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemDragDrop->SourceItem->ID);
+                else
+                    CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+            }
+            else
+                CDebug::Print("survivorController is not Valid", FColor::Red);
+
             return true;
         }
         else

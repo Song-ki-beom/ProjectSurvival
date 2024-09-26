@@ -83,8 +83,8 @@ public:
 	//Produce
 	TArray<FItemInformation> GetItemInfoArray() { return SharedItemInfoArray; }
 
-	class UCInventoryPanel_WorkingBench* GetWorkingBenchInventory() { return WorkingBenchWidget; }
-	class UCProduceWidget* GetWorkingBenchProduceWidget() { return WorkingBenchProduceWidget; }
+	class UCInventoryPanel_Placeable* GetPlaceableInventoryWidget() { return PlaceableWidget; }
+	class UCProduceWidget* GetPlaceableProduceWidget() { return PlaceableProduceWidget; }
 
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
@@ -120,7 +120,7 @@ protected:
 
 private:
 	UPROPERTY()
-		class UCInventoryPanel_WorkingBench* WorkingBenchWidget;
+		class UCInventoryPanel_Placeable* PlaceableWidget;
 	UPROPERTY(ReplicatedUsing = OnRep_WidgetRefreshTrigger)
 		int32 WidgetRefreshTrigger;
 	UPROPERTY()
@@ -130,5 +130,5 @@ private:
 	UPROPERTY()
 		TArray<FItemInformation> ItemInfoArray;
 	UPROPERTY()
-		class UCProduceWidget* WorkingBenchProduceWidget;
+		class UCProduceWidget* PlaceableProduceWidget;
 };

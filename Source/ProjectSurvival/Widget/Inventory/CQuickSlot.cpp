@@ -10,7 +10,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
 #include "Widget/Inventory/CInventoryPanel.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
@@ -95,9 +95,9 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
     {
         CDebug::Print("NativeOnDrop Called", FColor::Cyan);
 
-        if (itemDragDrop->DragStartWidget->IsA(UCInventoryPanel_WorkingBench::StaticClass()))
+        if (itemDragDrop->DragStartWidget->IsA(UCInventoryPanel_Placeable::StaticClass()))
         {
-            CDebug::Print("Drag From WorkingBench, Ignore", FColor::Red);
+            CDebug::Print("Drag From Placeable, Ignore", FColor::Red);
             return false;
         }
 

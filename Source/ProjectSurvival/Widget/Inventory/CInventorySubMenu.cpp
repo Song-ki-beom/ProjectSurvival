@@ -298,7 +298,7 @@ void UCInventorySubMenu::HandleBuildRegisterButton()
 
     if (SurvivorController->GetBuildWidget())
     {
-        SurvivorController->GetBuildWidget()->SaveStructureInfo(SelectedStructureKey, texture, structureClass, structureElem);
+        SurvivorController->GetBuildWidget()->SaveStructureInfo(slotID, SelectedStructureKey, texture, structureClass, structureElem);
         SelectedStructureKey = ESelectedStructure::None;
         SetButtonStyle(nullptr);
         OnFocusOnSubMenuEnded.Broadcast();
