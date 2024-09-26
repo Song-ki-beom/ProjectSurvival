@@ -54,6 +54,8 @@ private:
 	float CurrentStamina = 200.0f;
 	
 
+	//DifficultyCoef;
+	float DifficultyCoef = 1.0f;
 
 public:
 	FORCEINLINE float GetMaxHealth() { return MaxHealth; }

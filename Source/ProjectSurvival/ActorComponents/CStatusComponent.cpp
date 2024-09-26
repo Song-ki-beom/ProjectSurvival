@@ -3,18 +3,23 @@
 #include "ActorComponents/CStatusComponent.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
+#include "CGameInstance.h"
 
 
 UCStatusComponent::UCStatusComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
 void UCStatusComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance != nullptr)
+	{
+		DifficultyCoef = gameInstance->GetDifficultyCoeff();
+	}
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	CurrentHealth = MaxHealth;
 	CurrentStamina = MaxStamina;
@@ -34,17 +39,15 @@ void UCStatusComponent::ReduceStaminaByTime()
 {
 	if (CurrentStamina > 0)
 	{
-		float NewStamina = CurrentStamina - StaminaDecreaseAmount;  
+		float NewStamina = CurrentStamina - (StaminaDecreaseAmount* DifficultyCoef);
 		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina); 
 		BroadcastUpdateStamina(NewStamina);
 	}
-
-
 }
 
 void UCStatusComponent::ApplyDamage(float InAmount)
 {
-	float NewHealth = CurrentHealth -InAmount;
+	float NewHealth = CurrentHealth -(InAmount*DifficultyCoef);
 	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
 	BroadcastUpdateHealth(NewHealth);
 }
