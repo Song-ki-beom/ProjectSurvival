@@ -28,6 +28,11 @@ void UCStateComponent::SetEquipMode()
 	ChangeType(EStateType::Equip);
 }
 
+void UCStateComponent::SetCombatMode()
+{
+	ChangeType(EStateType::Combat);
+}
+
 void UCStateComponent::SetHitMode()
 {
 	ChangeType(EStateType::Hit);

@@ -5,6 +5,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ActorComponents/CStateComponent.h"
 #include "Utility/CDebug.h"
 #include "Net/UnrealNetwork.h"
 #include "Character/CSurvivor.h"
@@ -19,9 +20,9 @@ void UCEnemyAnimInstance::NativeInitializeAnimation()
 		return;
 	}
 	bCastEnded = true;
-	RootMotionMode = ERootMotionMode::IgnoreRootMotion;;
-
-	
+	RootMotionMode = ERootMotionMode::IgnoreRootMotion;
+	StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
+	StateComponent->OnStateTypeChanged.AddDynamic(this, &UCEnemyAnimInstance::OnStateTypeChangedHandler);
 }
 
 void UCEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -51,6 +52,11 @@ void UCEnemyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OwnerCharacter is not valid - UCEnemyAnimInstance"));
 	}
+}
+
+void UCEnemyAnimInstance::OnStateTypeChangedHandler(EStateType prevType, EStateType NewType)
+{
+	StateType = NewType;
 }
 
 

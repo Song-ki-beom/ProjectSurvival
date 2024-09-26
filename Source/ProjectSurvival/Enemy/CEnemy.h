@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-//#include "Interface/DamageInterface.h"
+#include "ActorComponents/CStateComponent.h"
 #include "Struct/CWeaponStructures.h"
 #include "CEnemy.generated.h"
 
@@ -47,18 +47,31 @@ public:
 protected:
 	virtual void ApplyHitData();
 	virtual void Die();
+
+private:
+	UFUNCTION()
+	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
+	void RotateMeshToSlope(float InDeltaTime);
+
 	
 protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Protected 설정
 	//Mesh
 	FString SkeletalMeshPath;
 	FString AnimInstancePath; 
 	FString BBAssetPath;
+	
 
 	//DoAction
 	UPROPERTY(EditAnywhere)
 	TArray<FDoActionData> DoActionDatas;
 	UPROPERTY(EditAnywhere)
 	TArray<FHitData> HitDatas;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arrow")
+	class UArrowComponent* SlopeCheckArrow;
+	// Box Collision Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UBoxComponent* BoxCollision;
 
 private:
 	//GameInstance <<- for HitData reference
@@ -73,6 +86,8 @@ private:
 		uint8 TeamID = 2; // Enemy 가 속한 TeamID
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class ACEnemyAIController* AIController;
+	
+	
 	//Component
 	UPROPERTY(VisibleAnywhere)
 	class UCStatusComponent* StatusComponent;
@@ -86,7 +101,7 @@ private:
 
 	//Attack
 	float TraceDistance = 45.0f;
-	float TraceOffset = 200.0f;
+	float TraceOffset = 100.0f;
 	int32 AttackIdx = 0;
 
 	//Damage

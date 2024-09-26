@@ -26,7 +26,7 @@ ACEnemyAIController::ACEnemyAIController()
         Sight->SightRadius = 1000;      
         Sight->LoseSightRadius = 1200;  
         Sight->PeripheralVisionAngleDegrees = 90; // 인식하는 시야 범위 
-        Sight->SetMaxAge(5);  //인식한 상대를 기억하는 시간 
+        Sight->SetMaxAge(15);  //인식한 상대를 기억하는 시간 
     }
 
    

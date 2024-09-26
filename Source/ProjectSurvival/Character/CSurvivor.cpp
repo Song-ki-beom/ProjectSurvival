@@ -101,20 +101,9 @@ ACSurvivor::ACSurvivor()
 		UE_LOG(LogTemp, Warning, TEXT("skeletalMeshFinder Failed - ACSurvivor"));
 	}
 
-	// AnimInstance
-	//static ConstructorHelpers::FClassFinder<UAnimInstance> animInstanceFinder(TEXT("AnimBlueprint'/Game/PirateIsland/Include/Animation/AnimationBlueprint/ABP_CSurvivor.ABP_CSurvivor_C'"));
-	//if (animInstanceFinder.Succeeded())
-	//{
-	//	GetMesh()->SetAnimClass(animInstanceFinder.Class);
-	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("animInstanceFinder Failed - ACSurvivor"));
-	//}
+	
 
 	bUseControllerRotationYaw = true;
-	// true일 경우 컨트롤러의 회전 방향으로 캐릭터가 회전한다.
-	// false일 경우 캐릭터의 이동 방향으로 캐릭터가 회전한다.
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	GetCharacterMovement()->MaxWalkSpeed = 450;
 
@@ -122,7 +111,6 @@ ACSurvivor::ACSurvivor()
 	SpringArm->TargetArmLength = 400;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
-	//SpringArm->ProbeChannel = UCollisionProfile::Get()->ConvertToCollisionChannel(,FName("LandScape"));
 	
 	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
 	if (survivorNameClassFinder.Succeeded())
@@ -351,9 +339,10 @@ void ACSurvivor::ApplyHitData()
 			{
 				StatusComponent->ApplyDamage(HitData->DamageAmount);
 			}
-			if(this->HasAuthority()) HitData->PlayHitStop(GetWorld());
 			HitData->PlaySoundWave(this);
 			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			HitData->PlayCameraShake(PlayerController, 1.0f);
 		}
 		
 
@@ -365,6 +354,8 @@ void ACSurvivor::ApplyHitData()
 			FVector target = targetActor->GetActorLocation();
 			FVector direction = target - start;
 			direction = direction.GetSafeNormal();
+
+			//Look At
 			/*FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
 			LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
 			SetActorRotation(LookAtRotation);*/

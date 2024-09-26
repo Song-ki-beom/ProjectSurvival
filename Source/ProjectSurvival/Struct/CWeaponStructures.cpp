@@ -59,40 +59,7 @@ void FHitData::PlayMontage(ACharacter* InOwner)
 
 }
 
-void FHitData::PlayHitStop(UWorld* InWorld)
-{
-	if (InWorld == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("InWorld is nullptr"));
-		return;
-	}
 
-	StopPawns.Empty();
-	if(FMath::IsNearlyZero(StopTime)==true) return;
-
-	for (AActor* actor : InWorld->GetCurrentLevel()->Actors)
-	{
-		APawn* pawn = Cast<ACharacter>(actor);
-		if (!!pawn)
-		{
-			pawn->CustomTimeDilation = 0.01f; 
-			StopPawns.Add(pawn);
-		}
-	}
-
-	
-	timerDelegate.BindLambda([=]()
-		{
-
-			for (APawn* pawn : StopPawns)
-			{
-				pawn->CustomTimeDilation = 1.0f;
-			}
-			CDebug::Print("Back To Normal:", StopPawns.Num());
-		});
-	
-	InWorld->GetTimerManager().SetTimer(handle, timerDelegate, StopTime, false);
-}
 
 void FHitData::PlaySoundWave(ACharacter* InOwner)
 {
@@ -121,6 +88,15 @@ void FHitData::PlayEffect(UWorld* InWorld, const FVector& InLocation, const FRot
 	if (!!particle)   
 		UGameplayStatics::SpawnEmitterAttached(particle, InMesh, InSocketName, location, rotation, scale);
 
+}
+
+void FHitData::PlayCameraShake(APlayerController* PlayerController, float InScale)
+{
+	
+	if (PlayerController && PlayerController->IsLocalController())
+	{
+		PlayerController->ClientStartCameraShake(CameraShakeClass, InScale);
+	}
 }
 
 AActor* FHitData::FindActorByNetGUID(FNetworkGUID NetGUID , UWorld* World)

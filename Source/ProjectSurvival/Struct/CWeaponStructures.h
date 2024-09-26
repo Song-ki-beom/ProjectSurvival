@@ -7,6 +7,7 @@
 #include "Engine/NetDriver.h"    // UNetDriver 및 FNetGUIDCache가 포함된 헤더
 #include "Misc/NetworkGuid.h" //FNetworkGUID 정의가 포함된 헤더 파일
 #include "Net/UnrealNetwork.h"
+#include "Camera/CameraShake.h"
 #include "CWeaponStructures.generated.h"
 
 
@@ -92,11 +93,11 @@ public:
 	UPROPERTY(EditAnywhere)
 		float Launch = 100.0f;
 	UPROPERTY(EditAnywhere)
-		float StopTime = 0.0f;    // Hit Stop
-	UPROPERTY(EditAnywhere)
 		class USoundWave* Sound;
 	UPROPERTY(EditAnywhere)
 		class UFXSystemAsset* Effect;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<UMatineeCameraShake> CameraShakeClass;
 	UPROPERTY(EditAnywhere)
 		FVector EffectLocation = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere)
@@ -105,9 +106,9 @@ public:
 public:
 	void SendDamage(class ACharacter* InAttacker, AActor* InAttackCauser, class ACharacter* InOther);
 	void PlayMontage(class ACharacter* InOwner);
-	void PlayHitStop(UWorld* InWorld);
 	void PlaySoundWave(class ACharacter* InOwner);
 	void PlayEffect(UWorld* InWorld, const FVector& InLocation, const FRotator& InRotation, USkeletalMeshComponent* InMesh = nullptr, FName InSocketName = NAME_None);
+	void PlayCameraShake(APlayerController* PlayerController, float InScale);
 	AActor* FindActorByNetGUID(FNetworkGUID NetGUID, UWorld* World);
 
 public:

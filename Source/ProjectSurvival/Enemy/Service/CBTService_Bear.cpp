@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "Enemy/CEnemyAIController.h"
 #include "Enemy/CEnemy.h"
+#include "Utility/CDebug.h"
 #include "ActorComponents/CStateComponent.h"
 #include "ActorComponents/CEnemyAIComponent.h"
 
@@ -19,6 +20,7 @@ UCBTService_Bear::UCBTService_Bear()
     this->Interval = 0.1f;     
     this->RandomDeviation = 0.0f;
 }
+
 void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -42,8 +44,14 @@ void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         AIComponent->SetRoamMode();
         return;
     }
+    else if (state->IsIdleMode())
+    {
+        state->ChangeType(EStateType::Combat);
+    };
+
 
     float  distance = Enemy->GetDistanceTo(target);
+    //CDebug::Print(TEXT("Distance Between Enemy and Player: "), distance);
     if (distance < ActionRange)
     {
         AIComponent->SetActionMode();

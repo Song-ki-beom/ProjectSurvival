@@ -6,10 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "CStateComponent.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum class EStateType : uint8
 {
-    Idle, Equip, Hit, Dead, Action, Max
+    Idle, Combat,Equip, Hit, Dead, Action, Max
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);
@@ -32,6 +32,7 @@ public:
 private:
     void SetIdleMode();
     void SetEquipMode();
+    void SetCombatMode();
     void SetHitMode();
     void SetActionMode();
     void SetDeadMode();
@@ -47,6 +48,7 @@ private:
 
 public:
     FORCEINLINE bool IsIdleMode() { return Type == EStateType::Idle; }
+    FORCEINLINE bool IsCombatMode() { return Type == EStateType::Combat; }
     FORCEINLINE bool IsEquipMode() { return Type == EStateType::Equip; }
     FORCEINLINE bool IsHitMode() { return Type == EStateType::Hit; }
     FORCEINLINE bool IsActionMode() { return Type == EStateType::Action; }

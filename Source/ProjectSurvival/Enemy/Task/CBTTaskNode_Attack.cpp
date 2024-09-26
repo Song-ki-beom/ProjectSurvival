@@ -9,8 +9,6 @@
 #include "ActorComponents/CStateComponent.h"
 #include "Utility/CDebug.h"
 #include "Enemy/CEnemyAIController.h"
-#include "Net/UnrealNetwork.h"
-#include "NavigationSystem.h"
 
 UCBTTaskNode_Attack::UCBTTaskNode_Attack()
 {
@@ -22,22 +20,15 @@ EBTNodeResult::Type UCBTTaskNode_Attack::ExecuteTask(UBehaviorTreeComponent& Own
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
     Controller = Cast<ACEnemyAIController>(OwnerComp.GetOwner());
-    if (Controller == nullptr) return EBTNodeResult::Failed;
+    if (Controller == nullptr) return EBTNodeResult::Succeeded;
     Enemy = Cast<ACEnemy>(Controller->GetPawn());
-    AIComponent = Cast<UCEnemyAIComponent>(Enemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
-    ACharacter* Target = AIComponent->GetTarget();
-    if (Target)
-    {
-        Controller->SetFocus(Target);
-    }
+    StateComponent = Cast<UCStateComponent>(Enemy->GetComponentByClass(UCStateComponent::StaticClass()));
+    if (StateComponent == nullptr) return EBTNodeResult::Succeeded;
+    StateComponent->ChangeType(EStateType::Action);
     Controller->StopMovement();
 
     Enemy->DoAction();
-        
-    
-   
 
-   
     return EBTNodeResult::InProgress;
 }
 
@@ -47,7 +38,7 @@ EBTNodeResult::Type UCBTTaskNode_Attack::AbortTask(UBehaviorTreeComponent& Owner
 {
     Super::AbortTask(OwnerComp, NodeMemory);
     Enemy->End_DoAction();
-    return EBTNodeResult::Succeeded;
+    return EBTNodeResult::Failed;
 
 }
 
@@ -55,10 +46,9 @@ void UCBTTaskNode_Attack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 {
     Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
+    if (StateComponent == nullptr) return FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 
-    
-    UCStateComponent* StateComponent = Cast<UCStateComponent>(Enemy->GetComponentByClass(UCStateComponent::StaticClass()));
-    if (StateComponent->IsIdleMode())
+    if (StateComponent->IsIdleMode() || StateComponent->IsCombatMode())
     {
         FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //FinishLatentTask : ExecuteTask 에 대해서 InProgress 인 작업을 지연 종료 시킴  
         return;

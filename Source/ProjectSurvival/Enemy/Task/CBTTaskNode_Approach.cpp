@@ -32,6 +32,14 @@ EBTNodeResult::Type UCBTTaskNode_Approach::ExecuteTask(UBehaviorTreeComponent& O
     return  EBTNodeResult::InProgress;
 }
 
+EBTNodeResult::Type UCBTTaskNode_Approach::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+    Super::AbortTask(OwnerComp, NodeMemory);
+    //Enemy->End_DoAction();
+    return EBTNodeResult::Failed;
+
+}
+
 void UCBTTaskNode_Approach::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
     Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);

@@ -26,7 +26,7 @@ private:
 	class ACEnemy* Enemy;
 	class UCEnemyAIComponent* AIComponent;
 	class UCMovingComponent* MovingComponent;
-	class UCStateComponent* State;
+	class UCStateComponent* StateComponent;
 	int32 count;
 
 };

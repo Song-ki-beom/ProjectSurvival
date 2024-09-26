@@ -4,8 +4,9 @@
 #include "ActorComponents/CStatusComponent.h"
 #include "ActorComponents/CEnemyAIComponent.h"
 #include "ActorComponents/CMovingComponent.h"
-#include "ActorComponents/CStateComponent.h"
 #include "ActorComponents/CMontageComponent.h"
+#include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
@@ -44,12 +45,12 @@ ACEnemy::ACEnemy()
 	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("MoveComponent"));
 	MovingComponent->SetIsReplicated(true);
 	
-
 	AIComponent = CreateDefaultSubobject<UCEnemyAIComponent>(TEXT("AIComponent"));
 	AIComponent->SetIsReplicated(true);
 
 	StateComponent = CreateDefaultSubobject<UCStateComponent>(TEXT("StateComponent"));
 	StateComponent->SetIsReplicated(true);
+	StateComponent->OnStateTypeChanged.AddDynamic(this,&ACEnemy::OnStateTypeChangedHandler);
 
 	MontageComponent = CreateDefaultSubobject<UCMontageComponent>(TEXT("MontageComponent"));
 	MontageComponent->SetIsReplicated(true);
@@ -57,12 +58,35 @@ ACEnemy::ACEnemy()
 
 	//Mesh Setting
 	{
-			GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+			GetMesh()->SetRelativeLocation(FVector(-45, 0, -90));
 			GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	}
 
 	
+	SlopeCheckArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("SlopeCheckArrow")); //경사 확인을 위한 Arrow Component
+	SlopeCheckArrow->SetupAttachment(RootComponent);
+	SlopeCheckArrow->ArrowSize = 2.0f;
+	SlopeCheckArrow->ArrowColor = FColor::Red;
+	SlopeCheckArrow->bHiddenInGame = false;
+	SlopeCheckArrow->SetVisibility(true);
+
+
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
+	BoxCollision->SetupAttachment(RootComponent);
+	//GetMesh()->SetupAttachment(BoxCollision);
+	// 박스 크기 설정
+	BoxCollision->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
+
+	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+
+	// Pawn 제외 모두 블록 처리
+	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Block);
 	
+	
+	BoxCollision->bHiddenInGame = false;
+	BoxCollision->SetVisibility(true);
 
 }
 
@@ -86,9 +110,6 @@ void ACEnemy::BeginPlay()
 	if (SkeletalMesh)
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
-		GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
-		GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
-		
 	}
 
 	//AnimInstance 
@@ -121,10 +142,11 @@ void ACEnemy::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("AIController failed to possess the character"));
 	}
 
+	//StateComponent->ChangeType(EStateType::Idle);
 	MovingComponent->SetSpeed(ESpeedType::Walk);
 	MovingComponent->DisableControlRotation();
 	// 이동 방향에 따라 회전하도록 설정
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
 
 }
 
@@ -132,48 +154,7 @@ void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//if (HasAuthority())
-	//{
-	//	if (GetIsReplicated())
-	//	{
-
-	//		UWorld* World = this->GetWorld();
-	//		// NetDriver 가져오기
-	//		UNetDriver* NetDriver = World->GetNetDriver();
-	//		if (NetDriver && NetDriver->GuidCache)
-	//		{
-	//			FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
-	//			
-
-	//			if (InstigatorNetGUID.IsValid())
-	//			{
-	//				int32 ClientValue = InstigatorNetGUID.Value;
-	//				CDebug::Print(TEXT("Server NetGUID is valid:"), ClientValue);
-	//				DamageData.CharacterID = InstigatorNetGUID;
-	//			}
-	//		}
-	//	}
-	//	else
-	//	{
-	//		UE_LOG(LogTemp, Warning, TEXT("This actor is NOT being replicated."));
-	//	}
-	//}
-	//else
-	//{
-	//	UWorld* World = this->GetWorld();
-	//	// NetDriver 가져오기
-	//	UNetDriver* NetDriver = World->GetNetDriver();
-	//	if (NetDriver && NetDriver->GuidCache)
-	//	{
-	//		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
-	//		if (InstigatorNetGUID.IsValid())
-	//		{
-	//			int32 ClientValue = InstigatorNetGUID.Value;
-	//			CDebug::Print(TEXT("Client NetGUID is valid:") , ClientValue);
-	//		}
-	//	}
-
-	//}
+	RotateMeshToSlope(DeltaTime);
 }
 
 void ACEnemy::DoAction()
@@ -200,7 +181,7 @@ void ACEnemy::RequestDoAction_Implementation()
 void ACEnemy::PerformDoAction(int32 InAttackIdx)
 {
 	AttackIdx = InAttackIdx;
-	MovingComponent->EnableControlRotation();
+	/*MovingComponent->EnableControlRotation();*/
 	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
 }
 
@@ -209,11 +190,11 @@ void ACEnemy::AttackTraceHit()
 
 	//Trace 관련 세팅
 	FVector ForwardVector = GetActorForwardVector();
-	FVector Start = FVector(GetActorLocation().X, GetActorLocation().Y,GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
+	FVector Start = FVector(GetActorLocation().X, GetActorLocation().Y,GetActorLocation().Z + 10.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
 	FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
 	FQuat Rot = FQuat(GetActorRotation());
 
-	FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 1.0f, TraceDistance / 1.0f);
+	FVector HalfSize = FVector(TraceDistance / 0.7f, TraceDistance / 1.0f, TraceDistance / 0.5f);
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -257,13 +238,15 @@ void ACEnemy::Begin_DoAction()
 	StateComponent->ChangeType(EStateType::Action);
 	if (!DoActionDatas[AttackIdx].bCanMove)
 		MovingComponent->Stop();
+	MovingComponent->EnableControlRotation();
 }
 
 void ACEnemy::End_DoAction()
 {
-	StateComponent->ChangeType(EStateType::Idle);
+	StateComponent->ChangeType(EStateType::Combat);
 	if (!DoActionDatas[AttackIdx].bCanMove)
 		MovingComponent->Move();
+	MovingComponent->DisableControlRotation();
 }
 
 
@@ -359,6 +342,54 @@ void ACEnemy::ApplyHitData()
 void ACEnemy::Die()
 {
 
+
+}
+
+void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)
+{
+
+
+}
+
+void ACEnemy::RotateMeshToSlope(float InDeltaTime)
+{
+
+	//FVector Start = SlopeCheckArrow->GetComponentLocation();
+	//FVector End = Start + (SlopeCheckArrow->GetUpVector() * (-500.0f));  //아래로 라인트레이스
+	//FHitResult HitResult;
+	////FCollisionQueryParams TraceParams;
+	////TraceParams.
+
+	//FCollisionQueryParams TraceParams;
+	//TraceParams.bTraceComplex = true;
+	//TraceParams.AddIgnoredActor(this);
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 2.0f);
+
+	//if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams))
+	//{
+	//	FVector ImpactNormal = HitResult.ImpactNormal;
+	//	FVector ImpactStart = HitResult.ImpactPoint;
+	//	FVector ImpactEnd = ImpactStart + (ImpactNormal * 150.0f);
+	//	DrawDebugLine(GetWorld(), ImpactStart, ImpactEnd, FColor::Green, false, 1.0f, 0, 2.0f);
+
+
+	//	//FRotator TargetRotator = FRotationMatrix::MakeFromZ(ImpactNormal).Rotator();
+
+	//	FRotator MeshRotator = GetMesh()->GetComponentRotation();
+	//	
+	//	FMatrix MeshRightMatrix = FRotationMatrix::MakeFromYZ(GetMesh()->GetRightVector(),ImpactNormal);
+	//	FRotator MeshRightRotator = MeshRightMatrix.Rotator();
+
+	//	FMatrix MeshForwardMatrix = FRotationMatrix::MakeFromYZ(GetMesh()->GetForwardVector(), ImpactNormal);
+	//	FRotator MeshForwardRotator = MeshForwardMatrix.Rotator();
+
+
+	//	FRotator TargetRotator = FRotator(MeshRightRotator.Pitch, MeshRotator.Yaw,MeshForwardRotator.Roll);
+	//	//BoxCollision
+	//	TargetRotator = FMath::RInterpTo(MeshRotator, TargetRotator, InDeltaTime, 5.0f);
+	//	GetMesh()->SetWorldRotation(TargetRotator);
+	//	
+	//}
 
 }
 
