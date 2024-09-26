@@ -7,6 +7,9 @@
 #include "CStatusComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, NewHealthRatio);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSURVIVAL_API UCStatusComponent : public UActorComponent
 {
@@ -17,25 +20,29 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastUpdataHealth(float NewHealth);
+
+public:
+	FOnHealthUpdated OnHealthUpdated;
+
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Health")
-		float MaxHealth = 100.0f;
-
-private:
+	float MaxHealth = 100.0f;
 	class ACharacter* OwnerCharacter;
-	float Health = 0.0f;
+	float CurrentHealth = 0.0f;
+
 
 public:
 	void  ApplyDamage(float InAmount);
 public:
 	FORCEINLINE float GetMaxHealth() { return MaxHealth; }
 	FORCEINLINE void SetMaxHealth(float NewMaxHealth) {  MaxHealth = NewMaxHealth; }
-	FORCEINLINE float GetHealth() { return Health; }
-	FORCEINLINE bool  IsDead() { return Health <= 0.0f; }
+	FORCEINLINE float GetHealth() { return CurrentHealth; }
+	FORCEINLINE bool  IsDead() { return CurrentHealth <= 0.0f; }
 };
 
 

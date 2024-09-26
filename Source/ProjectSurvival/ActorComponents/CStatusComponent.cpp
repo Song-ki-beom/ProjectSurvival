@@ -2,6 +2,7 @@
 
 #include "ActorComponents/CStatusComponent.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 
 
 UCStatusComponent::UCStatusComponent()
@@ -15,7 +16,7 @@ void UCStatusComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
-	Health = MaxHealth;
+	CurrentHealth = MaxHealth;
 	
 }
 
@@ -31,8 +32,14 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 void UCStatusComponent::ApplyDamage(float InAmount)
 {
-	Health -= InAmount;
-	Health = FMath::Clamp(Health, 0.0f, MaxHealth);
-
+	float NewHealth = CurrentHealth -InAmount;
+	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
+	BroadcastUpdataHealth(NewHealth);
 }
 
+void UCStatusComponent::BroadcastUpdataHealth_Implementation(float NewHealth)
+{
+	CurrentHealth = NewHealth;
+	OnHealthUpdated.Broadcast(CurrentHealth / MaxHealth);
+
+}

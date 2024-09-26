@@ -335,7 +335,7 @@ void ACSurvivor::ApplyHitData()
 		if (HitData && HitData->Montage)
 		{
 			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
-			if (StatusComponent != nullptr)
+			if (StatusComponent != nullptr && this->HasAuthority())
 			{
 				StatusComponent->ApplyDamage(HitData->DamageAmount);
 			}

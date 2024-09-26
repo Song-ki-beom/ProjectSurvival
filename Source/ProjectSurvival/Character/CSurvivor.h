@@ -7,7 +7,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
-//#include "Interface/DamageInterface.h"
 #include "Struct/CWeaponStructures.h"
 #include "CustomDataType/BuildStructureDataType.h"
 #include "CSurvivor.generated.h"

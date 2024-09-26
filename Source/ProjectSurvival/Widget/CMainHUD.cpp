@@ -10,6 +10,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Status/CStatusPanel.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
@@ -78,6 +79,16 @@ void ACMainHUD::BeginPlay()
 		QuickSlot->SetVisibility(ESlateVisibility::Visible);
 		QuickSlot->bIsFocusable = true;
 	}
+
+	if (StatusPanelClass)
+	{
+		StatusPanel = CreateWidget<UCStatusPanel>(GetWorld(), StatusPanelClass);
+		StatusPanel->AddToViewport(1);
+		StatusPanel->SetVisibility(ESlateVisibility::Visible);
+		StatusPanel->bIsFocusable = false;
+
+	}
+
 }
 
 void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InActorInventoryWidget, class UUserWidget* InActorProduceWidget, class AActor* InActor)
