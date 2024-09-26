@@ -8,6 +8,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, NewHealthRatio);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdated, float, NewStaminaRatio);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -17,27 +18,43 @@ class PROJECTSURVIVAL_API UCStatusComponent : public UActorComponent
 
 public:	
 	UCStatusComponent();
+	void  ApplyDamage(float InAmount);
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void ReduceStaminaByTime();
+	
 	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastUpdataHealth(float NewHealth);
+	void BroadcastUpdateHealth(float NewHealth);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastUpdateStamina(float NewStamina);
+
+
 
 public:
 	FOnHealthUpdated OnHealthUpdated;
-
+	FOnStaminaUpdated OnStaminaUpdated;
+	FTimerHandle StaminaReductionTimerHandle;
 
 private:
+	class ACharacter* OwnerCharacter;
+	//Health
 	UPROPERTY(EditAnywhere, Category = "Health")
 	float MaxHealth = 100.0f;
-	class ACharacter* OwnerCharacter;
-	float CurrentHealth = 0.0f;
+	float CurrentHealth = 200.0f;
+	
+	//Starvation
+	UPROPERTY(EditAnywhere, Category = "Stamina")
+	float MaxStamina = 100.0f;
+	UPROPERTY(EditAnywhere, Category = "Health")
+	float StaminaDecreaseAmount = 5.0f;
+	float CurrentStamina = 200.0f;
+	
 
 
-public:
-	void  ApplyDamage(float InAmount);
 public:
 	FORCEINLINE float GetMaxHealth() { return MaxHealth; }
 	FORCEINLINE void SetMaxHealth(float NewMaxHealth) {  MaxHealth = NewMaxHealth; }

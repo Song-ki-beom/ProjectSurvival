@@ -20,6 +20,7 @@ void UCStatusPanel::NativeConstruct()
 	if (OwnerCharacter == nullptr) return;
 	StatusComponent = Cast<UCStatusComponent>(OwnerCharacter->GetComponentByClass(UCStatusComponent::StaticClass()));
 	StatusComponent->OnHealthUpdated.AddDynamic(this, &UCStatusPanel::UpdateHealthProgressBar);
+	StatusComponent->OnStaminaUpdated.AddDynamic(this, &UCStatusPanel::UpdateStaminaProgressBar);
 
 }
 
@@ -28,6 +29,15 @@ void UCStatusPanel::UpdateHealthProgressBar(float HealthPercentage)
 	if (HealthBar)
 	{
 		HealthBar->SetPercent(HealthPercentage);
+	}
+
+}
+
+void UCStatusPanel::UpdateStaminaProgressBar(float StaminaPercentage)
+{
+	if (StaminaBar)
+	{
+		StaminaBar->SetPercent(StaminaPercentage);
 	}
 
 }

@@ -17,7 +17,9 @@ void UCStatusComponent::BeginPlay()
 	Super::BeginPlay();
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	CurrentHealth = MaxHealth;
-	
+	CurrentStamina = MaxStamina;
+	if(GetOwner()->HasAuthority()) //서버만 실행 
+		GetWorld()->GetTimerManager().SetTimer(StaminaReductionTimerHandle, this, &UCStatusComponent::ReduceStaminaByTime, 5.0f, true); //5초마다 반복해서 실행 
 }
 
 
@@ -26,6 +28,16 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 
+}
+
+void UCStatusComponent::ReduceStaminaByTime()
+{
+	if (CurrentStamina > 0)
+	{
+		float NewStamina = CurrentStamina - StaminaDecreaseAmount;  
+		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina); 
+		BroadcastUpdateStamina(NewStamina);
+	}
 
 
 }
@@ -34,12 +46,18 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 {
 	float NewHealth = CurrentHealth -InAmount;
 	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
-	BroadcastUpdataHealth(NewHealth);
+	BroadcastUpdateHealth(NewHealth);
 }
 
-void UCStatusComponent::BroadcastUpdataHealth_Implementation(float NewHealth)
+void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
 {
 	CurrentHealth = NewHealth;
 	OnHealthUpdated.Broadcast(CurrentHealth / MaxHealth);
 
 }
+
+void UCStatusComponent::BroadcastUpdateStamina_Implementation(float NewStamina)
+{
+	CurrentStamina = NewStamina;
+	OnStaminaUpdated.Broadcast(CurrentStamina / MaxStamina);
+};
