@@ -43,7 +43,9 @@ void UCBuildComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Survivor = Cast<ACSurvivor>(this->GetOwner());
-	ACSurvivorController* survivorController = Cast<ACSurvivorController>(GetWorld()->GetFirstPlayerController());
+	ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwner()->GetInstigatorController());
+	if (survivorController)
+		survivorController->SetupBuildWidget();
 
 	ItemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
 }
@@ -222,7 +224,18 @@ void UCBuildComponent::BuildSpawnedStructure()
 
 					if (buildItemSlot->GetBuildItemSlotID() == itemID)
 					{
-						buildItemSlot->SubStructureQuantity();
+						if (survivorController)
+						{
+							if (survivorController->GetBuildWidget())
+								survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(itemID);
+							else
+								CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+						}
+						else
+							CDebug::Print("survivorController is not Valid", FColor::Red);
+
+
+						//buildItemSlot->SubStructureQuantity();
 						break;
 					}
 				}

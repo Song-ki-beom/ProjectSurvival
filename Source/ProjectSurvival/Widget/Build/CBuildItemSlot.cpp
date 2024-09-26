@@ -52,3 +52,10 @@ void UCBuildItemSlot::SubStructureQuantity()
 		ClearBuildItemSlotInfo();
 	}
 }
+
+void UCBuildItemSlot::SetStructureQuantity(int32 InQuantity)
+{
+	StructureQuantity = InQuantity;
+	FText quantityText = FText::Format(FText::FromString("x{0}"), StructureQuantity);
+	StructureQuantityText->SetText(quantityText);
+}

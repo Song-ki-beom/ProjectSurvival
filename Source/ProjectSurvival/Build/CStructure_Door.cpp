@@ -17,7 +17,7 @@ void ACStructure_Door::CheckCenter()
 		centerBoxOrientation = GetOwner()->GetActorRotation();
 	else
 		centerBoxOrientation = CenterRotation;
-	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2; // 구체적으로 뭔지? TraceTypeQuery1하면 캐릭터를 감지안함
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery3;
 	bool bCenterBoxTraceComplex = false;
 	TArray<AActor*> centerBoxActorsToIgnore;
 	TArray<FHitResult> centerBoxHitResults;

@@ -26,7 +26,7 @@ void ACStructure_Ceiling::CheckCenter()
 		centerBoxOrientation = GetOwner()->GetActorRotation();
 	else
 		centerBoxOrientation = CenterRotation;
-	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery2;
+	ETraceTypeQuery centerBoxTraceTypeQuery = ETraceTypeQuery::TraceTypeQuery3;
 	bool bCenterBoxTraceComplex = false;
 	TArray<AActor*> centerBoxActorsToIgnore;
 	TArray<FHitResult> centerBoxHitResults;

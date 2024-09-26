@@ -1,9 +1,11 @@
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/Inventory/CItemBase.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
+#include "Widget/Build/CBuildWidget.h"
 #include "Build/CStructure_Placeable.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -145,10 +147,21 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 			switch (produceWidget->GetWidgetCall())
 			{
 			case EWidgetCall::Survivor:
+			{
 				Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
+				ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+				if (survivorController)
+				{
+					if (survivorController->GetBuildWidget())
+						survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ProduceItemID);
+					else
+						CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+				}
+				else
+					CDebug::Print("survivorController is not Valid", FColor::Red);
 				break;
-			
-			case EWidgetCall::WorkBench:
+			}
+			case EWidgetCall::Placeable:
 				if (this->GetOwningPlayer()->HasAuthority())
 					produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType);
 				break;

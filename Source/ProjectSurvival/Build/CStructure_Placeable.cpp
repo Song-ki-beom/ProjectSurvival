@@ -9,7 +9,7 @@
 #include "ActorComponents/CInventoryComponent.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Inventory/CItemBase.h"
-#include "Widget/Inventory/CInventoryPanel_WorkingBench.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
@@ -32,20 +32,20 @@ void ACStructure_Placeable::BeginPlay()
 
 	switch (WidgetCaller)
 	{
-	case EWidgetCall::WorkBench:
+	case EWidgetCall::Placeable:
 		ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
-		WorkingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-		if (WorkingBenchWidget)
+		PlaceableWidget = Cast<UCInventoryPanel_Placeable>(ActorInventoryWidget);
+		if (PlaceableWidget)
 		{
-			WorkingBenchWidget->SetOwnerActor(this);
+			PlaceableWidget->SetOwnerActor(this);
 
 			switch (PlaceableStructureType)
 			{
 			case EPlaceableStructureType::WorkingBench:
-				WorkingBenchWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 작업대")));
+				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 작업대")));
 				break;
 			case EPlaceableStructureType::Furnace:
-				WorkingBenchWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
+				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
 				break;
 			default:
 				break;
@@ -55,22 +55,22 @@ void ACStructure_Placeable::BeginPlay()
 
 
 		ActorProduceWidget = CreateWidget<UUserWidget>(GetWorld(), ActorProduceWidgetClass);
-		WorkingBenchProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
-		if (WorkingBenchProduceWidget)
+		PlaceableProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
+		if (PlaceableProduceWidget)
 		{
-			WorkingBenchProduceWidget->SetOwnerActor(this, WidgetCaller);
+			PlaceableProduceWidget->SetOwnerActor(this, WidgetCaller);
 
 			switch (PlaceableStructureType)
 			{
 			case EPlaceableStructureType::WorkingBench:
-				WorkingBenchProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
+				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
 				// 생산 아이템 추가
-				WorkingBenchProduceWidget->CreateBuildProduceItemSlot(1, 15);
-				WorkingBenchProduceWidget->CreateToolProduceItemSlot(1, 2);
-				WorkingBenchProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+				PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 15);
+				PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
+				PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
 				break;
 			case EPlaceableStructureType::Furnace:
-				WorkingBenchProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
+				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
 				break;
 			default:
 				break;
@@ -162,7 +162,7 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 	{
 		switch (WidgetCaller)
 		{
-		case EWidgetCall::WorkBench:
+		case EWidgetCall::Placeable:
 		{
 			if (ActorInventoryWidgetClass)
 			{
@@ -174,7 +174,7 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
 						if (mainHUD)
 						{
-							mainHUD->SetWidgetVisibility(EWidgetCall::WorkBench, ActorInventoryWidget, ActorProduceWidget, Actor);
+							mainHUD->SetWidgetVisibility(EWidgetCall::Placeable, ActorInventoryWidget, ActorProduceWidget, Actor);
 						}
 					}
 				}
@@ -340,20 +340,20 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 	//UI 위젯에 아이템 인벤토리 변경사항 업데이트 
 	switch (WidgetCaller)
 	{
-	case EWidgetCall::WorkBench:
+	case EWidgetCall::Placeable:
 	{
-		UCInventoryPanel_WorkingBench* workingBenchWidget = Cast<UCInventoryPanel_WorkingBench>(ActorInventoryWidget);
-		if (workingBenchWidget)
+		UCInventoryPanel_Placeable* placeableInventoryWidget = Cast<UCInventoryPanel_Placeable>(ActorInventoryWidget);
+		if (placeableInventoryWidget)
 		{
-			// workingBenchWidget의 클래스에 UCItemBase의 배열 전달
-			workingBenchWidget->SetWidgetItems(ActorInventoryContents);
-			workingBenchWidget->RefreshWorkingBenchInventory();
+			// Placeable의 클래스에 UCItemBase의 배열 전달
+			placeableInventoryWidget->SetWidgetItems(ActorInventoryContents);
+			placeableInventoryWidget->RefreshPlaceableInventory();
 		}
 
-		UCProduceWidget* workingBenchProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
-		if (workingBenchProduceWidget)
+		UCProduceWidget* placeableProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
+		if (placeableProduceWidget)
 		{
-			workingBenchProduceWidget->RefreshProduceDetail();
+			placeableProduceWidget->RefreshProduceDetail();
 		}
 	}
 	}
@@ -475,5 +475,5 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 
 void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
 {
-	WorkingBenchProduceWidget->AddProduceItemToQueue(ItemID);
+	PlaceableProduceWidget->AddProduceItemToQueue(ItemID);
 }

@@ -12,7 +12,7 @@ UENUM()
 enum class EWidgetCall : uint8
 {
 	Survivor,
-	WorkBench,
+	Placeable,
 	CloseWidget
 };
 

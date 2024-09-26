@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Widget/Inventory/CItemBase.h"
-#include "CInventoryPanel_WorkingBench.generated.h"
+#include "CInventoryPanel_Placeable.generated.h"
 
 UCLASS()
-class PROJECTSURVIVAL_API UCInventoryPanel_WorkingBench : public UUserWidget
+class PROJECTSURVIVAL_API UCInventoryPanel_Placeable : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -22,7 +22,7 @@ public:
 	void SetInventoryWindowName(FText InText);
 
 	UFUNCTION()
-		void RefreshWorkingBenchInventory();
+		void RefreshPlaceableInventory();
 	UFUNCTION()
 		void OnSortInventoryClicked();
 
@@ -48,7 +48,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* InventoryWindowName;
 	UPROPERTY(meta = (BindWidget))
-		class UWrapBox* WorkingBenchInventoryPanel;
+		class UWrapBox* PlaceableInventoryPanel;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* SortItemButton;
 	UPROPERTY(EditDefaultsOnly)

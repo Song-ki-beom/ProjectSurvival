@@ -1,8 +1,8 @@
 #include "ActorComponents/CInventoryComponent.h"
+#include "Widget/CMainHUD.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Character/CSurvivorController.h"
 #include "Net/UnrealNetwork.h"
-#include "Widget/CMainHUD.h"
 #include "World/CPickup.h"
 #include "Utility/CDebug.h"
 
@@ -133,37 +133,32 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 			return HandleNonStackableItems(InItem, InitialRequestedAddAmount);
 		}
 		
-			//Stack 가능한 아이템일 때, 기존에 Item이 존재하고 Stack 가능 개수가 남아있음 
-			const int32 StackableAmountAdded = HandleStackableItems(InItem, InitialRequestedAddAmount);
+		//Stack 가능한 아이템일 때, 기존에 Item이 존재하고 Stack 가능 개수가 남아있음 
+		const int32 StackableAmountAdded = HandleStackableItems(InItem, InitialRequestedAddAmount);
 
-			//StackableAmountAdded 결과에 따라 분기 처리 
-			if (StackableAmountAdded <= 0)
-			{
-				return FItemAddResult::AddedNone(FText::Format(FText::FromString("Cannot Add {0} Due To Inventory Weight or Slot Capacity"), InItem->TextData.Name));
-			}
-
-			//EarnedItem UI 표시
-			UCItemBase* EarnedItem = InItem->CreateItemCopy();
-			EarnedItem->Quantity = StackableAmountAdded;
-			HUD->AddEarnedInfo(EarnedItem);
-
-			if (StackableAmountAdded == InitialRequestedAddAmount)
-			{
-				return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} {1} All added To Inventory"),InItem->TextData.Name, InitialRequestedAddAmount));
-				
-			}
-
-			//Stack 한 결과가 처음 리퀘스트한 양이 아닌 일부만 넣어졌을때   
-			if (StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded >0)
-			{
-				return FItemAddResult::AddedPartial(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} x {1} Partial Amount of Item Added"), InItem->TextData.Name, StackableAmountAdded));
-			}
-
-			
-
-
-
+		//StackableAmountAdded 결과에 따라 분기 처리 
+		if (StackableAmountAdded <= 0)
+		{
+			return FItemAddResult::AddedNone(FText::Format(FText::FromString("Cannot Add {0} Due To Inventory Weight or Slot Capacity"), InItem->TextData.Name));
 		}
+
+		//EarnedItem UI 표시
+		UCItemBase* EarnedItem = InItem->CreateItemCopy();
+		EarnedItem->Quantity = StackableAmountAdded;
+		HUD->AddEarnedInfo(EarnedItem);
+
+		if (StackableAmountAdded == InitialRequestedAddAmount)
+		{
+			return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} {1} All added To Inventory"),InItem->TextData.Name, InitialRequestedAddAmount));
+			
+		}
+
+		//Stack 한 결과가 처음 리퀘스트한 양이 아닌 일부만 넣어졌을때   
+		if (StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded >0)
+		{
+			return FItemAddResult::AddedPartial(InitialRequestedAddAmount, FText::Format(FText::FromString("{0} x {1} Partial Amount of Item Added"), InItem->TextData.Name, StackableAmountAdded));
+		}
+	}
 
 	check(false);
 	return FItemAddResult::AddedNone(FText::FromString("HandleItem Fail Due To OwnerCharacter Problem"));

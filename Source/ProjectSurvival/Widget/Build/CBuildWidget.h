@@ -14,7 +14,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	void SaveStructureInfo(ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
+	void SaveStructureInfo(FName InItemID, ESelectedStructure InKey, UTexture2D* InTexture, TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement);
 	TSubclassOf<ACStructure> GetStructureClass(ESelectedStructure InKey);
 	EBuildStructureElement GetStructureElement(ESelectedStructure InKey);
 	class UCBuildItemSlot* GetBuildItemSlotQ() { return BuildItemSlotQ; }
@@ -27,9 +27,9 @@ public:
 	class UCBuildItemSlot* GetBuildItemSlotX() { return BuildItemSlotX; }
 	class UCBuildItemSlot* GetBuildItemSlotC() { return BuildItemSlotC; }
 	TArray<UCBuildItemSlot*> GetBuildItemSlotArray() { return BuildItemSlotArray; }
-	void RefreshBuildWidget();
+	void RefreshBuildWidgetQuantity(FName InItemID);
+
 private:
-	//void RefreshBuildWidget(FName InItemID);
 	void RemoveSameBuildItemSlot(FName InItemID);
 	int32 GetSameItemQuantity(FName InItemID);
 

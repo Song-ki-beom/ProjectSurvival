@@ -3,6 +3,7 @@
 #include "Character/CSurvivorController.h"
 #include "World/CPickUp.h"
 #include "Widget/CMainHUD.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 #include "Character/CSurvivor.h"
@@ -76,7 +77,7 @@ void UCInteractionComponent::DoInteract()
 	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleHiddenMenu, 0.5f, false);
 
 	//주위 범위 상호작용 트리거 타이머 시작 
-	GetWorld()->GetTimerManager().SetTimer(InteractAroundTimerHandle, this, &UCInteractionComponent::InteractAroundPlayer, 0.7f, false);
+	GetWorld()->GetTimerManager().SetTimer(InteractAroundTimerHandle, this, &UCInteractionComponent::GatherAround, 0.7f, false);
 
 }
 
@@ -328,11 +329,17 @@ void UCInteractionComponent::Interact(bool bIsLongPressed)
 
 void UCInteractionComponent::InteractAroundPlayer()
 {
-	if (!IsValid(TargetInteractable.GetObject()))
-	{
-		GatherAround();
-	}
-
+	//if (!IsValid(TargetInteractable.GetObject()))
+	//{
+	//	GatherAround();
+	//	CDebug::Print("GatherAround Called");
+	//}
+	// 
+	// 
+	//{
+	//	CDebug::Print("Clear Timer Called");
+	//	GetWorld()->GetTimerManager().ClearTimer(InteractAroundTimerHandle);
+	//}
 }
 
 void UCInteractionComponent::GatherAround()
@@ -369,13 +376,24 @@ void UCInteractionComponent::GatherAround()
 				
 				TargetInteractable = Hit.GetActor();
 				RequestUpdateTarget(Hit.GetActor());
-				Interact(false);
+
+				ACPickUp* pickUpActor = Cast<ACPickUp>(Hit.GetActor());
+				if (pickUpActor)
+				{
+					if (pickUpActor->ItemReference->ItemType == EItemType::Build || pickUpActor->ItemReference->ItemType == EItemType::Container)
+					{
+						if (pickUpActor->ItemReference->bIsDropMesh)
+							Interact(false);
+					}
+					else
+						Interact(false);
+				}
 			}
 		}
 	}
 
 	// 디버그 스피어 그리기
-	DrawDebugSphere(GetWorld(), TraceStart, SphereRadius, 50, FColor::Green, false, 2.0f);
+	DrawDebugSphere(GetWorld(), TraceStart, SphereRadius, 50, FColor::Green, false, 0.1f);
 
 	
 

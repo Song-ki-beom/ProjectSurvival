@@ -18,7 +18,6 @@ protected:
 
 public:
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
-//	void OpenActorInventory(TSubclassOf<class UUserWidget> InClass);
 	void SetupBuildWidget();
 
 
