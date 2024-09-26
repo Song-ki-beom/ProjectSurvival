@@ -73,14 +73,44 @@ void ACEnemyAIController::OnUnPossess()
 
 void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-    TArray<AActor*> actors;
-    Perception->GetCurrentlyPerceivedActors(nullptr, actors); //이미 Sight 컨피그에 의해 플레이어를 적으로 인식하도록 함 
+   
 
-    if (actors.Num() > 0)
+    if (!bIsAggroCoolDown) return;
+
+    Perception->GetCurrentlyPerceivedActors(nullptr, CandidateActors); //이미 Sight 컨피그에 의해 플레이어를 적으로 인식하도록 함 
+
+
+
+    //거리상 제일 가까운 Target 탐색 
+    if (CandidateActors.Num() > 0)
     {
-        CDebug::Log(actors[0]->GetName()); 
-        Blackboard->SetValueAsObject("Target", actors[0]); //처음 인식된 Actor을 타겟으로 설정 
-        return;
+        float shortestDistance = 99999.0f;
+        for (AActor* CandidateActor : CandidateActors)
+        {
+            if (GetPawn() == nullptr) return;
+            float distanceTo  = GetPawn()->GetDistanceTo(CandidateActor);
+            if (distanceTo < shortestDistance)
+            {
+                shortestDistance = distanceTo;
+                TargetActor = CandidateActor;
+            }
+        }
+        if (TargetActor != nullptr)
+        {
+            bIsAggroCoolDown = false;
+            GetWorld()->GetTimerManager().SetTimer(AggroTimerHandle, this, &ACEnemyAIController::EnableAggroCoolDown, CooldownTime, false);
+            //CDebug::Log(actors[0]->GetName()); 
+            Blackboard->SetValueAsObject("Target", TargetActor); //처음 인식된 Actor을 타겟으로 설정 
+        }
+        CandidateActors.Empty();
     }
-    Blackboard->SetValueAsObject("Target", nullptr);
+    return;
+
+}
+
+void ACEnemyAIController::EnableAggroCoolDown()
+{
+    bIsAggroCoolDown = true; //어그로 풀림 설정 .. 다시 탐색 시작 
+
+    
 }
