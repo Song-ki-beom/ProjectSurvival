@@ -26,9 +26,17 @@ private:
 private:  
 	UFUNCTION()
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+	UFUNCTION()
+		void EnableAggroCoolDown();
 
 private: 
 	class  ACEnemy* Enemy;
 	class  UAISenseConfig_Sight* Sight;
 	class  UCEnemyAIComponent* AIComponent;
+
+	bool bIsAggroCoolDown = true;
+	float CooldownTime =  10.0f;
+	FTimerHandle AggroTimerHandle;
+	TArray<AActor*> CandidateActors;
+	AActor* TargetActor;
 };

@@ -166,15 +166,6 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem, boo
 	
 }
 
-//void UCInventoryComponent::ToggleMenu()
-//{
-//	//if (HUD)
-//	//	HUD->ToggleMenu();
-//}
-
-
-
-
 
 
 void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 QuantityToDrop, int32 RemainDurability)

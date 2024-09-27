@@ -63,6 +63,12 @@ public:
 	TSubclassOf<class UCEarnInfoPanel> EarnInfoPanelClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<class UCQuickSlot> QuickSlotClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<class UCStatusPanel> StatusPanelClass;
+	UPROPERTY(EditAnywhere,Category = "Widgets")
+	TSubclassOf<class UCLowHealthWidget> LowHealthWidgetClass;
+
+	
 
 protected:
 	UPROPERTY()
@@ -81,4 +87,8 @@ protected:
 		class UCEarnInfoPanel* EarnInfoPanel;
 	UPROPERTY()
 		class UCQuickSlot* QuickSlot;
+	UPROPERTY()
+		class UCStatusPanel* StatusPanel;
+	UPROPERTY()
+		class UCLowHealthWidget* LowHealthWidget;
 };

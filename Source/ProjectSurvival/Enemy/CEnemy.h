@@ -8,6 +8,13 @@
 #include "Struct/CWeaponStructures.h"
 #include "CEnemy.generated.h"
 
+
+UENUM(BlueprintType)
+enum class ESpecialState : uint8
+{
+	Encounter, Roll, Evade
+};
+
 UCLASS()
 class PROJECTSURVIVAL_API ACEnemy : public ACharacter
 {
@@ -34,8 +41,11 @@ public:
 	virtual void AttackTraceHit();
 	virtual void Begin_DoAction();
 	virtual void End_DoAction();
-	
 
+	virtual void DoEncounter();
+	virtual void PerformDoSpecialAction(ESpecialState SpecialState);
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 //Damage Interface Override
@@ -53,7 +63,7 @@ private:
 	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
 	void RotateMeshToSlope(float InDeltaTime);
 
-	
+
 protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Protected 설정
 	//Mesh
 	FString SkeletalMeshPath;
@@ -64,6 +74,12 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	//DoAction
 	UPROPERTY(EditAnywhere)
 	TArray<FDoActionData> DoActionDatas;
+
+	//Special Action
+	UPROPERTY(EditAnywhere)
+	TArray<FDoActionData> DoSpecialActionDatas;
+	
+
 	UPROPERTY(EditAnywhere)
 	TArray<FHitData> HitDatas;
 

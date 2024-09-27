@@ -81,11 +81,27 @@ void UCBTTaskNode_Roam::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
     break;
     }
 
-
-
    
 
 }
+
+
+EBTNodeResult::Type UCBTTaskNode_Roam::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+    ACEnemyAIController* controller = Cast<ACEnemyAIController>(OwnerComp.GetOwner());
+
+    if (controller)
+    {
+        // AI의 이동 중지
+        controller->StopMovement();
+    }
+
+    //return EBTNodeResult::Aborted;
+
+    return EBTNodeResult::Succeeded;
+}
+
+
 
 void UCBTTaskNode_Roam::DrawDebug(UWorld* InWorld, FVector InLocation)
 {
