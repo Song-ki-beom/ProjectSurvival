@@ -4,6 +4,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
+#include "Components/RichTextBlock.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"

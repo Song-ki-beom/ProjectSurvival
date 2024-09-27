@@ -26,9 +26,12 @@ protected:
 public:
 	void SetOwnerActor(class ACStructure_Placeable* InActor, EWidgetCall InWidgetCall) { OwnerActor = InActor; WidgetCall = InWidgetCall; }
 	void SetProduceWindowName(FText InText);
+	void SetButtonVisivility(ESlateVisibility BuildVisibility, ESlateVisibility ToolVisibility, ESlateVisibility WeaponVisibility);
+	void SetProducePanelSwitcherIndex(int32 InIndex);
 	void CreateBuildProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void CreateToolProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void CreateWeaponProduceItemSlot(int32 StartIndex, int32 EndIndex);
+	void CreateHarvestProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void SetProduceDetail(FName InID, int32 InIndex, EWidgetCall InWidgetCall);
 	void RefreshProduceDetail();
 	void StartProduce();
@@ -64,6 +67,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* WeaponPanel;
 	UPROPERTY(meta = (BindWidget))
+		class UWrapBox* HarvestPanel;
+	UPROPERTY(meta = (BindWidget))
 		class UCProduceDetail* ProduceDetail;
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* ProduceQueue;
@@ -84,4 +89,5 @@ private:
 	FName SelectedBuildID;
 	FName SelectedToolID;
 	FName SelectedWeaponID;
+	FName SelectedHarvestID;
 };

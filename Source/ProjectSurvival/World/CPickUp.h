@@ -35,14 +35,14 @@ public:
 	//Pickup은 월드에 등록된 데이터베이스에서 PickUp 데이터의 참조가 가능함 
 	void InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, const int32 InQuantity);
 	//반면 아이템을 Drop 할 때는 에디터와 데이터테이블에 등록이 되어 있지 않아 별도의 함수로 처리를 해 주어야 함
-	void InitializeDrop(FName ItemID, const int32 InQuantity);
+	void InitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability = -1);
 	void PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity);
 	
 	//Drop&PickUp 리플리케이트
 	UFUNCTION(Server, Reliable)
-	void RequestInitializeDrop(FName ItemID, const int32 InQuantity);
+	void RequestInitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability = -1);
 	UFUNCTION(NetMulticast, Reliable)
-	void BroadCastInitializeDrop(FName ItemID, const int32 InQuantity);
+	void BroadCastInitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability = -1);
 //	UFUNCTION(Server, Reliable)
 //		void RequestDestroy();
 	UFUNCTION(NetMulticast, Reliable)

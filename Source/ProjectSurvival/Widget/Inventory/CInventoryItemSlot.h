@@ -73,6 +73,7 @@ public:
 	int32 GetUniqueItemIndexInWrapBox() { return UniqueItemIndexInWrapBox; }
 	void SetUniqueItemIndexInWrapBox(int32 InIndex) { UniqueItemIndexInWrapBox = InIndex; }
 	void SetItemQuantityText(int32 InQuantity);
+	void SetRemainDurability(int32 InDurability);
 
 protected:
 
@@ -95,6 +96,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
 	class UTextBlock* ItemQuantity; // 수량 
+
+	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
+	class UProgressBar* DurabilityProgressBar; // 내구도 
 
 	UPROPERTY(VisibleAnywhere, Category = "HUD")
 	class ACMainHUD* HUDReference; //SubMenu를 표시할 HUD 

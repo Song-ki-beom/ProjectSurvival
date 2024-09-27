@@ -43,10 +43,12 @@ public:
 	void ExtraOptionButtonUp();
 	void ExtraOptionButtonDown();
 	void AddEarnedInfo(class UObject* EarnedItem);
-	class UCProduceWidget* GetProduceWidget() { return ProduceWidget; }
+	class UCProduceWidget* GetSurvivorProduceWidget() { return SurvivorProduceWidget; }
 	class UCInventoryMenu* GetSurvivorInventoryWidget() { return SurvivorInventoryWidget; }
 	class UCQuickSlot* GetQuickSlotWidget() { return QuickSlot; }
 	class UCInventorySubMenu* GetInventorySubMenu() { return InventorySubMenuWidget; }
+	class UCInteractionWidget* GetInteractionWidget() { return InteractionWidget; }
+	class UCProduceWidget* GetPlaceableProduceWidget() { return PlaceableProduceWidget; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -70,11 +72,11 @@ protected:
 	UPROPERTY()
 		class UCInventorySubMenu* InventorySubMenuWidget;
 	UPROPERTY()
-		class UCProduceWidget* ProduceWidget;
+		class UCProduceWidget* SurvivorProduceWidget;
 	UPROPERTY()
-		class UUserWidget* ActorInventoryWidget;
+		class UCInventoryPanel_Placeable* PlaceableInventoryWidget;
 	UPROPERTY()
-		class UUserWidget* ActorProduceWidget;
+		class UCProduceWidget* PlaceableProduceWidget;
 	UPROPERTY()
 		class UCEarnInfoPanel* EarnInfoPanel;
 	UPROPERTY()

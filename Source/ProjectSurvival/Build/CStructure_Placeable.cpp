@@ -64,13 +64,17 @@ void ACStructure_Placeable::BeginPlay()
 			{
 			case EPlaceableStructureType::WorkingBench:
 				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
-				// 생산 아이템 추가
-				PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 15);
+				// 작업대 생산 아이템 추가
+				PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 16);
 				PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
 				PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
 				break;
 			case EPlaceableStructureType::Furnace:
 				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
+				// 화로 생산 아이템 추가
+				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed);
+				PlaceableProduceWidget->SetProducePanelSwitcherIndex(3);
+				PlaceableProduceWidget->CreateHarvestProduceItemSlot(5, 5);
 				break;
 			default:
 				break;
@@ -190,13 +194,16 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 		CDebug::Print("Survivor is not valid");
 }
 
-void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType)
+void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats)
 {
 	FItemInformation addedItemInfo;
 	addedItemInfo.ItemID = InID;
 	addedItemInfo.Quantity = InQuantity;
 	addedItemInfo.NumericData = InNumericData;
 	addedItemInfo.ItemType = InItemType;
+	CDebug::Print("PerformAddItem Durability : ", InItemStats.RemainDurability);
+	addedItemInfo.ItemStats = InItemStats;
+
 	// 스택이 가능한 아이템인지 검사
 	if (addedItemInfo.NumericData.bIsStackable)
 	{
@@ -213,7 +220,7 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 				ItemInfoArray[resultIndex].Quantity += addQuantity;
 
 				// 최대 스택만큼 더하고 남은 양만큼 다시 PerformAddItem 호출
-				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData ,addedItemInfo.ItemType);
+				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData, addedItemInfo.ItemType, addedItemInfo.ItemStats);
 			}
 			else
 				ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
@@ -222,12 +229,11 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	else
 		ItemInfoArray.Add(addedItemInfo);
 
-	// 클라이언트에서 AddItemInfoToWidget() 호출하기위한 OnRep_WidgetRefreshTrigger 트리거
-	WidgetRefreshTrigger++;
-
 	// TArray는 리플리케이트 되더라도 특정 인덱스의 내용물만 바꾸는 것으로는 리플리케이트 되지 않음
 	// 새로 초기화 해주거나 행렬 원소 갯수가 변경되어야 리플리케이트가 적용됨
 	SharedItemInfoArray = ItemInfoArray;
+	// 클라이언트에서 AddItemInfoToWidget() 호출하기위한 OnRep_WidgetRefreshTrigger 트리거
+	WidgetRefreshTrigger++;
 
 	AddItemInfoToWidget();
 }
@@ -326,7 +332,7 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 			ItemCopy->Quantity = SharedItemInfoArray[tempIndex].Quantity;
 			ItemCopy->ItemType = itemData->ItemType;
 			ItemCopy->TextData = itemData->TextData;
-			ItemCopy->ItemStats = itemData->ItemStats;
+			ItemCopy->ItemStats = SharedItemInfoArray[tempIndex].ItemStats;
 			ItemCopy->NumericData = itemData->NumericData;
 			ItemCopy->AssetData = itemData->AssetData;
 			ItemCopy->bIsCopy = true;
@@ -381,16 +387,6 @@ bool ACStructure_Placeable::CheckMaxStack(const FItemInformation InItemInformati
 {
 	return ItemInfoArray[InIndex].Quantity + InItemInformation.Quantity > ItemInfoArray[InIndex].NumericData.MaxStackSize;
 }
-
-void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ACStructure_Placeable, WidgetRefreshTrigger);
-	DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
-}
-
-
 
 //타입 , 수량 순으로 정렬 
 void ACStructure_Placeable::PerformSortInfoWidget()
@@ -476,4 +472,12 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
 {
 	PlaceableProduceWidget->AddProduceItemToQueue(ItemID);
+}
+
+void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACStructure_Placeable, WidgetRefreshTrigger);
+	DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
 }

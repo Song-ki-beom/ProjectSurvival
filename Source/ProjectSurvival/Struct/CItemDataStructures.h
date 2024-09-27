@@ -21,7 +21,9 @@ struct FItemStats
 {
 	GENERATED_USTRUCT_BODY()
 	UPROPERTY(EditAnywhere)
-		float Durability;
+		int32 RemainDurability;
+	UPROPERTY(EditAnywhere)
+		int32 MaxDurability;
 	UPROPERTY(EditAnywhere)
 		float DamageValue;
 	UPROPERTY(EditAnywhere)
@@ -90,6 +92,8 @@ struct FProduceWidgetData :public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 public:
+	UPROPERTY(EditAnywhere)
+		bool bApplyRichText;
 	UPROPERTY(EditAnywhere)
 		float ProduceTime;
 	UPROPERTY(EditAnywhere)

@@ -47,8 +47,21 @@ FReply UCInventoryMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 	if (InKeyEvent.GetKey() == EKeys::E)
 	{
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
-		if (mainHUD)
-			mainHUD->GetProduceWidget()->StartProduce();
+		if (!mainHUD)
+			return FReply::Unhandled();
+
+		if (mainHUD->GetSurvivorProduceWidget() && mainHUD->GetSurvivorProduceWidget()->GetVisibility() == ESlateVisibility::Visible)
+		{
+			mainHUD->GetSurvivorProduceWidget()->StartProduce();
+			return FReply::Handled();
+		}
+
+		if (mainHUD->GetPlaceableProduceWidget() && mainHUD->GetPlaceableProduceWidget()->GetVisibility() == ESlateVisibility::Visible)
+		{
+			mainHUD->GetPlaceableProduceWidget()->StartProduce();
+			return FReply::Handled();
+		}
+
 		return FReply::Handled();
 	}
 
@@ -81,10 +94,11 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 	{
 		if (ItemDragDrop->DragStartWidget == WBP_InventoryPanel)
 		{
-			PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
+			int32 remainDurability = ItemDragDrop->SourceItem->ItemStats.RemainDurability;
+			PlayerCharacter->GetInventoryComponent()->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity, remainDurability);
 			ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
 			if (mainHUD)
-				mainHUD->GetProduceWidget()->RefreshProduceDetail();
+				mainHUD->GetSurvivorProduceWidget()->RefreshProduceDetail();
 
 			ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
 			if (survivorController)

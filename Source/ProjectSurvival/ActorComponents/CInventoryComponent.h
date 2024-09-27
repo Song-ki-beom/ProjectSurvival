@@ -80,12 +80,12 @@ public:
 
 
 	UFUNCTION(Category = "Inventory")
-	FItemAddResult HandleAddItem(class UCItemBase* InItem); //추가하려는 Item 에 대한 처리 
+	FItemAddResult HandleAddItem(class UCItemBase* InItem, bool bShowEarnWidget = true); //추가하려는 Item 에 대한 처리 
 
 
 	//Toggle Menu
 	//void ToggleMenu();
-	void DropItem(class UCItemBase* ItemToDrop, const int32 QuantityToDrop);
+	void DropItem(class UCItemBase* ItemToDrop, const int32 QuantityToDrop, int32 RemainDurability = -1);
 	void SwapItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	bool CombineItem(class UCItemBase* ItemOnBase, class UCItemBase* ItemFromDrag);
 	//Find
@@ -139,16 +139,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	FItemAddResult HandleNonStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount);
+	FItemAddResult HandleNonStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount, bool bShowEarnWidget);
 	int32 HandleStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateWeightAddAmount(UCItemBase* ItemIn, int32 RequestedAddAmount);
 	int32 CalculateNumberForFullStack(UCItemBase* StackableItem, int32 InitialRequestedAddAmount); //요청한 InitialRequestedAddAmount 에서 허용 가능한 용량을 새로 계산함 
 
 	void AddNewItem(UCItemBase* InItem, const int32 AmountToAdd);
 
-	void PerformDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
+	void PerformDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity, int32 RemainDurability = -1);
 	UFUNCTION(Server, Reliable)
-	void RequestDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity);
+	void RequestDropItem(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity, int32 RemainDurability = -1);
 	int32 FindItemIndex(UCItemBase* Item);
 
 

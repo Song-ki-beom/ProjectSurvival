@@ -385,30 +385,6 @@ void ACSurvivorController::FocusChattingBox()
 
 void ACSurvivorController::PressQuickSlot1()
 {
-	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
-	if (!mainHUD)
-		return;
-
-	UCQuickSlot* quickSlot = mainHUD->GetQuickSlotWidget();
-	if (!quickSlot)
-		return;
-
-	USizeBox* sizeBox = quickSlot->GetSizeBoxArray()[0];
-	if (!sizeBox)
-		return;
-
-	UCInventoryItemSlot* quickSlotItemWidget = Cast<UCInventoryItemSlot>(sizeBox->GetChildAt(0));
-	if (!quickSlotItemWidget)
-		return;
-
-	UCItemBase* quickSlotItem = quickSlotItemWidget->GetItemReference();
-	if (!quickSlotItem)
-		return;
-
-	if (quickSlotItem->ItemType == EItemType::Hunt)
-		CDebug::Print("quickSlot1 Item ID : ", quickSlotItem->ID, FColor::Blue);
-
-	// ID나 여러타입에 따른 스위치문함수 필요
 }
 
 void ACSurvivorController::PressQuickSlot2()
@@ -425,6 +401,33 @@ void ACSurvivorController::PressQuickSlot4()
 
 void ACSurvivorController::PressQuickSlot5()
 {
+	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
+	if (!mainHUD)
+		return;
+
+	UCQuickSlot* quickSlot = mainHUD->GetQuickSlotWidget();
+	if (!quickSlot)
+		return;
+
+	USizeBox* sizeBox = quickSlot->GetSizeBoxArray()[4];
+	if (!sizeBox)
+		return;
+
+	UCInventoryItemSlot* quickSlotItemWidget = Cast<UCInventoryItemSlot>(sizeBox->GetChildAt(0));
+	if (!quickSlotItemWidget)
+		return;
+
+	UCItemBase* quickSlotItem = quickSlotItemWidget->GetItemReference();
+	if (!quickSlotItem)
+		return;
+
+	if (quickSlotItem->ItemType == EItemType::Hunt)
+	{
+		int32 durability = quickSlotItem->ItemStats.RemainDurability--;
+		quickSlotItemWidget->SetRemainDurability(durability);
+	}
+
+	// ID나 여러타입에 따른 스위치문함수 필요
 }
 
 void ACSurvivorController::PressQuickSlot6()
@@ -447,9 +450,9 @@ void ACSurvivorController::PressQuickSlot10()
 {
 }
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType)
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats)
 {
-	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType);
+	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats);
 }
 
 void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)

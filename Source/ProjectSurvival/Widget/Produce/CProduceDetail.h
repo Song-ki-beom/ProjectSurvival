@@ -29,12 +29,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ProduceDetailWeight;
 	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* ProduceDetailTime;
+		class URichTextBlock* ProduceDetailTime;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ProduceDetailMethod;
 	UPROPERTY(meta = (BindWidget))
 		class UScrollBox* ProduceDetailRecipeScroll;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ProduceDetailFlavorText;
-
 };

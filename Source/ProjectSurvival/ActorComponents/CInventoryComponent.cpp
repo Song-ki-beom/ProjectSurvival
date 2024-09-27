@@ -122,7 +122,7 @@ int32 UCInventoryComponent::CalculateNumberForFullStack(UCItemBase* StackableIte
 
 
 //처음에 아이템을 받았을 때 여기서 처리 
-FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
+FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem, bool bShowEarnWidget)
 {
 	if (GetOwner())
 	{
@@ -130,7 +130,7 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 		//Stack 가능한 아이템이 아닐 때, 기존에 아이템이 없음
 		if (!InItem->NumericData.bIsStackable)
 		{	
-			return HandleNonStackableItems(InItem, InitialRequestedAddAmount);
+			return HandleNonStackableItems(InItem, InitialRequestedAddAmount, bShowEarnWidget);
 		}
 		
 		//Stack 가능한 아이템일 때, 기존에 Item이 존재하고 Stack 가능 개수가 남아있음 
@@ -177,7 +177,7 @@ FItemAddResult UCInventoryComponent::HandleAddItem(class UCItemBase* InItem)
 
 
 
-void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 QuantityToDrop)
+void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 QuantityToDrop, int32 RemainDurability)
 {
 	if (FindMatchingItem(ItemToDrop))
 	{
@@ -194,11 +194,11 @@ void UCInventoryComponent::DropItem(UCItemBase* ItemToDrop, const int32 Quantity
 		 FName ItemID = ItemToDrop->ID;
 		 if (OwnerCharacter->HasAuthority())
 		 {
-			 PerformDropItem(SpawnTransform, ItemID, RemovedQuantity);
+			 PerformDropItem(SpawnTransform, ItemID, RemovedQuantity, RemainDurability);
 		 }
 		 else
 		 {
-			 RequestDropItem(SpawnTransform, ItemID, RemovedQuantity);
+			 RequestDropItem(SpawnTransform, ItemID, RemovedQuantity, RemainDurability);
 		 }
 			 
 	}
@@ -251,7 +251,7 @@ bool UCInventoryComponent::CombineItem(UCItemBase* ItemOnBase, UCItemBase* ItemF
 
 }
 
-void UCInventoryComponent::PerformDropItem( const  FTransform SpawnTransform, FName ItemID,  const int32 RemovedQuantity)
+void UCInventoryComponent::PerformDropItem(const FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity, int32 RemainDurability)
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = OwnerCharacter;
@@ -260,17 +260,17 @@ void UCInventoryComponent::PerformDropItem( const  FTransform SpawnTransform, FN
 
 
 	ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams); 
-	Pickup->InitializeDrop(ItemID, RemovedQuantity);
+	Pickup->InitializeDrop(ItemID, RemovedQuantity, RemainDurability);
 
 	
 }
 
-void UCInventoryComponent::RequestDropItem_Implementation(const  FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity)
+void UCInventoryComponent::RequestDropItem_Implementation(const FTransform SpawnTransform, FName ItemID, const int32 RemovedQuantity, int32 RemainDurability)
 {
 
 	if (OwnerCharacter->HasAuthority())
 	{
-		PerformDropItem(SpawnTransform, ItemID, RemovedQuantity);
+		PerformDropItem(SpawnTransform, ItemID, RemovedQuantity, RemainDurability);
 	}
 }
 
@@ -278,7 +278,7 @@ void UCInventoryComponent::RequestDropItem_Implementation(const  FTransform Spaw
 
 
 //IsStackable 이 False 인 데이터 수납할 시, 중첩 불가 단일 개수 
-FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount)
+FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn, int32 RequestedAddAmount, bool bShowEarnWidget)
 {
 	{//return none check
 
@@ -305,9 +305,12 @@ FItemAddResult UCInventoryComponent::HandleNonStackableItems(UCItemBase* ItemIn,
 	}
 
 	//EarnedItem UI 표시
-	UCItemBase* EarnedItem = ItemIn->CreateItemCopy();
-	EarnedItem->Quantity = 1;
-	HUD->AddEarnedInfo(EarnedItem);
+	if (bShowEarnWidget)
+	{
+		UCItemBase* EarnedItem = ItemIn->CreateItemCopy();
+		EarnedItem->Quantity = 1;
+		HUD->AddEarnedInfo(EarnedItem);
+	}
 
 	AddNewItem(ItemIn, 1);
 	return FItemAddResult::AddedAll(RequestedAddAmount,FText::Format(FText::FromString("Successfully put  {0} X{1} Item into Inventoty"), ItemIn->TextData.Name, RequestedAddAmount));

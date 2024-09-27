@@ -137,15 +137,15 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 	}
 }
 
-void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity)
+void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability)
 {
 	if (this->HasAuthority())
 	{
-		BroadCastInitializeDrop(ItemID, InQuantity);
+		BroadCastInitializeDrop(ItemID, InQuantity, RemainDurability);
 	}
 	else
 	{
-		RequestInitializeDrop(ItemID, InQuantity);
+		RequestInitializeDrop(ItemID, InQuantity, RemainDurability);
 	}
 }
 
@@ -176,18 +176,20 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 	UpdateInteractableData();
 }
 
-void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
+void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity, int32 RemainDurability)
 {
-	InitializeDrop(ItemID, InQuantity);
+	InitializeDrop(ItemID, InQuantity, RemainDurability);
 }
 
-void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity)
+void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity, int32 RemainDurability)
 {
 	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemID, ItemID.ToString());
 	if (ItemData)
 	{
 		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
 		ItemToDrop->CopyFromItemData(*ItemData);
+		if (RemainDurability != -1)
+			ItemToDrop->ItemStats.RemainDurability = RemainDurability;
 		PerformInitializeDrop(ItemToDrop, InQuantity);
 	}
 }

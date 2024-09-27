@@ -15,6 +15,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
+#include "Components/ProgressBar.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Utility/CDebug.h"
 #include "Kismet/GameplayStatics.h"
@@ -81,7 +82,12 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 			ItemQuantity->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
+		if (ItemReference->ItemType != EItemType::Hunt)
+			DurabilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
+		else
+			SetRemainDurability(ItemReference->ItemStats.RemainDurability);
 
+		
 	}
 
 }
@@ -354,4 +360,15 @@ bool UCInventoryItemSlot::Split(int32 InputNum)
 void UCInventoryItemSlot::SetItemQuantityText(int32 InQuantity)
 {
 	ItemQuantity->SetText(FText::AsNumber(InQuantity));
+}
+
+void UCInventoryItemSlot::SetRemainDurability(int32 InDurability)
+{
+	if (ItemReference)
+	{
+		CDebug::Print("InDurability :", InDurability, FColor::Emerald);
+		CDebug::Print("MaxDurability :", ItemReference->ItemStats.MaxDurability, FColor::Emerald);
+
+		DurabilityProgressBar->SetPercent(static_cast<float>(InDurability) / static_cast<float>(ItemReference->ItemStats.MaxDurability));
+	}
 }

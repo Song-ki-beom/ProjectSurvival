@@ -48,11 +48,11 @@ void ACMainHUD::BeginPlay()
 
 	if (ProduceWidgetClass)
 	{
-		ProduceWidget = CreateWidget<UCProduceWidget>(GetWorld(), ProduceWidgetClass);
-		ProduceWidget->SetOwnerActor(nullptr, EWidgetCall::Survivor);
-		ProduceWidget->AddToViewport(5);
-		ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
-		ProduceWidget->bIsFocusable = true;
+		SurvivorProduceWidget = CreateWidget<UCProduceWidget>(GetWorld(), ProduceWidgetClass);
+		SurvivorProduceWidget->SetOwnerActor(nullptr, EWidgetCall::Survivor);
+		SurvivorProduceWidget->AddToViewport(5);
+		SurvivorProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+		SurvivorProduceWidget->bIsFocusable = true;
 	}
 
 	if (EarnInfoPanelClass)
@@ -113,21 +113,21 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 			SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		if (ProduceWidget)
+		if (SurvivorProduceWidget)
 		{
-			ProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
+			SurvivorProduceWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		if (ActorInventoryWidget)
+		if (PlaceableInventoryWidget)
 		{
-			ActorInventoryWidget->RemoveFromViewport();
-			ActorInventoryWidget = nullptr;
+			PlaceableInventoryWidget->RemoveFromViewport();
+			PlaceableInventoryWidget = nullptr;
 		}
 
-		if (ActorProduceWidget)
+		if (PlaceableProduceWidget)
 		{
-			ActorProduceWidget->RemoveFromViewport();
-			ActorProduceWidget = nullptr;
+			PlaceableProduceWidget->RemoveFromViewport();
+			PlaceableProduceWidget = nullptr;
 		}
 
 		const FInputModeGameOnly InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
@@ -154,26 +154,27 @@ void ACMainHUD::DisplayProduceWidget(EWidgetCall InWidgetCall, class UUserWidget
 	switch (InWidgetCall)
 	{
 	case EWidgetCall::Survivor:
-		if (ProduceWidget)
+		if (SurvivorProduceWidget)
 		{
 			FVector2D widgetSize = FVector2D(580, 850);
-			ProduceWidget->SetDesiredSizeInViewport(widgetSize);
-			ProduceWidget->SetVisibility(ESlateVisibility::Visible);
-			ProduceWidget->SetKeyboardFocus();
-			ProduceWidget->RefreshProduceDetail();
+			SurvivorProduceWidget->SetDesiredSizeInViewport(widgetSize);
+			SurvivorProduceWidget->SetVisibility(ESlateVisibility::Visible);
+			SurvivorProduceWidget->SetKeyboardFocus();
+			SurvivorProduceWidget->RefreshProduceDetail();
 		}
 		break;
 	case EWidgetCall::Placeable:
 		if (InActorProduceWidget)
 		{
-			ActorProduceWidget = InActorProduceWidget;
-			if (ActorProduceWidget)
+			PlaceableProduceWidget = Cast<UCProduceWidget>(InActorProduceWidget);
+			if (PlaceableProduceWidget)
 			{
 				FVector2D widgetSize = FVector2D(580, 850);
-				ActorProduceWidget->SetDesiredSizeInViewport(widgetSize);
-				ActorProduceWidget->SetVisibility(ESlateVisibility::Visible);
-				ActorProduceWidget->bIsFocusable = true;
-				ActorProduceWidget->AddToViewport(5);
+				PlaceableProduceWidget->SetDesiredSizeInViewport(widgetSize);
+				PlaceableProduceWidget->SetVisibility(ESlateVisibility::Visible);
+				PlaceableProduceWidget->bIsFocusable = true;
+				PlaceableProduceWidget->AddToViewport(5);
+				PlaceableProduceWidget->SetFocus();
 			}
 		}
 		break;
@@ -186,22 +187,25 @@ void ACMainHUD::DisplayActorInventory(EWidgetCall InWidgetCall, class UUserWidge
 {
 	if (InWidget)
 	{
-		ActorInventoryWidget = InWidget;
+		PlaceableInventoryWidget = Cast<UCInventoryPanel_Placeable>(InWidget);
 
-		switch (InWidgetCall)
+		if (PlaceableInventoryWidget)
 		{
-		case EWidgetCall::Placeable:
-		{
-			FVector2D widgetSize = FVector2D(590, 440);
-			FVector2D viewportSize;
-			GEngine->GameViewport->GetViewportSize(viewportSize);
-			ActorInventoryWidget->SetAlignmentInViewport(FVector2D(0.5f, 1.0f));
-			ActorInventoryWidget->SetPositionInViewport(FVector2D(viewportSize.X / 2, viewportSize.Y / 2 - 15.0f));
-			ActorInventoryWidget->SetDesiredSizeInViewport(widgetSize);
-			ActorInventoryWidget->bIsFocusable = true;
-			ActorInventoryWidget->SetVisibility(ESlateVisibility::Visible);
-			ActorInventoryWidget->AddToViewport(5);
-		}
+			switch (InWidgetCall)
+			{
+			case EWidgetCall::Placeable:
+			{
+				FVector2D widgetSize = FVector2D(590, 440);
+				FVector2D viewportSize;
+				GEngine->GameViewport->GetViewportSize(viewportSize);
+				PlaceableInventoryWidget->SetAlignmentInViewport(FVector2D(0.5f, 1.0f));
+				PlaceableInventoryWidget->SetPositionInViewport(FVector2D(viewportSize.X / 2, viewportSize.Y / 2 - 15.0f));
+				PlaceableInventoryWidget->SetDesiredSizeInViewport(widgetSize);
+				PlaceableInventoryWidget->bIsFocusable = true;
+				PlaceableInventoryWidget->SetVisibility(ESlateVisibility::Visible);
+				PlaceableInventoryWidget->AddToViewport(5);
+			}
+			}
 		}
 	}
 }

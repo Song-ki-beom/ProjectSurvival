@@ -22,12 +22,12 @@ public:
 		EItemType ItemType;
 	UPROPERTY()
 		FName ItemID;
-
 	UPROPERTY()
 		int32 Quantity;
-
 	UPROPERTY()
 		FItemNumericData NumericData;
+	UPROPERTY()
+		FItemStats ItemStats;
 };
 
 UCLASS()
@@ -52,7 +52,7 @@ public:
 	float GetPlaceableHeight() { return PlaceableHeight; }
 
 	//Add
-	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType);
+	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
 	//Remove
 	void PerformRemoveItem(int32 idxRemove);
 	void PerformRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove);
@@ -70,7 +70,8 @@ public:
 	//Split
 	void PerformSplitItem(int32 ItemIdx, int32 AmountToSplit);
 
-	
+	//PlaceableType
+	EPlaceableStructureType GetPlaceableStructureType() { return PlaceableStructureType; }
 	
 
 

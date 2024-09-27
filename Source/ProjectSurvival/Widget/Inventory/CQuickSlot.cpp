@@ -324,13 +324,14 @@ void UCQuickSlot::ProcessDragToInventoryMenu(UCItemBase* InItem)
 
         // FItemData ItemToDropData = ItemToDrop->CreateFItemData(ItemToDrop);
         FName ItemID = InItem->ID;
+        int32 remainDurability = InItem->ItemStats.RemainDurability;
         if (survivor->HasAuthority())
         {
-            survivor->GetInventoryComponent()->PerformDropItem(SpawnTransform, ItemID, 1);
+            survivor->GetInventoryComponent()->PerformDropItem(SpawnTransform, ItemID, 1, remainDurability);
         }
         else
         {
-            survivor->GetInventoryComponent()->RequestDropItem(SpawnTransform, ItemID, 1);
+            survivor->GetInventoryComponent()->RequestDropItem(SpawnTransform, ItemID, 1, remainDurability);
         }
     }
     else if (InItem->ItemType == EItemType::Consumable)
@@ -346,7 +347,7 @@ void UCQuickSlot::ProcessDragToInventoryPanel(UCItemBase* InItem)
             return;
 
         RemoveQuickSlotItem(InItem);
-        survivor->GetInventoryComponent()->HandleAddItem(InItem);
+        survivor->GetInventoryComponent()->HandleAddItem(InItem, false);
     }
     else if (InItem->ItemType == EItemType::Consumable)
         RemoveQuickSlotItem(InItem);

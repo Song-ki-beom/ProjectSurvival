@@ -94,7 +94,7 @@ private:
 public:
 	// 서버 RPC 함수 테스트
 	UFUNCTION(Server, Reliable)
-		void RequestAddItem(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType);
+		void RequestAddItem(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats);
 	UFUNCTION(Server, Reliable)
 		void RequestSwapItem(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)

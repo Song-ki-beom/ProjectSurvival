@@ -41,9 +41,9 @@ FReply UCInventoryPanel_Placeable::NativeOnKeyDown(const FGeometry& InGeometry, 
 
 	if (InKeyEvent.GetKey() == EKeys::E)
 	{
-		ACMainHUD* mainHUD = Cast<ACMainHUD>(GetOwningPlayer()->GetHUD());
-		if (mainHUD)
-			mainHUD->GetProduceWidget()->StartProduce();
+		if (OwnerActor && OwnerActor->GetPlaceableProduceWidget())
+			OwnerActor->GetPlaceableProduceWidget()->StartProduce();
+
 		return FReply::Handled();
 	}
 
@@ -210,12 +210,12 @@ void UCInventoryPanel_Placeable::AddItem(class UCItemBase* InItem, const int32 Q
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType);
+			placeableActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
 		{
-			playerController->RequestAddItem(InItem->ID, QuantityToAdd, placeableActor, InItem->NumericData, InItem->ItemType);
+			playerController->RequestAddItem(InItem->ID, QuantityToAdd, placeableActor, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
 		}
 		);
 

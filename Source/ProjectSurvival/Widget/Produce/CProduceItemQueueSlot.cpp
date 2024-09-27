@@ -163,7 +163,7 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 			}
 			case EWidgetCall::Placeable:
 				if (this->GetOwningPlayer()->HasAuthority())
-					produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType);
+					produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
 				break;
 			}
 		}

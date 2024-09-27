@@ -35,7 +35,7 @@ void UCProduceWidget::NativeConstruct()
 		if (Survivor)
 		{
 			SetProduceWindowName(FText::FromString(TEXT("제작 - 생존자")));
-			CreateBuildProduceItemSlot(1, 15);
+			CreateBuildProduceItemSlot(1, 16);
 			CreateToolProduceItemSlot(1, 2);
 			CreateWeaponProduceItemSlot(3, 4);
 		}
@@ -114,6 +114,19 @@ bool UCProduceWidget::Initialize()
 void UCProduceWidget::SetProduceWindowName(FText InText)
 {
 	ProduceWindowName->SetText(InText);
+}
+
+void UCProduceWidget::SetButtonVisivility(ESlateVisibility BuildVisibility, ESlateVisibility ToolVisibility, ESlateVisibility WeaponVisibility)
+{
+	BuildStructureSelectButton->SetVisibility(BuildVisibility);
+	ToolSelectButton->SetVisibility(BuildVisibility);
+	WeaponSelectButton->SetVisibility(BuildVisibility);
+}
+
+void UCProduceWidget::SetProducePanelSwitcherIndex(int32 InIndex)
+{
+	if (ProducePanelSwitcher)
+		ProducePanelSwitcher->SetActiveWidgetIndex(InIndex);
 }
 
 void UCProduceWidget::CreateBuildProduceItemSlot(int32 StartIndex, int32 EndIndex)
@@ -200,6 +213,34 @@ void UCProduceWidget::CreateWeaponProduceItemSlot(int32 StartIndex, int32 EndInd
 	}
 }
 
+void UCProduceWidget::CreateHarvestProduceItemSlot(int32 StartIndex, int32 EndIndex)
+{
+	UClass* produceItemSlotClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemSlot.WBP_CProduceItemSlot_C'"));
+
+	// DT_Items 변동사항 발생 시 수정 필요, Harvest 관련 ProduceItemSlot추가
+	for (int32 i = StartIndex; i <= EndIndex; i++)
+	{
+		UCProduceItemSlot* produceItemSlot = CreateWidget<UCProduceItemSlot>(this, produceItemSlotClass);
+		if (produceItemSlot)
+		{
+			FName itemRowName = FName(*FString::Printf(TEXT("Harvest_%d"), i));
+			FItemData* itemData = ItemData->FindRow<FItemData>(itemRowName, TEXT(""));
+			if (itemData)
+			{
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemSlot->SetProduceSlotIcon(itemIcon);
+				produceItemSlot->SetProduceSlotID(itemRowName);
+				HarvestPanel->AddChild(produceItemSlot);
+			}
+			else
+				CDebug::Print("itemData is Not Valid");
+
+		}
+		else
+			CDebug::Print("produceItemSlot is Not Valid");
+	}
+}
+
 void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall InWidgetCall)
 {
 	FItemData* itemData = nullptr;
@@ -218,6 +259,9 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 		SelectedWeaponID = InID;
 		itemData = ItemData->FindRow<FItemData>(SelectedWeaponID, TEXT(""));
 		break;
+	case 3:
+		SelectedWeaponID = InID;
+		itemData = ItemData->FindRow<FItemData>(SelectedHarvestID, TEXT(""));
 	default:
 		break;
 	}
@@ -242,15 +286,36 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 		{
 		case EWidgetCall::Survivor:
 		{
-			FText survivorItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime));
-			ProduceDetail->SetProduceDetailTime(survivorItemProduceTimeText);
+			FText workingBenchItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime));
+			ProduceDetail->SetProduceDetailTime(workingBenchItemProduceTimeText);
 			break;
 		}
 		case EWidgetCall::Placeable:
 		{
-			FText placeableItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime / 2));
-			ProduceDetail->SetProduceDetailTime(placeableItemProduceTimeText);
-			break;
+			switch (OwnerActor->GetPlaceableStructureType())
+			{
+				case EPlaceableStructureType::WorkingBench:
+				{
+					if (itemData->ProduceData.bApplyRichText)
+					{
+						FText workingBenchItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: <GrayStrike>{0}초</> -> <Green>{1}초</>")), FText::AsNumber(itemProduceTime), FText::AsNumber(itemProduceTime / 2));
+						ProduceDetail->SetProduceDetailTime(workingBenchItemProduceTimeText);
+					}
+					else
+					{
+						FText workingBenchItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime));
+						ProduceDetail->SetProduceDetailTime(workingBenchItemProduceTimeText);
+					}
+					break;
+				}
+				default:
+				{
+					FText workingBenchItemProduceTimeText = FText::Format(FText::FromString(TEXT("제작 시간: {0}초")), FText::AsNumber(itemProduceTime));
+					ProduceDetail->SetProduceDetailTime(workingBenchItemProduceTimeText);
+					break;
+				}
+			}
+
 		}
 		default:
 		{
@@ -522,6 +587,14 @@ void UCProduceWidget::RefreshProduceDetail()
 			SetProduceDetail(SelectedWeaponID, 2, WidgetCall);
 		}
 		break;
+	case 3:
+		if (!SelectedHarvestID.IsNone())
+			SetProduceDetail(SelectedHarvestID, 3, WidgetCall);
+		else
+		{
+			SelectedHarvestID = "Harvest_5";
+			SetProduceDetail(SelectedHarvestID, 3, WidgetCall);
+		}
 	default:
 		break;
 	}
@@ -560,8 +633,13 @@ void UCProduceWidget::StartProduce()
 			ProduceDetail->ProducePlaceableItem(SelectedBuildID, OwnerActor);
 			break;
 		case 1:
+			ProduceDetail->ProducePlaceableItem(SelectedToolID, OwnerActor);
 			break;
 		case 2:
+			ProduceDetail->ProducePlaceableItem(SelectedWeaponID, OwnerActor);
+			break;
+		case 3:
+			ProduceDetail->ProducePlaceableItem(SelectedHarvestID, OwnerActor);
 			break;
 		default:
 			break;
@@ -588,8 +666,30 @@ void UCProduceWidget::AddProduceItemToQueue(FName InID)
 				produceItemQueueSlot->SetProduceQueueSlotIcon(itemIcon);
 				
 				int32 produceTime = itemData->ProduceData.ProduceTime;
-				FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(produceTime));
-				produceItemQueueSlot->SetProduceTimeText(produceTimeText);
+				
+				if (OwnerActor)
+				{
+					switch (OwnerActor->GetPlaceableStructureType())
+					{
+						case EPlaceableStructureType::WorkingBench:
+						{
+							FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(produceTime / 2));
+							produceItemQueueSlot->SetProduceTimeText(produceTimeText);
+							break;
+						}
+						default:
+						{
+							FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(produceTime));
+							produceItemQueueSlot->SetProduceTimeText(produceTimeText);
+							break;
+						}
+					}
+				}
+				else
+				{
+					FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(produceTime));
+					produceItemQueueSlot->SetProduceTimeText(produceTimeText);
+				}
 				
 				FText produceItemName = itemData->TextData.Name;
 				produceItemQueueSlot->SetProduceItemName(produceItemName);

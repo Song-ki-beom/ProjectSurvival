@@ -4,6 +4,7 @@
 #include "World/CPickUp.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInteractionWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 #include "Character/CSurvivor.h"
@@ -291,7 +292,7 @@ void UCInteractionComponent::BeginInteract()
 	{
 		if (IsValid(TargetInteractable.GetObject()))
 		{
-			TargetInteractable->BeginInteract(); // 이후 지울것
+			//TargetInteractable->BeginInteract(); // 이후 지울것
 		}
 		Interact(false);
 	}
@@ -344,6 +345,9 @@ void UCInteractionComponent::InteractAroundPlayer()
 
 void UCInteractionComponent::GatherAround()
 {
+	if (HUD && HUD->GetInteractionWidget()->GetVisibility() == ESlateVisibility::Visible)
+		return;
+
 	float SphereRadius = 200.0f; // 탐색 반지름 설정
 
 	FVector TraceStart = OwnerCharacter->GetActorLocation();
