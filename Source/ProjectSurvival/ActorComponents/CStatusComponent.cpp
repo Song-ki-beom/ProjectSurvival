@@ -76,7 +76,7 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
 	BroadcastUpdateHealth(NewHealth);
 	
-	if(NewHealth/ MaxHealth <0.3f)
+	if(NewHealth/ MaxHealth <0.45f)
 	{
 		OnLowHealthDetected.Broadcast();
 	}

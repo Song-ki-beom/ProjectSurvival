@@ -76,7 +76,10 @@ public:
 	{
 		Blackboard = InBlackboard;
 	}
-
+	FORCEINLINE UBlackboardComponent* GetBlackboard()
+	{
+		return Blackboard;
+	}
 
 };
 

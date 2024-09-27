@@ -249,7 +249,24 @@ void ACEnemy::End_DoAction()
 	MovingComponent->DisableControlRotation();
 }
 
+void ACEnemy::DoEncounter()
+{
+	if (HasAuthority())
+	{
+		BroadcastDoSpecialAction(ESpecialState::Encounter);
+	}
 
+}
+
+void ACEnemy::PerformDoSpecialAction(ESpecialState SpecialState)
+{
+	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+}
+
+void ACEnemy::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
+{
+	PerformDoSpecialAction(SpecialState);
+}
 
 
 void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

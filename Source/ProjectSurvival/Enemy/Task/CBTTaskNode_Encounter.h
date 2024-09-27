@@ -4,31 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "CBTTaskNode_Roam.generated.h"
+#include "CBTTaskNode_Encounter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTSURVIVAL_API UCBTTaskNode_Roam : public UBTTaskNode
+class PROJECTSURVIVAL_API UCBTTaskNode_Encounter : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 public:
-	UCBTTaskNode_Roam();
+	UCBTTaskNode_Encounter();
 protected:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
-protected:
-	UPROPERTY(EditAnywhere, Category = "Patrol")
-		bool bDebugMode = true;
-	UPROPERTY(EditAnywhere, Category = "Patrol")
-		float AcceptanceDistance = 50;
-	UPROPERTY(EditAnywhere, Category = "Patrol")
-		float RandomRadius = 1200;
-
 private:
-	void  DrawDebug(UWorld* InWorld, FVector InLocation);
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+		FBlackboardKeySelector EncounterKey;
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+		FBlackboardKeySelector TargetKey;
+	class ACEnemyAIController* Controller;
+	class ACEnemy* OwnerEnemy;
+	class UCEnemyAIComponent* AIComponent;
+	class UCMovingComponent* MovingComponent;
+
 };
