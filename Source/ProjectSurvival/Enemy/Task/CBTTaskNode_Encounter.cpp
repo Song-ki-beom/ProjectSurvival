@@ -16,7 +16,7 @@
 UCBTTaskNode_Encounter::UCBTTaskNode_Encounter()
 {
     NodeName = "Encounter";
-    bNotifyTick = false;
+    bNotifyTick = true;
 }
 
 EBTNodeResult::Type UCBTTaskNode_Encounter::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
