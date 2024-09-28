@@ -33,15 +33,15 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 
 
 		//Destructible Mesh DataTable Load
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_Destructible.DT_Destructible'"));
-	if (DataTable_BP.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UDataTable> DSDataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/DT_Destructible.DT_Destructible'"));
+	if (DSDataTable_BP.Succeeded())
 	{
-		DestructibleDataTable = DataTable_BP.Object;
+		DestructibleDataTable = DSDataTable_BP.Object;
 	}
 
 	//Hit DataTable Load
 	static ConstructorHelpers::FObjectFinder<UDataTable> HitDataTable_BP(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/HitData/DT_HitData.DT_HitData'"));
-	if (DataTable_BP.Succeeded())
+	if (HitDataTable_BP.Succeeded())
 	{
 		HitDataTable = HitDataTable_BP.Object;
 	}
