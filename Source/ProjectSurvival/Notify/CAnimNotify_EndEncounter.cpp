@@ -23,6 +23,7 @@ void UCAnimNotify_EndEncounter::Notify(USkeletalMeshComponent* MeshComp, UAnimSe
 	if (MeshComp == nullptr) return;
 	if (MeshComp->GetOwner() == nullptr) return;
 	UCEnemyAIComponent* EnemyAIComponent = Cast<UCEnemyAIComponent>(MeshComp->GetOwner()->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
-	EnemyAIComponent->GetBlackboard()->SetValueAsBool(FName("HasEncountered"), true);
+	if(MeshComp->GetOwner()->HasAuthority())
+		EnemyAIComponent->GetBlackboard()->SetValueAsBool(FName("bHasEncountered"), true);
 
 }

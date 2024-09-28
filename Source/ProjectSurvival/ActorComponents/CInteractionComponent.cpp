@@ -56,13 +56,6 @@ void UCInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 }
 
-//void UCInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-//	
-//	
-//
-//}
 
 bool UCInteractionComponent::IsInteracting() const
 {
@@ -74,7 +67,7 @@ bool UCInteractionComponent::IsInteracting() const
 void UCInteractionComponent::DoInteract()
 {
 	// 상세 정보 타이머 시작
-	bIsLongPress = false;
+	
 	GetWorld()->GetTimerManager().SetTimer(LongPressTimerHandle, this, &UCInteractionComponent::ToggleHiddenMenu, 0.5f, false);
 
 	//주위 범위 상호작용 트리거 타이머 시작 

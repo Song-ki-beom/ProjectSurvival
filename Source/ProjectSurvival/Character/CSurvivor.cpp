@@ -331,7 +331,8 @@ void ACSurvivor::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
-		HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		TArray<FHitData> HitDatas;
+			HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
 		if (HitData && HitData->Montage)
 		{
 			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);

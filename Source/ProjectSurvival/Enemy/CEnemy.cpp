@@ -279,80 +279,95 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	/*DamageData.Character = Cast<ACharacter>(EventInstigator->GetPawn());
-	DamageData.Causer = DamageCauser;*/
-	DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
+	if (this->HasAuthority())
+	{
+		//네트워크에서 액터 ID 식별하는 과정
+		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(EventInstigator->GetPawn());
+		if (!InstigatorNetGUID.IsValid()) return -1;
+		DamageData.CharacterID = InstigatorNetGUID.Value;
+		FNetworkGUID CauserNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(DamageCauser);
+		if (!CauserNetGUID.IsValid()) return -1;
+		DamageData.CauserID = CauserNetGUID.Value;
+		DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
 
-	
+
+
+	}
+
 	if (!DamageData.HitID.IsNone())
 	{
-		if (HasAuthority())
-			ApplyHitData();
+		BroadCastApplyHitData(DamageData);
 	}
 
 	return damage;
 
 }
 
+
+void ACEnemy::BroadCastApplyHitData_Implementation(FDamageData InDamageData)
+{
+	if (!HasAuthority())
+	{
+		DamageData = InDamageData;
+	}
+	ApplyHitData();
+}
+
+
+
 void ACEnemy::ApplyHitData()
 {
+	
 	UDataTable* HitDataTable = nullptr;
 	if (GameInstance)
 	{
 		HitDataTable = GameInstance->HitDataTable;
 	}
 
+
 	if (HitDataTable != nullptr)
 	{
-		FHitData* Row = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
-		if (Row && Row->Montage)
+		HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		if (HitData && HitData->Montage)
 		{
-			MontageComponent->Montage_Play(Row->Montage, Row->PlayRate);
+			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
+			if (StatusComponent != nullptr && this->HasAuthority())
+			{
+				StatusComponent->ApplyDamage(HitData->DamageAmount);
+			}
+			HitData->PlaySoundWave(this);
+			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			HitData->PlayCameraShake(PlayerController, 1.0f);
 		}
+
+
+		if (!StatusComponent->IsDead())
+		{
+			FVector start = GetActorLocation();
+			UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
+			AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
+			FVector target = targetActor->GetActorLocation();
+			FVector direction = target - start;
+			direction = direction.GetSafeNormal();
+
+			//Look At
+			FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
+			LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
+			SetActorRotation(LookAtRotation);
+			LaunchCharacter(-direction * HitData->Launch, false, false);
+		}
+		if (StatusComponent->IsDead())
+		{
+			//StatusComponent->SetDeadMode();
+			return;
+		}
+
+		DamageData.CharacterID = 0;
+		DamageData.CauserID = 0;
+		DamageData.HitID = "";
 	}
-	//StatusComponent->ApplyDamage(Damage.power);
-	//Damage.power = 0;
-
-	//// ���󺯰�
-	//{
-	//	Change_Color(this, FLinearColor::Red);
-	//	FTimerDelegate  timerDelegate;
-	//	timerDelegate.BindUFunction(this, "RestoreColor");
-	//	GetWorld()->GetTimerManager().SetTimer(RestoreColor_TimerHandle, timerDelegate, 0.2f, false);
-	//}
-
-	//// Montage->HitStop->Sound->Effect
-
-	//if (!!Damage.Event && !!Damage.Event->HitData)
-	//{
-	//	// Montage
-	//	Damage.Event->HitData->PlayMontage(this);
-	//	// HitStop
-	//	Damage.Event->HitData->PlayHitStop(GetWorld());
-	//	// Sound 
-	//	Damage.Event->HitData->PlaySoundWave(this);
-	//	// Effect 
-	//	Damage.Event->HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
-
-	//	if (!Status->IsDead())
-	//	{
-	//		FVector start = GetActorLocation();
-	//		FVector target = Damage.Character->GetActorLocation();
-	//		FVector direction = target - start; direction = direction.GetSafeNormal();
-
-	//		LaunchCharacter(-direction * Damage.Event->HitData->Launch, false, false);
-	//		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
-	//	}
-	//	if (Status->IsDead())
-	//	{
-	//		State->SetDeadMode();
-	//		return;
-	//	}
-	//}
-	////	Damage.Character = nullptr;
-	//Damage.Causer = nullptr;
-	//Damage.Event = nullptr;
-
+	
 
 }
 

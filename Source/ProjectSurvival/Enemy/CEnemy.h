@@ -52,10 +52,11 @@ public:
 	//virtual void Damage(FDamageData* DamageData) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser) override;
-
-
+	
 protected:
 	virtual void ApplyHitData();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadCastApplyHitData(FDamageData InDamageData);
 	virtual void Die();
 
 private:
@@ -63,6 +64,8 @@ private:
 	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
 	void RotateMeshToSlope(float InDeltaTime);
 
+
+	
 
 protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Protected 설정
 	//Mesh
@@ -90,9 +93,10 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	class UBoxComponent* BoxCollision;
 
 private:
-	//GameInstance <<- for HitData reference
 	class UCGameInstance* GameInstance;
-	
+	class UNetDriver* NetDriver;
+
+
 	//AI 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
@@ -122,6 +126,8 @@ private:
 
 	//Damage
 	FDamageData DamageData;
+	FHitData* HitData;
+
 public:
 //ForceInline Getter & Settter
 FORCEINLINE uint8 GetTeamID() { return TeamID; }
