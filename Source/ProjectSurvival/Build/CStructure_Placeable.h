@@ -70,13 +70,10 @@ public:
 	//Split
 	void PerformSplitItem(int32 ItemIdx, int32 AmountToSplit);
 
+	void AddItemInfoToWidget();
+
 	//PlaceableType
 	EPlaceableStructureType GetPlaceableStructureType() { return PlaceableStructureType; }
-	
-
-
-
-	void AddItemInfoToWidget();
 
 	UFUNCTION()
 		void OnRep_WidgetRefreshTrigger();
@@ -89,6 +86,13 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
+
+	//Fire
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSpawnFire();
+
+	void SetIgniteState(bool InValue) { bIsIgnited = InValue; }
+	bool GetIgniteState() { return bIsIgnited; }
 
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
@@ -132,4 +136,6 @@ private:
 		TArray<FItemInformation> ItemInfoArray;
 	UPROPERTY()
 		class UCProduceWidget* PlaceableProduceWidget;
+
+	bool bIsIgnited = false;
 };

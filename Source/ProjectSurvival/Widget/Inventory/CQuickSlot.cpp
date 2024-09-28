@@ -133,7 +133,12 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
             if (droppedSlotIndex != INDEX_NONE)
             {
                 if (itemDragDrop->SourceItem->ItemType == EItemType::Hunt)
-                    ProcessHuntItemInfo(itemDragDrop->SourceItem, droppedSlotIndex);
+                {
+                    if (itemDragDrop->DragStartWidget->IsA(UCQuickSlot::StaticClass()))
+                        ProcessHuntItemInfo(itemDragDrop->SourceItem, droppedSlotIndex, true);
+                    else
+                        ProcessHuntItemInfo(itemDragDrop->SourceItem, droppedSlotIndex, false);
+                }
                 else if (itemDragDrop->SourceItem->ItemType == EItemType::Consumable)
                     ProcessConsumableItemInfo(itemDragDrop->SourceItem, droppedSlotIndex);
             }
@@ -146,27 +151,28 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
     return false;
 }
 
-void UCQuickSlot::ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex)
+void UCQuickSlot::ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex, bool bDragStartFromQuickSlot)
 {
+    
     CDebug::Print("ProcessHuntItemInfo Called", FColor::Cyan);
-
+    
     UCInventoryItemSlot* itemSlot = CreateWidget<UCInventoryItemSlot>(this, InventorySlotClass);
     itemSlot->SetItemReference(InItem);
-
+    
     if (SizeBoxes[InIndex]->HasAnyChildren())
     {
         CDebug::Print("ClearChildren");
         SizeBoxes[InIndex]->ClearChildren();
     }
     SizeBoxes[InIndex]->AddChild(itemSlot);
-
+    
     for (int32 i = 0; i < SizeBoxes.Num(); i++)
     {
         if (!SizeBoxes[i]->HasAnyChildren() || i == InIndex)
             continue;
-
+    
         UCInventoryItemSlot* tempItemSlot = Cast<UCInventoryItemSlot>(SizeBoxes[i]->GetChildAt(0));
-
+    
         if (tempItemSlot->GetItemReference() == itemSlot->GetItemReference())
         {
             if (SizeBoxes[i]->HasAnyChildren())
@@ -174,12 +180,15 @@ void UCQuickSlot::ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex)
             break;
         }
     }
-
-    ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-    if (survivor)
+    
+    if (!bDragStartFromQuickSlot)
     {
-        survivor->GetInventoryComponent()->RemoveSingleItem(InItem);
-        survivor->GetInventoryComponent()->OnInventoryUpdated.Broadcast();
+        ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+        if (survivor)
+        {
+            survivor->GetInventoryComponent()->RemoveSingleItem(InItem);
+            survivor->GetInventoryComponent()->OnInventoryUpdated.Broadcast();
+        }
     }
 }
 

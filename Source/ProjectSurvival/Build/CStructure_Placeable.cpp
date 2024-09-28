@@ -68,11 +68,13 @@ void ACStructure_Placeable::BeginPlay()
 				PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 16);
 				PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
 				PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Collapsed);
+
 				break;
 			case EPlaceableStructureType::Furnace:
 				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
 				// 화로 생산 아이템 추가
-				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed);
+				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
 				PlaceableProduceWidget->SetProducePanelSwitcherIndex(3);
 				PlaceableProduceWidget->CreateHarvestProduceItemSlot(5, 5);
 				break;
@@ -308,13 +310,6 @@ void ACStructure_Placeable::PerformSplitItem(int32 ItemIdx, int32 AmountToSplit)
 	}
 }
 
-		
-
-
-	
-
-
-
 void ACStructure_Placeable::AddItemInfoToWidget()
 {
 	// 추가하기 전 UCItemBase 배열 초기화
@@ -368,6 +363,16 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 void ACStructure_Placeable::OnRep_WidgetRefreshTrigger()
 {
 	AddItemInfoToWidget();
+}
+
+void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
+{
+	PlaceableProduceWidget->AddProduceItemToQueue(ItemID);
+}
+
+void ACStructure_Placeable::BroadcastSpawnFire_Implementation()
+{
+	CDebug::Print("SpawnFire Called");
 }
 
 int32 ACStructure_Placeable::GetIndexOfNonFullStackByID(const FItemInformation InItemInformation)
@@ -467,11 +472,6 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 		// 병합
 		Merge(Array, Left, Mid, Right);
 	}
-}
-
-void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
-{
-	PlaceableProduceWidget->AddProduceItemToQueue(ItemID);
 }
 
 void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

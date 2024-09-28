@@ -1,5 +1,6 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Character/CSurvivor.h"
+#include "Character/CSurvivorController.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/Image.h"
@@ -13,6 +14,7 @@
 #include "Widget/Produce/CProduceItemSlot.h"
 #include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Widget/Inventory/CItemBase.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/CMainHUD.h"
 #include "Build/CStructure_Placeable.h"
@@ -32,20 +34,30 @@ void UCProduceWidget::NativeConstruct()
 	switch (WidgetCall)
 	{
 	case EWidgetCall::Survivor:
+	{
 		if (Survivor)
 		{
 			SetProduceWindowName(FText::FromString(TEXT("제작 - 생존자")));
 			CreateBuildProduceItemSlot(1, 16);
 			CreateToolProduceItemSlot(1, 2);
 			CreateWeaponProduceItemSlot(3, 4);
+			IgniteButton->GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 			CDebug::Print("Survivor is Not Valid");
 		break;
+	}
 	case EWidgetCall::Placeable:
+	{
+		CDebug::Print("Ignite Button Brush Saved");
+		IgniteButtonNormalBrush = IgniteButton->WidgetStyle.Normal;
+		IgniteButtonPressedBrush = IgniteButton->WidgetStyle.Pressed;
 		RefreshProduceDetail();
 		break;
 	}
+	}
+
+
 }
 
 FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -104,6 +116,9 @@ bool UCProduceWidget::Initialize()
 	if (!IsValid(WeaponSelectButton)) { CDebug::Print("WeaponSelectButton is invalid"); return false; }
 	WeaponSelectButton->OnClicked.AddDynamic(this, &UCProduceWidget::ClickWeaponButton);
 
+	if (!IsValid(IgniteButton)) { CDebug::Print("IgniteButton is invalid"); return false; }
+	IgniteButton->OnClicked.AddDynamic(this, &UCProduceWidget::ClickIgniteButton);
+
 	ItemData = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
 	if (!IsValid(ItemData))
 		CDebug::Print("ItemData is not Valid");
@@ -116,11 +131,12 @@ void UCProduceWidget::SetProduceWindowName(FText InText)
 	ProduceWindowName->SetText(InText);
 }
 
-void UCProduceWidget::SetButtonVisivility(ESlateVisibility BuildVisibility, ESlateVisibility ToolVisibility, ESlateVisibility WeaponVisibility)
+void UCProduceWidget::SetButtonVisivility(ESlateVisibility BuildVisibility, ESlateVisibility ToolVisibility, ESlateVisibility WeaponVisibility, ESlateVisibility IgniteVisibility)
 {
-	BuildStructureSelectButton->SetVisibility(BuildVisibility);
-	ToolSelectButton->SetVisibility(BuildVisibility);
-	WeaponSelectButton->SetVisibility(BuildVisibility);
+	BuildStructureSelectButton->GetParent()->SetVisibility(BuildVisibility);
+	ToolSelectButton->GetParent()->SetVisibility(ToolVisibility);
+	WeaponSelectButton->GetParent()->SetVisibility(WeaponVisibility);
+	IgniteButton->GetParent()->SetVisibility(IgniteVisibility);
 }
 
 void UCProduceWidget::SetProducePanelSwitcherIndex(int32 InIndex)
@@ -558,6 +574,7 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 
 void UCProduceWidget::RefreshProduceDetail()
 {
+	CDebug::Print("KKKKKKKKKKKKKKKKKKKK");
 	switch (ProducePanelSwitcher->GetActiveWidgetIndex())
 	{
 	case 0:
@@ -769,4 +786,50 @@ void UCProduceWidget::ClickWeaponButton()
 		CDebug::Print("ProducePanelSwitcher is not Valid");
 
 	WeaponSelectButton->GetTypedOuter<UUserWidget>()->SetFocus();
+}
+
+void UCProduceWidget::ClickIgniteButton()
+{
+	if (OwnerActor->GetIgniteState())
+	{
+		// 화로가 켜져있는 상태일때
+		FButtonStyle igniteButtonStyle = IgniteButton->WidgetStyle;
+		igniteButtonStyle.Normal = IgniteButtonNormalBrush;
+		igniteButtonStyle.Hovered = IgniteButtonNormalBrush;
+		igniteButtonStyle.Pressed = IgniteButtonPressedBrush;
+		IgniteButton->SetStyle(igniteButtonStyle);
+		OwnerActor->SetIgniteState(false);
+	}
+	else
+	{
+		// 화로가 꺼져있는 상태일때
+		for (UCItemBase* widgetItem : OwnerActor->GetPlaceableInventoryWidget()->GetWidgetItems())
+		{
+			if (widgetItem->ID == "Harvest_1")
+			{
+				if (widgetItem->Quantity == 1)
+					OwnerActor->GetPlaceableInventoryWidget()->RemoveItem(widgetItem);
+				else
+					OwnerActor->GetPlaceableInventoryWidget()->RemoveAmountOfItem(widgetItem, 1);
+
+				if (this->GetOwningPlayer()->HasAuthority())
+				{
+					OwnerActor->BroadcastSpawnFire();
+				}
+				else
+				{
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+					if (survivorController)
+						survivorController->RequestSpawnFire(OwnerActor);
+				}
+				FButtonStyle igniteButtonStyle = IgniteButton->WidgetStyle;
+				igniteButtonStyle.Normal = IgniteButtonPressedBrush;
+				igniteButtonStyle.Hovered = IgniteButtonPressedBrush;
+				igniteButtonStyle.Pressed = IgniteButtonPressedBrush;
+				IgniteButton->SetStyle(igniteButtonStyle);
+				OwnerActor->SetIgniteState(true);
+				break;
+			}
+		}
+	}
 }

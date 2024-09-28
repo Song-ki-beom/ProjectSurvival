@@ -109,5 +109,8 @@ public:
 		void RequestRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove, class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)
 		void RequestAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
+	UFUNCTION(Server, Reliable)
+		void RequestSpawnFire(class ACStructure_Placeable* InPlaceable);
+
 };
 

@@ -26,7 +26,7 @@ protected:
 public:
 	void SetOwnerActor(class ACStructure_Placeable* InActor, EWidgetCall InWidgetCall) { OwnerActor = InActor; WidgetCall = InWidgetCall; }
 	void SetProduceWindowName(FText InText);
-	void SetButtonVisivility(ESlateVisibility BuildVisibility, ESlateVisibility ToolVisibility, ESlateVisibility WeaponVisibility);
+	void SetButtonVisivility(ESlateVisibility BuildVisibility, ESlateVisibility ToolVisibility, ESlateVisibility WeaponVisibility, ESlateVisibility IgniteVisibility);
 	void SetProducePanelSwitcherIndex(int32 InIndex);
 	void CreateBuildProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void CreateToolProduceItemSlot(int32 StartIndex, int32 EndIndex);
@@ -48,6 +48,8 @@ private:
 		void ClickToolButton();
 	UFUNCTION()
 		void ClickWeaponButton();
+	UFUNCTION()
+		void ClickIgniteButton();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -58,6 +60,8 @@ private:
 		class UButton* ToolSelectButton;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* WeaponSelectButton;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* IgniteButton;
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* ProducePanelSwitcher;
 	UPROPERTY(meta = (BindWidget))
@@ -90,4 +94,8 @@ private:
 	FName SelectedToolID;
 	FName SelectedWeaponID;
 	FName SelectedHarvestID;
+
+	FSlateBrush IgniteButtonNormalBrush;
+	FSlateBrush IgniteButtonPressedBrush;
+	bool bIsIgniting = false;
 };

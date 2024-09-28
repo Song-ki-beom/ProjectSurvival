@@ -490,3 +490,8 @@ void ACSurvivorController::RequestAddProduceItemToQueue_Implementation(FName Ite
 {
 	InPlaceable->BroadcastAddProduceItemToQueue(ItemID, InPlaceable);
 }
+
+void ACSurvivorController::RequestSpawnFire_Implementation(class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->BroadcastSpawnFire();
+}

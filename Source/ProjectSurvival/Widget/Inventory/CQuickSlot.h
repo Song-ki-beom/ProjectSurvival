@@ -16,7 +16,7 @@ protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 public:
-	void ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex);
+	void ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex, bool bDragStartFromQuickSlot);
 	void ProcessConsumableItemInfo(class UCItemBase* InItem, int32 InIndex);
 	void RefreshConsumableQuantity();
 	void SwapItemInfo(class UCItemBase* DragStartWidgetItem, class UCItemBase* OwnerWidgetItem);
