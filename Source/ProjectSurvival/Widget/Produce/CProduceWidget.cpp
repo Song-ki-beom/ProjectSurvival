@@ -50,8 +50,6 @@ void UCProduceWidget::NativeConstruct()
 	case EWidgetCall::Placeable:
 	{
 		CDebug::Print("Ignite Button Brush Saved");
-		IgniteButtonNormalBrush = IgniteButton->WidgetStyle.Normal;
-		IgniteButtonPressedBrush = IgniteButton->WidgetStyle.Pressed;
 		RefreshProduceDetail();
 		break;
 	}
@@ -732,6 +730,24 @@ int32 UCProduceWidget::GetProducePanelSwitcherIndex()
 	return ProducePanelSwitcher->GetActiveWidgetIndex();
 }
 
+void UCProduceWidget::SetIgniteButtonOn()
+{
+	FButtonStyle igniteButtonStyle = IgniteButton->WidgetStyle;
+	igniteButtonStyle.Normal = OwnerActor->GetIgniteButtonPressedBrush();
+	igniteButtonStyle.Hovered = OwnerActor->GetIgniteButtonPressedBrush();
+	igniteButtonStyle.Pressed = OwnerActor->GetIgniteButtonPressedBrush();
+	IgniteButton->SetStyle(igniteButtonStyle);
+}
+
+void UCProduceWidget::SetIgniteButtonOff()
+{
+	FButtonStyle igniteButtonStyle = IgniteButton->WidgetStyle;
+	igniteButtonStyle.Normal = OwnerActor->GetIgniteButtonNormalBrush();
+	igniteButtonStyle.Hovered = OwnerActor->GetIgniteButtonNormalBrush();
+	igniteButtonStyle.Pressed = OwnerActor->GetIgniteButtonPressedBrush();
+	IgniteButton->SetStyle(igniteButtonStyle);
+}
+
 //void UCProduceWidget::Test_ShowPlaceableInventory()
 //{
 //	UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Inventory/WBP_CInventoryPanel_WorkingBench.WBP_CInventoryPanel_WorkingBench_C'"));
@@ -793,43 +809,55 @@ void UCProduceWidget::ClickIgniteButton()
 	if (OwnerActor->GetIgniteState())
 	{
 		// 화로가 켜져있는 상태일때
-		FButtonStyle igniteButtonStyle = IgniteButton->WidgetStyle;
-		igniteButtonStyle.Normal = IgniteButtonNormalBrush;
-		igniteButtonStyle.Hovered = IgniteButtonNormalBrush;
-		igniteButtonStyle.Pressed = IgniteButtonPressedBrush;
-		IgniteButton->SetStyle(igniteButtonStyle);
-		OwnerActor->SetIgniteState(false);
+		if (this->GetOwningPlayer()->HasAuthority())
+		{
+			OwnerActor->BroadcastExtinguish();
+		}
+		else
+		{
+			ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+			if (survivorController)
+				survivorController->RequestExtinguish(OwnerActor);
+		}
 	}
 	else
 	{
 		// 화로가 꺼져있는 상태일때
-		for (UCItemBase* widgetItem : OwnerActor->GetPlaceableInventoryWidget()->GetWidgetItems())
+		if (this->GetOwningPlayer()->HasAuthority())
 		{
-			if (widgetItem->ID == "Harvest_1")
+			if (CheckWoodResourceUsed())
 			{
-				if (widgetItem->Quantity == 1)
-					OwnerActor->GetPlaceableInventoryWidget()->RemoveItem(widgetItem);
-				else
-					OwnerActor->GetPlaceableInventoryWidget()->RemoveAmountOfItem(widgetItem, 1);
-
-				if (this->GetOwningPlayer()->HasAuthority())
-				{
-					OwnerActor->BroadcastSpawnFire();
-				}
-				else
-				{
-					ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-					if (survivorController)
-						survivorController->RequestSpawnFire(OwnerActor);
-				}
-				FButtonStyle igniteButtonStyle = IgniteButton->WidgetStyle;
-				igniteButtonStyle.Normal = IgniteButtonPressedBrush;
-				igniteButtonStyle.Hovered = IgniteButtonPressedBrush;
-				igniteButtonStyle.Pressed = IgniteButtonPressedBrush;
-				IgniteButton->SetStyle(igniteButtonStyle);
-				OwnerActor->SetIgniteState(true);
-				break;
+				OwnerActor->BroadcastIgnite();
+			}
+		}
+		else
+		{
+			if (CheckWoodResourceUsed())
+			{
+				ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+				if (survivorController)
+					survivorController->RequestIgnite(OwnerActor);
 			}
 		}
 	}
+}
+
+bool UCProduceWidget::CheckWoodResourceUsed()
+{
+	bool bIsWoodUsed = false;
+
+	for (UCItemBase* widgetItem : OwnerActor->GetPlaceableInventoryWidget()->GetWidgetItems())
+	{
+		if (widgetItem->ID == "Harvest_1")
+		{
+			if (widgetItem->Quantity == 1)
+				OwnerActor->GetPlaceableInventoryWidget()->RemoveItem(widgetItem);
+			else
+				OwnerActor->GetPlaceableInventoryWidget()->RemoveAmountOfItem(widgetItem, 1);
+
+			bIsWoodUsed = true;
+			break;
+		}
+	}
+	return bIsWoodUsed;
 }

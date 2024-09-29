@@ -74,6 +74,20 @@ void UCProduceItemQueueSlot::InitProduce()
 		ProduceTargetItem->AssetData = itemData->AssetData;
 		ProduceTargetItem->bIsCopy = true;
 	}
+
+	UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+	if (produceWidget)
+	{
+		if (produceWidget->GetOwnerActor())
+		{
+			bIsPlaceableOwner = true;
+
+			// 화력을 사용하는 Placeable인지 체크
+			if (produceWidget->GetOwnerActor()->GetPlaceableStructureType() == EPlaceableStructureType::Furnace)
+				IgniteUsingPlaceable = produceWidget->GetOwnerActor();
+		}
+	}
+
 	Survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
 	if (Survivor)
 		CDebug::Print("Survivor is Valid", FColor::White);
@@ -91,8 +105,6 @@ void UCProduceItemQueueSlot::InitProduce()
 
 void UCProduceItemQueueSlot::StartProduce()
 {
-	//CDebug::Print("StartProduce Called", FColor::White);
-
 	bIsProducing = true;
 
 	if (ProduceWidget)
@@ -109,26 +121,48 @@ void UCProduceItemQueueSlot::StartProduce()
 
 void UCProduceItemQueueSlot::SetProduceProgress()
 {
-	//CDebug::Print("Produce Timer ON", FColor::White);
-
-	int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
-	int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
-	
-	if (inventoryWeight + ProduceTargetItem->NumericData.Weight > totalWeight)
+	if (bIsPlaceableOwner)
 	{
-		GetWorld()->GetTimerManager().PauseTimer(ProgressTimerHandle);
-		GetWorld()->GetTimerManager().UnPauseTimer(PauseProgressTimerHandle);
+		if (IgniteUsingPlaceable)
+		{
+			if (!IgniteUsingPlaceable->GetIgniteState())
+			{
+				GetWorld()->GetTimerManager().PauseTimer(ProgressTimerHandle);
+				GetWorld()->GetTimerManager().UnPauseTimer(PauseProgressTimerHandle);
+
+				RemainProduceTime += 0.1f;
+				FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(RemainProduceTime, &FNumberFormattingOptions().SetMaximumFractionalDigits(1)));
+				ProduceTimeText->SetText(produceTimeText);
+
+				float progress = (TotalProduceTime - RemainProduceTime) / TotalProduceTime;
+				ProduceProgressBar->SetPercent(progress);
+
+				FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중단됨: {0} - 화력 부족")), ProduceItemName);
+				ProduceWidget->SetProducingItemText(produceItemNameText, FLinearColor::Yellow);
+			}
+		}
+	}
+	else
+	{
+		int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
+		int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
+
+		if (inventoryWeight + ProduceTargetItem->NumericData.Weight > totalWeight)
+		{
+			GetWorld()->GetTimerManager().PauseTimer(ProgressTimerHandle);
+			GetWorld()->GetTimerManager().UnPauseTimer(PauseProgressTimerHandle);
 
 
-		RemainProduceTime += 0.1f;
-		FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(RemainProduceTime, &FNumberFormattingOptions().SetMaximumFractionalDigits(1)));
-		ProduceTimeText->SetText(produceTimeText);
+			RemainProduceTime += 0.1f;
+			FText produceTimeText = FText::Format(FText::FromString(TEXT("{0}초")), FText::AsNumber(RemainProduceTime, &FNumberFormattingOptions().SetMaximumFractionalDigits(1)));
+			ProduceTimeText->SetText(produceTimeText);
 
-		float progress = (TotalProduceTime - RemainProduceTime) / TotalProduceTime;
-		ProduceProgressBar->SetPercent(progress);
+			float progress = (TotalProduceTime - RemainProduceTime) / TotalProduceTime;
+			ProduceProgressBar->SetPercent(progress);
 
-		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중단됨: {0} - 무게 초과")), ProduceItemName);
-		ProduceWidget->SetProducingItemText(produceItemNameText, FLinearColor::Yellow);
+			FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중단됨: {0} - 무게 초과")), ProduceItemName);
+			ProduceWidget->SetProducingItemText(produceItemNameText, FLinearColor::Yellow);
+		}
 	}
 
 	RemainProduceTime -= 0.1f;
@@ -141,48 +175,68 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 	if (RemainProduceTime <= 0.0f)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
-		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
-		if (produceWidget)
+		if (this->GetParent())
 		{
-			switch (produceWidget->GetWidgetCall())
+			UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+			if (produceWidget)
 			{
-			case EWidgetCall::Survivor:
-			{
-				Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
-				ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
-				if (survivorController)
+				switch (produceWidget->GetWidgetCall())
 				{
-					if (survivorController->GetBuildWidget())
-						survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ProduceItemID);
+				case EWidgetCall::Survivor:
+				{
+					Survivor->GetInventoryComponent()->HandleAddItem(ProduceTargetItem);
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+					if (survivorController)
+					{
+						if (survivorController->GetBuildWidget())
+							survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ProduceItemID);
+						else
+							CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+					}
 					else
-						CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+						CDebug::Print("survivorController is not Valid", FColor::Red);
+					break;
 				}
-				else
-					CDebug::Print("survivorController is not Valid", FColor::Red);
-				break;
+				case EWidgetCall::Placeable:
+					if (this->GetOwningPlayer()->HasAuthority())
+						produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
+					break;
+				}
 			}
-			case EWidgetCall::Placeable:
-				if (this->GetOwningPlayer()->HasAuthority())
-					produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
-				break;
-			}
+			EndProduce();
 		}
-		EndProduce();
 	}
 }
 
 void UCProduceItemQueueSlot::PauseProduceProgress()
 {
-	int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
-	int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
-
-	if (inventoryWeight < totalWeight)
+	if (bIsPlaceableOwner)
 	{
-		GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
-		GetWorld()->GetTimerManager().UnPauseTimer(ProgressTimerHandle);
+		if (IgniteUsingPlaceable)
+		{
+			if (IgniteUsingPlaceable->GetIgniteState())
+			{
+				GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
+				GetWorld()->GetTimerManager().UnPauseTimer(ProgressTimerHandle);
+				
+				FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
+				ProduceWidget->SetProducingItemText(produceItemNameText);
+			}
+		}
+	}
+	else
+	{
+		int32 totalWeight = Survivor->GetInventoryComponent()->GetWeightCapacity();
+		int32 inventoryWeight = Survivor->GetInventoryComponent()->GetInventoryTotalWeight();
 
-		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
-		ProduceWidget->SetProducingItemText(produceItemNameText);
+		if (inventoryWeight < totalWeight)
+		{
+			GetWorld()->GetTimerManager().PauseTimer(PauseProgressTimerHandle);
+			GetWorld()->GetTimerManager().UnPauseTimer(ProgressTimerHandle);
+
+			FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
+			ProduceWidget->SetProducingItemText(produceItemNameText);
+		}
 	}
 }
 
@@ -245,6 +299,72 @@ void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
 	}
 }
 
+void UCProduceItemQueueSlot::RemoveProduceItemQueueSlotWidget()
+{
+	if (bIsPlaceableOwner)
+	{
+		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+		if (produceWidget)
+		{
+			class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
+			if (wrapBox)
+			{
+				for (int32 i = 0; i < wrapBox->GetAllChildren().Num(); i++)
+				{
+					UWidget* itemSlot = wrapBox->GetChildAt(i);
+
+					if (itemSlot == this)
+					{
+						if (produceWidget->GetOwnerActor())
+						{
+							if (this->GetOwningPlayer()->HasAuthority())
+							{
+								produceWidget->GetOwnerActor()->BroadcastRemoveProduceItemFromQueue(i);
+							}
+							else
+							{
+								ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+								if (survivorController)
+									survivorController->RequestRemoveProduceItemFromQueue(produceWidget->GetOwnerActor(), i);
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
+		if (wrapBox)
+		{
+			CDebug::Print("wrapBox is valid");
+			wrapBox->RemoveChild(this);
+		}
+		else
+			CDebug::Print("wrapBox is not valid");
+
+		CheckWrapBox(wrapBox);
+	}
+}
+
+//void UCProduceItemQueueSlot::BroadcastRemoveProduceItemQueueSlotWidget_Implementation()
+//{
+//	CDebug::Print("BroadcastRemoveProduceItemQueueSlotWidget Called");
+//
+//	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
+//	if (wrapBox)
+//	{
+//		CDebug::Print("wrapBox is valid");
+//		wrapBox->RemoveChild(this);
+//	}
+//	else
+//		CDebug::Print("wrapBox is not valid");
+//
+//	CheckWrapBox(wrapBox);
+//}
+
 void UCProduceItemQueueSlot::CancleProduce()
 {
 	GetWorld()->GetTimerManager().ClearTimer(ProgressTimerHandle);
@@ -278,7 +398,17 @@ void UCProduceItemQueueSlot::CancleProduce()
 				cancleItem->AssetData = cancleResourceData->AssetData;
 				cancleItem->bIsCopy = true;
 
-				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+				if (bIsPlaceableOwner)
+				{
+					UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+					if (produceWidget)
+					{
+						if (produceWidget->GetOwnerActor())
+							produceWidget->GetOwnerActor()->GetPlaceableInventoryWidget()->AddItem(cancleItem, cancleItem->Quantity, produceWidget->GetOwnerActor());
+					}
+				}
+				else
+					Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
 			}
 		}
 	}
@@ -301,7 +431,17 @@ void UCProduceItemQueueSlot::CancleProduce()
 				cancleItem->AssetData = cancleResourceData->AssetData;
 				cancleItem->bIsCopy = true;
 
-				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+				if (bIsPlaceableOwner)
+				{
+					UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+					if (produceWidget)
+					{
+						if (produceWidget->GetOwnerActor())
+							produceWidget->GetOwnerActor()->GetPlaceableInventoryWidget()->AddItem(cancleItem, cancleItem->Quantity, produceWidget->GetOwnerActor());
+					}
+				}
+				else
+					Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
 			}
 		}
 	}
@@ -324,7 +464,17 @@ void UCProduceItemQueueSlot::CancleProduce()
 				cancleItem->AssetData = cancleResourceData->AssetData;
 				cancleItem->bIsCopy = true;
 
-				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+				if (bIsPlaceableOwner)
+				{
+					UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+					if (produceWidget)
+					{
+						if (produceWidget->GetOwnerActor())
+							produceWidget->GetOwnerActor()->GetPlaceableInventoryWidget()->AddItem(cancleItem, cancleItem->Quantity, produceWidget->GetOwnerActor());
+					}
+				}
+				else
+					Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
 			}
 		}
 	}
@@ -347,7 +497,17 @@ void UCProduceItemQueueSlot::CancleProduce()
 				cancleItem->AssetData = cancleResourceData->AssetData;
 				cancleItem->bIsCopy = true;
 
-				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+				if (bIsPlaceableOwner)
+				{
+					UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+					if (produceWidget)
+					{
+						if (produceWidget->GetOwnerActor())
+							produceWidget->GetOwnerActor()->GetPlaceableInventoryWidget()->AddItem(cancleItem, cancleItem->Quantity, produceWidget->GetOwnerActor());
+					}
+				}
+				else
+					Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
 			}
 		}
 	}
@@ -370,29 +530,25 @@ void UCProduceItemQueueSlot::CancleProduce()
 				cancleItem->AssetData = cancleResourceData->AssetData;
 				cancleItem->bIsCopy = true;
 
-				Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
+				if (bIsPlaceableOwner)
+				{
+					UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+					if (produceWidget)
+					{
+						if (produceWidget->GetOwnerActor())
+							produceWidget->GetOwnerActor()->GetPlaceableInventoryWidget()->AddItem(cancleItem, cancleItem->Quantity, produceWidget->GetOwnerActor());
+					}
+				}
+				else
+					Survivor->GetInventoryComponent()->HandleAddItem(cancleItem);
 			}
 		}
 	}
 	
-	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
-	if (wrapBox)
-	{
-		CDebug::Print("wrapBox is valid");
-		wrapBox->RemoveChild(this);
-	}
-	else
-		CDebug::Print("wrapBox is not valid");
-
-	CheckWrapBox(wrapBox);
+	RemoveProduceItemQueueSlotWidget();
 
 	if (ProduceWidget)
 		ProduceWidget->RefreshProduceDetail();
 	else
 		CDebug::Print("ProduceWidget is not Valid", FColor::White);
-}
-
-void UCProduceItemQueueSlot::GetCancleResource(UCItemBase* InItem)
-{
-
 }

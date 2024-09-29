@@ -25,13 +25,11 @@ public:
 	void PauseProduceProgress();
 	void EndProduce();
 	void CheckWrapBox(class UWrapBox* InWrapBox);
+	void RemoveProduceItemQueueSlotWidget();
 
 private:
 	UFUNCTION()
 		void CancleProduce();
-
-	void GetCancleResource(class UCItemBase* InItem);
-
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -43,7 +41,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UButton* ProduceCancleButton;
 
-	class UCProduceWidget* ProduceWidget;
+	UPROPERTY()
+		class UCProduceWidget* ProduceWidget;
 
 	bool bIsInitialized = false;
 	FName ProduceItemID;
@@ -54,8 +53,12 @@ private:
 	FTimerHandle PauseProgressTimerHandle;
 	float TotalProduceTime;
 	float RemainProduceTime;
+	bool bIsPlaceableOwner = false;
 
-
-	class ACSurvivor* Survivor;
-	class UCItemBase* ProduceTargetItem;
+	UPROPERTY()
+		class ACSurvivor* Survivor;
+	UPROPERTY()
+		class ACStructure_Placeable* IgniteUsingPlaceable;
+	UPROPERTY()
+		class UCItemBase* ProduceTargetItem;
 };

@@ -40,6 +40,12 @@ public:
 	int32 GetProducePanelSwitcherIndex();
 	EWidgetCall GetWidgetCall() { return WidgetCall; }
 	class ACStructure_Placeable* GetOwnerActor() { return OwnerActor; }
+	void SetIgniteButtonOn();
+	void SetIgniteButtonOff();
+
+	class UButton* GetIgniteButton() { return IgniteButton; }
+	bool CheckWoodResourceUsed();
+	class UWrapBox* GetProduceQueue() { return ProduceQueue; }
 
 private:
 	UFUNCTION()
@@ -50,6 +56,7 @@ private:
 		void ClickWeaponButton();
 	UFUNCTION()
 		void ClickIgniteButton();
+
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -95,7 +102,5 @@ private:
 	FName SelectedWeaponID;
 	FName SelectedHarvestID;
 
-	FSlateBrush IgniteButtonNormalBrush;
-	FSlateBrush IgniteButtonPressedBrush;
 	bool bIsIgniting = false;
 };

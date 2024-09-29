@@ -13,10 +13,12 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
-
-#include "Engine/World.h"
-#include "Engine/NetDriver.h"
-#include "Engine/PackageMapClient.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
+#include "Components/Button.h"
+#include "Components/WrapBox.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
 {
@@ -50,6 +52,8 @@ void ACStructure_Placeable::BeginPlay()
 			default:
 				break;
 			}
+
+
 		}
 
 
@@ -77,6 +81,10 @@ void ACStructure_Placeable::BeginPlay()
 				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
 				PlaceableProduceWidget->SetProducePanelSwitcherIndex(3);
 				PlaceableProduceWidget->CreateHarvestProduceItemSlot(5, 5);
+
+				IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
+				IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
+
 				break;
 			default:
 				break;
@@ -84,6 +92,15 @@ void ACStructure_Placeable::BeginPlay()
 
 		}
 		break;
+	}
+
+	if (this->HasAuthority())
+	{
+		CDebug::Print("HasAuthority", FColor::Green);
+	}
+	else
+	{
+		CDebug::Print("No HasAuthority", FColor::Red);
 	}
 }
 
@@ -370,9 +387,86 @@ void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName 
 	PlaceableProduceWidget->AddProduceItemToQueue(ItemID);
 }
 
-void ACStructure_Placeable::BroadcastSpawnFire_Implementation()
+void ACStructure_Placeable::BroadcastRemoveProduceItemFromQueue_Implementation(int32 InIndex)
 {
-	CDebug::Print("SpawnFire Called");
+	PlaceableProduceWidget->GetProduceQueue()->RemoveChildAt(InIndex);
+}
+
+void ACStructure_Placeable::BroadcastIgnite_Implementation()
+{
+	this->GetPlaceableProduceWidget()->SetIgniteButtonOn();
+	PerformIgnite();
+}
+
+void ACStructure_Placeable::BroadcastExtinguish_Implementation()
+{
+	this->GetPlaceableProduceWidget()->SetIgniteButtonOff();
+	PerformExtinguish();
+}
+
+void ACStructure_Placeable::PerformIgnite()
+{
+	if (FireParticle && FireSound && IgniteSound && FireSoundAttenuation)
+	{
+		SpawnedFireParticle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			FireParticle,
+			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorRotation(),
+			true
+		);
+
+		UGameplayStatics::SpawnSoundAtLocation(
+			GetWorld(),
+			IgniteSound,
+			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorRotation(),
+			1.0f,
+			1.0f,
+			0.0f,
+			FireSoundAttenuation
+		);
+
+		SpawnedFireSound = UGameplayStatics::SpawnSoundAtLocation(
+			GetWorld(),
+			FireSound,
+			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorRotation(),
+			0.25f,
+			1.0f,
+			0.0f,
+			FireSoundAttenuation
+		);
+
+		bIsIgnited = true;
+
+		GetWorld()->GetTimerManager().SetTimer(IgniteTimerHandle, this, &ACStructure_Placeable::CheckWoodResource, 3.0f, true);
+	}
+}
+
+void ACStructure_Placeable::PerformExtinguish()
+{
+	if (SpawnedFireParticle && SpawnedFireSound && ExtinguishSound)
+	{
+		SpawnedFireParticle->DestroyComponent();
+
+		UGameplayStatics::SpawnSoundAtLocation(
+			GetWorld(),
+			ExtinguishSound,
+			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorRotation(),
+			1.0f,
+			1.0f,
+			0.0f,
+			FireSoundAttenuation
+		);
+
+		SpawnedFireSound->DestroyComponent();
+		bIsIgnited = false;
+	}
+
+	if (GetWorld()->GetTimerManager().IsTimerActive(IgniteTimerHandle))
+		GetWorld()->GetTimerManager().ClearTimer(IgniteTimerHandle);
 }
 
 int32 ACStructure_Placeable::GetIndexOfNonFullStackByID(const FItemInformation InItemInformation)
@@ -391,6 +485,22 @@ int32 ACStructure_Placeable::GetIndexOfNonFullStackByID(const FItemInformation I
 bool ACStructure_Placeable::CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex)
 {
 	return ItemInfoArray[InIndex].Quantity + InItemInformation.Quantity > ItemInfoArray[InIndex].NumericData.MaxStackSize;
+}
+
+void ACStructure_Placeable::CheckWoodResource()
+{
+	CDebug::Print("CheckWoodResource Called");
+	
+	if (!PlaceableProduceWidget)
+		return;
+
+	if (this->PlaceableProduceWidget->GetOwningPlayer()->HasAuthority())
+	{
+		if (!this->PlaceableProduceWidget->CheckWoodResourceUsed())
+		{
+			BroadcastExtinguish();
+		}
+	}
 }
 
 //타입 , 수량 순으로 정렬 

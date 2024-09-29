@@ -52,6 +52,7 @@ void ACSurvivorController::BeginPlay()
 	this->SetInputMode(FInputModeGameOnly());
 	GetSurvivor();
 	SetupInputFunction();
+	GetWorld()->GetTimerManager().SetTimer(UpdateListenerTransformHandle, this, &ACSurvivorController::UpdateListenerTransform, 0.1f, true);
 }
 
 void ACSurvivorController::GetSurvivor()
@@ -115,6 +116,17 @@ void ACSurvivorController::SetupInputFunction()
 	else
 	{
 		CDebug::Print("CSurvivor is not valid");
+	}
+}
+
+void ACSurvivorController::UpdateListenerTransform()
+{
+	APawn* controlledPawn = this->GetPawn();
+	if (controlledPawn)
+	{
+		FVector listenerLocation = controlledPawn->GetActorLocation();
+		FRotator listenerRotation = controlledPawn->GetActorRotation();
+		SetAudioListenerOverride(nullptr, listenerLocation, listenerRotation);
 	}
 }
 
@@ -491,7 +503,17 @@ void ACSurvivorController::RequestAddProduceItemToQueue_Implementation(FName Ite
 	InPlaceable->BroadcastAddProduceItemToQueue(ItemID, InPlaceable);
 }
 
-void ACSurvivorController::RequestSpawnFire_Implementation(class ACStructure_Placeable* InPlaceable)
+void ACSurvivorController::RequestIgnite_Implementation(class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->BroadcastSpawnFire();
+	InPlaceable->BroadcastIgnite();
+}
+
+void ACSurvivorController::RequestExtinguish_Implementation(class ACStructure_Placeable* InPlaceable)
+{
+	InPlaceable->BroadcastExtinguish();
+}
+
+void ACSurvivorController::RequestRemoveProduceItemFromQueue_Implementation(class ACStructure_Placeable* InPlaceable, int32 InIndex)
+{
+	InPlaceable->BroadcastRemoveProduceItemFromQueue(InIndex);
 }
