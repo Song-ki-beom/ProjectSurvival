@@ -365,7 +365,8 @@ void ACSurvivor::ApplyHitData()
 		}
 		if (StatusComponent->IsDead())
 		{
-			//StatusComponent->SetDeadMode();
+			StateComponent->ChangeType(EStateType::Dead);
+			MontageComponent->PlayDeadMontage();
 			return;
 		}
 

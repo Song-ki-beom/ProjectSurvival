@@ -365,7 +365,7 @@ void ACEnemy::ApplyHitData()
 		}
 		if (StatusComponent->IsDead())
 		{
-			//StatusComponent->SetDeadMode();
+			Die();
 			return;
 		}
 
@@ -379,8 +379,8 @@ void ACEnemy::ApplyHitData()
 
 void ACEnemy::Die()
 {
-
-
+	StateComponent->ChangeType(EStateType::Dead);
+	MontageComponent->PlayDeadMontage();
 }
 
 void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)

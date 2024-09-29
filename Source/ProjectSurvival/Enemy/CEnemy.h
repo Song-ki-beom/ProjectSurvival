@@ -9,11 +9,6 @@
 #include "CEnemy.generated.h"
 
 
-UENUM(BlueprintType)
-enum class ESpecialState : uint8
-{
-	Encounter, Roll, Evade
-};
 
 UCLASS()
 class PROJECTSURVIVAL_API ACEnemy : public ACharacter

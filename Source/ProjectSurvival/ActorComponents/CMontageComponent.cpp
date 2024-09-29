@@ -27,7 +27,7 @@ void UCMontageComponent::BeginPlay()
 		{
 			if ((EStateType)i == data->Type)
 			{
-				MontageDatas[i] = data;
+				SpecialMontageDatas[i] = data;
 			}
 		}
 	}
@@ -50,7 +50,7 @@ void UCMontageComponent::BeginPlay()
 
 void UCMontageComponent::PlayDeadMontage()
 {
-	PlayAnimMontage(EStateType::Dead);
+	PlaySpecialMontage(ESpecialState::Dead);
 }
 
 // session
@@ -64,12 +64,11 @@ void UCMontageComponent::Montage_Play_Section(UAnimMontage* InMontage, FName Sec
 	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, InMontage);
 }
 
-void UCMontageComponent::PlayAnimMontage(EStateType InType)
+void UCMontageComponent::PlaySpecialMontage(ESpecialState InType)
 {
-	if (InType == EStateType::Action) return;
 	if(OwnerCharacter == nullptr) return;
 	
-	FMontagesData* data = MontageDatas[(int32)InType];
+	FMontagesData* data = SpecialMontageDatas[(int32)InType];
 	if (data == nullptr)
 	{
 		return;

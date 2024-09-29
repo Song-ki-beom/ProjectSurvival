@@ -12,6 +12,12 @@ enum class EStateType : uint8
     Idle, Combat,Equip, Hit, Dead, Action, Max
 };
 
+UENUM(BlueprintType)
+enum class ESpecialState : uint8
+{
+    Encounter, Roll, Evade, Dead
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);
 
 
