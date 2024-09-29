@@ -57,3 +57,16 @@ ACMainGameMode::ACMainGameMode()
 
 }
 
+//void ACMainGameMode::UpdateInventory(const TArray<UCItemBase>& NewInventory)
+//{
+//	{
+//		InventoryItems = NewInventory;
+//
+//		// 최신화된 인벤토리를 GameState로 전달하여 클라이언트에게 전파
+//		AMyGameState* GameState = GetGameState<AMyGameState>();
+//		if (GameState)
+//		{
+//			GameState->SetInventoryItems(InventoryItems);
+//		}
+//	}
+//}

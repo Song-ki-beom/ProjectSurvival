@@ -27,7 +27,8 @@ public:
 		void OnSortInventoryClicked();
 
 
-	void SetWidgetItems(TArray<UCItemBase*> InArray) { WidgetItems = InArray; }
+	void SetWidgetItems(TArray<UCItemBase*> InArray);
+	
 
 	void RemoveItem(class UCItemBase* ItemToRemove);
 	void RemoveAmountOfItem(class UCItemBase* ItemToRemove, int32 AmountToRemove);

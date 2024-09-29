@@ -58,10 +58,10 @@ protected:
 	class UCItemBase* ItemReference;
 //FORCEINLINE Getter & Setter for ItemReference 
 public:
-	FORCEINLINE void SetItemReference(class UCItemBase* ItemIn)
-	{
-		ItemReference = ItemIn;
-	}
+	void SetItemReference(class UCItemBase* ItemIn);
+	
+
+	
 	FORCEINLINE class UCItemBase* GetItemReference()
 	{ return ItemReference; }
 

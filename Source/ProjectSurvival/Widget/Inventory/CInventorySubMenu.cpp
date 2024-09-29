@@ -255,13 +255,15 @@ void UCInventorySubMenu::HandleOnFinalSplitButtonClicked()
             int32 InputNum = FCString::Atoi(*InputNumString);
             if (SlotReference->Split(InputNum))
             {
-                OnFocusOnSubMenuEnded.Broadcast();
-                SlotReference->ToggleTooltip();
+               /* OnFocusOnSubMenuEnded.Broadcast();
+                SlotReference->ToggleTooltip();*/
             }
             else
             {
-                CDebug::Print("The Split failed Due to Quantity or Slot issue");
+                CDebug::Print("The Split failed Due to Quantity or Slot issue or CItemBaseReference Issue");
             }
+            OnFocusOnSubMenuEnded.Broadcast();
+            SlotReference->ToggleTooltip();
         }
         else
         {

@@ -22,6 +22,8 @@ bool UCInventoryPanel_Placeable::Initialize()
 	if (IsValid(SortItemButton))
 		SortItemButton->OnClicked.AddDynamic(this, &UCInventoryPanel_Placeable::OnSortInventoryClicked);
 
+	WidgetItems.Reserve(100);
+
 	if (!Sucess)
 		return false;
 
@@ -152,6 +154,40 @@ bool UCInventoryPanel_Placeable::CombineItem(UCItemBase* ItemOnBase, UCItemBase*
 }
 
 
+void UCInventoryPanel_Placeable::SetWidgetItems(TArray<UCItemBase*> InArray)
+{
+	if (WidgetItems.Num() == 0)
+	{
+		WidgetItems = InArray;
+		return;
+	}
+
+	
+	if (WidgetItems.Num() != InArray.Num())
+	{
+		WidgetItems.SetNum(InArray.Num());  // WidgetItems의 크기를 InArray와 동일하게 설정
+	}
+
+	for (int32 i = 0; i < InArray.Num(); ++i)
+	{
+		if (WidgetItems[i] == nullptr)
+		{
+			WidgetItems[i] = InArray[i];
+			continue;
+		}
+		WidgetItems[i]->ID = InArray[i]->ID;
+		WidgetItems[i]->Quantity = InArray[i]->Quantity;
+		WidgetItems[i]->ItemType = InArray[i]->ItemType;
+		WidgetItems[i]->TextData = InArray[i]->TextData;
+		WidgetItems[i]->ItemStats = InArray[i]->ItemStats;
+		WidgetItems[i]->NumericData = InArray[i]->NumericData;
+		WidgetItems[i]->AssetData = InArray[i]->AssetData;
+		WidgetItems[i]->bIsCopy = InArray[i]->bIsCopy;
+		
+	}
+
+}
+
 void UCInventoryPanel_Placeable::RemoveItem(UCItemBase* ItemToRemove)
 {
 	int32 idxRemove = FindItemIndex(ItemToRemove);
@@ -195,6 +231,7 @@ void UCInventoryPanel_Placeable::RemoveAmountOfItem(UCItemBase* ItemToRemove, in
 
 int32 UCInventoryPanel_Placeable::FindItemIndex(UCItemBase * Item)
 {
+	if (Item == nullptr) return -1;
 		int32 Index = WidgetItems.IndexOfByPredicate([Item](const UCItemBase* InItem)
 			{
 				return InItem == Item;
@@ -226,6 +263,8 @@ void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* It
 	int32 idxBase = FindItemIndex(ItemOnBase);
 	int32 idxDrag = FindItemIndex(ItemFromDrag);
 
+	if (idxBase < 0 || idxDrag) return; //Item이 업데이트 되어 사라졌으면 
+
 	PerformActionIfHasAuthority(
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
@@ -246,6 +285,7 @@ bool UCInventoryPanel_Placeable::SplitExistingStack(UCItemBase* ItemIn, int32 Am
 	if (ItemIn->Quantity - AmountToSplit <= 0) return false;
 	//사용 가능 슬롯이 남아있으면
 	int32 ItemIdx = FindItemIndex(ItemIn);
+	if (ItemIdx < 0) return false; //Item이 업데이트 되어 사라졌으면 
 
 	return 	PerformActionIfHasAuthority(
 		// Server

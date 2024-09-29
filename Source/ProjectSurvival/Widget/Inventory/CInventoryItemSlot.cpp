@@ -356,6 +356,24 @@ bool UCInventoryItemSlot::Split(int32 InputNum)
 		
 	return false;
 }
+
+void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
+{
+	if (ItemReference == nullptr)
+	{
+		ItemReference = ItemIn;
+		return;
+	}
+
+	 ItemReference->ID = ItemIn->ID;
+	 ItemReference->Quantity = ItemIn->Quantity;
+	 ItemReference->ItemType = ItemIn->ItemType;
+	 ItemReference->TextData = ItemIn->TextData;
+	 ItemReference->ItemStats = ItemIn->ItemStats;
+	 ItemReference->NumericData = ItemIn->NumericData;
+	 ItemReference->AssetData = ItemIn->AssetData;
+	 ItemReference->bIsCopy = ItemIn->bIsCopy;
+}
  
 void UCInventoryItemSlot::SetItemQuantityText(int32 InQuantity)
 {
