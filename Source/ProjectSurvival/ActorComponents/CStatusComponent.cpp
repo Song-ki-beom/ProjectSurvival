@@ -26,6 +26,8 @@ void UCStatusComponent::BeginPlay()
 	if (GetOwner()->HasAuthority()) //서버만 실행 
 	{
 		GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 1.0f, true); //1초마다 반복해서 실행 
+		GetWorld()->GetTimerManager().SetTimer(StaminaReductionTimerHandle, this, &UCStatusComponent::ReduceStaminaByTime, 2.0f, true); //2초마다 반복해서 실행 
+
 	}
 		
 }
@@ -70,6 +72,17 @@ void UCStatusComponent::ReduceHungerByTime()
 
 }
 
+void UCStatusComponent::ReduceStaminaByTime()
+{
+	if (CurrentStamina > 0)
+	{
+		float NewStamina = CurrentStamina - (StaminaDecreaseAmount * DifficultyCoef);
+		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina);
+		BroadcastUpdateStamina(NewStamina);
+	}
+
+}
+
 void UCStatusComponent::ApplyDamage(float InAmount)
 {
 	float NewHealth = CurrentHealth -(InAmount*DifficultyCoef);
@@ -94,3 +107,10 @@ void UCStatusComponent::BroadcastUpdateHunger_Implementation(float NewHunger)
 	CurrentHunger = NewHunger;
 	OnHungerUpdated.Broadcast(CurrentHunger / MaxHunger);
 };
+
+
+void UCStatusComponent::BroadcastUpdateStamina_Implementation(float NewStamina)
+{
+	CurrentStamina = NewStamina;
+	OnStaminaUpdated.Broadcast(CurrentStamina / MaxStamina);
+}

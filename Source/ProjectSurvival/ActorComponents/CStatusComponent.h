@@ -10,6 +10,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, NewHealthRatio);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHungerUpdated, float, NewHungerRatio);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdated, float, NewStaminaRatio);
+
 DECLARE_MULTICAST_DELEGATE(FOnLowHealthDetected);
 
 
@@ -27,6 +29,7 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void ReduceHungerByTime();
+	void ReduceStaminaByTime();
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadcastUpdateHealth(float NewHealth);
@@ -34,12 +37,16 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadcastUpdateHunger(float NewHunger);
 
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUpdateStamina(float NewStamina);
 
 
 public:
 	FOnHealthUpdated OnHealthUpdated;
 	FOnHungerUpdated OnHungerUpdated;
+	FOnStaminaUpdated OnStaminaUpdated;
 	FOnLowHealthDetected OnLowHealthDetected;
+	FTimerHandle StaminaReductionTimerHandle;
 	FTimerHandle HungerReductionTimerHandle;
 	FTimerHandle StarvationTimerHandle;
 
@@ -55,7 +62,16 @@ private:
 	float MaxHunger = 100.0f;
 	float CurrentHunger = 200.0f;
 	UPROPERTY(EditAnywhere, Category = "Health")
-	float HungerDecreaseAmount = 1.0f;
+		float HungerDecreaseAmount = 1.0f;
+
+	//Stamina
+	UPROPERTY(EditAnywhere, Category = "Stamina")
+		float MaxStamina = 100.0f;
+	float CurrentStamina = 200.0f;
+	UPROPERTY(EditAnywhere, Category = "Health")
+		float StaminaDecreaseAmount = 1.0f;
+	
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMatineeCameraShake> StarveCameraShakeClass; //허기로 인한 Starve 이펙트 카메라 쉐이크 
 
