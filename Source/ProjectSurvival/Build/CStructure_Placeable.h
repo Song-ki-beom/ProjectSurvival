@@ -86,17 +86,28 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastRemoveProduceItemFromQueue(int32 InIndex);
 
 	//Fire
 	UFUNCTION(NetMulticast, Reliable)
-		void BroadcastSpawnFire();
+		void BroadcastIgnite();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastExtinguish();
+	
+	void PerformIgnite();
+	void PerformExtinguish();
 
-	void SetIgniteState(bool InValue) { bIsIgnited = InValue; }
+	FSlateBrush GetIgniteButtonNormalBrush() { return IgniteButtonNormalBrush; }
+	FSlateBrush GetIgniteButtonPressedBrush() { return IgniteButtonPressedBrush; }
+
+	//void SetIgniteState(bool InValue) { bIsIgnited = InValue; }
 	bool GetIgniteState() { return bIsIgnited; }
 
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
 	bool CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex);
+	void CheckWoodResource();
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -138,4 +149,24 @@ private:
 		class UCProduceWidget* PlaceableProduceWidget;
 
 	bool bIsIgnited = false;
+
+	FSlateBrush IgniteButtonNormalBrush;
+	FSlateBrush IgniteButtonPressedBrush;
+
+	UPROPERTY(EditAnywhere)
+		class UParticleSystem* FireParticle;
+	UPROPERTY()
+		class UParticleSystemComponent* SpawnedFireParticle;
+	UPROPERTY(EditAnywhere)
+		class USoundWave* FireSound;
+	UPROPERTY(EditAnywhere)
+		class USoundWave* IgniteSound;
+	UPROPERTY(EditAnywhere)
+		class USoundWave* ExtinguishSound;
+	UPROPERTY(EditAnywhere)
+		class USoundAttenuation* FireSoundAttenuation;
+	UPROPERTY()
+		class UAudioComponent* SpawnedFireSound;
+
+	FTimerHandle IgniteTimerHandle;
 };

@@ -24,8 +24,8 @@ public:
 private:
 	// Init
 	void GetSurvivor();
-
 	void SetupInputFunction();
+	void UpdateListenerTransform();
 	// Build
 	void ToggleBuildWidget();
 	void SelectQ();
@@ -91,6 +91,8 @@ private:
 	bool bIsBuildWidgetOn;
 	bool bIsProduceWidgetOn;
 
+	FTimerHandle UpdateListenerTransformHandle;
+
 public:
 	// 서버 RPC 함수 테스트
 	UFUNCTION(Server, Reliable)
@@ -110,7 +112,11 @@ public:
 	UFUNCTION(Server, Reliable)
 		void RequestAddProduceItemToQueue(FName ItemID, class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)
-		void RequestSpawnFire(class ACStructure_Placeable* InPlaceable);
+		void RequestIgnite(class ACStructure_Placeable* InPlaceable);
+	UFUNCTION(Server, Reliable)
+		void RequestExtinguish(class ACStructure_Placeable* InPlaceable);
+	UFUNCTION(Server, Reliable)
+		void RequestRemoveProduceItemFromQueue(class ACStructure_Placeable* InPlaceable, int32 InIndex);
 
 };
 
