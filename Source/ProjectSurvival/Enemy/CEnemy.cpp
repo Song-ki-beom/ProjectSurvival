@@ -27,7 +27,7 @@ ACEnemy::ACEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true; //리플리케이트 설정 
 	SetReplicates(true);
-	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
+	
 
 
 	//AI 세팅
@@ -94,9 +94,10 @@ void ACEnemy::BeginPlay()
 {
 
 	Super::BeginPlay();
+	NetDriver = GetWorld()->GetNetDriver();
 	NetUpdateFrequency = 50.0f;
 	NetPriority = 3.0f;
-
+	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 	//동적 리소스 로딩을 위한 에셋 로더 생성
 	FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
 
@@ -294,6 +295,9 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 
 	}
 
+
+
+
 	if (!DamageData.HitID.IsNone())
 	{
 		BroadCastApplyHitData(DamageData);
@@ -327,7 +331,9 @@ void ACEnemy::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
-		HitData = HitDataTable->FindRow<FHitData>(DamageData.HitID, FString(""));
+		FString HitActorName = FString("_Bear");
+		FName CompleteHitID = FName(*(DamageData.HitID.ToString()) + HitActorName);
+		HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Bear"));
 		if (HitData && HitData->Montage)
 		{
 			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);

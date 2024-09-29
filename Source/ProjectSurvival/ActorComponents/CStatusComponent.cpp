@@ -22,10 +22,10 @@ void UCStatusComponent::BeginPlay()
 	}
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	CurrentHealth = MaxHealth;
-	CurrentStamina = MaxStamina;
+	CurrentHunger = MaxHunger;
 	if (GetOwner()->HasAuthority()) //서버만 실행 
 	{
-		GetWorld()->GetTimerManager().SetTimer(StaminaReductionTimerHandle, this, &UCStatusComponent::ReduceStaminaByTime, 1.0f, true); //1초마다 반복해서 실행 
+		GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 1.0f, true); //1초마다 반복해서 실행 
 	}
 		
 }
@@ -34,7 +34,7 @@ void UCStatusComponent::BeginPlay()
 void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (CurrentStamina <= 0)
+	if (CurrentHunger <= 0)
 	{
 		TimeSinceStarvation += DeltaTime;
 
@@ -59,13 +59,13 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 
 
-void UCStatusComponent::ReduceStaminaByTime()
+void UCStatusComponent::ReduceHungerByTime()
 {
-	if (CurrentStamina > 0)
+	if (CurrentHunger > 0)
 	{
-		float NewStamina = CurrentStamina - (StaminaDecreaseAmount* DifficultyCoef);
-		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina); 
-		BroadcastUpdateStamina(NewStamina);
+		float NewHunger = CurrentHunger - (HungerDecreaseAmount * DifficultyCoef);
+		NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
+		BroadcastUpdateHunger(NewHunger);
 	}
 
 }
@@ -89,8 +89,8 @@ void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
 	}
 }
 
-void UCStatusComponent::BroadcastUpdateStamina_Implementation(float NewStamina)
+void UCStatusComponent::BroadcastUpdateHunger_Implementation(float NewHunger)
 {
-	CurrentStamina = NewStamina;
-	OnStaminaUpdated.Broadcast(CurrentStamina / MaxStamina);
+	CurrentHunger = NewHunger;
+	OnHungerUpdated.Broadcast(CurrentHunger / MaxHunger);
 };

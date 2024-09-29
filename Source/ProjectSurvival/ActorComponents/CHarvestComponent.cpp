@@ -56,39 +56,33 @@ void UCHarvestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 
-void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
+void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmount)
 {
-	if (!OwnerCharacter) return;
+		////Trace 관련 세팅
+		//FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
+		//FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
+		//FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
+		//FQuat Rot = FQuat(OwnerCharacter->GetActorRotation());
 
-	
-	
-		//Trace 관련 세팅
-		FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
-		FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
-		FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
-		FQuat Rot = FQuat(OwnerCharacter->GetActorRotation());
+		//FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 2.0f, TraceDistance / 2.0f);
+		//FHitResult HitResult;
+		//FCollisionQueryParams CollisionParams;
+		//CollisionParams.AddIgnoredActor(OwnerCharacter);
 
-		FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 2.0f, TraceDistance / 2.0f);
-		FHitResult HitResult;
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(OwnerCharacter);
+		////BoxTrace 
+		//bool bHit = GetWorld()->SweepSingleByChannel(
+		//	HitResult,
+		//	Start,
+		//	End,
+		//	Rot,
+		//	ECC_WorldStatic,
+		//	FCollisionShape::MakeBox(HalfSize),
+		//	CollisionParams
+		//);
 
-		//BoxTrace 
-		bool bHit = GetWorld()->SweepSingleByChannel(
-			HitResult,
-			Start,
-			End,
-			Rot,
-			ECC_WorldStatic,
-			FCollisionShape::MakeBox(HalfSize),
-			CollisionParams
-		);
+		//DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
+		//DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
 
-		DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
-		DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
-
-		if (bHit)
-		{
 			FString hitObjectName = *HitResult.Component->GetName();
 
 
@@ -105,21 +99,14 @@ void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
 			// 숫자 부분만 추출 (시작 인덱스를 증가시켜야 숫자 부분을 정확히 가져올 수 있음)
 			FString hitIndex = hitObjectName.Right(StringLength - StartIndex - 1);
 
-
-
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
 			CDebug::Print(debugText, FColor::Blue);
 
 			if (CheckIsFoliageInstance(HitResult))
 			{
-				if (OwnerCharacter->HasAuthority()) 
-				{
+				
 					SwitchFoligeToDestructible(hitIndex, InDamageAmount,SpawnTransform);
-				}
-				else
-				{
-					RequestSwitchFoligeToDestructible(hitIndex,InDamageAmount,SpawnTransform);
-				}
+				
 
 			}
 			else if (CheckIsDestructInstance(HitResult))
@@ -128,7 +115,7 @@ void UCHarvestComponent::HarvestBoxTrace(float InDamageAmount)
 					AddForceToDestructible(InDamageAmount , DestructibleActor);
 			}
 
-		}
+		
 
 	
 	
@@ -243,13 +230,6 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 }
 
 
-void UCHarvestComponent::RequestSwitchFoligeToDestructible_Implementation(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform)
-{
-	FString tempStr = FString::Printf(TEXT(" OnServer this Actor Got  %f Damage"), IndamageAmount);
-	CDebug::Print(tempStr);
-	SwitchFoligeToDestructible(InHitIndex, IndamageAmount, InSpawnTransform);
-
-}
 
 
 

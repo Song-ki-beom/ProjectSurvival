@@ -66,12 +66,6 @@ void ACDestructibleActor::AccumulateDamage(float DamageAmount)
 		float prevAccumulatedDamage = AccumulatedDamage;
 		AccumulatedDamage += DamageAmount;
 		AccumulatedDamage = FMath::Clamp(AccumulatedDamage, 0.0f, MaxDamageThreshold);
-		int32 DropItemCount = (int32)((AccumulatedDamage - prevAccumulatedDamage) / EarnItemRatio);
-		if (DropItemCount > 0)
-		{
-			//Give Attacker Item by DropItemCount (인벤토리 구현)
-		}
-
 
 		BroadcastAccumulateDamage(DamageAmount);
 
@@ -102,7 +96,7 @@ void ACDestructibleActor::BroadcastAccumulateDamage_Implementation(float NewAccu
 void ACDestructibleActor::OnRep_AccumulateDamage()
 {
 	FString tempStr = FString::Printf(TEXT(" OnClient Destructible Actor Has AccumulatedDamage %f"), AccumulatedDamage);
-	CDebug::Print(tempStr);
+	//CDebug::Print(tempStr);
 }
 
 void ACDestructibleActor::OnRef_DestructibleMeshSet()

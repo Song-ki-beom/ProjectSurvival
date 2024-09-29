@@ -25,5 +25,6 @@ public:
 
 private:
 	float HarvestDamage = 50.0f;
-
+	float TraceDistance = 45.0f;
+	float TraceOffset = 100.0f;
 };

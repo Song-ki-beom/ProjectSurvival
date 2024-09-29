@@ -29,7 +29,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void HarvestBoxTrace(float InDamageAmount);
+	void HarvestBoxTrace(FHitResult HitResult, float InDamageAmount);
 
 private:
 	bool CheckIsFoliageInstance(const FHitResult& Hit);
@@ -37,8 +37,8 @@ private:
 	bool CheckIsDestructInstance(const FHitResult& Hit);
 	void SwitchFoligeToDestructible(const FString& hitIndex, float damageAmount, FTransform InSpawnTransform);
 	void AddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
-	UFUNCTION(Server, Reliable)
-		void RequestSwitchFoligeToDestructible(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform);
+	/*UFUNCTION(Server, Reliable)
+		void RequestSwitchFoligeToDestructible(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform);*/
 	/*UFUNCTION(Server, Reliable)
 		void RequestRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);*/
 	UFUNCTION(NetMulticast, Reliable)
@@ -50,8 +50,6 @@ private:
 
 
 private:
-	float TraceDistance = 45.0f;
-	float TraceOffset = 100.0f;
 	UPROPERTY(VisibleAnywhere, Replicated)
 		FString HitIndex;
 	UPROPERTY(VisibleAnywhere, Replicated)
