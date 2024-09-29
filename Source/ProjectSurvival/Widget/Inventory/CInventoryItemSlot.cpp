@@ -362,10 +362,10 @@ void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
 	if (ItemReference == nullptr)
 	{
 		ItemReference = ItemIn;
-		return;
+		//return;
 	}
 
-	 ItemReference->ID = ItemIn->ID;
+	ItemReference->ID = ItemIn->ID;
 	 ItemReference->Quantity = ItemIn->Quantity;
 	 ItemReference->ItemType = ItemIn->ItemType;
 	 ItemReference->TextData = ItemIn->TextData;

@@ -263,7 +263,7 @@ void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* It
 	int32 idxBase = FindItemIndex(ItemOnBase);
 	int32 idxDrag = FindItemIndex(ItemFromDrag);
 
-	if (idxBase < 0 || idxDrag) return; //Item이 업데이트 되어 사라졌으면 
+	if (idxBase < 0 || idxDrag<0) return; //Item이 업데이트 되어 사라졌으면 
 
 	PerformActionIfHasAuthority(
 		// Server
