@@ -22,14 +22,21 @@ class PROJECTSURVIVAL_API UCStatusComponent : public UActorComponent
 
 public:	
 	UCStatusComponent();
+	//Health
 	void  ApplyDamage(float InAmount);
+	bool CheckHPCoefChanged();
 
+	//Stamina
+	void ReduceStamina(float ReduceAmount);
+	bool CanSpendStamina(float ReduceAmount);
+	void SuspendStaminaRecover();
+	void ProceedStaminaRecover();
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void ReduceHungerByTime();
-	void ReduceStaminaByTime();
+	void RecoverStaminaByTime();
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadcastUpdateHealth(float NewHealth);
@@ -46,7 +53,7 @@ public:
 	FOnHungerUpdated OnHungerUpdated;
 	FOnStaminaUpdated OnStaminaUpdated;
 	FOnLowHealthDetected OnLowHealthDetected;
-	FTimerHandle StaminaReductionTimerHandle;
+	FTimerHandle StaminaRecoverTimerHandle;
 	FTimerHandle HungerReductionTimerHandle;
 	FTimerHandle StarvationTimerHandle;
 
@@ -56,6 +63,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Health")
 	float MaxHealth = 100.0f;
 	float CurrentHealth = 200.0f;
+	int32 DamagedHealthCoef = 0;
 	
 	//Hunger
 	UPROPERTY(EditAnywhere, Category = "Stamina")
@@ -69,16 +77,14 @@ private:
 		float MaxStamina = 100.0f;
 	float CurrentStamina = 200.0f;
 	UPROPERTY(EditAnywhere, Category = "Health")
-		float StaminaDecreaseAmount = 1.0f;
-	
+		float StaminaIncreaseAmount = 1.5f;
+
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMatineeCameraShake> StarveCameraShakeClass; //허기로 인한 Starve 이펙트 카메라 쉐이크 
-
 	
 	float TimeSinceStarvation = 0.0f;
-
-	//DifficultyCoef;
+	//DifficultyCoef<- 난이도 
 	float DifficultyCoef = 1.0f;
 
 

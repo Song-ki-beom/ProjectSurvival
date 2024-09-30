@@ -9,17 +9,15 @@
 #include "Utility/CDebug.h"
 #include "ActorComponents/CHarvestComponent.h"
 #include "ActorComponents/CStateComponent.h"
+#include "ActorComponents/CStatusComponent.h"
 #include "DrawDebugHelpers.h"
 
 
 void UCDoAction_Axe::DoAction()
 {
 	Super::DoAction();
-	if(StateComponent->IsActionMode()) return;
-
-	if (DoActionDatas.Num() > 0)
-		DoActionDatas[ActionIdx].DoAction(OwnerCharacter);
 	
+
 }
 
 
@@ -86,14 +84,19 @@ void UCDoAction_Axe::Slash()
 			for (const FHitResult& Hit : HitResults)
 			{
 				ACEnemy* HitEnemy;
-				if ((Hit.GetActor() != nullptr) && (HitEnemy = Cast<ACEnemy>(Hit.GetActor())))
+				UPrimitiveComponent* HitComponent = Hit.GetComponent();
+				if (HitComponent && HitComponent->IsA<USkeletalMeshComponent>()) //스켈레탈 메시가 검출되었는지
+				{
+					continue; // Skeletal Mesh는 무시
+				}
+				else if ((Hit.GetActor() != nullptr) && (HitEnemy = Cast<ACEnemy>(Hit.GetActor()))) //Enemy 로 형변환 가능하면 적에게 데미지
 				{
 					FActionDamageEvent e;
 					e.HitID = DoActionDatas[ActionIdx].ActionID;
 					HitEnemy->TakeDamage(0, e, OwnerCharacter->GetController(), OwnerCharacter);
 
-				}
-				else
+				} 
+				else //Static Mesh or Destructible Mesh면 
 				{
 					survivor->GetHarvestComponent()->HarvestBoxTrace(Hit, HarvestDamage);
 				}

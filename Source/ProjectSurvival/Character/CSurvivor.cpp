@@ -356,17 +356,12 @@ void ACSurvivor::ApplyHitData()
 			FVector target = targetActor->GetActorLocation();
 			FVector direction = target - start;
 			direction = direction.GetSafeNormal();
-
-			//Look At
-			/*FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
-			LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
-			SetActorRotation(LookAtRotation);*/
 			LaunchCharacter(-direction*HitData->Launch, false, false);
 		}
 		if (StatusComponent->IsDead())
 		{
 			StateComponent->ChangeType(EStateType::Dead);
-			MontageComponent->PlayDeadMontage();
+			if (this->HasAuthority()) Die();
 			return;
 		}
 
@@ -376,6 +371,46 @@ void ACSurvivor::ApplyHitData()
 
 	}
 	
+}
+
+void ACSurvivor::Die()
+{
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	BroadcastDoSpecialAction(ESpecialState::Dead);
+	BroadcastDisableCollision();
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.3f, false);
+}
+
+void ACSurvivor::RemoveCharacter()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	PlayerController->UnPossess();
+	Destroy();
+}
+
+void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
+{
+	PerformDoSpecialAction(SpecialState);
+}
+
+void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
+{
+	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+}
+
+
+void ACSurvivor::BroadcastDisableCollision_Implementation()
+{
+	//입력 무효화 .. 임시로 넣어봄
+	DisableInput(GetWorld()->GetFirstPlayerController());
+
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// 모든 채널에 대해 충돌 무시
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 }
 
 

@@ -37,8 +37,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "DataTable")
-		UDataTable* DataTable;
 
 	UFUNCTION()
 		void OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
@@ -49,14 +47,10 @@ private:
 
 
 public:
-	void  PlaySpecialMontage(ESpecialState InType);
-	void  PlayDeadMontage();
 	void  Montage_Play(UAnimMontage* InMontage, float InPlayRate);
 	void  Montage_Play_Section(UAnimMontage* InMontage, FName SectionName);
 
 
-private:
-	FMontagesData* SpecialMontageDatas[(int32)EStateType::Max];
 private:
 	class ACharacter* OwnerCharacter;              
 };

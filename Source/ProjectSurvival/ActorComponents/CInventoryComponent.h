@@ -133,6 +133,11 @@ public:
 		InventoryTotalWeight = NewTotalWeight;
 	};
 
+	FORCEINLINE float GetInventoryWeightRatio()
+	{
+		return InventoryTotalWeight / InventoryWeightCapacity;
+	}
+
 	FORCEINLINE class ACMainHUD* GetHUDReference() const { return HUD;}; //현재 소지 용량 
 
 

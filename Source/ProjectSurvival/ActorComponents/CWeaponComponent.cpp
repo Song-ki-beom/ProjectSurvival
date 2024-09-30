@@ -220,7 +220,7 @@ void UCWeaponComponent::OnRef_TypeChanged()
 
 void UCWeaponComponent::SetModeReplicate() 
 {
-
+	if (Datas == nullptr) return;
 	if (OnWeaponTypeChanged.IsBound())
 		OnWeaponTypeChanged.Broadcast(PrevType, Type);
 	if (Type == EWeaponType::Max)  //무기해제       
