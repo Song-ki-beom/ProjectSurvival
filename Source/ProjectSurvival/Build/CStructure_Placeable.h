@@ -9,7 +9,7 @@
 UENUM()
 enum class EPlaceableStructureType : uint8
 {
-	WorkingBench, Furnace, None
+	WorkingBench, Furnace, CampFire, None
 };
 
 USTRUCT()
@@ -43,13 +43,15 @@ protected:
 	virtual void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor) override;
 
 public:
+	void CheckHeight();
+	bool GetPlaceableLandScapeHit() { return bLandScapeHit; }
+	float GetPlaceableHeight() { return PlaceableHeight; }
+
 	void CheckDown_FoundationAndCeiling();
 	bool GetPlaceableDown_FoundationAndCeilingHit() { return bDown_FoundationAndCeilingActorHit; }
 
 	void CheckCenter();
 	bool GetPlaceableCenterHit() { return bCenterHit; }
-
-	float GetPlaceableHeight() { return PlaceableHeight; }
 
 	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
@@ -112,9 +114,11 @@ private:
 protected:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* DownBox;
+
+	bool bLandScapeHit;
+	float PlaceableHeight;
 	bool bDown_FoundationAndCeilingActorHit;
 	bool bCenterHit;
-	float PlaceableHeight;
 	FRotator CenterRotation;
 
 	UPROPERTY(EditAnywhere)

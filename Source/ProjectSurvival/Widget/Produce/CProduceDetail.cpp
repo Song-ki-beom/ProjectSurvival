@@ -165,6 +165,13 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 
 void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeable* InOwner)
 {
+	EPlaceableStructureType placeableStructureType = InOwner->GetPlaceableStructureType();
+	if (placeableStructureType == EPlaceableStructureType::Furnace || placeableStructureType == EPlaceableStructureType::CampFire)
+	{
+		if (!InOwner->GetIgniteState())
+			return;
+	}
+
 	int32 recipeNumber = ProduceDetailRecipeScroll->GetAllChildren().Num();
 	int32 checkNumber = 0;
 	for (UWidget* childWidget : ProduceDetailRecipeScroll->GetAllChildren())

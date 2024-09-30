@@ -32,6 +32,7 @@ public:
 	void CreateToolProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void CreateWeaponProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void CreateHarvestProduceItemSlot(int32 StartIndex, int32 EndIndex);
+	void CreateConsumableProduceItemSlot(int32 StartIndex, int32 EndIndex);
 	void SetProduceDetail(FName InID, int32 InIndex, EWidgetCall InWidgetCall);
 	void RefreshProduceDetail();
 	void StartProduce();
@@ -46,6 +47,8 @@ public:
 	class UButton* GetIgniteButton() { return IgniteButton; }
 	bool CheckWoodResourceUsed();
 	class UWrapBox* GetProduceQueue() { return ProduceQueue; }
+	
+	void CheckWrapBox(class UWrapBox* InWrapBox);
 
 private:
 	UFUNCTION()
@@ -80,6 +83,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* HarvestPanel;
 	UPROPERTY(meta = (BindWidget))
+		class UWrapBox* ConsumablePanel;
+	UPROPERTY(meta = (BindWidget))
 		class UCProduceDetail* ProduceDetail;
 	UPROPERTY(meta = (BindWidget))
 		class UWrapBox* ProduceQueue;
@@ -101,6 +106,7 @@ private:
 	FName SelectedToolID;
 	FName SelectedWeaponID;
 	FName SelectedHarvestID;
+	FName SelectedConsumableID;
 
 	bool bIsIgniting = false;
 };

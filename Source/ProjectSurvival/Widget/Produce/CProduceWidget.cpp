@@ -255,6 +255,34 @@ void UCProduceWidget::CreateHarvestProduceItemSlot(int32 StartIndex, int32 EndIn
 	}
 }
 
+void UCProduceWidget::CreateConsumableProduceItemSlot(int32 StartIndex, int32 EndIndex)
+{
+	UClass* produceItemSlotClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceItemSlot.WBP_CProduceItemSlot_C'"));
+
+	// DT_Items 변동사항 발생 시 수정 필요, Consumable 관련 ProduceItemSlot추가
+	for (int32 i = StartIndex; i <= EndIndex; i++)
+	{
+		UCProduceItemSlot* produceItemSlot = CreateWidget<UCProduceItemSlot>(this, produceItemSlotClass);
+		if (produceItemSlot)
+		{
+			FName itemRowName = FName(*FString::Printf(TEXT("Consumable_%d"), i));
+			FItemData* itemData = ItemData->FindRow<FItemData>(itemRowName, TEXT(""));
+			if (itemData)
+			{
+				UTexture2D* itemIcon = itemData->AssetData.Icon;
+				produceItemSlot->SetProduceSlotIcon(itemIcon);
+				produceItemSlot->SetProduceSlotID(itemRowName);
+				ConsumablePanel->AddChild(produceItemSlot);
+			}
+			else
+				CDebug::Print("itemData is Not Valid");
+
+		}
+		else
+			CDebug::Print("produceItemSlot is Not Valid");
+	}
+}
+
 void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall InWidgetCall)
 {
 	FItemData* itemData = nullptr;
@@ -274,8 +302,13 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 		itemData = ItemData->FindRow<FItemData>(SelectedWeaponID, TEXT(""));
 		break;
 	case 3:
-		SelectedWeaponID = InID;
+		SelectedHarvestID = InID;
 		itemData = ItemData->FindRow<FItemData>(SelectedHarvestID, TEXT(""));
+		break;
+	case 4:
+		SelectedConsumableID = InID;
+		itemData = ItemData->FindRow<FItemData>(SelectedConsumableID, TEXT(""));
+		break;
 	default:
 		break;
 	}
@@ -572,7 +605,6 @@ void UCProduceWidget::SetProduceDetail(FName InID, int32 InIndex, EWidgetCall In
 
 void UCProduceWidget::RefreshProduceDetail()
 {
-	CDebug::Print("KKKKKKKKKKKKKKKKKKKK");
 	switch (ProducePanelSwitcher->GetActiveWidgetIndex())
 	{
 	case 0:
@@ -610,6 +642,16 @@ void UCProduceWidget::RefreshProduceDetail()
 			SelectedHarvestID = "Harvest_5";
 			SetProduceDetail(SelectedHarvestID, 3, WidgetCall);
 		}
+		break;
+	case 4:
+		if (!SelectedConsumableID.IsNone())
+			SetProduceDetail(SelectedConsumableID, 4, WidgetCall);
+		else
+		{
+			SelectedConsumableID = "Consumable_2";
+			SetProduceDetail(SelectedConsumableID, 4, WidgetCall);
+		}
+		break;
 	default:
 		break;
 	}
@@ -655,6 +697,9 @@ void UCProduceWidget::StartProduce()
 			break;
 		case 3:
 			ProduceDetail->ProducePlaceableItem(SelectedHarvestID, OwnerActor);
+			break;
+		case 4:
+			ProduceDetail->ProducePlaceableItem(SelectedConsumableID, OwnerActor);
 			break;
 		default:
 			break;
@@ -713,7 +758,8 @@ void UCProduceWidget::AddProduceItemToQueue(FName InID)
 				produceItemQueueSlot->SetProduceWidgetData(produceWidgetData);
 
 				ProduceQueue->AddChildToWrapBox(produceItemQueueSlot);
-				produceItemQueueSlot->CheckWrapBox(ProduceQueue);
+				//produceItemQueueSlot->CheckWrapBox(ProduceQueue);
+				CheckWrapBox(ProduceQueue);
 			}
 		}
 	}
@@ -860,4 +906,50 @@ bool UCProduceWidget::CheckWoodResourceUsed()
 		}
 	}
 	return bIsWoodUsed;
+}
+
+void UCProduceWidget::CheckWrapBox(class UWrapBox* InWrapBox)
+{
+	if (InWrapBox)
+	{
+		const TArray<UWidget*>& wrapBoxChildren = InWrapBox->GetAllChildren();
+
+		for (int index = 0; index < wrapBoxChildren.Num(); index++)
+		{
+			UCProduceItemQueueSlot* produceItemQueueSlot = Cast<UCProduceItemQueueSlot>(wrapBoxChildren[index]);
+			if (produceItemQueueSlot)
+			{
+				if (index == 0)
+				{
+					if (produceItemQueueSlot->GetIsInitialized())
+					{
+						if (!(produceItemQueueSlot->GetIsProducing()))
+							produceItemQueueSlot->StartProduce();
+					}
+					else
+					{
+						produceItemQueueSlot->InitProduce();
+						produceItemQueueSlot->StartProduce();
+					}
+
+				}
+				else
+				{
+					if (!produceItemQueueSlot->GetIsInitialized())
+						produceItemQueueSlot->InitProduce();
+				}
+
+			}
+		}
+
+		if (!(wrapBoxChildren.Num() > 0))
+		{
+			FText produceItemNameText = FText::GetEmpty();
+			SetProducingItemText(produceItemNameText);
+
+			return;
+		}
+	}
+	else
+		CDebug::Print("WrapBox is not Valid", FColor::White);
 }

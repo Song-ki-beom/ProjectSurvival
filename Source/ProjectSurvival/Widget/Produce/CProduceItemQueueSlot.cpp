@@ -83,14 +83,13 @@ void UCProduceItemQueueSlot::InitProduce()
 			bIsPlaceableOwner = true;
 
 			// 화력을 사용하는 Placeable인지 체크
-			if (produceWidget->GetOwnerActor()->GetPlaceableStructureType() == EPlaceableStructureType::Furnace)
+			EPlaceableStructureType placeableStructureType = produceWidget->GetOwnerActor()->GetPlaceableStructureType();
+			if (placeableStructureType == EPlaceableStructureType::Furnace || placeableStructureType == EPlaceableStructureType::CampFire)
 				IgniteUsingPlaceable = produceWidget->GetOwnerActor();
 		}
 	}
 
 	Survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
-	if (Survivor)
-		CDebug::Print("Survivor is Valid", FColor::White);
 
 	if (Survivor && ProduceTargetItem)
 	{
@@ -109,7 +108,6 @@ void UCProduceItemQueueSlot::StartProduce()
 
 	if (ProduceWidget)
 	{
-		CDebug::Print("ProduceItemName", ProduceItemName, FColor::Silver);
 		FText produceItemNameText = FText::Format(FText::FromString(TEXT("생산 중: {0}")), ProduceItemName);
 		ProduceWidget->SetProducingItemText(produceItemNameText);
 	}
@@ -244,126 +242,122 @@ void UCProduceItemQueueSlot::EndProduce()
 {
 	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
 	if (wrapBox)
+	{
 		wrapBox->RemoveChild(this);
 
-	CheckWrapBox(wrapBox);
-}
-
-void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
-{
-	if (InWrapBox)
-	{
-		const TArray<UWidget*>& wrapBoxChildren = InWrapBox->GetAllChildren();
-
-		for (int index = 0; index < wrapBoxChildren.Num(); index++)
-		{
-			UCProduceItemQueueSlot* produceItemQueueSlot = Cast<UCProduceItemQueueSlot>(wrapBoxChildren[index]);
-			if (produceItemQueueSlot)
-			{
-				if (index == 0)
-				{
-					if (produceItemQueueSlot->bIsInitialized)
-					{
-						if (!(produceItemQueueSlot->bIsProducing))
-							produceItemQueueSlot->StartProduce();
-					}
-					else
-					{
-						produceItemQueueSlot->InitProduce();
-						produceItemQueueSlot->StartProduce();
-					}
-					
-				}
-				else
-				{
-					if (!produceItemQueueSlot->bIsInitialized)
-						produceItemQueueSlot->InitProduce();
-				}
-
-			}
-		}
-
-		if (!(wrapBoxChildren.Num() > 0))
-		{
-			if (ProduceWidget)
-			{
-				FText produceItemNameText = FText::GetEmpty();
-				ProduceWidget->SetProducingItemText(produceItemNameText);
-			}
-			else
-				CDebug::Print("produceWidget is not valid");
-
-			CDebug::Print("Children.Num() <= 0: False", FColor::Red);
-			return;
-		}
+		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(wrapBox->GetTypedOuter<UUserWidget>());
+		if (produceWidget)
+			produceWidget->CheckWrapBox(wrapBox);
 	}
 }
 
+//void UCProduceItemQueueSlot::CheckWrapBox(class UWrapBox* InWrapBox)
+//{
+//	if (InWrapBox)
+//	{
+//		const TArray<UWidget*>& wrapBoxChildren = InWrapBox->GetAllChildren();
+//
+//		for (int index = 0; index < wrapBoxChildren.Num(); index++)
+//		{
+//			UCProduceItemQueueSlot* produceItemQueueSlot = Cast<UCProduceItemQueueSlot>(wrapBoxChildren[index]);
+//			if (produceItemQueueSlot)
+//			{
+//				if (index == 0)
+//				{
+//					if (produceItemQueueSlot->bIsInitialized)
+//					{
+//						if (!(produceItemQueueSlot->bIsProducing))
+//							produceItemQueueSlot->StartProduce();
+//					}
+//					else
+//					{
+//						produceItemQueueSlot->InitProduce();
+//						produceItemQueueSlot->StartProduce();
+//					}
+//
+//				}
+//				else
+//				{
+//					if (!produceItemQueueSlot->bIsInitialized)
+//						produceItemQueueSlot->InitProduce();
+//				}
+//
+//			}
+//		}
+//
+//		if (!(wrapBoxChildren.Num() > 0))
+//		{
+//			if (ProduceWidget)
+//			{
+//				FText produceItemNameText = FText::GetEmpty();
+//				ProduceWidget->SetProducingItemText(produceItemNameText);
+//			}
+//			else
+//				CDebug::Print("produceWidget is not valid", FColor::Red);
+//
+//			return;
+//		}
+//	}
+//	else
+//		CDebug::Print("WrapBox is not Valid", FColor::White);
+//}
+
 void UCProduceItemQueueSlot::RemoveProduceItemQueueSlotWidget()
 {
-	if (bIsPlaceableOwner)
+	UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+	if (produceWidget)
 	{
-		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
-		if (produceWidget)
+
+		if (bIsPlaceableOwner)
+		{
+			//UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetParent()->GetTypedOuter<UUserWidget>());
+			//if (produceWidget)
+			{
+				class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
+				if (wrapBox)
+				{
+					for (int32 i = 0; i < wrapBox->GetAllChildren().Num(); i++)
+					{
+						UWidget* itemSlot = wrapBox->GetChildAt(i);
+
+						if (itemSlot == this)
+						{
+							if (produceWidget->GetOwnerActor())
+							{
+								if (this->GetOwningPlayer()->HasAuthority())
+								{
+									produceWidget->GetOwnerActor()->BroadcastRemoveProduceItemFromQueue(i);
+								}
+								else
+								{
+									ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
+									if (survivorController)
+									{
+										survivorController->RequestRemoveProduceItemFromQueue(produceWidget->GetOwnerActor(), i);
+									}
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		else
 		{
 			class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
 			if (wrapBox)
 			{
-				for (int32 i = 0; i < wrapBox->GetAllChildren().Num(); i++)
-				{
-					UWidget* itemSlot = wrapBox->GetChildAt(i);
-
-					if (itemSlot == this)
-					{
-						if (produceWidget->GetOwnerActor())
-						{
-							if (this->GetOwningPlayer()->HasAuthority())
-							{
-								produceWidget->GetOwnerActor()->BroadcastRemoveProduceItemFromQueue(i);
-							}
-							else
-							{
-								ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
-								if (survivorController)
-									survivorController->RequestRemoveProduceItemFromQueue(produceWidget->GetOwnerActor(), i);
-							}
-						}
-						break;
-					}
-				}
+				CDebug::Print("wrapBox is valid");
+				wrapBox->RemoveChild(this);
 			}
-		}
-	}
-	else
-	{
-		class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
-		if (wrapBox)
-		{
-			CDebug::Print("wrapBox is valid");
-			wrapBox->RemoveChild(this);
-		}
-		else
-			CDebug::Print("wrapBox is not valid");
+			else
+				CDebug::Print("wrapBox is not valid");
 
-		CheckWrapBox(wrapBox);
+			produceWidget->CheckWrapBox(wrapBox);
+		}
 	}
 }
-
-//void UCProduceItemQueueSlot::BroadcastRemoveProduceItemQueueSlotWidget_Implementation()
-//{
-//	CDebug::Print("BroadcastRemoveProduceItemQueueSlotWidget Called");
-//
-//	class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
-//	if (wrapBox)
-//	{
-//		CDebug::Print("wrapBox is valid");
-//		wrapBox->RemoveChild(this);
-//	}
-//	else
-//		CDebug::Print("wrapBox is not valid");
-//
-//	CheckWrapBox(wrapBox);
-//}
 
 void UCProduceItemQueueSlot::CancleProduce()
 {

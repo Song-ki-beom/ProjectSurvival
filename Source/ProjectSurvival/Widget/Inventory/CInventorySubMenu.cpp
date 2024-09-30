@@ -48,7 +48,7 @@ void UCInventorySubMenu::NativeConstruct()
     ButtonNormalBrush = Button_Q->WidgetStyle.Normal;
     ButtonPressedBrush = Button_Q->WidgetStyle.Pressed;
 
-    SurvivorController->SetupBuildWidget();
+    //SurvivorController->SetupBuildWidget();
 }
 
 bool UCInventorySubMenu::Initialize()

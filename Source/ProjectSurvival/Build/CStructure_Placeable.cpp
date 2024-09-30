@@ -11,6 +11,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Produce/CProduceWidget.h"
+#include "Widget/Produce/CProduceItemQueueSlot.h"
 #include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,6 +20,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/Button.h"
 #include "Components/WrapBox.h"
+#include "LandScape.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
 {
@@ -49,6 +51,9 @@ void ACStructure_Placeable::BeginPlay()
 			case EPlaceableStructureType::Furnace:
 				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
 				break;
+			case EPlaceableStructureType::CampFire:
+				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
+				break;
 			default:
 				break;
 			}
@@ -73,7 +78,6 @@ void ACStructure_Placeable::BeginPlay()
 				PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
 				PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
 				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Collapsed);
-
 				break;
 			case EPlaceableStructureType::Furnace:
 				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
@@ -84,7 +88,16 @@ void ACStructure_Placeable::BeginPlay()
 
 				IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
 				IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
+				break;
+			case EPlaceableStructureType::CampFire:
+				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 모닥불")));
+				// 모닥불 생산 아이템 추가
+				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
+				PlaceableProduceWidget->SetProducePanelSwitcherIndex(4);
+				PlaceableProduceWidget->CreateConsumableProduceItemSlot(28, 28);
 
+				IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
+				IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
 				break;
 			default:
 				break;
@@ -101,6 +114,91 @@ void ACStructure_Placeable::BeginPlay()
 	else
 	{
 		CDebug::Print("No HasAuthority", FColor::Red);
+	}
+}
+
+void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
+{
+	if (Survivor)
+	{
+		switch (WidgetCaller)
+		{
+		case EWidgetCall::Placeable:
+		{
+			if (ActorInventoryWidgetClass)
+			{
+				if (ActorInventoryWidget)
+				{
+					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+					if (survivorController)
+					{
+						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+						if (mainHUD)
+						{
+							mainHUD->SetWidgetVisibility(EWidgetCall::Placeable, ActorInventoryWidget, ActorProduceWidget, Actor);
+						}
+					}
+				}
+				else
+					CDebug::Print("ActorInventoryWidget is not Valid");
+			}
+			else
+				CDebug::Print("ActorInventoryWidgetClass is not Valid");
+		}
+		}
+	}
+	else
+		CDebug::Print("Survivor is not valid");
+}
+
+void ACStructure_Placeable::CheckHeight()
+{
+	// 높이 체크
+	FHitResult floorHitResult;
+	float startLocationX = this->GetActorLocation().X;
+	float startLocationY = this->GetActorLocation().Y;
+	float startLocationZ = GetOwner()->GetActorLocation().Z;
+	FVector startLocation = FVector(startLocationX, startLocationY, startLocationZ);
+	FVector endLocation = startLocation - FVector(0, 0, 300);
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypeQuery;
+	objectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+	TArray<AActor*> ignores;
+	FCollisionObjectQueryParams objectQueryParams;
+	objectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel1);
+	FCollisionQueryParams collisionParams;
+	bLandScapeHit = UKismetSystemLibrary::LineTraceSingleForObjects
+	(
+		GetWorld(),
+		startLocation,
+		endLocation,
+		objectTypeQuery,
+		false,
+		ignores,
+		EDrawDebugTrace::ForDuration,
+		floorHitResult,
+		true,
+		FLinearColor::Yellow,
+		FLinearColor::Red
+	);
+
+	AActor* heightHitActor = floorHitResult.GetActor();
+	if (IsValid(heightHitActor))
+	{
+		if (heightHitActor->IsA(ALandscape::StaticClass()))
+		{
+			PlaceableHeight = floorHitResult.ImpactPoint.Z + 30.0f;
+			bLandScapeHit = true;
+		}
+		else
+		{
+			PlaceableHeight = GetOwner()->GetActorLocation().Z;
+			bLandScapeHit = false;
+		}
+	}
+	else
+	{
+		PlaceableHeight = GetOwner()->GetActorLocation().Z;
+		bLandScapeHit = false;
 	}
 }
 
@@ -177,40 +275,6 @@ void ACStructure_Placeable::CheckCenter()
 		FLinearColor::Green,
 		FLinearColor::Red
 	);
-}
-
-void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
-{
-	if (Survivor)
-	{
-		switch (WidgetCaller)
-		{
-		case EWidgetCall::Placeable:
-		{
-			if (ActorInventoryWidgetClass)
-			{
-				if (ActorInventoryWidget)
-				{
-					ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
-					if (survivorController)
-					{
-						ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
-						if (mainHUD)
-						{
-							mainHUD->SetWidgetVisibility(EWidgetCall::Placeable, ActorInventoryWidget, ActorProduceWidget, Actor);
-						}
-					}
-				}
-				else
-					CDebug::Print("ActorInventoryWidget is not Valid");
-			}
-			else
-				CDebug::Print("ActorInventoryWidgetClass is not Valid");
-		}
-		}
-	}
-	else
-		CDebug::Print("Survivor is not valid");
 }
 
 void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats)
@@ -390,6 +454,7 @@ void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName 
 void ACStructure_Placeable::BroadcastRemoveProduceItemFromQueue_Implementation(int32 InIndex)
 {
 	PlaceableProduceWidget->GetProduceQueue()->RemoveChildAt(InIndex);
+	PlaceableProduceWidget->CheckWrapBox(PlaceableProduceWidget->GetProduceQueue());
 }
 
 void ACStructure_Placeable::BroadcastIgnite_Implementation()
@@ -408,18 +473,36 @@ void ACStructure_Placeable::PerformIgnite()
 {
 	if (FireParticle && FireSound && IgniteSound && FireSoundAttenuation)
 	{
+		FVector adjustLocation = FVector::ZeroVector;
+		FVector adjustScale = FVector::ZeroVector;
+
+		switch (PlaceableStructureType)
+		{
+		case EPlaceableStructureType::Furnace:
+			adjustLocation = FVector(0.0f, 0.0f, 110.0f);
+			adjustScale = FVector(1.0f, 1.0f, 1.0f);
+			break;
+		case EPlaceableStructureType::CampFire:
+			adjustLocation = FVector(0.0f, 0.0f, 40.0f);
+			adjustScale = FVector(0.5f, 0.5f, 0.5f);
+			break;
+		default:
+			break;
+		}
+
 		SpawnedFireParticle = UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			FireParticle,
-			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorLocation() + adjustLocation,
 			this->GetActorRotation(),
 			true
 		);
-
+		SpawnedFireParticle->SetWorldScale3D(adjustScale);
+	
 		UGameplayStatics::SpawnSoundAtLocation(
 			GetWorld(),
 			IgniteSound,
-			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorLocation() + adjustLocation,
 			this->GetActorRotation(),
 			1.0f,
 			1.0f,
@@ -430,7 +513,7 @@ void ACStructure_Placeable::PerformIgnite()
 		SpawnedFireSound = UGameplayStatics::SpawnSoundAtLocation(
 			GetWorld(),
 			FireSound,
-			this->GetActorLocation() + FVector(0.0f, 0.0f, 110.0f),
+			this->GetActorLocation() + adjustLocation,
 			this->GetActorRotation(),
 			0.25f,
 			1.0f,

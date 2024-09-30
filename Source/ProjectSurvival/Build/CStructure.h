@@ -34,6 +34,8 @@ public:
 	void SetBuildStructureID(FName InItemID) { BuildStructureID = InItemID; }
 	FName GetBuildStructureID() { return BuildStructureID; }
 
+	bool CheckIsBuildOnLandScape() { return bIsBuildOnLandScape; }
+
 protected:
 	void SaveOriginMaterial();
 
@@ -42,6 +44,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* PreviewBox;
+	UPROPERTY()
+		UMaterialInterface* OriginMaterial;
 
-	UMaterialInterface* OriginMaterial;
+	UPROPERTY(EditAnywhere)
+		bool bIsBuildOnLandScape;
+
 };

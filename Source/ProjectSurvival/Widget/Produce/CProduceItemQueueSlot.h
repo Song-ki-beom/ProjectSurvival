@@ -24,8 +24,11 @@ public:
 	void SetProduceProgress();
 	void PauseProduceProgress();
 	void EndProduce();
-	void CheckWrapBox(class UWrapBox* InWrapBox);
+	//void CheckWrapBox(class UWrapBox* InWrapBox);
 	void RemoveProduceItemQueueSlotWidget();
+
+	bool GetIsInitialized() { return bIsInitialized; }
+	bool GetIsProducing() { return bIsProducing; }
 
 private:
 	UFUNCTION()

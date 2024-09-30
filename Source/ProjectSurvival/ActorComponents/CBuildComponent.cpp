@@ -1203,14 +1203,24 @@ void UCBuildComponent::BuildStartPlaceable()
 		FVector structureLocation;
 		FRotator structureRotation;
 
-		SpawnedPlaceable->CheckDown_FoundationAndCeiling();
-		if (SpawnedPlaceable->GetPlaceableDown_FoundationAndCeilingHit())
+		if (SpawnedPlaceable->CheckIsBuildOnLandScape())
 		{
+			SpawnedPlaceable->CheckHeight();
 			SpawnedPlaceable->CheckCenter();
-			bIsBuildable = !SpawnedPlaceable->GetPlaceableCenterHit();
+
+			bIsBuildable = ((SpawnedPlaceable->GetPlaceableLandScapeHit()) && (!SpawnedPlaceable->GetPlaceableCenterHit()));
 		}
 		else
-			bIsBuildable = false;
+		{
+			SpawnedPlaceable->CheckDown_FoundationAndCeiling();
+			if (SpawnedPlaceable->GetPlaceableDown_FoundationAndCeilingHit())
+			{
+				SpawnedPlaceable->CheckCenter();
+				bIsBuildable = !SpawnedPlaceable->GetPlaceableCenterHit();
+			}
+			else
+				bIsBuildable = false;
+		}
 
 		structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 		structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
