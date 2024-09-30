@@ -10,7 +10,6 @@ class PROJECTSURVIVAL_API UCWorldMap : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
-	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void SetCharacterPosOnWorldMap();
 
@@ -23,5 +22,5 @@ private:
 	float WorldMapLevelWidth = 41859.0f;
 	float WorldMapLevelHeight = 39879.0f;
 	FVector2D WorldMapLevelTopLeftLocation = FVector2D(15700.0f, -31483.0f);
-	FVector2D ImageSize = FVector2D(972.4f, 1021.5f);
+	FVector2D ImageSize;
 };
