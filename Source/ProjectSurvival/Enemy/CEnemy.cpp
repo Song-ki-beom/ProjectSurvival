@@ -60,6 +60,7 @@ ACEnemy::ACEnemy()
 	{
 			GetMesh()->SetRelativeLocation(FVector(-45, 0, -90));
 			GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+			GetMesh()->bMultiBodyOverlap = false; //본마다 Object Trace 되는 현상 방지 
 	}
 
 	
@@ -269,6 +270,12 @@ void ACEnemy::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState
 	PerformDoSpecialAction(SpecialState);
 }
 
+void ACEnemy::BroadcastDisableCollision_Implementation()
+{
+	BoxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 
 void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -331,44 +338,52 @@ void ACEnemy::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
+		CDebug::Print(TEXT("Hit Start"));
 		FString HitActorName = FString("_Bear");
 		FName CompleteHitID = FName(*(DamageData.HitID.ToString()) + HitActorName);
 		HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Bear"));
 		if (HitData && HitData->Montage)
 		{
-			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
 			if (StatusComponent != nullptr && this->HasAuthority())
 			{
 				StatusComponent->ApplyDamage(HitData->DamageAmount);
 			}
+			
 			HitData->PlaySoundWave(this);
 			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
-			APlayerController* PlayerController = Cast<APlayerController>(GetController());
-			HitData->PlayCameraShake(PlayerController, 1.0f);
+
+			if (!StatusComponent->IsDead())
+			{
+				
+
+				FVector start = GetActorLocation();
+				UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
+				AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
+				FVector target = targetActor->GetActorLocation();
+				FVector direction = target - start;
+				direction = direction.GetSafeNormal();
+
+				if (StatusComponent->CheckHPCoefChanged()) 
+				{
+					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
+					//Look At
+					FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
+					LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
+					SetActorRotation(LookAtRotation);
+					LaunchCharacter(-direction * HitData->Launch, false, false);
+				}
+
+			}
+
+			if (StatusComponent->IsDead())
+			{
+				
+				StateComponent->ChangeType(EStateType::Dead);
+				if(this->HasAuthority()) Die();
+				return;
+			}
+
 		}
-
-
-		if (!StatusComponent->IsDead())
-		{
-			FVector start = GetActorLocation();
-			UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
-			AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
-			FVector target = targetActor->GetActorLocation();
-			FVector direction = target - start;
-			direction = direction.GetSafeNormal();
-
-			//Look At
-			FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
-			LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
-			SetActorRotation(LookAtRotation);
-			LaunchCharacter(-direction * HitData->Launch, false, false);
-		}
-		if (StatusComponent->IsDead())
-		{
-			Die();
-			return;
-		}
-
 		DamageData.CharacterID = 0;
 		DamageData.CauserID = 0;
 		DamageData.HitID = "";
@@ -379,8 +394,26 @@ void ACEnemy::ApplyHitData()
 
 void ACEnemy::Die()
 {
-	StateComponent->ChangeType(EStateType::Dead);
-	MontageComponent->PlayDeadMontage();
+	
+	if (AIController)
+	{
+		AIController->StopMovement(); // AI가 현재 수행 중인 움직임 멈춤
+		AIController->BrainComponent->StopLogic("Enemy Dead"); // AI의 행동 로직 중지
+	}
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+
+	BroadcastDoSpecialAction(ESpecialState::Dead);
+	BroadcastDisableCollision();
+
+	
+	GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &ACEnemy::RemoveCharacter, 3.0f, false);
+}
+
+void ACEnemy::RemoveCharacter()
+{
+	Destroy();
+
 }
 
 void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)

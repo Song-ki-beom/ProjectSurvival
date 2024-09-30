@@ -59,6 +59,8 @@ protected:
 	UPROPERTY()
 		class UCStateComponent* StateComponent;
 	UPROPERTY()
+		class UCStatusComponent* StatusComponent;
+	UPROPERTY()
 		class UWorld* World;
 
 protected:

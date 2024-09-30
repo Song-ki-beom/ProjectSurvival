@@ -25,6 +25,8 @@ private:
 		void UpdateHungerProgressBar(float HungerPercentage);
 	UFUNCTION()
 		void UpdateStaminaProgressBar(float StaminaPercentage);
+	UFUNCTION()
+		void UpdateWeightProgressBar();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -33,10 +35,11 @@ private:
 		class UProgressBar* HungerBar;
 	UPROPERTY(meta = (BindWidget))
 		class UProgressBar* StaminaBar;
-
+	UPROPERTY(meta = (BindWidget))
+		class UProgressBar* WeightBar;
 
 private:
 	class UCStatusComponent* StatusComponent;
-
+	class UCInventoryComponent* InventoryComponent;
 
 };

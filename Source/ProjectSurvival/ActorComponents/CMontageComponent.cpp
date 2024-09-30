@@ -11,26 +11,7 @@ void UCMontageComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if (DataTable == nullptr)
-	{
-		return;
-	}
-
-	TArray<FMontagesData*>  OutArray;
-	DataTable->GetAllRows<FMontagesData>("", OutArray);
-
 	
-	
-	for (int32 i = 0; i < (int32)EStateType::Max; i++)
-	{
-		for (FMontagesData* data : OutArray)
-		{
-			if ((EStateType)i == data->Type)
-			{
-				SpecialMontageDatas[i] = data;
-			}
-		}
-	}
 
 	// 몽타주 제거할때 
 	//Mesh->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &UMCombatComponent::OnMontageNotifyBegin);
@@ -40,18 +21,34 @@ void UCMontageComponent::BeginPlay()
 		OwnerCharacter->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &UCMontageComponent::OnMontageNotifyBegin);
 		OwnerCharacter->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyEnd.AddDynamic(this, &UCMontageComponent::OnMontageNotifyEnd);
 		OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UCMontageComponent::OnMontageEnded);
+
 	}
 
 }
 
 
-
-
-
-void UCMontageComponent::PlayDeadMontage()
+void UCMontageComponent::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-	PlaySpecialMontage(ESpecialState::Dead);
+
 }
+void UCMontageComponent::OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+
+}
+
+void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (bInterrupted)
+	{
+		// 몽타주가 중단된 경우 처리할 로직
+	}
+	else
+	{
+		// 몽타주가 정상적으로 끝난 경우 처리할 로직
+	}
+}
+
+
 
 // session
 void UCMontageComponent::Montage_Play(UAnimMontage* InMontage, float InPlayRate)
@@ -64,27 +61,4 @@ void UCMontageComponent::Montage_Play_Section(UAnimMontage* InMontage, FName Sec
 	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, InMontage);
 }
 
-void UCMontageComponent::PlaySpecialMontage(ESpecialState InType)
-{
-	if(OwnerCharacter == nullptr) return;
-	
-	FMontagesData* data = SpecialMontageDatas[(int32)InType];
-	if (data == nullptr)
-	{
-		return;
-	}
-	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(data->Montage, data->PlayRate);
-}
-void UCMontageComponent::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
-{
 
-}
-void UCMontageComponent::OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
-{
-
-}
-
-void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	
-}

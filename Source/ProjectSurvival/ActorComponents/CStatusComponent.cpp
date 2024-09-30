@@ -3,6 +3,7 @@
 #include "ActorComponents/CStatusComponent.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
+#include "Utility/CDebug.h"
 #include "CGameInstance.h"
 
 
@@ -26,8 +27,7 @@ void UCStatusComponent::BeginPlay()
 	if (GetOwner()->HasAuthority()) //서버만 실행 
 	{
 		GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 1.0f, true); //1초마다 반복해서 실행 
-		GetWorld()->GetTimerManager().SetTimer(StaminaReductionTimerHandle, this, &UCStatusComponent::ReduceStaminaByTime, 2.0f, true); //2초마다 반복해서 실행 
-
+		GetWorld()->GetTimerManager().SetTimer(StaminaRecoverTimerHandle, this, &UCStatusComponent::RecoverStaminaByTime, 0.35f, true); //0.35초마다 반복해서 실행 
 	}
 		
 }
@@ -72,15 +72,48 @@ void UCStatusComponent::ReduceHungerByTime()
 
 }
 
-void UCStatusComponent::ReduceStaminaByTime()
+void UCStatusComponent::RecoverStaminaByTime()
 {
-	if (CurrentStamina > 0)
+	if (CurrentStamina >= 0)
 	{
-		float NewStamina = CurrentStamina - (StaminaDecreaseAmount * DifficultyCoef);
+		float NewStamina = CurrentStamina + StaminaIncreaseAmount;
 		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina);
 		BroadcastUpdateStamina(NewStamina);
 	}
 
+}
+
+void UCStatusComponent::ReduceStamina(float ReduceAmount)
+{
+	if (CurrentStamina > 0)
+	{
+		float NewStamina = CurrentStamina - ReduceAmount;
+		NewStamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina);
+		BroadcastUpdateStamina(NewStamina);
+	}
+
+}
+
+bool UCStatusComponent::CanSpendStamina(float ReduceAmount)
+{
+	if (CurrentStamina - ReduceAmount >=0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void UCStatusComponent::SuspendStaminaRecover()
+{
+	GetWorld()->GetTimerManager().PauseTimer(StaminaRecoverTimerHandle);
+}
+
+void UCStatusComponent::ProceedStaminaRecover()
+{
+	GetWorld()->GetTimerManager().UnPauseTimer(StaminaRecoverTimerHandle);
 }
 
 void UCStatusComponent::ApplyDamage(float InAmount)
@@ -90,6 +123,19 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 	BroadcastUpdateHealth(NewHealth);
 	
 	
+}
+
+bool UCStatusComponent::CheckHPCoefChanged()
+{
+	float NewDamagedHPCoef = (float)(1 - (CurrentHealth / MaxHealth));
+	int32 NewDamagedHealthCoef = NewDamagedHPCoef/ 0.25f;
+	if (DamagedHealthCoef != NewDamagedHealthCoef)
+	{
+		DamagedHealthCoef = NewDamagedHealthCoef;
+		CDebug::Print(TEXT("HitCoefChanged!!!!!!!: " ), NewDamagedHealthCoef);
+		return true;
+	}
+	return false;
 }
 
 void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)

@@ -72,10 +72,12 @@ public:
 	//Damage
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser) override;
-	void ApplyHitData();
-	UFUNCTION(NetMulticast,Reliable)
-	void BroadCastApplyHitData(FDamageData InDamageData);
-
+	
+	//Special Action
+	virtual void PerformDoSpecialAction(ESpecialState SpecialState);
+	UFUNCTION(NetMulticast, Reliable)
+		virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
+	
 
 private:
 	//Name  
@@ -83,6 +85,15 @@ private:
 	UFUNCTION(Server, Reliable, WithValidation)
 		void RequestSetSurvivorName(const FText& InText);
 	void UpdateSurvivorNameWidget();
+
+	//Damage
+	void ApplyHitData();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadCastApplyHitData(FDamageData InDamageData);
+	void Die();
+	void RemoveCharacter();
+	UFUNCTION(NetMulticast, Reliable)
+		virtual void BroadcastDisableCollision();
 
 private:
 	class UCGameInstance* GameInstance;
@@ -146,6 +157,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "HitData")
 	FDamageData DamageData;
 	FHitData* HitData;
+
+	//Special Action
+	//Special Action
+	UPROPERTY(EditAnywhere)
+		TArray<FDoActionData> DoSpecialActionDatas;
 public:
 	UFUNCTION(Server, Reliable)
 		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);

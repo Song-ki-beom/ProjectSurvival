@@ -41,6 +41,8 @@ public:
 	virtual void PerformDoSpecialAction(ESpecialState SpecialState);
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void BroadcastDisableCollision();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 //Damage Interface Override
@@ -53,11 +55,12 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastApplyHitData(FDamageData InDamageData);
 	virtual void Die();
-
+	virtual void RemoveCharacter();
 private:
 	UFUNCTION()
 	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
 	void RotateMeshToSlope(float InDeltaTime);
+
 
 
 	
@@ -75,11 +78,7 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 
 	//Special Action
 	UPROPERTY(EditAnywhere)
-	TArray<FDoActionData> DoSpecialActionDatas;
-	
-
-	UPROPERTY(EditAnywhere)
-	TArray<FHitData> HitDatas;
+	TArray<FDoActionData> DoSpecialActionDatas;	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arrow")
 	class UArrowComponent* SlopeCheckArrow;
@@ -122,6 +121,7 @@ private:
 	//Damage
 	FDamageData DamageData;
 	FHitData* HitData;
+	FTimerHandle DieTimerHandle;
 
 public:
 //ForceInline Getter & Settter
