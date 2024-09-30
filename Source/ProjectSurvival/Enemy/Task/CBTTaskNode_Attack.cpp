@@ -38,7 +38,8 @@ EBTNodeResult::Type UCBTTaskNode_Attack::AbortTask(UBehaviorTreeComponent& Owner
 {
     Super::AbortTask(OwnerComp, NodeMemory);
     Enemy->End_DoAction();
-    return EBTNodeResult::Failed;
+    CDebug::Print(TEXT("AbortTaskAbortTaskAbortTaskAbortTaskAbortTaskAbortTaskAbortTask"));
+    return EBTNodeResult::Succeeded;
 
 }
 

@@ -2,6 +2,7 @@
 
 
 #include "ActorComponents/CStateComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/Character.h"
 
 UCStateComponent::UCStateComponent()
@@ -50,9 +51,15 @@ void UCStateComponent::SetDeadMode()
 
 void UCStateComponent::ChangeType(EStateType InType)
 {
+	
+	BroadcastChangeType(InType);
+
+}
+
+void ::UCStateComponent::BroadcastChangeType_Implementation(EStateType InType)
+{
 	EStateType prevType = Type;
 	Type = InType;
 	if (OnStateTypeChanged.IsBound())
 		OnStateTypeChanged.Broadcast(prevType, Type);
 }
-

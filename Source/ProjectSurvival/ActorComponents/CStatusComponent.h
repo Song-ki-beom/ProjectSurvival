@@ -64,6 +64,7 @@ private:
 	float MaxHealth = 100.0f;
 	float CurrentHealth = 200.0f;
 	int32 DamagedHealthCoef = 0;
+	bool CoefChanged = false;
 	
 	//Hunger
 	UPROPERTY(EditAnywhere, Category = "Stamina")

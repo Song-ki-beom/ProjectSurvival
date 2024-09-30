@@ -74,10 +74,10 @@ void UCBTTaskNode_Roam::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
     switch (result)
     {
     case EPathFollowingRequestResult::Failed:
-        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
         break;
     case EPathFollowingRequestResult::AlreadyAtGoal: 
-        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
     break;
     }
 

@@ -117,11 +117,12 @@ private:
 	float TraceDistance = 45.0f;
 	float TraceOffset = 100.0f;
 	int32 AttackIdx = 0;
-
+	
 	//Damage
 	FDamageData DamageData;
 	FHitData* HitData;
 	FTimerHandle DieTimerHandle;
+	int32 hitCnt = 0;
 
 public:
 //ForceInline Getter & Settter

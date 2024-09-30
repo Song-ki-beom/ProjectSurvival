@@ -15,6 +15,8 @@ class PROJECTSURVIVAL_API ACEnemyAIController : public AAIController
 	GENERATED_BODY()
 public:
 	ACEnemyAIController();
+	UFUNCTION()
+		void ChangeTarget(class AActor* InTarget);
 protected:  
 	virtual void BeginPlay() override;
 protected:
@@ -28,7 +30,7 @@ private:
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	UFUNCTION()
 		void EnableAggroCoolDown();
-
+	
 private: 
 	class  ACEnemy* Enemy;
 	class  UAISenseConfig_Sight* Sight;

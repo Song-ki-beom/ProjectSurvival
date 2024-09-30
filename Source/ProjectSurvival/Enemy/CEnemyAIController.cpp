@@ -85,6 +85,7 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
     if (CandidateActors.Num() > 0)
     {
         float shortestDistance = 99999.0f;
+        AActor* NewTargetActor= NULL;
         for (AActor* CandidateActor : CandidateActors)
         {
             if (GetPawn() == nullptr) return;
@@ -92,25 +93,32 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
             if (distanceTo < shortestDistance)
             {
                 shortestDistance = distanceTo;
-                TargetActor = CandidateActor;
+                NewTargetActor = CandidateActor;
             }
         }
-        if (TargetActor != nullptr)
-        {
-            bIsAggroCoolDown = false;
-            GetWorld()->GetTimerManager().SetTimer(AggroTimerHandle, this, &ACEnemyAIController::EnableAggroCoolDown, CooldownTime, false);
-            //CDebug::Log(actors[0]->GetName()); 
-            Blackboard->SetValueAsObject("Target", TargetActor); //처음 인식된 Actor을 타겟으로 설정 
-        }
+        ChangeTarget(NewTargetActor);
         CandidateActors.Empty();
     }
     return;
 
 }
 
+
+
 void ACEnemyAIController::EnableAggroCoolDown()
 {
     bIsAggroCoolDown = true; //어그로 풀림 설정 .. 다시 탐색 시작 
+}
 
+void ACEnemyAIController::ChangeTarget(AActor* InTarget) 
+{
+    if (InTarget == nullptr) return;
+    if(TargetActor == InTarget) return;
     
+    TargetActor = InTarget;
+    bIsAggroCoolDown = false;
+    GetWorld()->GetTimerManager().SetTimer(AggroTimerHandle, this, &ACEnemyAIController::EnableAggroCoolDown, CooldownTime, false);
+    Blackboard->SetValueAsObject("Target", TargetActor); 
+    
+
 }

@@ -34,6 +34,9 @@ protected:
 
 public:
     void ChangeType(EStateType InType);
+    UFUNCTION(NetMulticast, Reliable)
+     void BroadcastChangeType(EStateType InType);
+
 
 private:
     void SetIdleMode();

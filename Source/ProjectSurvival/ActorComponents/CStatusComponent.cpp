@@ -127,12 +127,9 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 
 bool UCStatusComponent::CheckHPCoefChanged()
 {
-	float NewDamagedHPCoef = (float)(1 - (CurrentHealth / MaxHealth));
-	int32 NewDamagedHealthCoef = NewDamagedHPCoef/ 0.25f;
-	if (DamagedHealthCoef != NewDamagedHealthCoef)
+	if (CoefChanged == true )
 	{
-		DamagedHealthCoef = NewDamagedHealthCoef;
-		CDebug::Print(TEXT("HitCoefChanged!!!!!!!: " ), NewDamagedHealthCoef);
+		CoefChanged = false;
 		return true;
 	}
 	return false;
@@ -141,6 +138,18 @@ bool UCStatusComponent::CheckHPCoefChanged()
 void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
 {
 	CurrentHealth = NewHealth;
+
+	float NewDamagedHPCoef = (float)(1 - (CurrentHealth / MaxHealth));
+	int32 NewDamagedHealthCoef = NewDamagedHPCoef / 0.1f; //Default:0.25f
+	if (DamagedHealthCoef != NewDamagedHealthCoef)
+	{
+		DamagedHealthCoef = NewDamagedHealthCoef;
+		CoefChanged = true;
+		//CDebug::Print(TEXT("HitCoefChanged!!!!!!!: " ), NewDamagedHealthCoef);
+		
+	}
+	
+
 	OnHealthUpdated.Broadcast(CurrentHealth / MaxHealth);
 	if (CurrentHealth / MaxHealth < 0.45f)
 	{

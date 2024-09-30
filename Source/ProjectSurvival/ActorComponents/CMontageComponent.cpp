@@ -1,5 +1,6 @@
 #include "ActorComponents/CMontageComponent.h"
 #include "GameFramework/Character.h"
+#include "Utility/CDebug.h"
 #include "Components/SkeletalMeshComponent.h"
 
 UCMontageComponent::UCMontageComponent()
@@ -40,6 +41,7 @@ void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 {
 	if (bInterrupted)
 	{
+		bInterrupted;
 		// 몽타주가 중단된 경우 처리할 로직
 	}
 	else

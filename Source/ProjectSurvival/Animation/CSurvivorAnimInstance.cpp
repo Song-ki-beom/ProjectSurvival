@@ -20,6 +20,9 @@ void UCSurvivorAnimInstance::NativeBeginPlay()
 	Weapon = Cast<UCWeaponComponent>(OwnerCharacter->GetComponentByClass(UCWeaponComponent::StaticClass()));
 	if (!!Weapon)
 		Weapon->OnWeaponTypeChanged.AddDynamic(this, &UCSurvivorAnimInstance::OnWeaponTypeChanged);
+	//StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
+	//StateComponent->OnStateTypeChanged.AddDynamic(this, &UCEnemyAnimInstance::OnStateTypeChangedHandler);
+
 }
 
 void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)

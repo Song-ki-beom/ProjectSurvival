@@ -351,7 +351,7 @@ void ACEnemy::ApplyHitData()
 			
 			HitData->PlaySoundWave(this);
 			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
-
+			hitCnt++;
 			if (!StatusComponent->IsDead())
 			{
 				
@@ -363,15 +363,18 @@ void ACEnemy::ApplyHitData()
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();
 
-				if (StatusComponent->CheckHPCoefChanged()) 
+				if (hitCnt >= 4)
 				{
 					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
+					if (this->HasAuthority()) AIController->ChangeTarget(targetActor); //타겟 변경 
 					//Look At
 					FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
 					LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
 					SetActorRotation(LookAtRotation);
 					LaunchCharacter(-direction * HitData->Launch, false, false);
+					hitCnt = 0;
 				}
+		
 
 			}
 
