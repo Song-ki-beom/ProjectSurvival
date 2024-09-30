@@ -1,13 +1,6 @@
 #include "Widget/Map/CWorldMap.h"
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
-#include "Utility/CDebug.h"
-
-
-void UCWorldMap::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
 
 void UCWorldMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -23,6 +16,10 @@ void UCWorldMap::SetCharacterPosOnWorldMap()
 	float ownerLocationX = ownerTransform.GetLocation().X;
 	float ownerLocationY = ownerTransform.GetLocation().Y;
 	float ownerRotationZ = ownerTransform.GetRotation().Rotator().Yaw;
+
+	if (UCanvasPanelSlot* canvasPanelSlot = Cast<UCanvasPanelSlot>(WorldMap->Slot))
+		ImageSize = canvasPanelSlot->GetSize();
+
 
 	float translationX = (ownerLocationY - WorldMapLevelTopLeftLocation.Y) / WorldMapLevelWidth * ImageSize.X;
 	float translationY = (WorldMapLevelTopLeftLocation.X - ownerLocationX) / WorldMapLevelHeight * ImageSize.Y;

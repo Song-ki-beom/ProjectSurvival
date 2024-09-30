@@ -55,6 +55,9 @@ private:
 	//Chatting
 	void FocusChattingBox();
 
+	// WorldMap
+	void ToggleWorldMap();
+
 	//QuickSlot
 	void PressQuickSlot1();
 	void PressQuickSlot2();

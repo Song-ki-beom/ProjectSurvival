@@ -12,6 +12,8 @@
 #include "Widget/Inventory/CQuickSlot.h"
 #include "Widget/Status/CLowHealthWidget.h"
 #include "Widget/Status/CStatusPanel.h"
+#include "Widget/Map/CMiniMap.h"
+#include "Widget/Map/CWorldMap.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
@@ -95,6 +97,20 @@ void ACMainHUD::BeginPlay()
 		LowHealthWidget = CreateWidget<UCLowHealthWidget>(GetWorld(), LowHealthWidgetClass);
 		LowHealthWidget->AddToViewport(0);
 		LowHealthWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (MiniMapClass)
+	{
+		MiniMap = CreateWidget<UCMiniMap>(GetWorld(), MiniMapClass);
+		MiniMap->AddToViewport(4);
+		MiniMap->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (WorldMapClass)
+	{
+		WorldMap = CreateWidget<UCWorldMap>(GetWorld(), WorldMapClass);
+		WorldMap->AddToViewport(6);
+		WorldMap->SetVisibility(ESlateVisibility::Hidden);
 	}
 
 }

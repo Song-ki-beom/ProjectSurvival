@@ -19,6 +19,8 @@
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Map/CMiniMap.h"
+#include "Widget/Map/CWorldMap.h"
 #include "Components/SizeBox.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
 
@@ -93,6 +95,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("MouseWheelUp", IE_Pressed, this,&ACSurvivorController::HandleMouseWheelUp);
 		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
 		InputComponent->BindAction("Chat", IE_Pressed,this, &ACSurvivorController::FocusChattingBox);
+		InputComponent->BindAction("WorldMap", IE_Pressed,this, &ACSurvivorController::ToggleWorldMap);
 		InputComponent->BindAction("QuickSlot1", IE_Pressed, this, &ACSurvivorController::PressQuickSlot1);
 		InputComponent->BindAction("QuickSlot2", IE_Pressed, this, &ACSurvivorController::PressQuickSlot2);
 		InputComponent->BindAction("QuickSlot3", IE_Pressed, this, &ACSurvivorController::PressQuickSlot3);
@@ -393,6 +396,25 @@ void ACSurvivorController::FocusChattingBox()
 	}
 	else
 		CDebug::Print("gameInstance is not Valid");
+}
+
+void ACSurvivorController::ToggleWorldMap()
+{
+	if (bIsProduceWidgetOn)
+		return;
+
+	if (ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD()))
+	{
+		if (mainHUD->GetWorldMap()->GetVisibility() == ESlateVisibility::Hidden)
+			mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Visible);
+		else
+			mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Hidden);
+
+		if (mainHUD->GetMiniMap()->GetVisibility() == ESlateVisibility::Hidden)
+			mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Visible);
+		else
+			mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 void ACSurvivorController::PressQuickSlot1()

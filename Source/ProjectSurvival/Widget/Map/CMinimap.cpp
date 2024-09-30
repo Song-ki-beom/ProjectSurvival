@@ -1,30 +1,23 @@
-#include "Widget/Map/CMinimap.h"
+#include "Widget/Map/CMiniMap.h"
 #include "Components/Image.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Character/CSurvivorController.h"
-#include "Utility/CDebug.h"
 
-UCMinimap::UCMinimap(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-}
-
-void UCMinimap::NativeConstruct()
+void UCMiniMap::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UTexture2D* worldMapTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("Texture2D'/Game/PirateIsland/Include/Textures/UI/WorldMap.WorldMap'")));
-
-	if (!worldMapTexture)
-		return;
-
-	WorldMapImage->SetBrushFromTexture(worldMapTexture);
-	MinimapBrush.SetResourceObject(worldMapTexture);
-	MinimapBrush.ImageSize = FVector2D(worldMapTexture->GetSizeX(), worldMapTexture->GetSizeY());
-	MinimapBrush.DrawAs = ESlateBrushDrawType::Image;
+	// 확대된 부분 그리기 위한 Brush 생성
+	if (UTexture2D* worldMapTexture = Cast<UTexture2D>(WorldMap->Brush.GetResourceObject()))
+	{
+		ImageSize = FVector2D(worldMapTexture->GetSizeX(), worldMapTexture->GetSizeY());
+		WorldMap->SetBrushFromTexture(worldMapTexture);
+		MiniMapBrush.SetResourceObject(worldMapTexture);
+		MiniMapBrush.ImageSize = FVector2D(worldMapTexture->GetSizeX(), worldMapTexture->GetSizeY());
+		MiniMapBrush.DrawAs = ESlateBrushDrawType::Image;
+	}
 }
 
 
-void UCMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void UCMiniMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
@@ -36,17 +29,11 @@ void UCMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	float uvMaxX = (characterPos.X + 100.0f) / ImageSize.X;
 	float uvMaxY = (characterPos.Y + 100.0f) / ImageSize.Y;
 
-	MinimapBrush.SetUVRegion(FBox2D(FVector2D(uvMinX, uvMinY), FVector2D(uvMaxX, uvMaxY)));
-	WorldMapImage->SetBrush(MinimapBrush);
+	MiniMapBrush.SetUVRegion(FBox2D(FVector2D(uvMinX, uvMinY), FVector2D(uvMaxX, uvMaxY)));
+	WorldMap->SetBrush(MiniMapBrush);
 }
 
-void UCMinimap::SetUpMinimap()
-{
-	CreateWidget<UUserWidget>(GetWorld(), MinimapClass);
-	this->AddToViewport(5);
-}
-
-FVector2D UCMinimap::GetCharacterPosOnWorldMap()
+FVector2D UCMiniMap::GetCharacterPosOnWorldMap()
 {
 	// 캐릭터의 실제 위치를 WorldMap 텍스쳐 이미지 위치로 변환 (좌상단 0,0 기준)
 	FTransform ownerTransform = this->GetOwningPlayerPawn()->GetActorTransform();
