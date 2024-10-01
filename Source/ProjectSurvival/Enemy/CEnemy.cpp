@@ -17,6 +17,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "CGameInstance.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Net/UnrealNetwork.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "Engine/PackageMapClient.h"
@@ -93,6 +94,7 @@ ACEnemy::ACEnemy()
 
 void ACEnemy::BeginPlay()
 {
+	
 
 	Super::BeginPlay();
 	NetDriver = GetWorld()->GetNetDriver();
@@ -113,6 +115,7 @@ void ACEnemy::BeginPlay()
 	{
 		GetMesh()->SetSkeletalMesh(SkeletalMesh);
 	}
+	CreateDynamicMaterial(); //Mesh 에서 원본 Mesh 색 추출, 인스턴스 머터리얼 생성 
 
 	//AnimInstance 
 	UClass* AnimInstance = Cast<UClass>(AssetLoader.LoadSynchronous(FSoftObjectPath(AnimInstancePath)));
@@ -122,6 +125,11 @@ void ACEnemy::BeginPlay()
 		GetMesh()->SetAnimClass(AnimInstance);
 	}
 
+
+	if (GetMesh()->GetAnimInstance())
+	{
+		AfterABPBindDynamic();
+	}
 
 	
 
@@ -149,13 +157,14 @@ void ACEnemy::BeginPlay()
 	MovingComponent->DisableControlRotation();
 	// 이동 방향에 따라 회전하도록 설정
 	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+		//몽타주 끝나는 시점 관련 바인딩 
+	
 
 }
 
 void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 	RotateMeshToSlope(DeltaTime);
 }
 
@@ -189,6 +198,7 @@ void ACEnemy::PerformDoAction(int32 InAttackIdx)
 
 void ACEnemy::AttackTraceHit()
 {
+
 
 	//Trace 관련 세팅
 	FVector ForwardVector = GetActorForwardVector();
@@ -314,6 +324,21 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 
 }
 
+void ACEnemy::AfterABPBindDynamic()
+{
+	if (MontageComponent && (GetMesh()->GetAnimInstance()))
+	{
+		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(MontageComponent, &UCMontageComponent::OnMontageNotifyBegin);
+		GetMesh()->GetAnimInstance()->OnPlayMontageNotifyEnd.AddDynamic(MontageComponent, &UCMontageComponent::OnMontageNotifyEnd);
+		GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(MontageComponent, &UCMontageComponent::OnMontageEnded);
+		MontageComponent->OnMontageFinalEnded.AddDynamic(this, &ACEnemy::OnMontageFinalEnded);
+		MontageComponent->OnMontageInterrupted.AddDynamic(this, &ACEnemy::OnMontageInterrupted);
+		MontageComponent->OnPlayMontageNotifyBegin.AddDynamic(this, &ACEnemy::OnPlayMontageNotifyBegin);
+		MontageComponent->OnPlayMontageNotifyEnd.AddDynamic(this, &ACEnemy::OnPlayMontageNotifyEnd);
+
+	}
+}
+
 
 void ACEnemy::BroadCastApplyHitData_Implementation(FDamageData InDamageData)
 {
@@ -354,8 +379,8 @@ void ACEnemy::ApplyHitData()
 			hitCnt++;
 			if (!StatusComponent->IsDead())
 			{
-				
-
+				ChangeMeshColor(FLinearColor::Red); //Material Change 
+				GetWorld()->GetTimerManager().SetTimer(ResetColorTimerHandle, this, &ACEnemy::ResetColor, 0.7f, false);
 				FVector start = GetActorLocation();
 				UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
 				AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
@@ -365,7 +390,7 @@ void ACEnemy::ApplyHitData()
 
 				if (hitCnt >= 4)
 				{
-					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
+					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
 					if (this->HasAuthority()) AIController->ChangeTarget(targetActor); //타겟 변경 
 					//Look At
 					FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
@@ -408,9 +433,7 @@ void ACEnemy::Die()
 
 	BroadcastDoSpecialAction(ESpecialState::Dead);
 	BroadcastDisableCollision();
-
 	
-	GetWorld()->GetTimerManager().SetTimer(DieTimerHandle, this, &ACEnemy::RemoveCharacter, 3.0f, false);
 }
 
 void ACEnemy::RemoveCharacter()
@@ -467,9 +490,76 @@ void ACEnemy::RotateMeshToSlope(float InDeltaTime)
 
 }
 
+void ACEnemy::OnMontageFinalEnded()
+{
+	
+}
+
+void ACEnemy::OnMontageInterrupted()
+{
+	
+}
+
+void ACEnemy::OnPlayMontageNotifyBegin()
+{
+	if (this->HasAuthority() && StatusComponent->IsDead())
+	{
+		RemoveCharacter();
+	}
+}
+
+void ACEnemy::OnPlayMontageNotifyEnd()
+{
+	
+}
 
 
+void ACEnemy::CreateDynamicMaterial()
+{
+	for (int32 i = 0; i < GetMesh()->GetMaterials().Num(); i++)
+	{
+		
+		UMaterialInterface* material = GetMesh()->GetMaterials()[i];
+		UMaterialInstanceDynamic* DynamicMaterial = Cast<UMaterialInstanceDynamic>(material);
+		if (!DynamicMaterial)
+		{
+			DynamicMaterial = UMaterialInstanceDynamic::Create(material, this);
+			GetMesh()->SetMaterial(i, DynamicMaterial);
+			if (i == 0)
+			{
+				FMaterialParameterInfo ParameterInfo(TEXT("Color")); 
+				DynamicMaterial->GetVectorParameterValue(ParameterInfo, OriginalMeshColor);
 
+			}
+
+		}
+		
+	}
+
+	
+}
+
+void ACEnemy::ChangeMeshColor(FLinearColor InColor)
+{
+	for (UMaterialInterface* material : GetMesh()->GetMaterials())
+	{
+		UMaterialInstanceDynamic* instance = Cast<UMaterialInstanceDynamic>(material);
+		if (!!material)
+			instance->SetVectorParameterValue("Color", InColor);
+	}
+}
+
+void ACEnemy::ResetColor()
+{
+	for (int32 i = 0; i < GetMesh()->GetMaterials().Num(); i++)
+	{
+		UMaterialInstanceDynamic* DynamicMaterial = Cast<UMaterialInstanceDynamic>(GetMesh()->GetMaterial(i));
+		if (DynamicMaterial)
+		{
+			DynamicMaterial->SetVectorParameterValue("Color",OriginalMeshColor);
+		}
+	}
+}
 
 //리플리케이트 변수 선언부분 
 //void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

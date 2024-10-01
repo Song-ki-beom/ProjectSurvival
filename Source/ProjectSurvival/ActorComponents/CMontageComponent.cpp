@@ -30,23 +30,29 @@ void UCMontageComponent::BeginPlay()
 
 void UCMontageComponent::OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-
+	OnPlayMontageNotifyBegin.Broadcast();
 }
 void UCMontageComponent::OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
-
+	OnPlayMontageNotifyEnd.Broadcast();
 }
 
 void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (bInterrupted)
+	if (bInterrupted) //중간에 중단 
 	{
-		bInterrupted;
-		// 몽타주가 중단된 경우 처리할 로직
+		
+		//CDebug::Print("OnMontageInterrupted: ", Montage->GetFName().ToString());
+			OnMontageInterrupted.Broadcast();
+		
 	}
 	else
-	{
-		// 몽타주가 정상적으로 끝난 경우 처리할 로직
+	{// 성공적 마무리 
+		
+		//CDebug::Print("OnMontageFinalEnded", Montage->GetFName().ToString());
+			OnMontageFinalEnded.Broadcast();
+	
+		
 	}
 }
 

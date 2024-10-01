@@ -49,18 +49,38 @@ public:
 	//virtual void Damage(FDamageData* DamageData) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser) override;
+
+	//Montage 
+	void AfterABPBindDynamic();
 	
-protected:
+private:
+	//Hit
 	virtual void ApplyHitData();
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastApplyHitData(FDamageData InDamageData);
 	virtual void Die();
 	virtual void RemoveCharacter();
-private:
+
+	//Material 
+	virtual  void CreateDynamicMaterial();
+	virtual  void ChangeMeshColor(FLinearColor InColor);
+	void ResetColor();
+	
+
+	//etc
 	UFUNCTION()
 	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
 	void RotateMeshToSlope(float InDeltaTime);
 
+	//Montage
+	UFUNCTION()
+	void OnMontageFinalEnded();
+	UFUNCTION()
+	void OnMontageInterrupted();
+	UFUNCTION()
+	void OnPlayMontageNotifyBegin();
+	UFUNCTION()
+	void OnPlayMontageNotifyEnd();
 
 
 	
@@ -123,7 +143,10 @@ private:
 	FHitData* HitData;
 	FTimerHandle DieTimerHandle;
 	int32 hitCnt = 0;
-
+	
+	//Material
+	FLinearColor OriginalMeshColor = FLinearColor::White;
+	FTimerHandle ResetColorTimerHandle;
 public:
 //ForceInline Getter & Settter
 FORCEINLINE uint8 GetTeamID() { return TeamID; }

@@ -63,6 +63,7 @@ void ACEnemyAIController::OnPossess(APawn* InPawn)
     AIComponent = Cast<UCEnemyAIComponent>(Enemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
     if(AIComponent == nullptr) return;
     AIComponent->SetBlackboard(Blackboard); //AIComponent에 여기서 설정된 BlackBoard를 AIComponent 가 사용하는 BlackBoard 로 설정(추후에 블랙보드 참조하기 위함)
+  
 
 }
 

@@ -8,8 +8,10 @@
 #include "ActorComponents/CStateComponent.h"
 #include "CMontageComponent.generated.h"
 
-
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMontageFinalEnded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMontageInterrupted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayMontageNotifyBegin);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayMontageNotifyEnd);
 USTRUCT()
 struct FMontagesData : public FTableRowBase
 {
@@ -36,7 +38,12 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
+
+public:
+	UFUNCTION()
+	void  Montage_Play(UAnimMontage* InMontage, float InPlayRate);
+	UFUNCTION()
+	void  Montage_Play_Section(UAnimMontage* InMontage, FName SectionName);
 
 	UFUNCTION()
 		void OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
@@ -47,9 +54,10 @@ private:
 
 
 public:
-	void  Montage_Play(UAnimMontage* InMontage, float InPlayRate);
-	void  Montage_Play_Section(UAnimMontage* InMontage, FName SectionName);
-
+	FOnMontageFinalEnded OnMontageFinalEnded;
+	FOnMontageInterrupted OnMontageInterrupted;
+	FOnPlayMontageNotifyBegin OnPlayMontageNotifyBegin;
+	FOnPlayMontageNotifyEnd OnPlayMontageNotifyEnd;
 
 private:
 	class ACharacter* OwnerCharacter;              

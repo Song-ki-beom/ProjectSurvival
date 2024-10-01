@@ -41,7 +41,6 @@ void UCEnemyAIComponent::ChangeType(EAIStateType InType)
 {
 	EAIStateType prevType = GetType();
 	Blackboard->SetValueAsEnum(AIStateTypeKey, (uint8)InType);
-	if (OnAIStateTypeChanged.IsBound())
 		OnAIStateTypeChanged.Broadcast(prevType, InType);
 }
 /////////////////////////////////////////////////////////////////////
