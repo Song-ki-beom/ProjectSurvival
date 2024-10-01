@@ -504,14 +504,14 @@ void ACSurvivor::PerformAddMessage(const FText& InSurvivorNameText, const FText&
 
 void ACSurvivor::BroadcastSetName_Implementation(const FText& InText, uint32 NetGUIDValue)
 {
-	ACMainHUD* mainHUD = Cast<ACMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-	if (mainHUD)
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		mainHUD->GetWorldMap()->SetSurvivorNameOnWorldMap(InText, NetGUIDValue);
+		gameInstance->WorldMap->SetSurvivorNameOnWorldMap(InText, NetGUIDValue);
 	}
 	else
 	{
-		CDebug::Print("mainHUD is not valid");
+		CDebug::Print("gameInstance is not valid");
 	}
 }
 
@@ -522,14 +522,14 @@ void ACSurvivor::RequestSetName_Implementation(const FText& InText, uint32 NetGU
 
 void ACSurvivor::BroadcastLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
 {
-	ACMainHUD* mainHUD = Cast<ACMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-	if (mainHUD)
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		mainHUD->GetWorldMap()->SetOtherCharacterPosOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
+		gameInstance->WorldMap->SetOtherCharacterPosOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
 	}
 	else
 	{
-		CDebug::Print("mainHUD is not valid");
+		CDebug::Print("gameInstance is not valid");
 	}
 }
 

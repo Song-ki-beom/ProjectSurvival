@@ -20,6 +20,9 @@ public:
 	void SetOtherCharacterPosOnWorldMap(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
 
 private:
+	void DisableNameTransmit() { bIsNameTransmitted = true; }
+
+private:
 	UPROPERTY(meta = (BindWidget))
 		class UCanvasPanel* WorldMapCanvasPanel;
 	UPROPERTY(meta = (BindWidget))

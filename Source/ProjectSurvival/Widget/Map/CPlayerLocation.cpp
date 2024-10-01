@@ -45,9 +45,13 @@ void UCPlayerLocation::RegisterPlayerName(const FText& InText)
 
 void UCPlayerLocation::UpdatePlayerLocation(float LocationX, float LocationY, float RotationZ)
 {
-	FWidgetTransform widgetTransform;
-	widgetTransform.Translation = FVector2D(LocationX, LocationY);
-	widgetTransform.Angle = RotationZ;
-	PlayerLocationImage->SetRenderTransform(widgetTransform);
+	FWidgetTransform imageTransform;
+	imageTransform.Translation = FVector2D(LocationX, LocationY);
+	imageTransform.Angle = RotationZ;
+	PlayerLocationImage->SetRenderTransform(imageTransform);
+
+	FWidgetTransform textTransform;
+	textTransform.Translation = FVector2D(LocationX, LocationY + 20.0f);
+	PlayerName->SetRenderTransform(textTransform);
 }
 

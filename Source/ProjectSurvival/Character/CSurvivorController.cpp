@@ -403,19 +403,20 @@ void ACSurvivorController::ToggleWorldMap()
 	if (bIsProduceWidgetOn)
 		return;
 
-	if (ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD()))
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		if (mainHUD->GetWorldMap() && mainHUD->GetMiniMap())
+		if (gameInstance->WorldMap && gameInstance->MiniMap)
 		{
-			if (mainHUD->GetWorldMap()->GetVisibility() == ESlateVisibility::Hidden)
-				mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Visible);
+			if (gameInstance->WorldMap->GetVisibility() == ESlateVisibility::Hidden)
+				gameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);
 			else
-				mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Hidden);
-
-			if (mainHUD->GetMiniMap()->GetVisibility() == ESlateVisibility::Hidden)
-				mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Visible);
+				gameInstance->WorldMap->SetVisibility(ESlateVisibility::Hidden);
+		
+			if (gameInstance->MiniMap->GetVisibility() == ESlateVisibility::Hidden)
+				gameInstance->MiniMap->SetVisibility(ESlateVisibility::Visible);
 			else
-				mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Hidden);
+				gameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }

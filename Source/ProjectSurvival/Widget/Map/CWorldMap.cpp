@@ -20,8 +20,13 @@ void UCWorldMap::NativeConstruct()
 		CDebug::Print("PersonalNetGuidValue", PersonalNetGuidValue, FColor::Magenta);
 	}
 
+	// 위치정보 보내기
 	FTimerHandle worldMapUpdateTimer;
 	GetWorld()->GetTimerManager().SetTimer(worldMapUpdateTimer, this, &UCWorldMap::SetCharacterPosOnWorldMap, 0.025f, true, 3.0f);
+
+	// 이름 보내기 중단 (이미 정해져서 업데이트 필요x)
+	FTimerHandle nameTransmitTimer;
+	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 5.0f, false);
 }
 
 void UCWorldMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -42,14 +47,8 @@ void UCWorldMap::SetCharacterPosOnWorldMap()
 	if (UCanvasPanelSlot* canvasPanelSlot = Cast<UCanvasPanelSlot>(WorldMap->Slot))
 		ImageSize = canvasPanelSlot->GetSize();
 
-
 	float translationX = (ownerLocationY - WorldMapLevelTopLeftLocation.Y) / WorldMapLevelWidth * ImageSize.X;
 	float translationY = (WorldMapLevelTopLeftLocation.X - ownerLocationX) / WorldMapLevelHeight * ImageSize.Y;
-
-	//FWidgetTransform widgetTransform;
-	//widgetTransform.Translation = FVector2D(translationX, translationY); // 월드맵은 텍스쳐가 정지하고 캐릭터 커서가 움직임
-	//widgetTransform.Angle = ownerRotationZ;
-	//PlayerLocation->SetRenderTransform(widgetTransform);
 
 	if (this->GetOwningPlayer()->HasAuthority())
 	{
@@ -140,7 +139,7 @@ void UCWorldMap::SetSurvivorNameOnWorldMap(const FText& InText, uint32 NetGUIDVa
 				UCanvasPanelSlot* canvasSlot = Cast<UCanvasPanelSlot>(addedPlayerLocation->Slot);
 				if (canvasSlot)
 				{
-					canvasSlot->SetPosition(FVector2D(410.0f, 50.0f));
+					canvasSlot->SetPosition(FVector2D(370.0f, 50.0f));
 				}
 
 				CDebug::Print("Added On Canvas Panel");

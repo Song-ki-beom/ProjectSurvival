@@ -49,8 +49,6 @@ public:
 	class UCInventorySubMenu* GetInventorySubMenu() { return InventorySubMenuWidget; }
 	class UCInteractionWidget* GetInteractionWidget() { return InteractionWidget; }
 	class UCProduceWidget* GetPlaceableProduceWidget() { return PlaceableProduceWidget; }
-	class UCMiniMap* GetMiniMap() { return MiniMap; }
-	class UCWorldMap* GetWorldMap() { return WorldMap; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
@@ -69,10 +67,6 @@ public:
 	TSubclassOf<class UCStatusPanel> StatusPanelClass;
 	UPROPERTY(EditAnywhere,Category = "Widgets")
 	TSubclassOf<class UCLowHealthWidget> LowHealthWidgetClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<class UCMiniMap> MiniMapClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<class UCWorldMap> WorldMapClass;
 
 	
 
@@ -97,8 +91,4 @@ protected:
 		class UCStatusPanel* StatusPanel;
 	UPROPERTY()
 		class UCLowHealthWidget* LowHealthWidget;
-	UPROPERTY()
-		class UCMiniMap* MiniMap;
-	UPROPERTY()
-		class UCWorldMap* WorldMap;
 };

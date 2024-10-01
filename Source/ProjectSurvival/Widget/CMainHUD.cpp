@@ -98,20 +98,6 @@ void ACMainHUD::BeginPlay()
 		LowHealthWidget->AddToViewport(0);
 		LowHealthWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
-
-	if (MiniMapClass)
-	{
-		MiniMap = CreateWidget<UCMiniMap>(GetWorld(), MiniMapClass);
-		MiniMap->AddToViewport(4);
-		MiniMap->SetVisibility(ESlateVisibility::Visible);
-	}
-
-	if (WorldMapClass)
-	{
-		WorldMap = CreateWidget<UCWorldMap>(GetWorld(), WorldMapClass);
-		WorldMap->AddToViewport(6);
-		WorldMap->SetVisibility(ESlateVisibility::Hidden);
-	}
 }
 
 void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InActorInventoryWidget, class UUserWidget* InActorProduceWidget, class AActor* InActor)
