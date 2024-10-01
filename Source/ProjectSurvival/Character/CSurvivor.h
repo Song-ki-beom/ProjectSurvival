@@ -175,6 +175,18 @@ public:
 	UFUNCTION()
 		void PerformAddMessage(const FText& InSurvivorNameText, const FText& InMessageText);
 
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSetName(const FText& InText, uint32 NetGUIDValue);
+
+	UFUNCTION(Server, Reliable)
+		void RequestSetName(const FText& InText, uint32 NetGUIDValue);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastLocation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
+
+	UFUNCTION(Server, Reliable)
+		void RequestLocation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
+
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;
 };

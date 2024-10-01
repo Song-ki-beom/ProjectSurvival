@@ -28,11 +28,12 @@
 #include "Utility/CDebug.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
+#include "Widget/Map/CWorldMap.h"
+#include "Widget/Map/CMiniMap.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/CSurvivorController.h"
 #include "GameFramework/PlayerState.h"
-
 
 #include "Engine/PackageMapClient.h"
 
@@ -499,6 +500,42 @@ void ACSurvivor::PerformAddMessage(const FText& InSurvivorNameText, const FText&
 	}
 	else
 		CDebug::Print(("CGameInstance is Not Valid"), FColor::Red);
+}
+
+void ACSurvivor::BroadcastSetName_Implementation(const FText& InText, uint32 NetGUIDValue)
+{
+	ACMainHUD* mainHUD = Cast<ACMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (mainHUD)
+	{
+		mainHUD->GetWorldMap()->SetSurvivorNameOnWorldMap(InText, NetGUIDValue);
+	}
+	else
+	{
+		CDebug::Print("mainHUD is not valid");
+	}
+}
+
+void ACSurvivor::RequestSetName_Implementation(const FText& InText, uint32 NetGUIDValue)
+{
+	BroadcastSetName(InText, NetGUIDValue);
+}
+
+void ACSurvivor::BroadcastLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
+{
+	ACMainHUD* mainHUD = Cast<ACMainHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	if (mainHUD)
+	{
+		mainHUD->GetWorldMap()->SetOtherCharacterPosOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
+	}
+	else
+	{
+		CDebug::Print("mainHUD is not valid");
+	}
+}
+
+void ACSurvivor::RequestLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
+{
+	BroadcastLocation(LocationX, LocationY, RotationZ, NetGUIDValue);
 }
 
 void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

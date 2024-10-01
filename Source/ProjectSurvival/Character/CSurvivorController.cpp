@@ -405,15 +405,18 @@ void ACSurvivorController::ToggleWorldMap()
 
 	if (ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD()))
 	{
-		if (mainHUD->GetWorldMap()->GetVisibility() == ESlateVisibility::Hidden)
-			mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Visible);
-		else
-			mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Hidden);
+		if (mainHUD->GetWorldMap() && mainHUD->GetMiniMap())
+		{
+			if (mainHUD->GetWorldMap()->GetVisibility() == ESlateVisibility::Hidden)
+				mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Visible);
+			else
+				mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Hidden);
 
-		if (mainHUD->GetMiniMap()->GetVisibility() == ESlateVisibility::Hidden)
-			mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Visible);
-		else
-			mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Hidden);
+			if (mainHUD->GetMiniMap()->GetVisibility() == ESlateVisibility::Hidden)
+				mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Visible);
+			else
+				mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 

@@ -112,7 +112,6 @@ void ACMainHUD::BeginPlay()
 		WorldMap->AddToViewport(6);
 		WorldMap->SetVisibility(ESlateVisibility::Hidden);
 	}
-
 }
 
 void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget* InActorInventoryWidget, class UUserWidget* InActorProduceWidget, class AActor* InActor)
