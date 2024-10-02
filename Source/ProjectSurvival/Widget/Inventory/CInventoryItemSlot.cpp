@@ -134,7 +134,6 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		{
 			FInputModeGameAndUI InputMode;
 			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);  // 마우스가 자유롭게 움직일 수 있게 설정
-			APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 			
 
 			FVector2D mousePosition(0, 0);

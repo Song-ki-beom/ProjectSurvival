@@ -102,6 +102,12 @@ public:
 		TSubclassOf<class UCWorldMap> WorldMapClass;
 	UPROPERTY()
 		class UCWorldMap* WorldMap;
+
+public:
+	FORCEINLINE
+		TSharedPtr<const FUniqueNetId> GetLocalPlayerNetId() { return playerNetId; };
+
+
 };
 
 

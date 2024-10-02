@@ -119,7 +119,8 @@ private:
 	class UDataTable* ItemDataTable;
 	UPROPERTY()
 	class UNetDriver* NetDriver;
-
+	UPROPERTY()
+	class ACharacter* PlayerCharacter;
 
 	//AI 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

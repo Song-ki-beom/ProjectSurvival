@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Widget/Status/CEnemyStatusBar.h"
 #include "Components/CapsuleComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Enemy/CEnemyAIController.h"
 #include "Animation/CEnemyAnimInstance.h"
 #include "World/CPickUp.h"
@@ -27,6 +28,10 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "Engine/PackageMapClient.h"
 #include "Utility/CDebug.h"
+#include "Camera/PlayerCameraManager.h"
+#include "Widget/Map/CWorldMap.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/GameStateBase.h"
 
 ACEnemy::ACEnemy()
 {
@@ -106,14 +111,16 @@ ACEnemy::ACEnemy()
 	}
 
 	HPBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPBar"));
-	HPBarWidgetComponent->SetupAttachment(GetRootComponent());
+	HPBarWidgetComponent->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 	HPBarWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 25.0f));
 	HPBarWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 	HPBarWidgetComponent->SetDrawAtDesiredSize(true);
 	//HPBarWidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
 	HPBarWidgetComponent->SetWidgetClass(HPBarWidgetClass);
 	HPBarWidgetComponent->InitWidget();
-	HPBarWidgetComponent->SetVisibility(false);
+	HPBarWidgetComponent->SetVisibility(true);
+	HPBarWidgetComponent->PrimaryComponentTick.bCanEverTick = true;
+	//HPBarWidgetComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 }
 
 void ACEnemy::BeginPlay()
@@ -122,8 +129,8 @@ void ACEnemy::BeginPlay()
 
 	Super::BeginPlay();
 	NetDriver = GetWorld()->GetNetDriver();
-	NetUpdateFrequency = 50.0f;
-	NetPriority = 3.0f;
+	NetUpdateFrequency = 144.0f;
+	NetPriority = 4.0f;
 	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 	//동적 리소스 로딩을 위한 에셋 로더 생성
 	FStreamableManager& AssetLoader = UAssetManager::GetStreamableManager();
@@ -195,23 +202,53 @@ void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	RotateMeshToSlope(DeltaTime);
-
+	
 	if (IsValid(GetWorld()) && GetWorld()->IsClient())  // 클라이언트에서만 실행
 	{
-		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) //로컬 플레이어(플레이어)
+		if (IsValid(HPBarWidgetComponent) && HPBarWidgetComponent->IsVisible())
 		{
-			FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+			if (GameInstance->WorldMap)
+			{
+				AActor* PlayerActor = HitData->FindActorByNetGUID(GameInstance->WorldMap->GetPersonalGUID(), GetWorld());
+				PlayerCharacter = Cast<ACharacter>(PlayerActor);
+			}
+			else
+			{
+				APlayerController* PlayerController = GetWorld()->GetFirstPlayerController(); //로컬 플레이어(플레이어)
+				PlayerCharacter = Cast<ACharacter>(PlayerController->GetPawn());
+			}
+
+		
+
+
+
+			if (PlayerCharacter == nullptr) return;
+
+			UCameraComponent* CameraComponent = PlayerCharacter->FindComponentByClass<UCameraComponent>();
+			if (CameraComponent == nullptr)
+			{
+				CDebug::Print("CameraComponent Null");
+				return;
+			}
+			FVector CameraLocation = CameraComponent->GetComponentLocation();
+			//FVector CameraLocation = UGameplayStatics::GetPlayerCameraManager(GetWorld(),0)->GetCameraLocation();
 			FVector VectorTowardPlayer = CameraLocation - HPBarWidgetComponent->GetComponentLocation();
 			FRotator LookAtRotation = FRotationMatrix::MakeFromX(VectorTowardPlayer).Rotator();
+			//CDebug::Print("CameraLocation", CameraLocation);
 
 			// 위젯이 카메라를 향하도록 회전
 			HPBarWidgetComponent->SetWorldRotation(LookAtRotation);
+
+
+
+
 		}
 	}
 }
 
 void ACEnemy::DoAction()
 {
+	
 	if (HasAuthority())
 	{
 		int32 NewAttackIdx = FMath::RandRange(0, DoActionDatas.Num() - 1); //플레이할 몽타주 랜덤 넘버 설정
@@ -345,15 +382,17 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 
 	if (this->HasAuthority())
 	{
-		//네트워크에서 액터 ID 식별하는 과정
-		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(EventInstigator->GetPawn());
-		if (!InstigatorNetGUID.IsValid()) return -1;
-		DamageData.CharacterID = InstigatorNetGUID.Value;
-		FNetworkGUID CauserNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(DamageCauser);
-		if (!CauserNetGUID.IsValid()) return -1;
-		DamageData.CauserID = CauserNetGUID.Value;
-		DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
-
+		if (NetDriver && NetDriver->GuidCache)
+		{
+			//네트워크에서 액터 ID 식별하는 과정
+			FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(EventInstigator->GetPawn());
+			if (!InstigatorNetGUID.IsValid()) return -1;
+			DamageData.CharacterID = InstigatorNetGUID.Value;
+			FNetworkGUID CauserNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(DamageCauser);
+			if (!CauserNetGUID.IsValid()) return -1;
+			DamageData.CauserID = CauserNetGUID.Value;
+			DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
+		}
 
 
 	}
@@ -431,6 +470,8 @@ void ACEnemy::ApplyHitData()
 				FVector start = GetActorLocation();
 				UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
 				AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
+				
+
 				FVector target = targetActor->GetActorLocation();
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();

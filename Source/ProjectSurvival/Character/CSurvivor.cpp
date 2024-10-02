@@ -293,15 +293,17 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 	
 	if (this->HasAuthority()) 
 	{
-		//네트워크에서 액터 ID 식별하는 과정
-		FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(EventInstigator->GetPawn());
-		if (!InstigatorNetGUID.IsValid()) return -1;
-		DamageData.CharacterID = InstigatorNetGUID.Value;
-		FNetworkGUID CauserNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(DamageCauser);
-		if (!CauserNetGUID.IsValid()) return -1;
-		DamageData.CauserID = CauserNetGUID.Value;
-		DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
-
+		if (NetDriver && NetDriver->GuidCache)
+		{
+			//네트워크에서 액터 ID 식별하는 과정
+			FNetworkGUID InstigatorNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(EventInstigator->GetPawn());
+			if (!InstigatorNetGUID.IsValid()) return -1;
+			DamageData.CharacterID = InstigatorNetGUID.Value;
+			FNetworkGUID CauserNetGUID = NetDriver->GuidCache->GetOrAssignNetGUID(DamageCauser);
+			if (!CauserNetGUID.IsValid()) return -1;
+			DamageData.CauserID = CauserNetGUID.Value;
+			DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
+		}
 
 
 	}
@@ -407,22 +409,20 @@ void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 
 void ACSurvivor::BroadcastDisableCollision_Implementation()
 {
-	//입력 무효화 .. 임시로 넣어봄
+	//입력 무효화
 	DisableInput(GetWorld()->GetFirstPlayerController());
-
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// 모든 채널에 대해 충돌 무시
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
-	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 }
 
 void ACSurvivor::SetSurvivorNameVisibility()
 {
-	if (!PersonalSurvivor)
+	// 게임 인스턴스 기반으로 고유한 서바이버 찾을때까지 반복
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		// 게임 인스턴스 기반으로 고유한 서바이버 찾을때까지 반복
-		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
-		if (gameInstance)
+		if (gameInstance->WorldMap &&NetDriver && NetDriver->GuidCache)
 		{
 			UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
 			if (foundObject)
