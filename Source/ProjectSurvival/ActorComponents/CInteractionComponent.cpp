@@ -192,7 +192,7 @@ void UCInteractionComponent::PerformInteractionCheck()
 		FHitResult TraceHit;
 
 		// 트레이스 박스의 크기 및 회전 
-		FVector BoxHalfSize(50.0f, 50.0f, 50.0f);
+		FVector BoxHalfSize(35.0f, 35.0f, 35.0f);
 		FQuat BoxRotation = OwnerCharacter->GetViewRotation().Quaternion();
 
 		//디버그 BoxTrace

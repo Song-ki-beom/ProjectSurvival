@@ -16,6 +16,9 @@ void UCEnemyAIComponent::BeginPlay()
 
 }
 
+
+
+
 ACharacter* UCEnemyAIComponent::GetTarget()
 {
 	return Cast<ACharacter>(Blackboard->GetValueAsObject(TargetKey));
@@ -79,6 +82,11 @@ bool UCEnemyAIComponent::IsDeadMode()
 	return GetType() == EAIStateType::Dead;
 }
 
+bool UCEnemyAIComponent::IsStarveMode()
+{
+	return GetType() == EAIStateType::Starve;
+}
+
 void UCEnemyAIComponent::SetWaitMode()
 {
 	ChangeType(EAIStateType::Wait);
@@ -112,4 +120,9 @@ void UCEnemyAIComponent::SetAvoidMode()
 void UCEnemyAIComponent::SetDeadMode()
 {
 	ChangeType(EAIStateType::Dead);
+}
+
+void UCEnemyAIComponent::SetStarveMode()
+{
+	ChangeType(EAIStateType::Starve);
 }

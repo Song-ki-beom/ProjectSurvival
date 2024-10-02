@@ -7,7 +7,11 @@
 #include "Camera/CameraShake.h"
 #include "CStatusComponent.generated.h"
 
-
+//UENUM(BlueprintType)
+//enum class EStatusType : uint8
+//{
+//	Hunger,Starvation, 
+//};
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, NewHealthRatio);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHungerUpdated, float, NewHungerRatio);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdated, float, NewStaminaRatio);

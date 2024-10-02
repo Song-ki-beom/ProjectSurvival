@@ -10,7 +10,7 @@
 UENUM(BlueprintType)
 enum class EAIStateType : uint8
 {
-	Wait, Approach, Action, Roam, Hitted, Avoid, Dead, Max
+	Wait, Approach, Action, Roam, Hitted, Avoid, Dead, Starve,Max
 };
 
 
@@ -53,7 +53,7 @@ public:
 	bool IsHittedMode();
 	bool IsAvoidMode();
 	bool IsDeadMode();
-
+	bool IsStarveMode();
 public:
 	void SetWaitMode();
 	void SetApproachMode();
@@ -62,7 +62,7 @@ public:
 	void SetHittedMode();
 	void SetAvoidMode();
 	void SetDeadMode();
-
+	void SetStarveMode();
 
 
 public: 
