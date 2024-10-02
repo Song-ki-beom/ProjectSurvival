@@ -16,6 +16,8 @@
 #include "DestructibleComponent.h"
 
 #include "Widget/Chatting/CChattingBox.h"
+#include "Widget/Map/CWorldMap.h"
+#include "Widget/Map/CMiniMap.h"
 
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
@@ -50,6 +52,14 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 	ConstructorHelpers::FClassFinder<UUserWidget> chattingBoxClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Chatting/WBP_ChattingBox.WBP_ChattingBox_C'"));
 	if (chattingBoxClassFinder.Succeeded())
 		ChattingBoxClass = chattingBoxClassFinder.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> miniMapClassClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Map/WBP_CMinimap.WBP_CMinimap_C'"));
+	if (miniMapClassClassFinder.Succeeded())
+		MiniMapClass = miniMapClassClassFinder.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> worldMapClassClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Map/WBP_CWorldMap.WBP_CWorldMap_C'"));
+	if (worldMapClassClassFinder.Succeeded())
+		WorldMapClass = worldMapClassClassFinder.Class;
 }
 
 void UCGameInstance::Init()
@@ -166,6 +176,23 @@ void UCGameInstance::CreateChattingBox()
 		FVector2D widgetAlignment = FVector2D(-0.02, -4.35);
 		ChattingBox->SetAlignmentInViewport(widgetAlignment);
 		ChattingBox->SetKeyboardFocus();
+	}
+}
+
+void UCGameInstance::CreateMap()
+{
+	if (MiniMapClass)
+	{
+		MiniMap = CreateWidget<UCMiniMap>(GetWorld(), MiniMapClass);
+		MiniMap->AddToViewport(4);
+		MiniMap->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (WorldMapClass)
+	{
+		WorldMap = CreateWidget<UCWorldMap>(GetWorld(), WorldMapClass);
+		WorldMap->AddToViewport(6);
+		WorldMap->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

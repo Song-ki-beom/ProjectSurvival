@@ -197,7 +197,17 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 				}
 				case EWidgetCall::Placeable:
 					if (this->GetOwningPlayer()->HasAuthority())
-						produceWidget->GetOwnerActor()->PerformAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
+					{
+						produceWidget->GetOwnerActor()->BroadcastAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
+					}
+					else
+					{
+						ACSurvivorController* survivorController = Cast<ACSurvivorController>(Survivor->GetController());
+						if (survivorController)
+						{
+							survivorController->RequestAddItem(ProduceTargetItem->ID, 1, produceWidget->GetOwnerActor(), ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
+						}
+					}
 					break;
 				}
 			}

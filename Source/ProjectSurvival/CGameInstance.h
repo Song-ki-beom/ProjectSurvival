@@ -36,6 +36,8 @@ public:
 		void RemoveAllWidgets();
 	UFUNCTION(BlueprintCallable)
 		void CreateChattingBox();
+	UFUNCTION(BlueprintCallable)
+		void CreateMap();
 
 	void SaveCustomizeRowNames(TArray<FName> InRowNames) { CustomizeRowNames = InRowNames; }
 	TArray<FName> GetCustomizeRowNames() { return CustomizeRowNames; }
@@ -90,6 +92,16 @@ public:
 		TSubclassOf<class UUserWidget> ChattingBoxClass;
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;
+
+	UPROPERTY()
+		TSubclassOf<class UCMiniMap> MiniMapClass;
+	UPROPERTY()
+		class UCMiniMap* MiniMap;
+
+	UPROPERTY()
+		TSubclassOf<class UCWorldMap> WorldMapClass;
+	UPROPERTY()
+		class UCWorldMap* WorldMap;
 };
 
 

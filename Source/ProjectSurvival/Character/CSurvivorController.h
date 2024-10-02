@@ -74,25 +74,18 @@ private:
 private:
 	class ACSurvivor* Survivor;
 
+	bool bIsBuildWidgetOn;
+	bool bIsProduceWidgetOn;
+
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> BuildWidgetClass;
 	UPROPERTY()
 		class UCBuildWidget* BuildWidget;
 
-	//UPROPERTY()
-	//	TSubclassOf<class UUserWidget> ProduceWidgetClass;
-	//UPROPERTY()
-		//class UCProduceWidget* ProduceWidget;
-
 	UPROPERTY()
 		TSubclassOf<class UUserWidget> ChattingBoxClass;
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;
-
-	//class UDataTable* BuildStructureData;
-
-	bool bIsBuildWidgetOn;
-	bool bIsProduceWidgetOn;
 
 	FTimerHandle UpdateListenerTransformHandle;
 
