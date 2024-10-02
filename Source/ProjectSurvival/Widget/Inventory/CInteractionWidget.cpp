@@ -294,7 +294,14 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 		}
 		else
 		{
-			ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
+			FItemData* itemData = ItemDataTable->FindRow<FItemData>(InteractableData->ID, TEXT(""));
+			if (itemData)
+			{
+				if(itemData->BuildData.bIsInteractableBuildStructure)
+					ActionText->SetText(itemData->BuildData.BuildInteractText); // 짧은 상호작용 가능한 빌드아이템일 경우
+				else
+					ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
+			}
 		}
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 		break;

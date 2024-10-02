@@ -85,8 +85,13 @@ void UCInteractionComponent::FinishInteract()
 		const FInteractableData* InteractableData = &TargetInteractable->InteractableData;
 		if (InteractableData->InteractableType == EInteractableType::Build && !InteractableData->bIsDropMesh)
 		{
-			HUD->HideHiddenMenu();
-			EndInteract();
+			if (ElapsedTime < 0.25f && ElapsedTime >= 0) //0.25 초 내의 짧은 E 키 Released 면 
+				BeginInteract();
+			else
+			{
+				HUD->HideHiddenMenu();
+				EndInteract();
+			}
 		}
 		else if (InteractableData->InteractableType == EInteractableType::Container && !InteractableData->bIsDropMesh)
 		{

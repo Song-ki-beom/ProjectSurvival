@@ -113,6 +113,9 @@ public:
 		void RequestExtinguish(class ACStructure_Placeable* InPlaceable);
 	UFUNCTION(Server, Reliable)
 		void RequestRemoveProduceItemFromQueue(class ACStructure_Placeable* InPlaceable, int32 InIndex);
-
+	UFUNCTION(Server, Reliable)
+		void RequestOpenDoor(class ACStructure_Door* InDoor);
+	UFUNCTION(Server, Reliable)
+		void RequestCloseDoor(class ACStructure_Door* InDoor);
 };
 

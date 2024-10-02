@@ -62,6 +62,7 @@ public:
 
 protected:
 	virtual void OpenActorInventory(const class ACSurvivor* Survivor, class AActor* Actor);
+	virtual void DoBuildTypeInteract();
 	void SetTransform();
 
 public:
@@ -76,7 +77,7 @@ public:
 		int32 ItemQuantity;
 
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Pickup")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Pickup")
 		UStaticMeshComponent* PickupMesh;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Pickup")

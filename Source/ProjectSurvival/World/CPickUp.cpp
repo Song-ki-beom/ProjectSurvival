@@ -116,6 +116,8 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			ItemReference->TextData = ItemData->TextData;
 			ItemReference->AssetData = ItemData->AssetData;
 			ItemReference->ItemStats = ItemData->ItemStats;
+			ItemReference->BuildData = ItemData->BuildData;
+
 			if (InQuantity <= 0) //0보다 작으면 
 			{
 				ItemReference->SetQuantity(1);
@@ -172,6 +174,7 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 		PickupMesh->SetCollisionProfileName(FName("Item"));
 		PickupMesh->SetSimulatePhysics(true);
 	}
+
 
 	UpdateInteractableData();
 }
@@ -241,7 +244,17 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 {
 	if (PlayerCharacter)
 	{
-		if (ItemReference->ItemType == EItemType::Container)
+		if (ItemReference->ItemType == EItemType::Build)
+		{
+			if (bIsLongPressed)
+				TakePickup(PlayerCharacter);
+			else
+			{
+				if (ItemReference->BuildData.bIsInteractableBuildStructure)
+					DoBuildTypeInteract();
+			}
+		}
+		else if(ItemReference->ItemType == EItemType::Container)
 		{
 			if (bIsLongPressed)
 				TakePickup(PlayerCharacter);
@@ -315,6 +328,11 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
 	// Container 클래스 자체에서 함수내용 구현
+}
+
+void ACPickUp::DoBuildTypeInteract()
+{
+	// 하위 클래스 자체에서 함수내용 구현 (Door)
 }
 
 

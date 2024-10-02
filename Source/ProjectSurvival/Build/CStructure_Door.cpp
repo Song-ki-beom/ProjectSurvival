@@ -1,10 +1,72 @@
 #include "Build/CStructure_Door.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Character/CSurvivorController.h"
+#include "Widget/Map/CWorldMap.h"
+#include "CGameInstance.h"
+#include "Engine/PackageMapClient.h"
+#include "Components/ArrowComponent.h"
 #include "Utility/CDebug.h"
 
 ACStructure_Door::ACStructure_Door()
 {
+	PrimaryActorTick.bCanEverTick = true;
 
+	// RootComponent 설정
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SetRootComponent(RootSceneComponent);
+
+
+	PivotArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("PivotArrow"));
+	PivotArrow->SetupAttachment(RootSceneComponent);
+	PivotArrow->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	PickupMesh->SetupAttachment(PivotArrow);
+	PickupMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+}
+
+void ACStructure_Door::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		if (GetWorld()->GetNetDriver() && GetWorld()->GetNetDriver()->GuidCache)
+		{
+			UObject* foundObject = GetWorld()->GetNetDriver()->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
+			if (foundObject)
+			{
+				APawn* personalPawn = Cast<APawn>(foundObject);
+				if (personalPawn)
+				{
+					PersonalSurvivorController = Cast<ACSurvivorController>(personalPawn->GetController());
+				}
+			}
+		}
+	}
+}
+void ACStructure_Door::Tick(float DeltaSeconds)
+{
+	//
+	//// 액터의 현재 위치
+	//FVector ActorLocation = GetActorLocation();
+	//
+	//FVector PivotPoint = GetActorLocation() + FVector(50, 0, 0);
+	//
+	//// 피벗과 액터 사이의 오프셋 계산
+	//FVector Offset = ActorLocation - PivotPoint;
+	//
+	//// 새 회전 각도 계산
+	//FRotator NewRotation = FRotator(0.f, Angle, 0.f); // 예시로 Yaw 축을 기준으로 회전
+	//
+	//// 회전된 오프셋 적용 (피벗을 기준으로 회전)
+	//FVector RotatedOffset = NewRotation.RotateVector(Offset);
+	//
+	//// 액터의 새 위치 설정
+	////FVector NewLocation = PivotPoint + RotatedOffset;
+	//
+	//// 액터 이동 및 회전
+	////SetActorLocation(NewLocation);
+	//SetActorRotation(NewRotation);
 }
 
 void ACStructure_Door::CheckCenter()
@@ -72,12 +134,89 @@ void ACStructure_Door::CheckUp_DoorFrame()
 	}
 }
 
-void ACStructure_Door::OpenDoor()
+void ACStructure_Door::DoBuildTypeInteract()
 {
+	CDebug::Print("DoBuildTypeInteract Called");
 
+	if (this->HasAuthority())
+	{
+		if (bIsOpened)
+			BroadcastCloseDoor();
+		else
+			BroadcastOpenDoor();
+	}
+	else
+	{
+		if (bIsOpened)
+		{
+			if (PersonalSurvivorController)
+				PersonalSurvivorController->RequestCloseDoor(this);
+		}
+		else
+		{
+			if (PersonalSurvivorController)
+				PersonalSurvivorController->RequestOpenDoor(this);
+		}
+	}
 }
 
-void ACStructure_Door::CloseDoor()
+void ACStructure_Door::BroadcastOpenDoor_Implementation()
+{
+	CDebug::Print("BroadcastOpenDoor_Implementation Called");
+	GetWorld()->GetTimerManager().SetTimer(OpenTimerHandle, this, &ACStructure_Door::PerformOpenDoor, 0.025f, true);
+}
+
+void ACStructure_Door::BroadcastCloseDoor_Implementation()
 {
 
+	GetWorld()->GetTimerManager().SetTimer(CloseTimerHandle, this, &ACStructure_Door::PerformCloseDoor, 0.025f, true);
 }
+
+void ACStructure_Door::PerformOpenDoor()
+{
+	if (!bIsOpened)
+	{
+		PivotArrow->AddLocalRotation(FQuat(0.0f, 0.0f, +0.05f, 1.0f));
+		Angle += 0.025f;
+
+		if (FMath::IsNearlyEqual(Angle, 0.4f, 0.01f))
+		{
+			CDebug::Print("PerformOpenDoor Ended");
+			GetWorld()->GetTimerManager().ClearTimer(OpenTimerHandle);
+			Angle = 0.4f;
+			bIsOpened = true;
+			//GetWorld()->GetTimerManager().SetTimer(CloseTimerHandle, this, &ACStructure_Door::Wait, 0.5f, false);
+		}
+	}
+}
+
+void ACStructure_Door::PerformCloseDoor()
+{
+	if (bIsOpened)
+	{
+		PivotArrow->AddLocalRotation(FQuat(0.0f, 0.0f, -0.05f, 1.0f));
+		Angle -= 0.025f;
+
+		if (FMath::IsNearlyEqual(Angle, 0.0f, 0.01f))
+		{
+			CDebug::Print("PerformCloseDoor Ended");
+			GetWorld()->GetTimerManager().ClearTimer(CloseTimerHandle);
+			Angle = 0.0f;
+			bIsOpened = false;
+			//GetWorld()->GetTimerManager().SetTimer(CloseTimerHandle, this, &ACStructure_Door::Wait, 0.5f, false);
+		}
+
+	}
+}
+
+void ACStructure_Door::Wait()
+{
+	bIsOpened = !bIsOpened;
+}
+
+//void ACStructure_Door::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//	DOREPLIFETIME(ACStructure_Door, bIsOpened);
+//}
