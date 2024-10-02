@@ -9,8 +9,13 @@ class PROJECTSURVIVAL_API ACStructure_Door : public ACStructure
 {
 	GENERATED_BODY()
 	
+
 public:
 	ACStructure_Door();
+
+protected:
+	virtual void BeginPlay();
+	virtual void Tick(float DeltaSeconds);
 
 public:
 	void CheckCenter();
@@ -19,14 +24,41 @@ public:
 	void CheckUp_DoorFrame();
 	bool GetDoorUp_DoorFrameHit() { return bUp_DoorFrameHit; }
 
-	void DestroyPreviewBox();
+	virtual void DoBuildTypeInteract() override;
 
-	void OpenDoor();
-	void CloseDoor();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastOpenDoor();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastCloseDoor();
+
+private:
+	void Wait();
 
 private:
 	bool bCenterHit;
 	bool bUp_DoorFrameHit;
 
 	FRotator CenterRotation;
+
+	UPROPERTY()
+		class ACSurvivorController* PersonalSurvivorController;
+
+	UPROPERTY(VisibleAnywhere)
+		class USceneComponent* RootSceneComponent;
+
+	UPROPERTY(VisibleAnywhere)
+		class UArrowComponent* PivotArrow;
+
+	bool bIsOpened = false;
+
+	void PerformOpenDoor();
+	void PerformCloseDoor();
+
+	FTimerHandle OpenTimerHandle;
+	FTimerHandle CloseTimerHandle;
+
+	FTimerHandle WaitTimerHandle;
+	float Angle;
+
 };

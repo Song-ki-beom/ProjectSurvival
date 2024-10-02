@@ -35,9 +35,11 @@ public:
 	FName GetBuildStructureID() { return BuildStructureID; }
 
 	bool CheckIsBuildOnLandScape() { return bIsBuildOnLandScape; }
+	bool CheckIsInteractableBuildTypeStructure() { return bIsInteractableBuildTypeStructure; }
 
 protected:
 	void SaveOriginMaterial();
+
 
 protected:
 	FName BuildStructureID;
@@ -50,4 +52,5 @@ protected:
 	UPROPERTY(EditAnywhere)
 		bool bIsBuildOnLandScape;
 
+	bool bIsInteractableBuildTypeStructure = false;
 };

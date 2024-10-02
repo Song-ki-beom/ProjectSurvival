@@ -113,6 +113,17 @@ public:
 };
 
 USTRUCT()
+struct FBuildData :public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		bool bIsInteractableBuildStructure;
+	UPROPERTY(EditAnywhere)
+		FText BuildInteractText;
+};
+
+USTRUCT()
 struct FItemData :public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
@@ -131,6 +142,7 @@ public:
 		FItemAssetData AssetData;
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 		FProduceWidgetData ProduceData;
-
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+		FBuildData BuildData;
 };
 

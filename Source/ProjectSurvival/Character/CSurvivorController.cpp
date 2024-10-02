@@ -16,13 +16,14 @@
 #include "Utility/CDebug.h"
 #include "CGameInstance.h"
 #include "Build/CStructure_Placeable.h"
+#include "Build/CStructure_Door.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/Inventory/CQuickSlot.h"
 #include "Widget/Map/CMiniMap.h"
 #include "Widget/Map/CWorldMap.h"
-#include "Components/SizeBox.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
+#include "Components/SizeBox.h"
 
 ACSurvivorController::ACSurvivorController()
 {
@@ -549,3 +550,13 @@ void ACSurvivorController::RequestRemoveProduceItemFromQueue_Implementation(clas
 {
 	InPlaceable->BroadcastRemoveProduceItemFromQueue(InIndex);
 }
+
+void ACSurvivorController::RequestOpenDoor_Implementation(class ACStructure_Door* InDoor)
+{
+	InDoor->BroadcastOpenDoor();
+}
+
+void ACSurvivorController::RequestCloseDoor_Implementation(class ACStructure_Door* InDoor)
+{
+	InDoor->BroadcastCloseDoor();
+} 

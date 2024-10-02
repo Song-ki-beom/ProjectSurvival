@@ -385,7 +385,7 @@ bool UCInventoryPanel_Placeable::SplitExistingStack(UCItemBase* ItemIn, int32 Am
 	//	}
 	//	);
 
-	if (ItemIn->Quantity - AmountToSplit <= 0) return false;
+	if (ItemIn->Quantity - AmountToSplit <= 0 || AmountToSplit <= 0) return false;
 	//사용 가능 슬롯이 남아있으면
 	int32 ItemIdx = FindItemIndex(ItemIn);
 	if (ItemIdx < 0) return false; //Item이 업데이트 되어 사라졌으면 

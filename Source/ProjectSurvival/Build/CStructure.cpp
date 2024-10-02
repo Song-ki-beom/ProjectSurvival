@@ -67,3 +67,4 @@ void ACStructure::SaveOriginMaterial()
 		OriginMaterial = PickupMesh->GetStaticMesh()->GetMaterial(0);
 }
 
+
