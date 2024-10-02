@@ -24,19 +24,18 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
-
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	//DoAction
 	virtual void DoAction();
-
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDoAction(int32 InAttackIdx);
 	UFUNCTION(Server, Reliable)
 	virtual void RequestDoAction();
 	virtual void PerformDoAction(int32 InAttackIdx);
-	virtual void AttackTraceHit();
 	virtual void Begin_DoAction();
 	virtual void End_DoAction();
-
+	virtual void AttackTraceHit();
 	virtual void DoEncounter();
 	virtual void PerformDoSpecialAction(ESpecialState SpecialState);
 	UFUNCTION(NetMulticast, Reliable)
@@ -44,7 +43,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDisableCollision();
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 //Damage Interface Override
 	//virtual void Damage(FDamageData* DamageData) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
@@ -55,9 +54,9 @@ public:
 	
 private:
 	//Hit
-	virtual void ApplyHitData();
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastApplyHitData(FDamageData InDamageData);
+	virtual void ApplyHitData();
 	virtual void Die();
 	virtual void RemoveCharacter();
 
@@ -66,6 +65,8 @@ private:
 	virtual  void ChangeMeshColor(FLinearColor InColor);
 	void ResetColor();
 	
+	//Drop Item
+	void CreateDropItem();
 
 	//etc
 	UFUNCTION()
@@ -83,14 +84,16 @@ private:
 	void OnPlayMontageNotifyEnd();
 
 
-	
-
 protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Protected 설정
 	//Mesh
 	FString SkeletalMeshPath;
 	FString AnimInstancePath; 
 	FString BBAssetPath;
 	
+	//Drop
+	int32 DropItemNum;
+	FName DropItemID;
+	float DropOffsetRange;
 
 	//DoAction
 	UPROPERTY(EditAnywhere)
@@ -106,8 +109,15 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UBoxComponent* BoxCollision;
 
+
+
+
 private:
+	UPROPERTY()
 	class UCGameInstance* GameInstance;
+	UPROPERTY()
+	class UDataTable* ItemDataTable;
+	UPROPERTY()
 	class UNetDriver* NetDriver;
 
 
@@ -147,14 +157,18 @@ private:
 	//Material
 	FLinearColor OriginalMeshColor = FLinearColor::White;
 	FTimerHandle ResetColorTimerHandle;
-public:
-//ForceInline Getter & Settter
+
+	//World HPbar
+	UPROPERTY(VisibleAnywhere)
+		TSubclassOf<class UUserWidget> HPBarWidgetClass;
+	UPROPERTY(VisibleAnywhere)
+		class UWidgetComponent* HPBarWidgetComponent;
+
+
+public: //ForceInline Getter & Settter
+
 FORCEINLINE uint8 GetTeamID() { return TeamID; }
 
 FORCEINLINE class UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
-
-//FORCEINLINE class ACPatrolPath* GetPatrolPath() { return PatrolPath; }
-
-
 	
 };

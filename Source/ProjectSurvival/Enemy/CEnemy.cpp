@@ -5,15 +5,20 @@
 #include "ActorComponents/CEnemyAIComponent.h"
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CMontageComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Widget/Status/CEnemyStatusBar.h"
+#include "Components/CapsuleComponent.h"
+#include "Enemy/CEnemyAIController.h"
+#include "Animation/CEnemyAnimInstance.h"
+#include "World/CPickUp.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "Animation/CEnemyAnimInstance.h"
 #include "Animation/AnimInstance.h"
-#include "Enemy/CEnemyAIController.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "CGameInstance.h"
@@ -29,7 +34,11 @@ ACEnemy::ACEnemy()
 	bReplicates = true; //리플리케이트 설정 
 	SetReplicates(true);
 	
-
+	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
+	if (DataTableAsset.Succeeded())
+	{
+		ItemDataTable = DataTableAsset.Object;
+	}
 
 	//AI 세팅
 	static ConstructorHelpers::FClassFinder<ACEnemyAIController> AIControllerFinder(TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Character/Animal/Bear/BP_CEnemyAIController_Bear.BP_CEnemyAIController_Bear_C'"));
@@ -90,6 +99,21 @@ ACEnemy::ACEnemy()
 	BoxCollision->bHiddenInGame = false;
 	BoxCollision->SetVisibility(true);
 
+	static ConstructorHelpers::FClassFinder<UUserWidget> HPBarClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Status/WBP_EnemyStatusBar.WBP_EnemyStatusBar_C'"));
+	if (HPBarClassFinder.Succeeded())
+	{
+		HPBarWidgetClass = HPBarClassFinder.Class;
+	}
+
+	HPBarWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("EnemyHPBar"));
+	HPBarWidgetComponent->SetupAttachment(GetRootComponent());
+	HPBarWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 25.0f));
+	HPBarWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+	HPBarWidgetComponent->SetDrawAtDesiredSize(true);
+	//HPBarWidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
+	HPBarWidgetComponent->SetWidgetClass(HPBarWidgetClass);
+	HPBarWidgetComponent->InitWidget();
+	HPBarWidgetComponent->SetVisibility(false);
 }
 
 void ACEnemy::BeginPlay()
@@ -158,7 +182,12 @@ void ACEnemy::BeginPlay()
 	// 이동 방향에 따라 회전하도록 설정
 	//GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
 		//몽타주 끝나는 시점 관련 바인딩 
-	
+	UCEnemyStatusBar* EnemyStatusBar = Cast<UCEnemyStatusBar>(HPBarWidgetComponent->GetWidget());
+	if (EnemyStatusBar)
+	{
+		// OwnerEnemyCharacter로 현재 적을 설정 
+		EnemyStatusBar->InitializeEnemyCharacter(this);
+	}
 
 }
 
@@ -166,6 +195,19 @@ void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	RotateMeshToSlope(DeltaTime);
+
+	if (IsValid(GetWorld()) && GetWorld()->IsClient())  // 클라이언트에서만 실행
+	{
+		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController()) //로컬 플레이어(플레이어)
+		{
+			FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+			FVector VectorTowardPlayer = CameraLocation - HPBarWidgetComponent->GetComponentLocation();
+			FRotator LookAtRotation = FRotationMatrix::MakeFromX(VectorTowardPlayer).Rotator();
+
+			// 위젯이 카메라를 향하도록 회전
+			HPBarWidgetComponent->SetWorldRotation(LookAtRotation);
+		}
+	}
 }
 
 void ACEnemy::DoAction()
@@ -196,9 +238,9 @@ void ACEnemy::PerformDoAction(int32 InAttackIdx)
 	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
 }
 
+
 void ACEnemy::AttackTraceHit()
 {
-
 
 	//Trace 관련 세팅
 	FVector ForwardVector = GetActorForwardVector();
@@ -231,6 +273,7 @@ void ACEnemy::AttackTraceHit()
 
 	if (bHit)
 	{
+
 		for (const FHitResult& Hit : HitResults)
 		{
 			ACharacter* HitPlayer;
@@ -243,6 +286,9 @@ void ACEnemy::AttackTraceHit()
 			}
 		}
 	}
+
+	
+
 }
 
 void ACEnemy::Begin_DoAction()
@@ -353,7 +399,8 @@ void ACEnemy::BroadCastApplyHitData_Implementation(FDamageData InDamageData)
 
 void ACEnemy::ApplyHitData()
 {
-	
+	if (!HPBarWidgetComponent->IsVisible())
+		HPBarWidgetComponent->SetVisibility(true);
 	UDataTable* HitDataTable = nullptr;
 	if (GameInstance)
 	{
@@ -438,6 +485,7 @@ void ACEnemy::Die()
 
 void ACEnemy::RemoveCharacter()
 {
+	CreateDropItem();
 	Destroy();
 
 }
@@ -560,6 +608,50 @@ void ACEnemy::ResetColor()
 		}
 	}
 }
+
+
+void ACEnemy::CreateDropItem()
+{
+
+	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DropItemID, DropItemID.ToString());
+	if (ItemData)
+	{
+		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
+		ItemToDrop->CopyFromItemData(*ItemData);
+	}
+
+
+	// 디스트럭티블 메쉬의  절반 높이 가져오기 (Z 축 기준)
+	FVector MeshBounds = GetMesh()->Bounds.BoxExtent;
+	float HalfHeight = MeshBounds.Z;
+	// 스폰 위치 설정 시 절반 높이를 고려하여 Y축에만 오프셋을 적용
+	FVector SpawnLocation = this->GetActorLocation() + FVector(0.0f, 0.0f, HalfHeight * 0.7f);
+
+	for (int i = 0; i < DropItemNum; i++)
+	{
+		// 겹치지 않도록 랜덤 오프셋 추가
+		FVector RandomOffset = FVector(
+			FMath::RandRange(-DropOffsetRange, DropOffsetRange),
+			FMath::RandRange(-DropOffsetRange, DropOffsetRange),
+			0.0f //높이는 그대로 
+		);
+		FVector FinalSpawnLocation = SpawnLocation + RandomOffset;
+		FTransform SpawnTransform(this->GetActorRotation(), FinalSpawnLocation); //최종 스폰 위치 
+
+		//스폰 파라미터 설정 
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.bNoFail = true;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
+
+		ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams);
+		Pickup->InitializeDrop(DropItemID, 1);
+
+	}
+
+
+
+}
+
 
 //리플리케이트 변수 선언부분 
 //void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
