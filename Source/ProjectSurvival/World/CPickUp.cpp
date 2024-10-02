@@ -237,6 +237,7 @@ void ACPickUp::UpdateInteractableData()
 	InstanceInteractableData.Quantity = ItemReference->Quantity;
 	InstanceInteractableData.ID = ItemReference->ID;
 	InstanceInteractableData.bIsDropMesh = ItemReference->bIsDropMesh; //DropMesh(주머니) 일때 참조 bool 
+	InstanceInteractableData.bIsDoorOpened = ItemReference->BuildData.bIsDoorOpened;
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
 }
 

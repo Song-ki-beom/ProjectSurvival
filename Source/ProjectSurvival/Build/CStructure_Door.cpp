@@ -2,23 +2,23 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Character/CSurvivorController.h"
 #include "Widget/Map/CWorldMap.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "CGameInstance.h"
 #include "Engine/PackageMapClient.h"
 #include "Components/ArrowComponent.h"
+#include "ActorComponents/CInteractionComponent.h"
 #include "Utility/CDebug.h"
 
 ACStructure_Door::ACStructure_Door()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	// RootComponent 설정
 	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SetRootComponent(RootSceneComponent);
 
-
 	PivotArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("PivotArrow"));
 	PivotArrow->SetupAttachment(RootSceneComponent);
 	PivotArrow->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
 	PickupMesh->SetupAttachment(PivotArrow);
 	PickupMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 }
@@ -43,6 +43,8 @@ void ACStructure_Door::BeginPlay()
 			}
 		}
 	}
+
+	//ItemReference->BuildData.bIsDoorOpened = false;
 }
 void ACStructure_Door::Tick(float DeltaSeconds)
 {
@@ -185,7 +187,14 @@ void ACStructure_Door::PerformOpenDoor()
 			GetWorld()->GetTimerManager().ClearTimer(OpenTimerHandle);
 			Angle = 0.4f;
 			bIsOpened = true;
-			//GetWorld()->GetTimerManager().SetTimer(CloseTimerHandle, this, &ACStructure_Door::Wait, 0.5f, false);
+			ItemReference->BuildData.bIsDoorOpened = true;
+			UpdateInteractableData();
+			if (PersonalSurvivorController)
+			{
+				ACSurvivor* survivor = Cast<ACSurvivor>(PersonalSurvivorController->GetPawn());
+				if (survivor)
+					survivor->GetInteractionComponent()->UpdateInteractionWidget();
+			}
 		}
 	}
 }
@@ -203,20 +212,15 @@ void ACStructure_Door::PerformCloseDoor()
 			GetWorld()->GetTimerManager().ClearTimer(CloseTimerHandle);
 			Angle = 0.0f;
 			bIsOpened = false;
-			//GetWorld()->GetTimerManager().SetTimer(CloseTimerHandle, this, &ACStructure_Door::Wait, 0.5f, false);
+			ItemReference->BuildData.bIsDoorOpened = false;
+			UpdateInteractableData();
+			if (PersonalSurvivorController)
+			{
+				ACSurvivor* survivor = Cast<ACSurvivor>(PersonalSurvivorController->GetPawn());
+				if (survivor)
+					survivor->GetInteractionComponent()->UpdateInteractionWidget();
+			}
 		}
 
 	}
 }
-
-void ACStructure_Door::Wait()
-{
-	bIsOpened = !bIsOpened;
-}
-
-//void ACStructure_Door::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-//
-//	DOREPLIFETIME(ACStructure_Door, bIsOpened);
-//}

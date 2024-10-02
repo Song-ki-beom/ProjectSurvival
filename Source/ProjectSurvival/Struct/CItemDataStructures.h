@@ -112,6 +112,13 @@ public:
 		FProduceSlotData ProduceResource_5;
 };
 
+UENUM()
+enum class EInteractableBuildType : uint8
+{
+	Door,
+	None
+};
+
 USTRUCT()
 struct FBuildData :public FTableRowBase
 {
@@ -121,6 +128,10 @@ public:
 		bool bIsInteractableBuildStructure;
 	UPROPERTY(EditAnywhere)
 		FText BuildInteractText;
+	UPROPERTY(EditAnywhere)
+		EInteractableBuildType InteractableBuildType;
+	UPROPERTY()
+		bool bIsDoorOpened = false;
 };
 
 USTRUCT()

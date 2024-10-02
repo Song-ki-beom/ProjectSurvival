@@ -260,6 +260,7 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 
 	NameText->SetText(InteractableData->Name); // 아이템 이름 
 	bIsDropMesh = InteractableData->bIsDropMesh;
+	bIsDoorOpened = InteractableData->bIsDoorOpened;
 	ActionText->SetText(InteractableData->Action); //상호작용 Text
 	InteractType = InteractableData->InteractableType;
 	switch (InteractType)
@@ -297,10 +298,30 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 			FItemData* itemData = ItemDataTable->FindRow<FItemData>(InteractableData->ID, TEXT(""));
 			if (itemData)
 			{
-				if(itemData->BuildData.bIsInteractableBuildStructure)
-					ActionText->SetText(itemData->BuildData.BuildInteractText); // 짧은 상호작용 가능한 빌드아이템일 경우
+				if (itemData->BuildData.bIsInteractableBuildStructure)
+				{
+					switch (itemData->BuildData.InteractableBuildType)
+					{
+					case EInteractableBuildType::Door:
+					{
+						if (bIsDoorOpened)
+							ActionText->SetText(FText::FromString(TEXT("닫기"))); //상호작용 Text
+						else
+							ActionText->SetText(FText::FromString(TEXT("열기"))); //상호작용 Text
+						break;
+					}
+					default:
+					{
+						ActionText->SetText(FText::FromString(TEXT("?????"))); //상호작용 Text
+						break;
+					}
+					}
+				}
 				else
+				{
 					ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
+				}
+				
 			}
 		}
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);

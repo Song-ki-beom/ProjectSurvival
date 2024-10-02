@@ -33,9 +33,6 @@ public:
 		void BroadcastCloseDoor();
 
 private:
-	void Wait();
-
-private:
 	bool bCenterHit;
 	bool bUp_DoorFrameHit;
 
