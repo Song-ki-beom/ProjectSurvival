@@ -21,23 +21,21 @@ UCInteractionWidget::UCInteractionWidget(const FObjectInitializer& ObjectInitial
 	{
 		ItemDataTable = DataTableAsset.Object;
 	}
-
 }
-
-
 
 void UCInteractionWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-
-	InteractionProgressBar->PercentDelegate.BindUFunction(this,"UpdateInteractionProgress");
-	MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
-	ExtraOptionBox->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UCInteractionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	InteractionProgressBar->PercentDelegate.BindUFunction(this, "UpdateInteractionProgress");
+	MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
+	ExtraOptionBox->SetVisibility(ESlateVisibility::Collapsed);
+
 	CurrentInteractionDuration = 0.0f;
 
 	ExtraButtonArray.Add(CancelButton);

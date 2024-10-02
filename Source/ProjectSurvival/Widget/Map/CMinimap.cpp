@@ -1,5 +1,6 @@
 #include "Widget/Map/CMiniMap.h"
 #include "Components/Image.h"
+#include "Utility/CDebug.h"
 
 void UCMiniMap::NativeConstruct()
 {
@@ -15,7 +16,6 @@ void UCMiniMap::NativeConstruct()
 		MiniMapBrush.DrawAs = ESlateBrushDrawType::Image;
 	}
 }
-
 
 void UCMiniMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -50,4 +50,3 @@ FVector2D UCMiniMap::GetCharacterPosOnWorldMap()
 
 	return FVector2D(translationX, translationY);
 }
-

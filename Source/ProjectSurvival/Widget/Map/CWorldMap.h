@@ -9,15 +9,15 @@ UCLASS()
 class PROJECTSURVIVAL_API UCWorldMap : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void NativeConstruct() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void SetCharacterPosOnWorldMap();
 
 public:
-	void SetSurvivorNameOnWorldMap(const FText& InText, uint32 NetGUIDValue);
-	void SetOtherCharacterPosOnWorldMap(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
+	void CreateSurvivorLocationOnWorldMap(const FText& InText, uint32 NetGUIDValue);
+	void RefreshSurvivorLocationOnWorldMap(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
+	FNetworkGUID GetPersonalGUID() { return PersonalNetGuid; }
 
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
@@ -27,8 +27,6 @@ private:
 		class UCanvasPanel* WorldMapCanvasPanel;
 	UPROPERTY(meta = (BindWidget))
 		class UImage* WorldMap;
-	//UPROPERTY(meta = (BindWidget))
-	//	class UImage* PlayerLocation;
 
 	float WorldMapLevelWidth = 41859.0f;
 	float WorldMapLevelHeight = 39879.0f;
@@ -42,6 +40,7 @@ private:
 		TMap<uint32, TWeakObjectPtr<UCPlayerLocation>> PlayerLocationMap;
 
 	int32 PersonalNetGuidValue;
+	FNetworkGUID PersonalNetGuid;
 
 	bool bIsNameTransmitted = false;
 };

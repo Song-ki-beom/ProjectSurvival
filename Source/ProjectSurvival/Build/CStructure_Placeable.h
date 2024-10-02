@@ -55,33 +55,61 @@ public:
 
 	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
+
+
+
 	//Remove
 	void PerformRemoveItem(int32 idxRemove);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastRemoveItem(int32 idxRemove);
+
 	void PerformRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove);
+
 	//Swap
 	void PerformSwapItem(int32 idxBase,int32 idxDrag);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSwapItem(int32 idxBase, int32 idxDrag);
 
 	//Combine
 	void PerformCombineItem(int32 idxBase, int32 idxDrag);
 
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastCombineItem(int32 idxBase, int32 idxDrag);
+
 	//Sort
 	void PerformSortInfoWidget();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSortInfoWidget();
+
 	void Merge(TArray<FItemInformation>&  Array, int Left, int Mid, int Right); //분할 후 정복 
 	void MergeSort(TArray<FItemInformation>& Array, int Left, int Right); // 분할 정복 Merges Sort 사용 
 
 	//Split
 	void PerformSplitItem(int32 ItemIdx, int32 AmountToSplit);
 
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSplitItem(int32 ItemIdx, int32 AmountToSplit);
+
 	void AddItemInfoToWidget();
 
 	//PlaceableType
 	EPlaceableStructureType GetPlaceableStructureType() { return PlaceableStructureType; }
 
-	UFUNCTION()
-		void OnRep_WidgetRefreshTrigger();
+	//UFUNCTION()
+	//	void OnRep_WidgetRefreshTrigger();
 
 	//Produce
-	TArray<FItemInformation> GetItemInfoArray() { return SharedItemInfoArray; }
+	//TArray<FItemInformation> GetItemInfoArray() { return SharedItemInfoArray; }
+	TArray<FItemInformation> GetItemInfoArray() { return ItemInfoArray; }
 
 	class UCInventoryPanel_Placeable* GetPlaceableInventoryWidget() { return PlaceableWidget; }
 	class UCProduceWidget* GetPlaceableProduceWidget() { return PlaceableProduceWidget; }
@@ -141,12 +169,12 @@ protected:
 private:
 	UPROPERTY()
 		class UCInventoryPanel_Placeable* PlaceableWidget;
-	UPROPERTY(ReplicatedUsing = OnRep_WidgetRefreshTrigger)
-		int32 WidgetRefreshTrigger;
+	//UPROPERTY(ReplicatedUsing = OnRep_WidgetRefreshTrigger)
+	//	int32 WidgetRefreshTrigger;
 	UPROPERTY()
 		TArray<UCItemBase*> ActorInventoryContents;
-	UPROPERTY(Replicated)
-		TArray<FItemInformation> SharedItemInfoArray;
+	//UPROPERTY(Replicated)
+	//	TArray<FItemInformation> SharedItemInfoArray;
 	UPROPERTY()
 		TArray<FItemInformation> ItemInfoArray;
 	UPROPERTY()

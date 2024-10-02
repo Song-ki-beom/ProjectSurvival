@@ -127,28 +127,51 @@ void UCInventoryPanel_Placeable::RefreshPlaceableInventory()
 
 bool UCInventoryPanel_Placeable::CombineItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
 {
-		if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
-		{
-			SwapItem(ItemOnBase, ItemFromDrag);
-			return true;
-		}
+		//if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
+		//{
+		//	SwapItem(ItemOnBase, ItemFromDrag);
+		//	return true;
+		//}
 	
-		int32 idxBase = FindItemIndex(ItemOnBase);
-		int32 idxDrag = FindItemIndex(ItemFromDrag);
+		//int32 idxBase = FindItemIndex(ItemOnBase);
+		//int32 idxDrag = FindItemIndex(ItemFromDrag);
 
-		
-		return PerformActionIfHasAuthority(
-			// Server
-			[=](ACStructure_Placeable* placeableActor)
-			{
-				placeableActor->PerformCombineItem(idxBase, idxDrag);
-			},
-			// Client
-				[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
-			{
-				playerController->RequestCombineItem(idxBase, idxDrag, placeableActor);
-			}
-			);
+		//
+		//return PerformActionIfHasAuthority(
+		//	// Server
+		//	[=](ACStructure_Placeable* placeableActor)
+		//	{
+		//		placeableActor->PerformCombineItem(idxBase, idxDrag);
+		//	},
+		//	// Client
+		//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+		//	{
+		//		playerController->RequestCombineItem(idxBase, idxDrag, placeableActor);
+		//	}
+		//	);
+
+	if (ItemOnBase->IsFullItemStack() || ItemFromDrag->IsFullItemStack()) //둘중에 하나가 풀스택이면 Swap Item 
+	{
+		SwapItem(ItemOnBase, ItemFromDrag);
+		return true;
+	}
+
+	int32 idxBase = FindItemIndex(ItemOnBase);
+	int32 idxDrag = FindItemIndex(ItemFromDrag);
+
+
+	return PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* placeableActor)
+		{
+			placeableActor->BroadcastCombineItem(idxBase, idxDrag);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+		{
+			playerController->RequestCombineItem(idxBase, idxDrag, placeableActor);
+		}
+		);
 
 	
 }
@@ -190,12 +213,26 @@ void UCInventoryPanel_Placeable::SetWidgetItems(TArray<UCItemBase*> InArray)
 
 void UCInventoryPanel_Placeable::RemoveItem(UCItemBase* ItemToRemove)
 {
-	int32 idxRemove = FindItemIndex(ItemToRemove);
+	//int32 idxRemove = FindItemIndex(ItemToRemove);
+	//PerformActionIfHasAuthority(
+	//	// Server
+	//	[=](ACStructure_Placeable* placeableActor)
+	//	{
+	//		placeableActor->PerformRemoveItem(idxRemove);
+	//	},
+	//	// Client
+	//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+	//	{
+	//		playerController->RequestRemoveItem(idxRemove, placeableActor);
+	//	}
+	//	);
+
+		int32 idxRemove = FindItemIndex(ItemToRemove);
 	PerformActionIfHasAuthority(
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformRemoveItem(idxRemove);
+			placeableActor->BroadcastRemoveItem(idxRemove);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
@@ -203,24 +240,40 @@ void UCInventoryPanel_Placeable::RemoveItem(UCItemBase* ItemToRemove)
 			playerController->RequestRemoveItem(idxRemove, placeableActor);
 		}
 		);
+	
 
 }
 
 void UCInventoryPanel_Placeable::RemoveAmountOfItem(UCItemBase* ItemToRemove, int32 AmountToRemove)
 {
+	//int32 idxRemove = FindItemIndex(ItemToRemove);
+	//PerformActionIfHasAuthority(
+	//	// Server
+	//	[=](ACStructure_Placeable* placeableActor)
+	//	{
+	//		placeableActor->PerformRemoveAmountOfItem(idxRemove , AmountToRemove);
+	//	},
+	//	// Client
+	//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+	//	{
+	//		playerController->RequestRemoveAmountOfItem(idxRemove, AmountToRemove, placeableActor);
+	//	}
+	//	
+	//	);
+
 	int32 idxRemove = FindItemIndex(ItemToRemove);
 	PerformActionIfHasAuthority(
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformRemoveAmountOfItem(idxRemove , AmountToRemove);
+			placeableActor->BroadcastRemoveAmountOfItem(idxRemove, AmountToRemove);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
 		{
 			playerController->RequestRemoveAmountOfItem(idxRemove, AmountToRemove, placeableActor);
 		}
-		
+
 		);
 }
 
@@ -243,11 +296,24 @@ int32 UCInventoryPanel_Placeable::FindItemIndex(UCItemBase * Item)
 void UCInventoryPanel_Placeable::AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor)
 {
 
+	//PerformActionIfHasAuthority(
+	//	// Server
+	//	[=](ACStructure_Placeable* placeableActor)
+	//	{
+	//		placeableActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
+	//	},
+	//	// Client
+	//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+	//	{
+	//		playerController->RequestAddItem(InItem->ID, QuantityToAdd, placeableActor, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
+	//	}
+	//	);
+
 	PerformActionIfHasAuthority(
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
+			placeableActor->BroadcastAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
@@ -260,7 +326,25 @@ void UCInventoryPanel_Placeable::AddItem(class UCItemBase* InItem, const int32 Q
 
 void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
 {
-	int32 idxBase = FindItemIndex(ItemOnBase);
+	//int32 idxBase = FindItemIndex(ItemOnBase);
+	//int32 idxDrag = FindItemIndex(ItemFromDrag);
+
+	//if (idxBase < 0 || idxDrag<0) return; //Item이 업데이트 되어 사라졌으면 
+
+	//PerformActionIfHasAuthority(
+	//	// Server
+	//	[=](ACStructure_Placeable* placeableActor)
+	//	{
+	//		placeableActor->PerformSwapItem(idxBase, idxDrag);
+	//	},
+	//	// Client
+	//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+	//	{
+	//		playerController->RequestSwapItem(idxBase, idxDrag, placeableActor);
+	//	}
+	//	);
+
+		int32 idxBase = FindItemIndex(ItemOnBase);
 	int32 idxDrag = FindItemIndex(ItemFromDrag);
 
 	if (idxBase < 0 || idxDrag<0) return; //Item이 업데이트 되어 사라졌으면 
@@ -269,7 +353,7 @@ void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* It
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformSwapItem(idxBase, idxDrag);
+			placeableActor->BroadcastSwapItem(idxBase, idxDrag);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
@@ -277,11 +361,30 @@ void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* It
 			playerController->RequestSwapItem(idxBase, idxDrag, placeableActor);
 		}
 		);
+	
 
 }
 
 bool UCInventoryPanel_Placeable::SplitExistingStack(UCItemBase* ItemIn, int32 AmountToSplit)
 {
+	//if (ItemIn->Quantity - AmountToSplit <= 0) return false;
+	////사용 가능 슬롯이 남아있으면
+	//int32 ItemIdx = FindItemIndex(ItemIn);
+	//if (ItemIdx < 0) return false; //Item이 업데이트 되어 사라졌으면 
+
+	//return 	PerformActionIfHasAuthority(
+	//	// Server
+	//	[=](ACStructure_Placeable* placeableActor)
+	//	{
+	//		placeableActor->PerformSplitItem(ItemIdx, AmountToSplit);
+	//	},
+	//	// Client
+	//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+	//	{
+	//		playerController->RequestSplitItem(ItemIdx, AmountToSplit, placeableActor);
+	//	}
+	//	);
+
 	if (ItemIn->Quantity - AmountToSplit <= 0) return false;
 	//사용 가능 슬롯이 남아있으면
 	int32 ItemIdx = FindItemIndex(ItemIn);
@@ -291,7 +394,7 @@ bool UCInventoryPanel_Placeable::SplitExistingStack(UCItemBase* ItemIn, int32 Am
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformSplitItem(ItemIdx, AmountToSplit);
+			placeableActor->BroadcastSplitItem(ItemIdx, AmountToSplit);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
@@ -299,7 +402,6 @@ bool UCInventoryPanel_Placeable::SplitExistingStack(UCItemBase* ItemIn, int32 Am
 			playerController->RequestSplitItem(ItemIdx, AmountToSplit, placeableActor);
 		}
 		);
-
 }
 
 
@@ -308,11 +410,24 @@ void UCInventoryPanel_Placeable::OnSortInventoryClicked()
 {
 
 	
+	//PerformActionIfHasAuthority(
+	//	// Server
+	//	[=](ACStructure_Placeable* placeableActor)
+	//	{
+	//		placeableActor->PerformSortInfoWidget();
+	//	},
+	//	// Client
+	//		[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+	//	{
+	//		playerController->RequestSortInfoWidget(placeableActor);
+	//	}
+	//	);
+
 	PerformActionIfHasAuthority(
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->PerformSortInfoWidget();
+			placeableActor->BroadcastSortInfoWidget();
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)

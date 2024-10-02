@@ -23,12 +23,19 @@
 void UCInventoryItemSlot::NativeOnInitialized() //위젯 생성될때 호출
 {
 	Super::NativeOnInitialized();
+
+}
+
+void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요소 결정 후 호출 
+{
+	Super::NativeConstruct();
+
 	if (ToolTipClass)
 	{
 		ToolTip = CreateWidget<UCInventoryTooltip>(this, ToolTipClass);
 		ToolTip->InventorySlotBeingHovered = this;
 		ToggleTooltip();
-		
+
 	}
 
 	if (this->GetTypedOuter<UUserWidget>() || this->GetParent()->GetTypedOuter<UUserWidget>())
@@ -42,11 +49,6 @@ void UCInventoryItemSlot::NativeOnInitialized() //위젯 생성될때 호출
 			OwnerWidget = this->GetParent()->GetTypedOuter<UUserWidget>();
 		}
 	}
-}
-
-void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요소 결정 후 호출 
-{
-	Super::NativeConstruct();
 
 	if (ItemReference)
 	{

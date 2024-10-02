@@ -34,7 +34,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/CSurvivorController.h"
 #include "GameFramework/PlayerState.h"
-
+#include "Widget/Map/CWorldMap.h"
+#include "EngineUtils.h"
 #include "Engine/PackageMapClient.h"
 
 
@@ -131,7 +132,6 @@ ACSurvivor::ACSurvivor()
 	SurvivorNameWidgetComponent->SetWidgetClass(SurvivorNameClass);
 	SurvivorNameWidgetComponent->InitWidget();
 
-
 	MovingComponent->SetSpeed(ESpeedType::Run);
 
 }
@@ -161,13 +161,15 @@ void ACSurvivor::BeginPlay()
 	{
 		RequestSetSurvivorName(gameInstance->GetLobbySurvivorName());
 	}
+
+	FTimerHandle nameTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(nameTimerHandle, this, &ACSurvivor::SetSurvivorNameVisibility, 0.5f, true);
 }
 
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -414,6 +416,60 @@ void ACSurvivor::BroadcastDisableCollision_Implementation()
 	//GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 }
 
+void ACSurvivor::SetSurvivorNameVisibility()
+{
+	if (!PersonalSurvivor)
+	{
+		// 게임 인스턴스 기반으로 고유한 서바이버 찾을때까지 반복
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+		if (gameInstance)
+		{
+			UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
+			if (foundObject)
+			{
+				ACSurvivor* survivor = Cast<ACSurvivor>(foundObject);
+				if (survivor)
+					PersonalSurvivor = survivor;
+			}
+		}
+	}
+	else
+	{
+		// 다른 서바이버 위치 검사
+		for (TActorIterator<ACSurvivor> It(GetWorld()); It; ++It)
+		{
+			ACSurvivor* otherSurvivor = *It;
+
+			// 자신이 아닌 다른 survivor에 대해서만 처리
+			if (otherSurvivor && otherSurvivor != PersonalSurvivor)
+			{
+				float distance = FVector::Dist(PersonalSurvivor->GetActorLocation(), otherSurvivor->GetActorLocation());
+
+				// 거리 조건을 만족할 때 가시성 변경이 한번만 호출됨
+				if (distance > MaxDistanceForNameVisibility)
+				{
+					if (otherSurvivor->SurvivorNameWidgetComponent)
+					{
+						if (otherSurvivor->SurvivorNameWidgetComponent->IsVisible())
+						{
+							otherSurvivor->SurvivorNameWidgetComponent->SetVisibility(false);
+						}
+					}
+				}
+				else
+				{
+					if (otherSurvivor->SurvivorNameWidgetComponent)
+					{
+						if (!(otherSurvivor->SurvivorNameWidgetComponent->IsVisible()))
+						{
+							otherSurvivor->SurvivorNameWidgetComponent->SetVisibility(true);
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {
@@ -507,7 +563,7 @@ void ACSurvivor::BroadcastSetName_Implementation(const FText& InText, uint32 Net
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance)
 	{
-		gameInstance->WorldMap->SetSurvivorNameOnWorldMap(InText, NetGUIDValue);
+		gameInstance->WorldMap->CreateSurvivorLocationOnWorldMap(InText, NetGUIDValue);
 	}
 	else
 	{
@@ -520,12 +576,12 @@ void ACSurvivor::RequestSetName_Implementation(const FText& InText, uint32 NetGU
 	BroadcastSetName(InText, NetGUIDValue);
 }
 
-void ACSurvivor::BroadcastLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
+void ACSurvivor::BroadcastSetLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
 {
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance)
 	{
-		gameInstance->WorldMap->SetOtherCharacterPosOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
+		gameInstance->WorldMap->RefreshSurvivorLocationOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
 	}
 	else
 	{
@@ -533,14 +589,13 @@ void ACSurvivor::BroadcastLocation_Implementation(float LocationX, float Locatio
 	}
 }
 
-void ACSurvivor::RequestLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
+void ACSurvivor::RequestSetLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
 {
-	BroadcastLocation(LocationX, LocationY, RotationZ, NetGUIDValue);
+	BroadcastSetLocation(LocationX, LocationY, RotationZ, NetGUIDValue);
 }
 
 void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACSurvivor, ReplicatedSurvivorName);
-
 }

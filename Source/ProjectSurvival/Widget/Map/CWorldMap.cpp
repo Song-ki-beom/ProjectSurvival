@@ -15,9 +15,10 @@ void UCWorldMap::NativeConstruct()
 	{
 		FNetworkGUID playerGUID = GetWorld()->GetNetDriver()->GuidCache->GetOrAssignNetGUID(this->GetOwningPlayerPawn());
 		if (playerGUID.IsValid())
+		{
+			PersonalNetGuid = playerGUID;
 			PersonalNetGuidValue = playerGUID.Value;
-
-		CDebug::Print("PersonalNetGuidValue", PersonalNetGuidValue, FColor::Magenta);
+		}
 	}
 
 	// 위치정보 보내기
@@ -26,14 +27,7 @@ void UCWorldMap::NativeConstruct()
 
 	// 이름 보내기 중단 (이미 정해져서 업데이트 필요x)
 	FTimerHandle nameTransmitTimer;
-	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 5.0f, false);
-}
-
-void UCWorldMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	//SetCharacterPosOnWorldMap();
+	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 30.0f, false);
 }
 
 void UCWorldMap::SetCharacterPosOnWorldMap()
@@ -70,7 +64,7 @@ void UCWorldMap::SetCharacterPosOnWorldMap()
 					{
 						survivor->BroadcastSetName(survivorName, playerGUIDValue);
 					}
-					survivor->BroadcastLocation(translationX, translationY, ownerRotationZ, playerGUIDValue);
+					survivor->BroadcastSetLocation(translationX, translationY, ownerRotationZ, playerGUIDValue);
 				}
 			}
 		}
@@ -96,20 +90,20 @@ void UCWorldMap::SetCharacterPosOnWorldMap()
 						survivor->RequestSetName(survivorName, playerGUIDValue);
 					}
 
-					survivor->RequestLocation(translationX, translationY, ownerRotationZ, playerGUIDValue);
+					survivor->RequestSetLocation(translationX, translationY, ownerRotationZ, playerGUIDValue);
 				}
 			}
 		}
 	}
 }
 
-void UCWorldMap::SetSurvivorNameOnWorldMap(const FText& InText, uint32 NetGUIDValue)
+void UCWorldMap::CreateSurvivorLocationOnWorldMap(const FText& InText, uint32 NetGUIDValue)
 {
 	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
 
 	if (playerLocationPtr && playerLocationPtr->IsValid())
 	{
-		
+
 	}
 	else
 	{
@@ -154,66 +148,16 @@ void UCWorldMap::SetSurvivorNameOnWorldMap(const FText& InText, uint32 NetGUIDVa
 	}
 }
 
-void UCWorldMap::SetOtherCharacterPosOnWorldMap(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
+void UCWorldMap::RefreshSurvivorLocationOnWorldMap(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
 {
-	//CDebug::Print("LocationX :", LocationX);
-	//CDebug::Print("LocationY :", LocationY);
-	//CDebug::Print("RotationZ :", RotationZ);
-	//CDebug::Print("NetGUIDValue :", static_cast<int32>(NetGUIDValue));
-
-
 	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
 
 	if (playerLocationPtr && playerLocationPtr->IsValid())
 	{
-		//CDebug::Print("playerLocationPtr && playerLocationPtr->IsValid Called", FColor::Green);
 		UCPlayerLocation* playerLocation = playerLocationPtr->Get();
 		if (playerLocation)
 		{
 			playerLocation->UpdatePlayerLocation(LocationX, LocationY, RotationZ);
 		}
-	}
-	else
-	{
-		//if (PlayerLocationClass)
-		//{
-		//	//CDebug::Print("playerLocationPtr && playerLocationPtr->Is Not Valid Called", FColor::Red);
-		//
-		//	// 위젯이 없으면 생성
-		//	UCPlayerLocation* newPlayerLocation = CreateWidget<UCPlayerLocation>(GetWorld(), PlayerLocationClass);
-		//
-		//	// 맵에 추가
-		//	PlayerLocationMap.Add(NetGUIDValue, TWeakObjectPtr<UCPlayerLocation>(newPlayerLocation));
-		//
-		//	// 방금 추가한 객체를 바로 캐시
-		//	UCPlayerLocation* addedPlayerLocation = newPlayerLocation;
-		//
-		//	// 위젯이 유효하면 WorldMapCanvasPanel에 추가
-		//	if (addedPlayerLocation)
-		//	{
-		//		WorldMapCanvasPanel->AddChild(addedPlayerLocation);
-		//
-		//		if (PersonalNetGuidValue == NetGUIDValue)
-		//			addedPlayerLocation->CheckWidgetOwner(true);
-		//		else
-		//			addedPlayerLocation->CheckWidgetOwner(false);
-		//
-		//
-		//
-		//		UCanvasPanelSlot* canvasSlot = Cast<UCanvasPanelSlot>(addedPlayerLocation->Slot);
-		//		if (canvasSlot)
-		//		{
-		//			canvasSlot->SetPosition(FVector2D(410.0f, 50.0f));
-		//		}
-		//
-		//		CDebug::Print("Added On Canvas Panel");
-		//	}
-		//	else
-		//	{
-		//		CDebug::Print("addedPlayerLocation is not Valid");
-		//	}
-		//}
-		//else
-		//	CDebug::Print("PlayerLocationClass is not Valid");
 	}
 }
