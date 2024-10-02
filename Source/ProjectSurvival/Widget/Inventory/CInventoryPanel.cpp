@@ -21,6 +21,13 @@ void UCInventoryPanel::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
+    
+}
+
+void UCInventoryPanel::NativeConstruct()
+{
+    Super::NativeConstruct();
+
     PlayerCharacter = Cast<ACSurvivor>(GetOwningPlayerPawn());
     if (PlayerCharacter)
     {
@@ -36,7 +43,6 @@ void UCInventoryPanel::NativeOnInitialized()
         }
     }
 }
-
 
 void UCInventoryPanel::RemoveItem(UCItemBase* ItemToRemove)
 {

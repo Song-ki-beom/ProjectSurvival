@@ -95,9 +95,17 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 		virtual void BroadcastDisableCollision();
 
+	void SetSurvivorNameVisibility();
+
 private:
-	class UCGameInstance* GameInstance;
-	class UNetDriver* NetDriver;
+	float MaxDistanceForNameVisibility = 2000.0f;
+
+	UPROPERTY()
+		class ACSurvivor* PersonalSurvivor;
+	UPROPERTY()
+		class UCGameInstance* GameInstance;
+	UPROPERTY()
+		class UNetDriver* NetDriver;
 
 	UPROPERTY(VisibleAnywhere)
 		class USpringArmComponent* SpringArm;
@@ -174,6 +182,18 @@ public:
 
 	UFUNCTION()
 		void PerformAddMessage(const FText& InSurvivorNameText, const FText& InMessageText);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSetName(const FText& InText, uint32 NetGUIDValue);
+
+	UFUNCTION(Server, Reliable)
+		void RequestSetName(const FText& InText, uint32 NetGUIDValue);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSetLocation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
+
+	UFUNCTION(Server, Reliable)
+		void RequestSetLocation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
 
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;

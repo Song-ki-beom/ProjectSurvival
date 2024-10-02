@@ -403,17 +403,21 @@ void ACSurvivorController::ToggleWorldMap()
 	if (bIsProduceWidgetOn)
 		return;
 
-	if (ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD()))
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		if (mainHUD->GetWorldMap()->GetVisibility() == ESlateVisibility::Hidden)
-			mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Visible);
-		else
-			mainHUD->GetWorldMap()->SetVisibility(ESlateVisibility::Hidden);
-
-		if (mainHUD->GetMiniMap()->GetVisibility() == ESlateVisibility::Hidden)
-			mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Visible);
-		else
-			mainHUD->GetMiniMap()->SetVisibility(ESlateVisibility::Hidden);
+		if (gameInstance->WorldMap && gameInstance->MiniMap)
+		{
+			if (gameInstance->WorldMap->GetVisibility() == ESlateVisibility::Hidden)
+				gameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);
+			else
+				gameInstance->WorldMap->SetVisibility(ESlateVisibility::Hidden);
+		
+			if (gameInstance->MiniMap->GetVisibility() == ESlateVisibility::Hidden)
+				gameInstance->MiniMap->SetVisibility(ESlateVisibility::Visible);
+			else
+				gameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 
@@ -486,38 +490,44 @@ void ACSurvivorController::PressQuickSlot10()
 
 void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats)
 {
-	InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats);
+	//InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats);
+	InPlaceable->BroadcastAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats);
 }
 
 void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->PerformSwapItem(idxBase, idxDrag);
+	//InPlaceable->PerformSwapItem(idxBase, idxDrag);
+	InPlaceable->BroadcastSwapItem(idxBase, idxDrag);
 };
 
 void ACSurvivorController::RequestSortInfoWidget_Implementation(class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->PerformSortInfoWidget();
+	//InPlaceable->PerformSortInfoWidget();
+	InPlaceable->BroadcastSortInfoWidget();
 }
 
 void ACSurvivorController::RequestSplitItem_Implementation(int32 ItemIdx, int32 AmountToSplit, class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->PerformSplitItem(ItemIdx, AmountToSplit);
-
+	//InPlaceable->PerformSplitItem(ItemIdx, AmountToSplit);
+	InPlaceable->BroadcastSplitItem(ItemIdx, AmountToSplit);
 }
 
 void ACSurvivorController::RequestCombineItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->PerformCombineItem(idxBase, idxDrag);
+	//InPlaceable->PerformCombineItem(idxBase, idxDrag);
+	InPlaceable->BroadcastCombineItem(idxBase, idxDrag);
 }
 
 void ACSurvivorController::RequestRemoveItem_Implementation(int32 idxRemove, class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->PerformRemoveItem(idxRemove);
+	//InPlaceable->PerformRemoveItem(idxRemove);
+	InPlaceable->BroadcastRemoveItem(idxRemove);
 }
 
 void ACSurvivorController::RequestRemoveAmountOfItem_Implementation(int32 idxRemove, int32 AmountToRemove, class ACStructure_Placeable* InPlaceable)
 {
-	InPlaceable->PerformRemoveAmountOfItem(idxRemove, AmountToRemove);
+	//InPlaceable->PerformRemoveAmountOfItem(idxRemove, AmountToRemove);
+	InPlaceable->BroadcastRemoveAmountOfItem(idxRemove, AmountToRemove);
 }
 
 void ACSurvivorController::RequestAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
