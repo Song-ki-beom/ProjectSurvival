@@ -12,8 +12,8 @@
 ACStructure_Door::ACStructure_Door()
 {
 	// RootComponent 설정
-	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	SetRootComponent(RootSceneComponent);
+	//RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	//SetRootComponent(RootSceneComponent);
 
 	PivotArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("PivotArrow"));
 	PivotArrow->SetupAttachment(RootSceneComponent);

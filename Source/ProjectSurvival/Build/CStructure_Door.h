@@ -41,8 +41,8 @@ private:
 	UPROPERTY()
 		class ACSurvivorController* PersonalSurvivorController;
 
-	UPROPERTY(VisibleAnywhere)
-		class USceneComponent* RootSceneComponent;
+	//UPROPERTY(VisibleAnywhere)
+	//	class USceneComponent* RootSceneComponent;
 
 	UPROPERTY(VisibleAnywhere)
 		class UArrowComponent* PivotArrow;

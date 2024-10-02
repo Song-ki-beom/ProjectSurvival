@@ -76,6 +76,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PickupInitialization")
 		int32 ItemQuantity;
 
+	UPROPERTY(VisibleAnywhere)
+		class USceneComponent* RootSceneComponent;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Pickup")
 		UStaticMeshComponent* PickupMesh;

@@ -19,10 +19,12 @@ ACPickUp::ACPickUp()
 	bReplicates = true;
 	SetReplicates(true);
 	PrimaryActorTick.bCanEverTick = false;
+	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SetRootComponent(RootSceneComponent);
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
+	PickupMesh->SetupAttachment(RootSceneComponent);
 	PickupMesh->SetSimulatePhysics(false);
 	PickupMesh->SetEnableGravity(true);
-	SetRootComponent(PickupMesh);
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
 	{
