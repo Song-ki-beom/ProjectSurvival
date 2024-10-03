@@ -1,4 +1,4 @@
-﻿#include "CLobbyGameMode.h"
+#include "CLobbyGameMode.h"
 #include "GameFramework/PlayerState.h"
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CWaitingWidget.h"
@@ -56,25 +56,25 @@ bool ACLobbyGameMode::CheckPlayer()
 
 void ACLobbyGameMode::StartGame()
 {
-	// 첫 번째 플레이어 컨트롤러 가져오기
-	ACLobbySurvivorController* LobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
+	//// 첫 번째 플레이어 컨트롤러 가져오기
+	//ACLobbySurvivorController* LobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());
 
-	if (LobbySurvivorController)
-	{
-		// 현재 포제스하고 있는 캐릭터(Pawn)를 해제
-		APawn* CurrentPawn = LobbySurvivorController->GetPawn();
-		if (CurrentPawn)
-		{
-			// 컨트롤러가 캐릭터를 소유하지 않도록 해제
-			LobbySurvivorController->UnPossess();
+	//if (LobbySurvivorController)
+	//{
+	//	// 현재 포제스하고 있는 캐릭터(Pawn)를 해제
+	//	APawn* CurrentPawn = LobbySurvivorController->GetPawn();
+	//	if (CurrentPawn)
+	//	{
+	//		// 컨트롤러가 캐릭터를 소유하지 않도록 해제
+	//		LobbySurvivorController->UnPossess();
 
-			// 필요에 따라 캐릭터를 삭제할 수 있습니다.
-			CurrentPawn->Destroy();  // 캐릭터 삭제
-		}
+	//		// 필요에 따라 캐릭터를 삭제할 수 있습니다.
+	//		CurrentPawn->Destroy();  // 캐릭터 삭제
+	//	}
 
-		// 컨트롤러를 해제하고 삭제
-		LobbySurvivorController->Destroy();
-	}
+	//	// 컨트롤러를 해제하고 삭제
+	//	LobbySurvivorController->Destroy();
+	//}
 
 	// Seamless Travel을 사용하도록 설정
 	bUseSeamlessTravel = true;

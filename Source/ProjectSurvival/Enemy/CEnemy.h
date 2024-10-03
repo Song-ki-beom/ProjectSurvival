@@ -27,7 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	//DoAction
-	virtual void DoAction();
+	virtual float DoAction();
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDoAction(int32 InAttackIdx);
 	UFUNCTION(Server, Reliable)
@@ -42,7 +42,8 @@ public:
 	virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDisableCollision();
-
+	UFUNCTION(NetMulticast, Reliable)
+		virtual void BroadcastDisableMesh();
 	
 //Damage Interface Override
 	//virtual void Damage(FDamageData* DamageData) override;
@@ -71,6 +72,8 @@ private:
 	//Drop Item
 	void CreateDropItem();
 
+	//Destroy
+	void DestroyEnemy();
 
 	//etc
 	UFUNCTION()
@@ -169,6 +172,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UWidgetComponent* HPBarWidgetComponent;
 
+	//Destroy
+	FTimerHandle RemoveTimerHandle;
 
 public: //ForceInline Getter & Settter
 

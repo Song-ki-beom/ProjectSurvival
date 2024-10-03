@@ -6,9 +6,8 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "CBTTaskNode_Attack.generated.h"
 
-/**
- * 
- */
+
+
 UCLASS()
 class PROJECTSURVIVAL_API UCBTTaskNode_Attack : public UBTTaskNode
 {
@@ -16,10 +15,12 @@ class PROJECTSURVIVAL_API UCBTTaskNode_Attack : public UBTTaskNode
 
 public:
 	UCBTTaskNode_Attack();
-protected:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	//void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	UFUNCTION()
+	void OnMontageFinished();
+
 
 private:
 	class ACEnemyAIController* Controller;
@@ -28,5 +29,9 @@ private:
 	class UCMovingComponent* MovingComponent;
 	class UCStateComponent* StateComponent;
 	int32 count;
+
+private:
+	FTimerHandle TimerHandle_RetriggerableDelay;
+
 
 };

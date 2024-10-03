@@ -120,7 +120,7 @@ void ACDestructibleActor::CreateDropItem()
 	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DropItemID, DropItemID.ToString());
 	if (ItemData)
 	{
-		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
+		UCItemBase* ItemToDrop = NewObject<UCItemBase>(UCItemBase::StaticClass());
 		ItemToDrop->CopyFromItemData(*ItemData);
 	}
 

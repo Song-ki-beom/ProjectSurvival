@@ -120,7 +120,7 @@ ACEnemy::ACEnemy()
 	HPBarWidgetComponent->SetWidgetClass(HPBarWidgetClass);
 	HPBarWidgetComponent->InitWidget();
 	HPBarWidgetComponent->SetVisibility(true);
-	HPBarWidgetComponent->PrimaryComponentTick.bCanEverTick = true;
+	//HPBarWidgetComponent->PrimaryComponentTick.bCanEverTick = true;
 	//HPBarWidgetComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 }
 
@@ -202,7 +202,7 @@ void ACEnemy::BeginPlay()
 void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RotateMeshToSlope(DeltaTime);
+	//RotateMeshToSlope(DeltaTime);
 	
 	if (IsValid(GetWorld()) && GetWorld()->IsClient())  // 클라이언트에서만 실행
 	{
@@ -247,20 +247,21 @@ void ACEnemy::Tick(float DeltaTime)
 	}
 }
 
-void ACEnemy::DoAction()
+float ACEnemy::DoAction()
 {
 	
 	if (HasAuthority())
 	{
 		int32 NewAttackIdx = FMath::RandRange(0, DoActionDatas.Num() - 1); //플레이할 몽타주 랜덤 넘버 설정
-		BroadcastDoAction(NewAttackIdx);
+		 BroadcastDoAction(NewAttackIdx);
+		 return MontageComponent->GetMontageDelay();
 	}
-	
+	return -1;
 }
 
 void ACEnemy::BroadcastDoAction_Implementation(int32 InAttackIdx)
 {
-	PerformDoAction(InAttackIdx);
+	   PerformDoAction(InAttackIdx);
 }
 
 
@@ -272,7 +273,6 @@ void ACEnemy::RequestDoAction_Implementation()
 void ACEnemy::PerformDoAction(int32 InAttackIdx)
 {
 	AttackIdx = InAttackIdx;
-	/*MovingComponent->EnableControlRotation();*/
 	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
 }
 
@@ -368,6 +368,11 @@ void ACEnemy::BroadcastDisableCollision_Implementation()
 {
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ACEnemy::BroadcastDisableMesh_Implementation()
+{
+	GetMesh()->SetVisibility(false);
 }
 
 
@@ -527,9 +532,15 @@ void ACEnemy::Die()
 
 void ACEnemy::RemoveCharacter()
 {
+	BroadcastDisableMesh();
 	CreateDropItem();
-	Destroy();
+	GetWorld()->GetTimerManager().SetTimer(RemoveTimerHandle, this, &ACEnemy::DestroyEnemy, 1.0f, false);
 
+}
+
+void ACEnemy::DestroyEnemy()
+{
+	Destroy();
 }
 
 void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)
@@ -658,7 +669,7 @@ void ACEnemy::CreateDropItem()
 	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DropItemID, DropItemID.ToString());
 	if (ItemData)
 	{
-		UCItemBase* ItemToDrop = NewObject<UCItemBase>(StaticClass());
+		UCItemBase* ItemToDrop = NewObject<UCItemBase>(UCItemBase::StaticClass());
 		ItemToDrop->CopyFromItemData(*ItemData);
 	}
 
@@ -682,8 +693,9 @@ void ACEnemy::CreateDropItem()
 
 		//스폰 파라미터 설정 
 		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.bNoFail = true;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
+		//SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn; // 벽에 끼이는 등  spawn 에 실패하는 상황이 생기면 위치를 Adjust해서 성공시킴 
 
 		ACPickUp* Pickup = GetWorld()->SpawnActor<ACPickUp>(ACPickUp::StaticClass(), SpawnTransform, SpawnParams);
 		Pickup->InitializeDrop(DropItemID, 1);

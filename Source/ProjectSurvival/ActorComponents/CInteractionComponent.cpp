@@ -242,8 +242,11 @@ void UCInteractionComponent::FoundInteractable(AActor* NewInteractable)
 	if (InteractionData.CurrentInteractable) //최근에 이미 상호작용한 액터를 발견했으면 
 	{
 		TargetInteractable = InteractionData.CurrentInteractable; //타겟을 최근에발견한 것으로 설정 
-		TargetInteractable->EndFocus(); //타겟 엑터에 가하고 있는 Focus 해제 
-
+		if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
+		{
+			TargetInteractable->EndFocus();
+		}
+		
 	}
 
 
@@ -251,8 +254,10 @@ void UCInteractionComponent::FoundInteractable(AActor* NewInteractable)
 	TargetInteractable = NewInteractable;
 	if(HUD)
 		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData); //인터렉션 위젯 갱신 
-	TargetInteractable->BeginFocus(); //지금 검출해서 찾은 것으로 Focus 시작 
-
+	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
+	{
+		TargetInteractable->BeginFocus(); //지금 검출해서 찾은 것으로 Focus 시작 
+	}
 
 }
 
