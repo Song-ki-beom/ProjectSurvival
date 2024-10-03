@@ -208,7 +208,6 @@ void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 
 
 void ACPickUp::BroadcastSetTransform_Implementation(FTransform InTransform)
 {
-	CDebug::Print("Broadcast Transform Implementation Called");
 	SetActorTransform(InTransform);
 }
 
