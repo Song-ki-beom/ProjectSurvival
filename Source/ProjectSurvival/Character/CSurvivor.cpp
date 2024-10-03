@@ -429,13 +429,15 @@ void ACSurvivor::SetSurvivorNameVisibility()
 			{
 				if (NetDriver && NetDriver->GuidCache)
 				{
-					UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
-					if (foundObject)
-					{
-						ACSurvivor* survivor = Cast<ACSurvivor>(foundObject);
-						if (survivor)
-							PersonalSurvivor = survivor;
-					}
+					//UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
+					//if (foundObject)
+					//{
+					//	ACSurvivor* survivor = Cast<ACSurvivor>(foundObject);
+					//	if (survivor)
+					//		PersonalSurvivor = survivor;
+					//}
+
+					PersonalSurvivor = gameInstance->WorldMap->GetPersonalSurvivor();
 				}
 			}
 		}
