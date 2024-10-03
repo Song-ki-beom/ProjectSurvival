@@ -419,19 +419,25 @@ void ACSurvivor::BroadcastDisableCollision_Implementation()
 void ACSurvivor::SetSurvivorNameVisibility()
 {
 	// 게임 인스턴스 기반으로 고유한 서바이버 찾을때까지 반복
-	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
-	if (gameInstance)
+
+	if (!PersonalSurvivor)
 	{
-		if (gameInstance->WorldMap &&NetDriver && NetDriver->GuidCache)
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+		if (gameInstance)
 		{
-			if (NetDriver && NetDriver->GuidCache)
+			if (gameInstance->WorldMap && NetDriver && NetDriver->GuidCache)
 			{
-				UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
-				if (foundObject)
+				if (NetDriver && NetDriver->GuidCache)
 				{
-					ACSurvivor* survivor = Cast<ACSurvivor>(foundObject);
-					if (survivor)
-						PersonalSurvivor = survivor;
+					//UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
+					//if (foundObject)
+					//{
+					//	ACSurvivor* survivor = Cast<ACSurvivor>(foundObject);
+					//	if (survivor)
+					//		PersonalSurvivor = survivor;
+					//}
+
+					PersonalSurvivor = gameInstance->WorldMap->GetPersonalSurvivor();
 				}
 			}
 		}

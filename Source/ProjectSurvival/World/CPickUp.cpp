@@ -262,8 +262,15 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 				TakePickup(PlayerCharacter);
 			else
 			{
-				if (ItemReference->BuildData.bIsInteractableBuildStructure)
-					DoBuildTypeInteract();
+				if (InstanceInteractableData.bIsDropMesh)
+				{
+					TakePickup(PlayerCharacter);
+				}
+				else
+				{
+					if (ItemReference->BuildData.bIsInteractableBuildStructure)
+						DoBuildTypeInteract();
+				}
 			}
 		}
 		else if(ItemReference->ItemType == EItemType::Container)
