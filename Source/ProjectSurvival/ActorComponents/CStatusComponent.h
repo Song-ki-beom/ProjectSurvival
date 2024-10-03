@@ -35,6 +35,11 @@ public:
 	bool CanSpendStamina(float ReduceAmount);
 	void SuspendStaminaRecover();
 	void ProceedStaminaRecover();
+
+	//Hunger
+	bool IsStarving();
+	void RecoverHunger(float RecoverAmount);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -75,7 +80,7 @@ private:
 	float MaxHunger = 100.0f;
 	float CurrentHunger = 200.0f;
 	UPROPERTY(EditAnywhere, Category = "Health")
-		float HungerDecreaseAmount = 1.0f;
+		float HungerDecreaseAmount = 5.0f;
 
 	//Stamina
 	UPROPERTY(EditAnywhere, Category = "Stamina")

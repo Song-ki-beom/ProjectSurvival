@@ -42,9 +42,9 @@
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 	bReplicates = true;
 	SetReplicates(true);
+	Tags.Add(FName("Player"));
 	//인터렉션 세팅
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
 

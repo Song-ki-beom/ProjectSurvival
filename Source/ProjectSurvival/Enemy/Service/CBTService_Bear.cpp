@@ -40,7 +40,11 @@ void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         return;
     }
 
-    //if(status->)
+    if (status->IsStarving())
+    {
+        AIComponent->SetStarveMode();
+        return;
+    }
 
     ACharacter* target = AIComponent->GetTarget(); // 적 발견 시 
     if (target == nullptr)

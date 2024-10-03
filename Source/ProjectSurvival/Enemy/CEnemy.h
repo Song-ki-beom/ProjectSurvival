@@ -51,6 +51,9 @@ public:
 
 	//Montage 
 	void AfterABPBindDynamic();
+
+	//Eat Food
+	void EatFood(class ACPickUp* TargetPickUp);
 	
 private:
 	//Hit
@@ -67,6 +70,7 @@ private:
 	
 	//Drop Item
 	void CreateDropItem();
+
 
 	//etc
 	UFUNCTION()

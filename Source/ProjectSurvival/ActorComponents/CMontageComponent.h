@@ -12,6 +12,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMontageFinalEnded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMontageInterrupted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayMontageNotifyBegin);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayMontageNotifyEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFoodMontageNotifyEnd);
+
+
 USTRUCT()
 struct FMontagesData : public FTableRowBase
 {
@@ -51,6 +54,10 @@ public:
 		void OnMontageNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 	UFUNCTION()
 		void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		void BindFoodMontageEnded();
+	UFUNCTION()
+		void OnFoodMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 
 public:
@@ -58,6 +65,7 @@ public:
 	FOnMontageInterrupted OnMontageInterrupted;
 	FOnPlayMontageNotifyBegin OnPlayMontageNotifyBegin;
 	FOnPlayMontageNotifyEnd OnPlayMontageNotifyEnd;
+	FOnFoodMontageNotifyEnd OnFoodMontageNotifyEnd;
 
 private:
 	class ACharacter* OwnerCharacter;              

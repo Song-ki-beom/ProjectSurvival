@@ -38,7 +38,8 @@ ACEnemy::ACEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true; //리플리케이트 설정 
 	SetReplicates(true);
-	
+	Tags.Add(FName("Enemy"));
+
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
 	{
@@ -691,6 +692,12 @@ void ACEnemy::CreateDropItem()
 
 
 
+}
+
+void ACEnemy::EatFood(ACPickUp* TargetPickUp)
+{
+	StatusComponent->RecoverHunger(TargetPickUp->ItemReference->ItemStats.DamageValue);
+	TargetPickUp->Destroy();
 }
 
 

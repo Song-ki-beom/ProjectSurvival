@@ -13,6 +13,12 @@ UCStatusComponent::UCStatusComponent()
 }
 
 
+bool UCStatusComponent::IsStarving()
+{
+	return (CurrentHunger / MaxHunger) <= 0;
+}
+
+
 void UCStatusComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -27,7 +33,11 @@ void UCStatusComponent::BeginPlay()
 	if (GetOwner()->HasAuthority()) //서버만 실행 
 	{
 		GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 1.0f, true); //1초마다 반복해서 실행 
-		GetWorld()->GetTimerManager().SetTimer(StaminaRecoverTimerHandle, this, &UCStatusComponent::RecoverStaminaByTime, 0.35f, true); //0.35초마다 반복해서 실행 
+		if (OwnerCharacter->Tags.Contains("Player"))
+		{
+			GetWorld()->GetTimerManager().SetTimer(StaminaRecoverTimerHandle, this, &UCStatusComponent::RecoverStaminaByTime, 0.35f, true); //0.35초마다 반복해서 실행 
+		}
+		
 	}
 		
 }
@@ -40,23 +50,33 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		TimeSinceStarvation += DeltaTime;
 
-		// 5초가 지났을 때마다 Starvation데미지 적용
-		if (TimeSinceStarvation >= 5.0f)
+
+		if (OwnerCharacter->Tags.Contains("Player"))
 		{
-			if (GetOwner()->HasAuthority())
+			// 5초가 지났을 때마다 Starvation데미지 적용
+			if (TimeSinceStarvation >= 5.0f)
 			{
-				ApplyDamage(7.0f);
+				if (GetOwner()->HasAuthority())
+				{
+					ApplyDamage(7.0f);
+				}
+				APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
+				if (PlayerController && PlayerController->IsLocalController())
+				{
+					PlayerController->ClientStartCameraShake(StarveCameraShakeClass, 1.0f);
+				}
+				// 타이머 리셋
+				TimeSinceStarvation = 0.0f;
 			}
-			APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
-			if (PlayerController && PlayerController->IsLocalController())
-			{
-				PlayerController->ClientStartCameraShake(StarveCameraShakeClass, 1.0f);
-			}
-			// 타이머 리셋
-			TimeSinceStarvation = 0.0f;
 		}
 	}
 		
+}
+
+void UCStatusComponent::RecoverHunger(float RecoverAmount)
+{
+	float NewHunger = CurrentHunger + RecoverAmount;
+	NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
 }
 
 
@@ -145,8 +165,6 @@ void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
 	{
 		DamagedHealthCoef = NewDamagedHealthCoef;
 		CoefChanged = true;
-		//CDebug::Print(TEXT("HitCoefChanged!!!!!!!: " ), NewDamagedHealthCoef);
-		
 	}
 	
 
