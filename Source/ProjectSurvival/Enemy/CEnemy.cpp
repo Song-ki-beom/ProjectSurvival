@@ -694,6 +694,12 @@ void ACEnemy::CreateDropItem()
 
 }
 
+void ACEnemy::EatFood(ACPickUp* TargetPickUp)
+{
+	StatusComponent->RecoverHunger(TargetPickUp->ItemReference->ItemStats.DamageValue);
+	TargetPickUp->Destroy();
+}
+
 
 //리플리케이트 변수 선언부분 
 //void ACEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

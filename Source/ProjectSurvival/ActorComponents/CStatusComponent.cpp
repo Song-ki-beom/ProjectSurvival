@@ -18,6 +18,7 @@ bool UCStatusComponent::IsStarving()
 	return (CurrentHunger / MaxHunger) <= 0;
 }
 
+
 void UCStatusComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -70,6 +71,12 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		}
 	}
 		
+}
+
+void UCStatusComponent::RecoverHunger(float RecoverAmount)
+{
+	float NewHunger = CurrentHunger + RecoverAmount;
+	NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
 }
 
 

@@ -37,7 +37,7 @@ private:
 	class  UCEnemyAIComponent* AIComponent;
 
 	bool bIsAggroCoolDown = true;
-	float CooldownTime =  10.0f;
+	float CooldownTime =  15.0f;
 	FTimerHandle AggroTimerHandle;
 	TArray<AActor*> CandidateActors;
 	AActor* TargetActor;
