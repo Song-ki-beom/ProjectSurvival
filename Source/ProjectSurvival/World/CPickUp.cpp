@@ -79,8 +79,9 @@ void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 
 void ACPickUp::BeginFocus()
 {
-		if (PickupMesh)
+		if (PickupMesh && CustomDepthStencilValue ==0)
 		{
+			CustomDepthStencilValue = 252;
 			PickupMesh->SetRenderCustomDepth(true); //깊이 버퍼에 메쉬를 등록 
 			PickupMesh->SetCustomDepthStencilValue(252);
 		}
@@ -91,8 +92,9 @@ void ACPickUp::BeginFocus()
 void ACPickUp::EndFocus()
 {
 	
-		if (PickupMesh)
+		if (PickupMesh&& CustomDepthStencilValue == 252)
 		{
+			CustomDepthStencilValue = 0;
 			PickupMesh->SetRenderCustomDepth(false);
 			PickupMesh->SetCustomDepthStencilValue(0);
 		}

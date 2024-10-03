@@ -96,10 +96,15 @@ public:
 
 	FTimerHandle TransformTimerHandle;
 
+
+
 protected:
 
 	FORCEINLINE class UCItemBase* GetItemData() { return ItemReference; };
 	bool bTransformTimerUse;
 	
+
+private:
+	float CustomDepthStencilValue = 0.0f;
 
 };

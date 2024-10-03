@@ -7,6 +7,7 @@
 #include "CGameInstance.h"
 
 
+
 UCStatusComponent::UCStatusComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -15,6 +16,7 @@ UCStatusComponent::UCStatusComponent()
 
 bool UCStatusComponent::IsStarving()
 {
+	CDebug::Print("Current Hunger:",CurrentHunger / MaxHunger);
 	return (CurrentHunger / MaxHunger) <= 0;
 }
 

@@ -58,6 +58,7 @@ void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 
 void UCMontageComponent::BindFoodMontageEnded()
 {
+
 	OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UCMontageComponent::OnFoodMontageEnded);
 
 }
@@ -66,7 +67,7 @@ void UCMontageComponent::OnFoodMontageEnded(UAnimMontage* Montage, bool bInterru
 {
 	OnFoodMontageNotifyEnd.Broadcast();
 
-
+	OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.RemoveDynamic(this, &UCMontageComponent::OnFoodMontageEnded);
 	//원상태의 델리게이트로 복귀 
 	OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UCMontageComponent::OnMontageEnded);
 
