@@ -53,6 +53,9 @@ public:
 	void CheckCenter();
 	bool GetPlaceableCenterHit() { return bCenterHit; }
 
+	//Interact
+	virtual void DoBuildTypeInteract() override;
+
 	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
 
@@ -131,8 +134,11 @@ public:
 	FSlateBrush GetIgniteButtonNormalBrush() { return IgniteButtonNormalBrush; }
 	FSlateBrush GetIgniteButtonPressedBrush() { return IgniteButtonPressedBrush; }
 
-	//void SetIgniteState(bool InValue) { bIsIgnited = InValue; }
 	bool GetIgniteState() { return bIsIgnited; }
+
+	//Bed
+	//UFUNCTION(NetMulticast, Reliable)
+	//	void BroadcastRegisterRespawnLocation();
 
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);

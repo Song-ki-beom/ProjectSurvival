@@ -89,7 +89,7 @@ void UCInteractionWidget::MoveFocusToNextButton()
 		int32 prevIndex = ExtraButtonFoucsIndex;
 		ExtraButtonArray[prevIndex]->SetStyle(DefaultButtonStyle);
 
-		ExtraButtonFoucsIndex = (ExtraButtonFoucsIndex + 1) % 4; //인덱스 증가
+		ExtraButtonFoucsIndex = (ExtraButtonFoucsIndex + 1) % 2; // 인터랙션 휠 인덱스 증가
 		
 		
 		int32 NewIndex = ExtraButtonFoucsIndex;
@@ -300,26 +300,31 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 			{
 				if (itemData->BuildData.bIsInteractableBuildStructure)
 				{
-					switch (itemData->BuildData.InteractableBuildType)
+					switch (itemData->BuildData.InteractableBuildType) // 상호작용 텍스트 설정
 					{
 					case EInteractableBuildType::Door:
 					{
 						if (bIsDoorOpened)
-							ActionText->SetText(FText::FromString(TEXT("닫기"))); //상호작용 Text
+							ActionText->SetText(FText::FromString(TEXT("닫기")));
 						else
-							ActionText->SetText(FText::FromString(TEXT("열기"))); //상호작용 Text
+							ActionText->SetText(FText::FromString(TEXT("열기")));
+						break;
+					}
+					case EInteractableBuildType::Bed:
+					{
+						ActionText->SetText(FText::FromString(TEXT("리스폰 지점 등록")));
 						break;
 					}
 					default:
 					{
-						ActionText->SetText(FText::FromString(TEXT("?????"))); //상호작용 Text
+						ActionText->SetText(FText::FromString(TEXT("?????")));
 						break;
 					}
 					}
 				}
 				else
 				{
-					ActionText->SetText(FText::FromString(TEXT("기타 옵션"))); //상호작용 Text
+					ActionText->SetText(FText::FromString(TEXT("기타 옵션")));
 				}
 				
 			}

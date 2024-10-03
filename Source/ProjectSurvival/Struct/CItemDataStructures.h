@@ -116,6 +116,7 @@ UENUM()
 enum class EInteractableBuildType : uint8
 {
 	Door,
+	Bed,
 	None
 };
 

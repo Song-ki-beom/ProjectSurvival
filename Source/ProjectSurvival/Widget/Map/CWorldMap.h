@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Widget/Map/CPlayerLocation.h"
+#include "Widget/Map/CRespawnLocation.h"
 #include "CWorldMap.generated.h"
 
 UCLASS()
@@ -35,6 +36,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<UCPlayerLocation> PlayerLocationClass;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<UCRespawnLocation> RespawnLocationClass;
 
 	UPROPERTY()
 		TMap<uint32, TWeakObjectPtr<UCPlayerLocation>> PlayerLocationMap;

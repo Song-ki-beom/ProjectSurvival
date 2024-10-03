@@ -37,72 +37,74 @@ void ACStructure_Placeable::BeginPlay()
 	switch (WidgetCaller)
 	{
 	case EWidgetCall::Placeable:
-		ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
-		PlaceableWidget = Cast<UCInventoryPanel_Placeable>(ActorInventoryWidget);
-		if (PlaceableWidget)
+		if (ActorInventoryWidgetClass)
 		{
-			PlaceableWidget->SetOwnerActor(this);
-
-			switch (PlaceableStructureType)
+			ActorInventoryWidget = CreateWidget<UUserWidget>(GetWorld(), ActorInventoryWidgetClass);
+			PlaceableWidget = Cast<UCInventoryPanel_Placeable>(ActorInventoryWidget);
+			if (PlaceableWidget)
 			{
-			case EPlaceableStructureType::WorkingBench:
-				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 작업대")));
-				break;
-			case EPlaceableStructureType::Furnace:
-				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
-				break;
-			case EPlaceableStructureType::CampFire:
-				PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
-				break;
-			default:
-				break;
+				PlaceableWidget->SetOwnerActor(this);
+
+				switch (PlaceableStructureType)
+				{
+				case EPlaceableStructureType::WorkingBench:
+					PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 작업대")));
+					break;
+				case EPlaceableStructureType::Furnace:
+					PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
+					break;
+				case EPlaceableStructureType::CampFire:
+					PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
+					break;
+				default:
+					break;
+				}
 			}
-
-
 		}
-
-
-
-		ActorProduceWidget = CreateWidget<UUserWidget>(GetWorld(), ActorProduceWidgetClass);
-		PlaceableProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
-		if (PlaceableProduceWidget)
+		
+		if (ActorProduceWidgetClass)
 		{
-			PlaceableProduceWidget->SetOwnerActor(this, WidgetCaller);
-
-			switch (PlaceableStructureType)
+			ActorProduceWidget = CreateWidget<UUserWidget>(GetWorld(), ActorProduceWidgetClass);
+			PlaceableProduceWidget = Cast<UCProduceWidget>(ActorProduceWidget);
+			if (PlaceableProduceWidget)
 			{
-			case EPlaceableStructureType::WorkingBench:
-				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
-				// 작업대 생산 아이템 추가
-				PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 16);
-				PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
-				PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
-				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Collapsed);
-				break;
-			case EPlaceableStructureType::Furnace:
-				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
-				// 화로 생산 아이템 추가
-				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
-				PlaceableProduceWidget->SetProducePanelSwitcherIndex(3);
-				PlaceableProduceWidget->CreateHarvestProduceItemSlot(5, 5);
+				PlaceableProduceWidget->SetOwnerActor(this, WidgetCaller);
 
-				IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
-				IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
-				break;
-			case EPlaceableStructureType::CampFire:
-				PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 모닥불")));
-				// 모닥불 생산 아이템 추가
-				PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
-				PlaceableProduceWidget->SetProducePanelSwitcherIndex(4);
-				PlaceableProduceWidget->CreateConsumableProduceItemSlot(28, 28);
+				switch (PlaceableStructureType)
+				{
+				case EPlaceableStructureType::WorkingBench:
+					PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
+					// 작업대 생산 아이템 추가
+					PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 16);
+					PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
+					PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+					PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Collapsed);
+					break;
+				case EPlaceableStructureType::Furnace:
+					PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 화로")));
+					// 화로 생산 아이템 추가
+					PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
+					PlaceableProduceWidget->SetProducePanelSwitcherIndex(3);
+					PlaceableProduceWidget->CreateHarvestProduceItemSlot(5, 5);
 
-				IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
-				IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
-				break;
-			default:
-				break;
+					IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
+					IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
+					break;
+				case EPlaceableStructureType::CampFire:
+					PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 모닥불")));
+					// 모닥불 생산 아이템 추가
+					PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
+					PlaceableProduceWidget->SetProducePanelSwitcherIndex(4);
+					PlaceableProduceWidget->CreateConsumableProduceItemSlot(28, 28);
+
+					IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
+					IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
+					break;
+				default:
+					break;
+				}
+
 			}
-
 		}
 		break;
 	}
@@ -275,6 +277,20 @@ void ACStructure_Placeable::CheckCenter()
 		FLinearColor::Green,
 		FLinearColor::Red
 	);
+}
+
+void ACStructure_Placeable::DoBuildTypeInteract()
+{
+	switch (ItemReference->BuildData.InteractableBuildType)
+	{
+	case EInteractableBuildType::Bed:
+	{
+		if (this->HasAuthority())
+			CDebug::Print("Server Bed Interaction Called");
+		else
+			CDebug::Print("Client Bed Interaction Called");
+	}
+	}
 }
 
 void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats)
