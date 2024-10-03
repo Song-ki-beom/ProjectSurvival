@@ -77,12 +77,13 @@ void UCMontageComponent::OnFoodMontageEnded(UAnimMontage* Montage, bool bInterru
 // session
 void UCMontageComponent::Montage_Play(UAnimMontage* InMontage, float InPlayRate)
 {
-	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(InMontage, InPlayRate);
+	MontageDelay= OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(InMontage, InPlayRate);
+	CDebug::Print("Montage Delay:", MontageDelay);
 }
 
 void UCMontageComponent::Montage_Play_Section(UAnimMontage* InMontage, FName SectionName)
 {
-	OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, InMontage);
+	 OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName, InMontage);
 }
 
 

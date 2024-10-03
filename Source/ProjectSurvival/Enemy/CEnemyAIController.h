@@ -17,6 +17,10 @@ public:
 	ACEnemyAIController();
 	UFUNCTION()
 		void ChangeTarget(class AActor* InTarget);
+	UFUNCTION()
+		void RunAI();
+	UFUNCTION()
+		void StopAI();
 protected:  
 	virtual void BeginPlay() override;
 protected:

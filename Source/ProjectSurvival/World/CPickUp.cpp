@@ -13,6 +13,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Build/CStructure_Placeable.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACPickUp::ACPickUp()
@@ -78,20 +79,25 @@ void ACPickUp::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 
 void ACPickUp::BeginFocus()
 {
-	if (PickupMesh)
-	{
-		PickupMesh->SetRenderCustomDepth(true); //깊이 버퍼에 메쉬를 등록 
-		PickupMesh->SetCustomDepthStencilValue(252);
-	}
+		if (PickupMesh)
+		{
+			PickupMesh->SetRenderCustomDepth(true); //깊이 버퍼에 메쉬를 등록 
+			PickupMesh->SetCustomDepthStencilValue(252);
+		}
+	
+	
 }
 
 void ACPickUp::EndFocus()
 {
-	if (PickupMesh)
-	{
-		PickupMesh->SetRenderCustomDepth(false);
-		PickupMesh->SetCustomDepthStencilValue(0);
-	}
+	
+		if (PickupMesh)
+		{
+			PickupMesh->SetRenderCustomDepth(false);
+			PickupMesh->SetCustomDepthStencilValue(0);
+		}
+
+	
 }
 
 void ACPickUp::BeginInteract()

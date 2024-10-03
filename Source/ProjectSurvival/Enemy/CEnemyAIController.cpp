@@ -16,7 +16,8 @@
 
 ACEnemyAIController::ACEnemyAIController()
 {
-
+    bReplicates = true;
+    SetReplicates(true);
 
     Blackboard =  CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoard"));
     Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception"));
@@ -57,14 +58,31 @@ void ACEnemyAIController::OnPossess(APawn* InPawn)
   
     if(Enemy->GetBehaviorTree() == nullptr) 
         return;
-    UseBlackboard(Enemy->GetBehaviorTree()->BlackboardAsset,Blackboard); //CEnemy의 BehaviorTree 에서 설정한 BlackBoardAsset 를 가져와서 AIController의 참조 블랙보드로 설정 
-    RunBehaviorTree(Enemy->GetBehaviorTree()); //BT 실행
+    if (!Enemy->HasAuthority()) return;
+
+    RunAI();
 
     AIComponent = Cast<UCEnemyAIComponent>(Enemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
     if(AIComponent == nullptr) return;
     AIComponent->SetBlackboard(Blackboard); //AIComponent에 여기서 설정된 BlackBoard를 AIComponent 가 사용하는 BlackBoard 로 설정(추후에 블랙보드 참조하기 위함)
   
 
+}
+
+void ACEnemyAIController::RunAI()
+{
+    if (UseBlackboard(Enemy->GetBehaviorTree()->BlackboardAsset, Blackboard))
+    {
+        RunBehaviorTree(Enemy->GetBehaviorTree()); 
+    }
+}
+
+void ACEnemyAIController::StopAI()
+{
+    UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+    if (nullptr == BehaviorTreeComponent) return;
+
+    BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
 }
 
 void ACEnemyAIController::OnUnPossess()

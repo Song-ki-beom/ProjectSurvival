@@ -68,5 +68,9 @@ public:
 	FOnFoodMontageNotifyEnd OnFoodMontageNotifyEnd;
 
 private:
-	class ACharacter* OwnerCharacter;              
+	class ACharacter* OwnerCharacter;     
+	float MontageDelay = 0.0f;
+
+public:
+	FORCEINLINE float GetMontageDelay() { return MontageDelay; }
 };

@@ -63,7 +63,7 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 				APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
 				if (PlayerController && PlayerController->IsLocalController())
 				{
-					PlayerController->ClientStartCameraShake(StarveCameraShakeClass, 1.0f);
+					//PlayerController->ClientStartCameraShake(StarveCameraShakeClass, 1.0f);
 				}
 				// 타이머 리셋
 				TimeSinceStarvation = 0.0f;

@@ -15,9 +15,9 @@ ACEnemy_Bear::ACEnemy_Bear()
 	 DropOffsetRange = 50.0f;
 }
 
-void ACEnemy_Bear::DoAction()
+float ACEnemy_Bear::DoAction()
 {
-	Super::DoAction();
+	return Super::DoAction();
 	//Attack 몽타주 실행부분 
 
 
