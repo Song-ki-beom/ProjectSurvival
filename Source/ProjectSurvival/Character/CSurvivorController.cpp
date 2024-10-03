@@ -36,14 +36,13 @@ ACSurvivorController::ACSurvivorController()
 	else
 		CDebug::Print("buildWidgetFinder Failed", FColor::Red);
 
-	//static ConstructorHelpers::FObjectFinder<UDataTable> buildStructureDataFinder(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Build/DT_BuildStructureInfo.DT_BuildStructureInfo'"));
-	//if (buildStructureDataFinder.Succeeded())
+	//static ConstructorHelpers::FClassFinder<UUserWidget> registerRespawnLocationFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Build/WBP_BuildWidget.WBP_BuildWidget_C'"));
+	//if (registerRespawnLocationFinder.Succeeded())
 	//{
-	//	BuildStructureData = buildStructureDataFinder.Object;
-	//	//CDebug::Print("buildStructureDataFinder Succeeded", FColor::Green);
+	//	RespawnLocationRegisterClass = registerRespawnLocationFinder.Class;
 	//}
 	//else
-	//	CDebug::Print("buildStructureDataFinder Failed", FColor::Red);
+	//	CDebug::Print("registerRespawnLocationFinder Failed", FColor::Red);
 
 	bIsBuildWidgetOn = false;
 	bIsProduceWidgetOn = false;
@@ -487,6 +486,11 @@ void ACSurvivorController::PressQuickSlot9()
 
 void ACSurvivorController::PressQuickSlot10()
 {
+}
+
+void ACSurvivorController::ShowBuildInteractWidget()
+{
+	//RespawnLocationRegisterClass
 }
 
 void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats)

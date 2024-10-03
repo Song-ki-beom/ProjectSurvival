@@ -4,6 +4,7 @@
 #include "World/CPickUp.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
+#include "Components/ArrowComponent.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "Utility/CDebug.h"
 #include "Engine/DataTable.h"
@@ -16,15 +17,14 @@
 // Sets default values
 ACPickUp::ACPickUp()
 {
-	bReplicates = true;
-	SetReplicates(true);
 	PrimaryActorTick.bCanEverTick = false;
-	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	SetRootComponent(RootSceneComponent);
+
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
-	PickupMesh->SetupAttachment(RootSceneComponent);
+	SetRootComponent(PickupMesh);
 	PickupMesh->SetSimulatePhysics(false);
 	PickupMesh->SetEnableGravity(true);
+	SetReplicates(true);
+
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
 	{
@@ -45,6 +45,7 @@ void ACPickUp::BeginPlay()
 		if (!bTransformTimerUse)
 			GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
 	}
+	CDebug::Print("Replicated Check : ", this->GetIsReplicated());
 }
 
 void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -149,6 +150,7 @@ void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity, int32 Remain
 	}
 	else
 	{
+		//CDebug::Print("RequestInitializeDrop Called");
 		RequestInitializeDrop(ItemID, InQuantity, RemainDurability);
 	}
 }
@@ -177,7 +179,6 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 		PickupMesh->SetSimulatePhysics(true);
 	}
 
-
 	UpdateInteractableData();
 }
 
@@ -201,6 +202,7 @@ void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 
 
 void ACPickUp::BroadcastSetTransform_Implementation(FTransform InTransform)
 {
+	CDebug::Print("Broadcast Transform Implementation Called");
 	SetActorTransform(InTransform);
 }
 
@@ -342,5 +344,7 @@ void ACPickUp::DoBuildTypeInteract()
 
 void ACPickUp::SetTransform()
 {
-	BroadcastSetTransform(this->GetActorTransform());
+	//CDebug::Print("SetTransform Called", FColor::Blue);
+	if (HasAuthority())
+		BroadcastSetTransform(this->GetActorTransform());
 }

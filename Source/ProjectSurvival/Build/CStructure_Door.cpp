@@ -1,26 +1,30 @@
 #include "Build/CStructure_Door.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Character/CSurvivorController.h"
+#include "Components/ArrowComponent.h"
 #include "Widget/Map/CWorldMap.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "CGameInstance.h"
 #include "Engine/PackageMapClient.h"
-#include "Components/ArrowComponent.h"
 #include "ActorComponents/CInteractionComponent.h"
 #include "Utility/CDebug.h"
 
 ACStructure_Door::ACStructure_Door()
 {
-	// RootComponent 설정
-	//RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	//SetRootComponent(RootSceneComponent);
+	TempRoot = CreateDefaultSubobject<USceneComponent>(TEXT("TempRoot"));
+	SetRootComponent(TempRoot);
 
 	PivotArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("PivotArrow"));
-	PivotArrow->SetupAttachment(RootSceneComponent);
+	PivotArrow->SetupAttachment(TempRoot);
 	PivotArrow->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
 	PickupMesh->SetupAttachment(PivotArrow);
 	PickupMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+	//DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
+	//DoorMesh->SetupAttachment(PivotArrow);
+	//DoorMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+	//DoorMesh->SetVisibility(false);
 }
 
 void ACStructure_Door::BeginPlay()

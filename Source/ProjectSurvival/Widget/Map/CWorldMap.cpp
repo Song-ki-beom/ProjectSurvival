@@ -18,6 +18,8 @@ void UCWorldMap::NativeConstruct()
 		{
 			PersonalNetGuid = playerGUID;
 			PersonalNetGuidValue = playerGUID.Value;
+			PersonalSurvivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+			PersonalSurvivorController = Cast<ACSurvivorController>(this->GetOwningPlayer());
 		}
 	}
 

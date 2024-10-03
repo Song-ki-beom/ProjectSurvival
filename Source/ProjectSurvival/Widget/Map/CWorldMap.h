@@ -20,6 +20,9 @@ public:
 	void RefreshSurvivorLocationOnWorldMap(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
 	FNetworkGUID GetPersonalGUID() { return PersonalNetGuid; }
 
+	class ACSurvivor* GetPersonalSurvivor() { return PersonalSurvivor; }
+	class ACSurvivorController* GetPersonalSurvivorController() { return PersonalSurvivorController; }
+
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
 
@@ -45,6 +48,12 @@ private:
 
 	int32 PersonalNetGuidValue;
 	FNetworkGUID PersonalNetGuid;
+
+	UPROPERTY()
+		class ACSurvivor* PersonalSurvivor;
+
+	UPROPERTY()
+		class ACSurvivorController* PersonalSurvivorController;
 
 	bool bIsNameTransmitted = false;
 };

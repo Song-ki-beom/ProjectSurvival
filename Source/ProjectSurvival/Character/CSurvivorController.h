@@ -70,6 +70,8 @@ private:
 	void PressQuickSlot9();
 	void PressQuickSlot10();
 
+	//BuildInteract
+	void ShowBuildInteractWidget();
 
 private:
 	class ACSurvivor* Survivor;
@@ -86,6 +88,11 @@ private:
 		TSubclassOf<class UUserWidget> ChattingBoxClass;
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;
+
+	//UPROPERTY()
+	//	TSubclassOf<class UUserWidget> RespawnLocationRegisterClass;
+	//UPROPERTY()
+	//	class UCRespawnLocationRegist* RespawnLocationRegister;
 
 	FTimerHandle UpdateListenerTransformHandle;
 

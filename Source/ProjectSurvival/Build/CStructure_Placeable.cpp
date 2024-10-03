@@ -12,6 +12,7 @@
 #include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Produce/CProduceItemQueueSlot.h"
+#include "Widget/Map/CWorldMap.h"
 #include "Net/UnrealNetwork.h"
 #include "Utility/CDebug.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +22,7 @@
 #include "Components/Button.h"
 #include "Components/WrapBox.h"
 #include "LandScape.h"
+#include "CGameInstance.h"
 
 ACStructure_Placeable::ACStructure_Placeable()
 {
@@ -285,10 +287,16 @@ void ACStructure_Placeable::DoBuildTypeInteract()
 	{
 	case EInteractableBuildType::Bed:
 	{
-		if (this->HasAuthority())
-			CDebug::Print("Server Bed Interaction Called");
-		else
-			CDebug::Print("Client Bed Interaction Called");
+		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+		if (gameInstance)
+		{
+			ACSurvivorController* survivorController = gameInstance->WorldMap->GetPersonalSurvivorController();
+			if (survivorController)
+			{
+				CDebug::Print("Personal survivorController is Valid");
+
+			}
+		}
 	}
 	}
 }

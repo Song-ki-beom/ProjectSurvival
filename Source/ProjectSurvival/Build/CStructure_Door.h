@@ -41,11 +41,11 @@ private:
 	UPROPERTY()
 		class ACSurvivorController* PersonalSurvivorController;
 
-	//UPROPERTY(VisibleAnywhere)
-	//	class USceneComponent* RootSceneComponent;
+	UPROPERTY(VisibleAnywhere)
+		class USceneComponent* TempRoot;
 
 	UPROPERTY(VisibleAnywhere)
-		class UArrowComponent* PivotArrow;
+		class UStaticMeshComponent* DoorMesh;
 
 	bool bIsOpened = false;
 
