@@ -571,7 +571,7 @@ void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)
 
 void ACEnemy::OnBecameFriendlyHandler()
 {
-	if (EnemyAIComponent&& StatusComponent)
+	if (EnemyAIComponent)
 	{
 		BroadcastUpdateHealthBar(FLinearColor::Green);
 		//StatusComponent->

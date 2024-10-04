@@ -16,6 +16,7 @@
 
 ACEnemyAIController::ACEnemyAIController()
 {
+    //PrimaryActorTick.bCanEverTick = true;
     bReplicates = true;
     SetReplicates(true);
 
@@ -27,7 +28,7 @@ ACEnemyAIController::ACEnemyAIController()
         Sight->SightRadius = 1000;      
         Sight->LoseSightRadius = 1100;  
         Sight->PeripheralVisionAngleDegrees = 180; // 인식하는 시야 범위 
-        Sight->SetMaxAge(2);  //인식한 상대를 기억하는 시간 
+        Sight->SetMaxAge(3);  //인식한 상대를 기억하는 시간 
     }
 
    
@@ -46,7 +47,11 @@ void ACEnemyAIController::BeginPlay()
 {
     Super::BeginPlay();
     Perception->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
+    GetWorld()->GetTimerManager().SetTimer(TickTimerHandle, this, &ACEnemyAIController::CustomTick, 0.1f, true);
+
 }
+
+
 
 void ACEnemyAIController::OnPossess(APawn* InPawn)
 {
@@ -92,20 +97,11 @@ void ACEnemyAIController::OnUnPossess()
 
 void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-   
+  
 
     if (!bIsAggroCoolDown) return;
 
     Perception->GetCurrentlyPerceivedActors(nullptr, CandidateActors); //이미 Sight 컨피그에 의해 플레이어를 적으로 인식하도록 함 
-
-
-    if (GetPawn()->GetDistanceTo(TargetActor) >= 5000.0f)
-    {
-        TargetActor = NULL;
-        Blackboard->SetValueAsObject("Target", TargetActor);
-        GetWorld()->GetTimerManager().ClearTimer(AggroTimerHandle);
-        EnableAggroCoolDown();
-    }
 
     //거리상 제일 가까운 Target 탐색 
     if (CandidateActors.Num() > 0)
@@ -124,6 +120,7 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
             }
         }
         ChangeTarget(NewTargetActor);
+        GetWorld()->GetTimerManager().SetTimer(AggroTimerHandle, this, &ACEnemyAIController::EnableAggroCoolDown, CooldownTime, false);
         CandidateActors.Empty();
     }
     return;
@@ -137,6 +134,17 @@ void ACEnemyAIController::EnableAggroCoolDown()
     bIsAggroCoolDown = true; //어그로 풀림 설정 .. 다시 탐색 시작 
 }
 
+void ACEnemyAIController::CustomTick()
+{
+        if (TargetActor &&GetPawn()->GetDistanceTo(TargetActor) >= 5000.0f)
+    {
+        TargetActor = NULL;
+        Blackboard->SetValueAsObject("Target", TargetActor);
+        GetWorld()->GetTimerManager().ClearTimer(AggroTimerHandle);
+        EnableAggroCoolDown();
+    }
+}
+
 void ACEnemyAIController::ChangeTarget(AActor* InTarget) 
 {
     if (InTarget == nullptr) return;
@@ -144,7 +152,6 @@ void ACEnemyAIController::ChangeTarget(AActor* InTarget)
     
     TargetActor = InTarget;
     bIsAggroCoolDown = false;
-    GetWorld()->GetTimerManager().SetTimer(AggroTimerHandle, this, &ACEnemyAIController::EnableAggroCoolDown, CooldownTime, false);
     Blackboard->SetValueAsObject("Target", TargetActor); 
     
 

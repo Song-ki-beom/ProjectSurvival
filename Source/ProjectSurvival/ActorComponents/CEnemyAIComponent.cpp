@@ -57,15 +57,16 @@ void UCEnemyAIComponent::ChangeAIStateType(EAIStateType InType)
 {
 	EAIStateType prevType = GetAIStateType();
 	Blackboard->SetValueAsEnum(AIStateTypeKey, (uint8)InType);
-	if(OnAIStateTypeChanged.IsBound())
-		OnAIStateTypeChanged.Broadcast(prevType, InType);
+	//if(OnAIStateTypeChanged.IsBound())
+		//OnAIStateTypeChanged.Broadcast(prevType, InType);
 }
 void UCEnemyAIComponent::ChangeAIReputationType(EAIReputationType InType)
 {
 	EAIReputationType prevType = GetAIReputationType();
 	Blackboard->SetValueAsEnum(AIReputationTypeKey, (uint8)InType);
-	if(OnAIReputationTypeChanged.IsBound())
-		OnAIReputationTypeChanged.Broadcast(prevType, InType);
+	this;
+	//if(OnAIReputationTypeChanged.IsBound())
+		//OnAIReputationTypeChanged.Broadcast(prevType, InType);
 }
 
 

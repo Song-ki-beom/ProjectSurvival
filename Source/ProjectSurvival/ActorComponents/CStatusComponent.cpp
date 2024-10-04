@@ -231,14 +231,14 @@ void UCStatusComponent::BroadcastUpdateStamina_Implementation(float NewStamina)
 void UCStatusComponent::BroadcastUpdateFriendShip_Implementation(float NewFriendShip)
 {
 	CurrentFriendship = NewFriendShip;
-	/*if (OwnerCharacter->HasAuthority()) 
-	{*/
+	if (OwnerCharacter->HasAuthority()) 
+	{
 		if (CurrentFriendship >= MaxFriendShip)
 		{
 			bIsFriendly = true;
 			OnBecameFriendly.Broadcast();
 		}
-	//}
+	}
 	OnFriendShipUpdated.Broadcast(CurrentStamina / MaxStamina);
 
 }

@@ -23,6 +23,7 @@ public:
 		void StopAI();
 protected:  
 	virtual void BeginPlay() override;
+
 protected:
 	void  OnPossess(APawn* InPawn)  override; 
 	void  OnUnPossess()   override;
@@ -34,14 +35,17 @@ private:
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	UFUNCTION()
 		void EnableAggroCoolDown();
+	UFUNCTION()
+		void CustomTick();
 	
 private: 
 	class  ACEnemy* Enemy;
 	class  UAISenseConfig_Sight* Sight;
 	class  UCEnemyAIComponent* AIComponent;
+	FTimerHandle TickTimerHandle;
 
 	bool bIsAggroCoolDown = true;
-	float CooldownTime =  5.0f;
+	float CooldownTime =  3.0f;
 	FTimerHandle AggroTimerHandle;
 	TArray<AActor*> CandidateActors;
 	AActor* TargetActor;
