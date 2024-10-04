@@ -366,7 +366,7 @@ void ACSurvivor::ApplyHitData()
 		if (StatusComponent->IsDead())
 		{
 			StateComponent->ChangeType(EStateType::Dead);
-			if (this->HasAuthority()) Die();
+			Die();
 			return;
 		}
 
@@ -380,20 +380,25 @@ void ACSurvivor::ApplyHitData()
 
 void ACSurvivor::Die()
 {
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
+	GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+	//GetCharacterMovement()->DisableMovement();
+	//GetCharacterMovement()->StopMovementImmediately();
 	BroadcastDoSpecialAction(ESpecialState::Dead);
-	BroadcastDisableCollision();
+	//BroadcastDisableCollision();
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 1.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.0f, false);
 }
 
 void ACSurvivor::RemoveCharacter()
 {
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	PlayerController->UnPossess();
-	Destroy();
+	if (this->HasAuthority())
+		BroadcastDestroySurvivor();
+	else
+		RequestDestroySurvivor();
+	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	//PlayerController->UnPossess();
+
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
@@ -480,6 +485,16 @@ void ACSurvivor::SetSurvivorNameVisibility()
 			}
 		}
 	}
+}
+
+void ACSurvivor::BroadcastDestroySurvivor_Implementation()
+{
+	this->Destroy();
+}
+
+void ACSurvivor::RequestDestroySurvivor_Implementation()
+{
+	BroadcastDestroySurvivor();
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
