@@ -26,8 +26,8 @@ ACEnemyAIController::ACEnemyAIController()
         Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
         Sight->SightRadius = 1000;      
         Sight->LoseSightRadius = 1100;  
-        Sight->PeripheralVisionAngleDegrees = 90; // 인식하는 시야 범위 
-        Sight->SetMaxAge(5);  //인식한 상대를 기억하는 시간 
+        Sight->PeripheralVisionAngleDegrees = 180; // 인식하는 시야 범위 
+        Sight->SetMaxAge(2);  //인식한 상대를 기억하는 시간 
     }
 
    
@@ -99,6 +99,13 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
     Perception->GetCurrentlyPerceivedActors(nullptr, CandidateActors); //이미 Sight 컨피그에 의해 플레이어를 적으로 인식하도록 함 
 
 
+    if (GetPawn()->GetDistanceTo(TargetActor) >= 5000.0f)
+    {
+        TargetActor = NULL;
+        Blackboard->SetValueAsObject("Target", TargetActor);
+        GetWorld()->GetTimerManager().ClearTimer(AggroTimerHandle);
+        EnableAggroCoolDown();
+    }
 
     //거리상 제일 가까운 Target 탐색 
     if (CandidateActors.Num() > 0)
@@ -108,6 +115,7 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
         for (AActor* CandidateActor : CandidateActors)
         {
             if (GetPawn() == nullptr) return;
+
             float distanceTo  = GetPawn()->GetDistanceTo(CandidateActor);
             if (distanceTo < shortestDistance)
             {

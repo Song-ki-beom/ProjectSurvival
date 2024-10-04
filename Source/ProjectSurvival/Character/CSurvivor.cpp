@@ -380,11 +380,12 @@ void ACSurvivor::ApplyHitData()
 
 void ACSurvivor::Die()
 {
-	GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
-	//GetCharacterMovement()->DisableMovement();
-	//GetCharacterMovement()->StopMovementImmediately();
+	if (IsLocallyControlled())
+			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
 	BroadcastDoSpecialAction(ESpecialState::Dead);
-	//BroadcastDisableCollision();
+	
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.0f, false);
@@ -393,12 +394,12 @@ void ACSurvivor::Die()
 void ACSurvivor::RemoveCharacter()
 {
 	if (this->HasAuthority())
-		BroadcastDestroySurvivor();
+		BroadcastRemoveSurvivor();
 	else
-		RequestDestroySurvivor();
+		RequestRemoveSurvivor();
 	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	//PlayerController->UnPossess();
-
+	BroadcastDisableCollision();
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
@@ -415,8 +416,7 @@ void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 void ACSurvivor::BroadcastDisableCollision_Implementation()
 {
 	//입력 무효화
-	//DisableInput(GetWorld()->GetFirstPlayerController());
-	GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+	//GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetVisibility(false);
 	// 모든 채널에 대해 충돌 무시
@@ -487,14 +487,23 @@ void ACSurvivor::SetSurvivorNameVisibility()
 	}
 }
 
-void ACSurvivor::BroadcastDestroySurvivor_Implementation()
+void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 {
-	this->Destroy();
+	SetActorLocation(GetActorLocation() + FVector(0, 0, 10000.0f));
+	FVector cameraLocation = Camera->GetComponentLocation();
+	FRotator cameraRotation = Camera->GetComponentRotation();
+	Camera->DetachFromParent();
+	Camera->SetWorldLocation(cameraLocation);
+	Camera->SetWorldRotation(cameraRotation);
+	GetCharacterMovement()->GravityScale = 0.0f;
+
+
+	//this->Destroy();
 }
 
-void ACSurvivor::RequestDestroySurvivor_Implementation()
+void ACSurvivor::RequestRemoveSurvivor_Implementation()
 {
-	BroadcastDestroySurvivor();
+	BroadcastRemoveSurvivor();
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)

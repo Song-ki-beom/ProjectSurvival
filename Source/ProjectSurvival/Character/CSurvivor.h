@@ -98,10 +98,10 @@ private:
 	void SetSurvivorNameVisibility();
 
 	UFUNCTION(NetMulticast, Reliable)
-		void BroadcastDestroySurvivor();
+		void BroadcastRemoveSurvivor();
 
 	UFUNCTION(Server, Reliable)
-		void RequestDestroySurvivor();
+		void RequestRemoveSurvivor();
 private:
 	float MaxDistanceForNameVisibility = 2000.0f;
 
