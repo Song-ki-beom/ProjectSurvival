@@ -312,7 +312,7 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 					}
 					case EInteractableBuildType::Bed:
 					{
-						ActionText->SetText(FText::FromString(TEXT("리스폰 지점 등록")));
+						ActionText->SetText(FText::FromString(TEXT("리스폰 지점 이름 등록")));
 						break;
 					}
 					default:

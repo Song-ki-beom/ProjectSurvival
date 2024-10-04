@@ -34,6 +34,9 @@ public:
 	void ClearSpawnedStructure();
 	bool CheckIsBuilding() { return bIsBuilding; }
 
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastRegisterOnWorldMap(class AActor* InActor);
+
 private:
 	void SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
 	void BuildStartFoundation();

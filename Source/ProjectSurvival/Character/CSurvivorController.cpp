@@ -564,3 +564,8 @@ void ACSurvivorController::RequestCloseDoor_Implementation(class ACStructure_Doo
 {
 	InDoor->BroadcastCloseDoor();
 } 
+
+void ACSurvivorController::RequestSetRespawnLocationName_Implementation(class ACStructure_Placeable* InPlaceable, const FText& InText)
+{
+	InPlaceable->BroadcastSetRespawnLocationName(InText);
+}

@@ -2,6 +2,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
+#include "ActorComponents/CBuildComponent.h"
 #include "Character/CSurvivor.h"
 #include "Engine/PackageMapClient.h"
 #include "CGameInstance.h"
@@ -30,6 +31,10 @@ void UCWorldMap::NativeConstruct()
 	// 이름 보내기 중단 (이미 정해져서 업데이트 필요x)
 	FTimerHandle nameTransmitTimer;
 	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 30.0f, false);
+
+	// 리스폰 위치 검사
+	FTimerHandle respawnLocationCheckTimer;
+	GetWorld()->GetTimerManager().SetTimer(respawnLocationCheckTimer, this, &UCWorldMap::RefreshRespawnLocationOnWorldMap, 0.5f, true, 5.0f);
 }
 
 void UCWorldMap::SetCharacterPosOnWorldMap()
@@ -162,4 +167,92 @@ void UCWorldMap::RefreshSurvivorLocationOnWorldMap(float LocationX, float Locati
 			playerLocation->UpdatePlayerLocation(LocationX, LocationY, RotationZ);
 		}
 	}
+}
+
+void UCWorldMap::SetActorOnWorldMap(class AActor* InActor)
+{
+	if (InActor)
+	{
+		PersonalSurvivor->GetBuildComponent()->BroadcastRegisterOnWorldMap(InActor);
+	}
+}
+
+void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
+{
+	// 빌드컴포넌트에서 멀티캐스트로 호출된 함수
+
+	if (InActor)
+	{
+		float actorLocationX = InActor->GetActorLocation().X;
+		float actorLocationY = InActor->GetActorLocation().Y;
+
+		if (UCanvasPanelSlot* canvasPanelSlot = Cast<UCanvasPanelSlot>(WorldMap->Slot))
+			ImageSize = canvasPanelSlot->GetSize();
+
+		float translationX = (actorLocationY - WorldMapLevelTopLeftLocation.Y) / WorldMapLevelWidth * ImageSize.X;
+		float translationY = (WorldMapLevelTopLeftLocation.X - actorLocationX) / WorldMapLevelHeight * ImageSize.Y;
+
+		if (RespawnLocationClass)
+		{
+			// 위젯 생성
+			UCRespawnLocation* newRespawnLocation = CreateWidget<UCRespawnLocation>(GetWorld(), RespawnLocationClass);
+
+			// 맵에 추가
+			RespawnLocationMap.Add(InActor, TWeakObjectPtr<UCRespawnLocation>(newRespawnLocation));
+
+			// 방금 추가한 객체를 바로 캐시
+			UCRespawnLocation* addedRespawnLocation = newRespawnLocation;
+
+			// 위젯이 유효하면 WorldMapCanvasPanel에 추가
+			if (addedRespawnLocation)
+			{
+				WorldMapCanvasPanel->AddChild(addedRespawnLocation);
+
+				UCanvasPanelSlot* canvasSlot = Cast<UCanvasPanelSlot>(addedRespawnLocation->Slot);
+				if (canvasSlot)
+				{
+					canvasSlot->SetPosition(FVector2D(370.0f, 50.0f));
+				}
+				addedRespawnLocation->SetOwnerActor(InActor);
+				addedRespawnLocation->SetRespawnLocationOnWorldMap(translationX, translationY);
+			}
+		}
+	}
+}
+
+void UCWorldMap::RefreshRespawnLocationOnWorldMap()
+{
+	//// 유효하지 않은 키들을 따로 저장하기 위한 배열
+	//TArray<AActor*> InvalidKeys;
+
+	//// 맵을 순회하며 nullptr 키를 찾음
+	//for (const TPair<AActor*, TWeakObjectPtr<UCRespawnLocation>>& Elem : RespawnLocationMap)
+	//{
+	//	AActor* Key = Elem.Key;
+
+	//	// 키가 nullptr인 경우
+	//	if (Key == nullptr)
+	//	{
+	//		// 해당 값이 유효한지 확인
+	//		if (Elem.Value.IsValid())
+	//		{
+	//			// 값을 얻어와 파괴 (MarkPendingKill 호출)
+	//			UCRespawnLocation* RespawnLocation = Elem.Value.Get();
+	//			if (RespawnLocation)
+	//			{
+	//				RespawnLocation->RemoveFromParent();  // 위젯을 UI에서 제거 (필요한 경우)
+	//				RespawnLocation->MarkPendingKill();   // UObject 파괴
+	//			}
+	//		}
+
+	//		// 유효하지 않은 키를 배열에 저장
+	//		InvalidKeys.Add(Key);
+	//	}
+	//}
+
+	//// 유효하지 않은 키들을 맵에서 제거
+	//for (AActor* InvalidKey : InvalidKeys)
+	//{
+	//	RespawnLocationMap.Remove(InvalidKey);
+	//}
 }

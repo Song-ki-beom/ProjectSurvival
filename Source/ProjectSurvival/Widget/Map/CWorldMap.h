@@ -23,6 +23,10 @@ public:
 	class ACSurvivor* GetPersonalSurvivor() { return PersonalSurvivor; }
 	class ACSurvivorController* GetPersonalSurvivorController() { return PersonalSurvivorController; }
 
+	void SetActorOnWorldMap(class AActor* InActor);
+	void CreateRespawnLocationOnWorldMap(class AActor* InActor);
+	void RefreshRespawnLocationOnWorldMap();
+
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
 
@@ -56,4 +60,7 @@ private:
 		class ACSurvivorController* PersonalSurvivorController;
 
 	bool bIsNameTransmitted = false;
+
+	UPROPERTY()
+		TMap<class AActor*, TWeakObjectPtr<UCRespawnLocation>> RespawnLocationMap;
 };

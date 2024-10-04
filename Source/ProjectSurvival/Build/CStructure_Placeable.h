@@ -3,8 +3,11 @@
 #include "CoreMinimal.h"
 #include "Build/CStructure.h"
 #include "Widget/CMainHUD.h"
+#include "Widget/Build/CRespawnLocationRegist.h"
 #include "Struct/CItemDataStructures.h"
 #include "CStructure_Placeable.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTextSet, const FText&, InText);
 
 UENUM()
 enum class EPlaceableStructureType : uint8
@@ -55,6 +58,11 @@ public:
 
 	//Interact
 	virtual void DoBuildTypeInteract() override;
+
+	UFUNCTION()
+		void SetRespawnLocationText(const FText& InText);
+
+	FOnTextSet OnTextSet;
 
 	//Add
 	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
@@ -137,8 +145,8 @@ public:
 	bool GetIgniteState() { return bIsIgnited; }
 
 	//Bed
-	//UFUNCTION(NetMulticast, Reliable)
-	//	void BroadcastRegisterRespawnLocation();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastSetRespawnLocationName(const FText& InText);
 
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
@@ -210,4 +218,9 @@ private:
 		class UAudioComponent* SpawnedFireSound;
 
 	FTimerHandle IgniteTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<UCRespawnLocationRegist> RespawnLocationRegistClass;
+	UPROPERTY()
+		class UCRespawnLocationRegist* RespawnLocationRegistWidget;
 };

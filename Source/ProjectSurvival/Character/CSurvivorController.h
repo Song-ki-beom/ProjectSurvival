@@ -124,5 +124,8 @@ public:
 		void RequestOpenDoor(class ACStructure_Door* InDoor);
 	UFUNCTION(Server, Reliable)
 		void RequestCloseDoor(class ACStructure_Door* InDoor);
+	UFUNCTION(Server, Reliable)
+		void RequestSetRespawnLocationName(class ACStructure_Placeable* InPlaceable, const FText& InText);
+	
 };
 

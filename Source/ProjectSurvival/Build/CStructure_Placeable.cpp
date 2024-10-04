@@ -3,6 +3,7 @@
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ActorComponents/CActorInventoryComponent.h"
+#include "ActorComponents/CInteractionComponent.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"
 #include "Blueprint/UserWidget.h"
@@ -241,10 +242,6 @@ void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 			bDown_FoundationAndCeilingActorHit = true;
 			PlaceableHeight = actorHitResult.ImpactPoint.Z;
 		}
-		else
-		{
-
-		}
 	}
 	else
 	{
@@ -287,17 +284,92 @@ void ACStructure_Placeable::DoBuildTypeInteract()
 	{
 	case EInteractableBuildType::Bed:
 	{
-		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+
+		if (RespawnLocationRegistWidget)
+		{
+			RespawnLocationRegistWidget->SetTargetActor(this);
+			RespawnLocationRegistWidget->SetVisibility(ESlateVisibility::Visible);
+
+			UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+			if (gameInstance)
+			{
+				ACSurvivorController* survivorController = gameInstance->WorldMap->GetPersonalSurvivorController();
+				if (survivorController)
+				{
+					ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+					if (mainHUD)
+					{
+						mainHUD->HideInteractionWidget();
+						survivorController->SetInputMode(FInputModeUIOnly());
+						survivorController->bShowMouseCursor = true;
+					}
+				}
+			}
+
+		}
+		else
+		{
+			if (RespawnLocationRegistClass)
+			{
+				
+				RespawnLocationRegistWidget = CreateWidget<UCRespawnLocationRegist>(GetWorld(), RespawnLocationRegistClass);
+				if (RespawnLocationRegistWidget)
+				{
+					RespawnLocationRegistWidget->SetTargetActor(this);
+					RespawnLocationRegistWidget->AddToViewport(5);
+
+					UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+					if (gameInstance)
+					{
+						ACSurvivorController* survivorController = gameInstance->WorldMap->GetPersonalSurvivorController();
+						if (survivorController)
+						{
+							ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+							if (mainHUD)
+							{
+								mainHUD->HideInteractionWidget();
+								survivorController->SetInputMode(FInputModeUIOnly());
+								survivorController->bShowMouseCursor = true;
+							}
+						}
+					}
+				}
+				else
+					CDebug::Print("RespawnLocationRegistWidget is not valid");
+
+				CDebug::Print("CreateWidget Called");
+			}
+		}
+
+	}
+	}
+}
+
+void ACStructure_Placeable::SetRespawnLocationText(const FText& InText)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		ACSurvivorController* survivorController = gameInstance->WorldMap->GetPersonalSurvivorController();
+		if (survivorController)
+		{
+			ACSurvivor* survivor = Cast<ACSurvivor>(survivorController->GetPawn());
+			survivor->GetInteractionComponent()->UpdateInteractionWidget();
+		}
+	}
+
+	if (this->HasAuthority())
+		BroadcastSetRespawnLocationName(InText);
+	else
+	{
 		if (gameInstance)
 		{
 			ACSurvivorController* survivorController = gameInstance->WorldMap->GetPersonalSurvivorController();
 			if (survivorController)
 			{
-				CDebug::Print("Personal survivorController is Valid");
-
+				survivorController->RequestSetRespawnLocationName(this, InText);
 			}
 		}
-	}
 	}
 }
 
@@ -705,6 +777,11 @@ void ACStructure_Placeable::PerformExtinguish()
 
 	if (GetWorld()->GetTimerManager().IsTimerActive(IgniteTimerHandle))
 		GetWorld()->GetTimerManager().ClearTimer(IgniteTimerHandle);
+}
+
+void ACStructure_Placeable::BroadcastSetRespawnLocationName_Implementation(const FText& InText)
+{
+	OnTextSet.Broadcast(InText);
 }
 
 int32 ACStructure_Placeable::GetIndexOfNonFullStackByID(const FItemInformation InItemInformation)

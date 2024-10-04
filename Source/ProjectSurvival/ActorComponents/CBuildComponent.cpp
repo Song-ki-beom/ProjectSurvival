@@ -15,6 +15,8 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryPanel.h"
 #include "Widget/Menu/CInventoryMenu.h"
+#include "Widget/Map/CWorldMap.h"
+#include "CGameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
@@ -284,6 +286,18 @@ void UCBuildComponent::ClearSpawnedStructure()
 	if (SpawnedStructure)
 		SpawnedStructure->Destroy();
 	bIsSnapped = false;
+}
+
+void UCBuildComponent::BroadcastRegisterOnWorldMap_Implementation(class AActor* InActor)
+{
+	if (InActor)
+	{
+		class UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+		if (gameInstance)
+		{
+			gameInstance->WorldMap->CreateRespawnLocationOnWorldMap(InActor);
+		}
+	}
 }
 
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
@@ -1252,7 +1266,12 @@ void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform
 		buildstructure->BroadcastDestroyPreviewBox();
 		ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
 		if (placeableStructure)
+		{
 			placeableStructure->SetReplicates(true);
+			class UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+			if (gameInstance)
+				gameInstance->WorldMap->SetActorOnWorldMap(placeableStructure);
+		}
 		bIsSnapped = false;
 	}
 	else
