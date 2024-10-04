@@ -10,4 +10,6 @@ class PROJECTSURVIVAL_API ACGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void BeginPlay() override;
 };

@@ -17,7 +17,8 @@ void UCInventorySubMenu::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
         if (!IsHovered())
         {
             OnFocusOnSubMenuEnded.Broadcast();
-            SlotReference->ToggleTooltip();
+            if (SlotReference)
+                SlotReference->ToggleTooltip();
 
            // NativeOnMouseEnter(Geometry, PointerEvent);
             return;
