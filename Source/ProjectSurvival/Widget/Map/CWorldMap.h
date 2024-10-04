@@ -27,6 +27,8 @@ public:
 	void CreateRespawnLocationOnWorldMap(class AActor* InActor);
 	void RefreshRespawnLocationOnWorldMap();
 
+	TWeakObjectPtr<UCPlayerLocation> GetPlayerLocationPtr() { return PlayerLocationPtr; }
+
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
 
@@ -49,6 +51,8 @@ private:
 
 	UPROPERTY()
 		TMap<uint32, TWeakObjectPtr<UCPlayerLocation>> PlayerLocationMap;
+
+	TWeakObjectPtr<UCPlayerLocation> PlayerLocationPtr;
 
 	int32 PersonalNetGuidValue;
 	FNetworkGUID PersonalNetGuid;

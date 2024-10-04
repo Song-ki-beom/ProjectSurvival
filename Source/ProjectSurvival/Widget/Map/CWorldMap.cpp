@@ -127,6 +127,8 @@ void UCWorldMap::CreateSurvivorLocationOnWorldMap(const FText& InText, uint32 Ne
 			// 방금 추가한 객체를 바로 캐시
 			UCPlayerLocation* addedPlayerLocation = newPlayerLocation;
 
+
+
 			// 위젯이 유효하면 WorldMapCanvasPanel에 추가
 			if (addedPlayerLocation)
 			{
@@ -136,6 +138,8 @@ void UCWorldMap::CreateSurvivorLocationOnWorldMap(const FText& InText, uint32 Ne
 					addedPlayerLocation->CheckWidgetOwner(true);
 				else
 					addedPlayerLocation->CheckWidgetOwner(false);
+
+				addedPlayerLocation->RegisterPlayer(PersonalSurvivor);
 
 				addedPlayerLocation->RegisterPlayerName(InText);
 
@@ -163,6 +167,8 @@ void UCWorldMap::RefreshSurvivorLocationOnWorldMap(float LocationX, float Locati
 
 	if (playerLocationPtr && playerLocationPtr->IsValid())
 	{
+		PlayerLocationPtr = *playerLocationPtr;
+
 		UCPlayerLocation* playerLocation = playerLocationPtr->Get();
 		if (playerLocation)
 		{

@@ -14,12 +14,20 @@ protected:
 
 public:
 	void CheckWidgetOwner(bool InValue);
+	void RegisterPlayer(class ACSurvivor* InActor);
 	void RegisterPlayerName(const FText& InText);
 	void UpdatePlayerLocation(float LocationX, float LocationY, float RotationZ);
+	void RemovePlayerLocation();
+
+private:
+	UFUNCTION()
+		void OnDestroyedSurvivor(class AActor* InActor);
 
 private:
 	UPROPERTY(meta = (BindWidget))
 		class UImage* PlayerLocationImage;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* PlayerName;
+	UPROPERTY()
+		class ACSurvivor* Survivor;
 };

@@ -75,6 +75,7 @@ public:
 	
 	//Special Action
 	virtual void PerformDoSpecialAction(ESpecialState SpecialState);
+
 	UFUNCTION(NetMulticast, Reliable)
 		virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
 	
@@ -90,10 +91,10 @@ private:
 	void ApplyHitData();
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastApplyHitData(FDamageData InDamageData);
+
 	void Die();
+
 	void RemoveCharacter();
-	UFUNCTION(NetMulticast, Reliable)
-		virtual void BroadcastDisableCollision();
 
 	void SetSurvivorNameVisibility();
 

@@ -126,6 +126,10 @@ public:
 		void RequestCloseDoor(class ACStructure_Door* InDoor);
 	UFUNCTION(Server, Reliable)
 		void RequestSetRespawnLocationName(class ACStructure_Placeable* InPlaceable, const FText& InText);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastDestroyPlayerLocation();
+	UFUNCTION(Server, Reliable)
+		void RequestDestroyPlayerLocation();
 	
 };
 

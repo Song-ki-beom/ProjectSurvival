@@ -382,10 +382,8 @@ void ACSurvivor::Die()
 {
 	if (IsLocallyControlled())
 			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
+
 	BroadcastDoSpecialAction(ESpecialState::Dead);
-	
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.0f, false);
@@ -397,9 +395,6 @@ void ACSurvivor::RemoveCharacter()
 		BroadcastRemoveSurvivor();
 	else
 		RequestRemoveSurvivor();
-	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	//PlayerController->UnPossess();
-	BroadcastDisableCollision();
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
@@ -410,17 +405,6 @@ void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialSt
 void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 {
 	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
-}
-
-
-void ACSurvivor::BroadcastDisableCollision_Implementation()
-{
-	//입력 무효화
-	//GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetVisibility(false);
-	// 모든 채널에 대해 충돌 무시
-	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 
 void ACSurvivor::SetSurvivorNameVisibility()
@@ -489,16 +473,14 @@ void ACSurvivor::SetSurvivorNameVisibility()
 
 void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 {
-	SetActorLocation(GetActorLocation() + FVector(0, 0, 10000.0f));
+	SetActorHiddenInGame(true);
 	FVector cameraLocation = Camera->GetComponentLocation();
 	FRotator cameraRotation = Camera->GetComponentRotation();
 	Camera->DetachFromParent();
 	Camera->SetWorldLocation(cameraLocation);
 	Camera->SetWorldRotation(cameraRotation);
 	GetCharacterMovement()->GravityScale = 0.0f;
-
-
-	//this->Destroy();
+	SetActorLocation(GetActorLocation() + FVector(0, 0, 10000.0f));
 }
 
 void ACSurvivor::RequestRemoveSurvivor_Implementation()

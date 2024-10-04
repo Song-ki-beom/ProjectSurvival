@@ -569,3 +569,23 @@ void ACSurvivorController::RequestSetRespawnLocationName_Implementation(class AC
 {
 	InPlaceable->BroadcastSetRespawnLocationName(InText);
 }
+
+void ACSurvivorController::BroadcastDestroyPlayerLocation_Implementation()
+{
+	CDebug::Print("BroadcastDestroyPlayerLocation_Implementation Called");
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		//gameInstance->WorldMap->GetPlayerLocationPtr().Get()->RemoveFromParent();
+		//gameInstance->WorldMap->GetPlayerLocationPtr().Get()->MarkPendingKill();
+		if (gameInstance->WorldMap->GetPlayerLocationPtr().IsValid())
+			gameInstance->WorldMap->GetPlayerLocationPtr().Get()->RemovePlayerLocation();
+		
+	}
+}
+
+void ACSurvivorController::RequestDestroyPlayerLocation_Implementation()
+{
+	BroadcastDestroyPlayerLocation();
+}
