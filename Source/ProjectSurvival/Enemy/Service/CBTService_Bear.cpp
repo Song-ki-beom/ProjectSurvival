@@ -40,9 +40,9 @@ void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         return;
     }
 
-    if (status->IsStarving())
+    if (status->IsExhausted())
     {
-        AIComponent->SetStarveMode();
+        AIComponent->SetExhaustMode();
         return;
     }
 

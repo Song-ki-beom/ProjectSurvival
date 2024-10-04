@@ -36,7 +36,7 @@ EBTNodeResult::Type UCBTTaskNode_EatFood::ExecuteTask(UBehaviorTreeComponent& Ow
 
     UObject* TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetFoodActorKey.SelectedKeyName);
     if (TargetObject == nullptr) return EBTNodeResult::Failed;
-    ACPickUp* TargetPickUp = Cast<ACPickUp>(TargetObject);
+    TargetPickUp = Cast<ACPickUp>(TargetObject);
     if (TargetPickUp == nullptr) return EBTNodeResult::Failed;
 
     if (EatFoodMontage)
@@ -44,17 +44,14 @@ EBTNodeResult::Type UCBTTaskNode_EatFood::ExecuteTask(UBehaviorTreeComponent& Ow
         AnimInstance = Enemy->GetMesh()->GetAnimInstance();
         if (AnimInstance && MontageComponent)
         {
-            
-            //EndDelegate.BindUObject(this, &UCBTTaskNode_EatFood::OnEatFoodMontageEnded);
-            //AnimInstance->Montage_SetEndDelegate(EndDelegate, EatFoodMontage);
-
             MontageComponent->BindFoodMontageEnded();
-            MontageComponent->OnFoodMontageNotifyEnd.AddDynamic(this, &UCBTTaskNode_EatFood::OnEatFoodMontageEnded);
+            if(!MontageComponent->OnFoodMontageNotifyEnd.IsBound())
+                MontageComponent->OnFoodMontageNotifyEnd.AddDynamic(this, &UCBTTaskNode_EatFood::OnEatFoodMontageEnded);
             AnimInstance->Montage_Play(EatFoodMontage , 1.5f);
         }
     }
 
-    Enemy->EatFood(TargetPickUp);
+ 
     
     return  EBTNodeResult::InProgress;
 }
@@ -79,7 +76,8 @@ void UCBTTaskNode_EatFood::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 void UCBTTaskNode_EatFood::OnEatFoodMontageEnded()
 {
-    CDebug::Print("Eat Montage Ended");
+
+    Enemy->EatFood(TargetPickUp);
     bIsMontageEnded = true;
 
 }

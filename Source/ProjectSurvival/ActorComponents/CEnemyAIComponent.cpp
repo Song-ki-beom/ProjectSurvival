@@ -35,94 +35,146 @@ void UCEnemyAIComponent::SetRoamingLocation(const FVector& InLocation)
 }
 
 
-EAIStateType UCEnemyAIComponent::GetType()
+EAIStateType UCEnemyAIComponent::GetAIStateType()
 {
-	return (EAIStateType)Blackboard->GetValueAsEnum(AIStateTypeKey);
+	if(Blackboard)
+		return (EAIStateType)Blackboard->GetValueAsEnum(AIStateTypeKey);
+
+	return EAIStateType::Max;
+
 }
 
-void UCEnemyAIComponent::ChangeType(EAIStateType InType)
+EAIReputationType UCEnemyAIComponent::GetAIReputationType()
 {
-	EAIStateType prevType = GetType();
+	if(Blackboard)
+		return(EAIReputationType)Blackboard->GetValueAsEnum(AIReputationTypeKey);
+	
+	return EAIReputationType::Max;
+
+}
+
+void UCEnemyAIComponent::ChangeAIStateType(EAIStateType InType)
+{
+	EAIStateType prevType = GetAIStateType();
 	Blackboard->SetValueAsEnum(AIStateTypeKey, (uint8)InType);
+	if(OnAIStateTypeChanged.IsBound())
 		OnAIStateTypeChanged.Broadcast(prevType, InType);
 }
-/////////////////////////////////////////////////////////////////////
+void UCEnemyAIComponent::ChangeAIReputationType(EAIReputationType InType)
+{
+	EAIReputationType prevType = GetAIReputationType();
+	Blackboard->SetValueAsEnum(AIReputationTypeKey, (uint8)InType);
+	if(OnAIReputationTypeChanged.IsBound())
+		OnAIReputationTypeChanged.Broadcast(prevType, InType);
+}
+
+
 bool UCEnemyAIComponent::IsWaitMode()
 {
-	return GetType() == EAIStateType::Wait;
+	return GetAIStateType() == EAIStateType::Wait;
 }
 
 bool UCEnemyAIComponent::IsApproachMode()
 {
-	return GetType() == EAIStateType::Approach;
+	return GetAIStateType() == EAIStateType::Approach;
 }
 
 bool UCEnemyAIComponent::IsActionMode()
 {
-	return GetType() == EAIStateType::Action;
+	return GetAIStateType() == EAIStateType::Action;
 }
 
 bool UCEnemyAIComponent::IsRoamMode()
 {
-	return GetType() == EAIStateType::Roam;
+	return GetAIStateType() == EAIStateType::Roam;
 }
 
 bool UCEnemyAIComponent::IsHittedMode()
 {
-	return GetType() == EAIStateType::Hitted;
+	return GetAIStateType() == EAIStateType::Hitted;
 }
 
 bool UCEnemyAIComponent::IsAvoidMode()
 {
-	return GetType() == EAIStateType::Avoid;
+	return GetAIStateType() == EAIStateType::Avoid;
 }
 
 bool UCEnemyAIComponent::IsDeadMode()
 {
-	return GetType() == EAIStateType::Dead;
+	return GetAIStateType() == EAIStateType::Dead;
 }
 
-bool UCEnemyAIComponent::IsStarveMode()
+bool UCEnemyAIComponent::IsExhaustMode()
 {
-	return GetType() == EAIStateType::Starve;
+	return GetAIStateType() == EAIStateType::Exhaust;
+}
+
+bool UCEnemyAIComponent::IsHostileMode()
+{
+	return GetAIReputationType() == EAIReputationType::Hostile;
+}
+
+bool UCEnemyAIComponent::IsNeutralMode()
+{
+	return GetAIReputationType() == EAIReputationType::Neutral;
+}
+
+bool UCEnemyAIComponent::IsFriendlyMode()
+{
+	return GetAIReputationType() == EAIReputationType::Friendly;
 }
 
 void UCEnemyAIComponent::SetWaitMode()
 {
-	ChangeType(EAIStateType::Wait);
+	ChangeAIStateType(EAIStateType::Wait);
 }
 
 void UCEnemyAIComponent::SetApproachMode()
 {
-	ChangeType(EAIStateType::Approach);
+	ChangeAIStateType(EAIStateType::Approach);
 }
 
 void UCEnemyAIComponent::SetActionMode()
 {
-	ChangeType(EAIStateType::Action);
+	ChangeAIStateType(EAIStateType::Action);
 }
 
 void UCEnemyAIComponent::SetRoamMode()
 {
-	ChangeType(EAIStateType::Roam);
+	ChangeAIStateType(EAIStateType::Roam);
 }
 
 void UCEnemyAIComponent::SetHittedMode()
 {
-	ChangeType(EAIStateType::Hitted);
+	ChangeAIStateType(EAIStateType::Hitted);
 }
 
 void UCEnemyAIComponent::SetAvoidMode()
 {
-	ChangeType(EAIStateType::Avoid);
+	ChangeAIStateType(EAIStateType::Avoid);
 }
 
 void UCEnemyAIComponent::SetDeadMode()
 {
-	ChangeType(EAIStateType::Dead);
+	ChangeAIStateType(EAIStateType::Dead);
 }
 
-void UCEnemyAIComponent::SetStarveMode()
+void UCEnemyAIComponent::SetExhaustMode()
 {
-	ChangeType(EAIStateType::Starve);
+	ChangeAIStateType(EAIStateType::Exhaust);
+}
+
+void UCEnemyAIComponent::SetHostileMode()
+{
+	ChangeAIReputationType(EAIReputationType::Hostile);
+}
+
+void UCEnemyAIComponent::SetNeutralMode()
+{
+	ChangeAIReputationType(EAIReputationType::Neutral);
+}
+
+void UCEnemyAIComponent::SetFriendlyMode()
+{
+	ChangeAIReputationType(EAIReputationType::Friendly);
 }

@@ -31,6 +31,14 @@ void UCEnemyStatusBar::InitializeEnemyCharacter(ACharacter* InCharacter)
 	StatusComponent->OnHealthUpdated.AddDynamic(this, &UCEnemyStatusBar::UpdateHealthProgressBar);
 }
 
+void UCEnemyStatusBar::UpdateHealthColor(FLinearColor InColor)
+{
+	if (HealthBar)
+	{
+		HealthBar->SetFillColorAndOpacity(InColor);
+	}
+}
+
 void UCEnemyStatusBar::UpdateHealthProgressBar(float HealthPercentage)
 {
 	if (HealthBar)

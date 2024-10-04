@@ -58,6 +58,7 @@ void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 
 void UCMontageComponent::BindFoodMontageEnded()
 {
+	OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.RemoveDynamic(this, &UCMontageComponent::OnMontageEnded);
 
 	OwnerCharacter->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &UCMontageComponent::OnFoodMontageEnded);
 

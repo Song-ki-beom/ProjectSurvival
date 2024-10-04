@@ -36,14 +36,16 @@ public:
 	virtual void Begin_DoAction();
 	virtual void End_DoAction();
 	virtual void AttackTraceHit();
-	virtual void DoEncounter();
+	virtual float DoEncounter();
 	virtual void PerformDoSpecialAction(ESpecialState SpecialState);
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDisableCollision();
 	UFUNCTION(NetMulticast, Reliable)
-		virtual void BroadcastDisableMesh();
+	virtual void BroadcastDisableMesh();
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastUpdateHealthBar(FLinearColor InColor);
 	
 //Damage Interface Override
 	//virtual void Damage(FDamageData* DamageData) override;
@@ -75,9 +77,11 @@ private:
 	//Destroy
 	void DestroyEnemy();
 
-	//etc
+	//DelegateBindHandler
 	UFUNCTION()
 	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
+	UFUNCTION()
+	void OnBecameFriendlyHandler();
 	void RotateMeshToSlope(float InDeltaTime);
 
 	//Montage
@@ -116,10 +120,11 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UBoxComponent* BoxCollision;
 
+	//Hit 
+	FString HitActorName = FString("_Bear");
 
 
-
-private:
+protected:
 	UPROPERTY()
 	class UCGameInstance* GameInstance;
 	UPROPERTY()
@@ -132,8 +137,6 @@ private:
 	//AI 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-		class UCEnemyAIComponent* AIComponent;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		uint8 TeamID = 2; // Enemy 가 속한 TeamID
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
@@ -149,6 +152,8 @@ private:
 	class UCStateComponent* StateComponent;
 	UPROPERTY(VisibleAnywhere)
 	class UCMontageComponent* MontageComponent;
+	UPROPERTY(VisibleAnywhere)
+	class UCEnemyAIComponent* EnemyAIComponent;
 
 
 	//Attack
