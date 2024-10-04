@@ -366,6 +366,27 @@ void ACSurvivor::ApplyHitData()
 		if (StatusComponent->IsDead())
 		{
 			StateComponent->ChangeType(EStateType::Dead);
+
+			UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+			if (gameInstance)
+			{
+				if (NetDriver && NetDriver->GuidCache)
+				{
+					FNetworkGUID deadSurvivorGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
+					if (deadSurvivorGUID.IsValid())
+					{
+						if (this->HasAuthority())
+						{
+							BroadcastHidePlayerLocation(deadSurvivorGUID.Value);
+						}
+						else
+						{
+							RequestHidePlayerLocation(deadSurvivorGUID.Value);
+						}
+					}
+				}
+			}
+
 			Die();
 			return;
 		}
@@ -381,9 +402,12 @@ void ACSurvivor::ApplyHitData()
 void ACSurvivor::Die()
 {
 	if (IsLocallyControlled())
-			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+	{
+		GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+	}
 
-	BroadcastDoSpecialAction(ESpecialState::Dead);
+	if (this->HasAuthority())
+		BroadcastDoSpecialAction(ESpecialState::Dead);
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.0f, false);
@@ -486,6 +510,20 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 void ACSurvivor::RequestRemoveSurvivor_Implementation()
 {
 	BroadcastRemoveSurvivor();
+}
+
+void ACSurvivor::BroadcastHidePlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		gameInstance->WorldMap->HideSurvivorLocationOnWorldMap(InNetworkGUIDValue);
+	}
+}
+
+void ACSurvivor::RequestHidePlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	BroadcastHidePlayerLocation(InNetworkGUIDValue);
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)

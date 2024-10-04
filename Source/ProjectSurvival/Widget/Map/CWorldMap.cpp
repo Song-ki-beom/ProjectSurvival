@@ -264,3 +264,31 @@ void UCWorldMap::RefreshRespawnLocationOnWorldMap()
 	//	RespawnLocationMap.Remove(InvalidKey);
 	//}
 }
+
+void UCWorldMap::HideSurvivorLocationOnWorldMap(uint32 NetGUIDValue)
+{
+	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
+
+	if (playerLocationPtr && playerLocationPtr->IsValid())
+	{
+		UCPlayerLocation* playerLocation = playerLocationPtr->Get();
+		if (playerLocation)
+		{
+			playerLocation->HidePlayerLocation();
+		}
+	}
+}
+
+void UCWorldMap::ShowSurvivorLocationOnWorldMap(uint32 NetGUIDValue)
+{
+	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
+
+	if (playerLocationPtr && playerLocationPtr->IsValid())
+	{
+		UCPlayerLocation* playerLocation = playerLocationPtr->Get();
+		if (playerLocation)
+		{
+			playerLocation->ShowPlayerLocation();
+		}
+	}
+}

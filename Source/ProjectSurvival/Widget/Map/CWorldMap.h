@@ -29,6 +29,9 @@ public:
 
 	TWeakObjectPtr<UCPlayerLocation> GetPlayerLocationPtr() { return PlayerLocationPtr; }
 
+	void HideSurvivorLocationOnWorldMap(uint32 NetGUIDValue);
+	void ShowSurvivorLocationOnWorldMap(uint32 NetGUIDValue);
+
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
 

@@ -60,6 +60,16 @@ void UCPlayerLocation::RemovePlayerLocation()
 	MarkPendingKill();
 }
 
+void UCPlayerLocation::HidePlayerLocation()
+{
+	this->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UCPlayerLocation::ShowPlayerLocation()
+{
+	this->SetVisibility(ESlateVisibility::Visible);
+}
+
 void UCPlayerLocation::OnDestroyedSurvivor(class AActor* InActor)
 {
 	CDebug::Print("OnDestroyedSurvivor Called");

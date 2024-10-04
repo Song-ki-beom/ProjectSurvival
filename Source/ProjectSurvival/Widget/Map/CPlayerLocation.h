@@ -18,6 +18,8 @@ public:
 	void RegisterPlayerName(const FText& InText);
 	void UpdatePlayerLocation(float LocationX, float LocationY, float RotationZ);
 	void RemovePlayerLocation();
+	void HidePlayerLocation();
+	void ShowPlayerLocation();
 
 private:
 	UFUNCTION()

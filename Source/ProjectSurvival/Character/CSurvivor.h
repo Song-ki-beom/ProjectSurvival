@@ -103,6 +103,13 @@ private:
 
 	UFUNCTION(Server, Reliable)
 		void RequestRemoveSurvivor();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastHidePlayerLocation(uint32 InNetworkGUIDValue);
+
+	UFUNCTION(Server, Reliable)
+		void RequestHidePlayerLocation(uint32 InNetworkGUIDValue);
+
 private:
 	float MaxDistanceForNameVisibility = 2000.0f;
 
