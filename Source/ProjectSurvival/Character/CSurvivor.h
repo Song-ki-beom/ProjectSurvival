@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "Struct/CWeaponStructures.h"
 #include "CustomDataType/BuildStructureDataType.h"
+#include "Components/TimeLineComponent.h"
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
 
@@ -110,6 +111,8 @@ private:
 	UFUNCTION(Server, Reliable)
 		void RequestHidePlayerLocation(uint32 InNetworkGUIDValue);
 
+	UFUNCTION()
+		void SetWorldMapOpacity(float Value);
 private:
 	float MaxDistanceForNameVisibility = 2000.0f;
 
@@ -180,9 +183,20 @@ private:
 	FHitData* HitData;
 
 	//Special Action
-	//Special Action
 	UPROPERTY(EditAnywhere)
 		TArray<FDoActionData> DoSpecialActionDatas;
+
+	FTimeline WorldMapOpacityTimeline;
+
+	UPROPERTY()
+		float WorldMapOpacityTimelineDeltaTime = 0.0f;
+
+	UPROPERTY()
+		float WorldMapOpacityTimelineLength = 2.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Timeline")
+		class UCurveFloat* WorldMapOpacityTimelineCurve;
+
 public:
 	UFUNCTION(Server, Reliable)
 		void RequestMessage(const FText& InSurvivorNameText, const FText& InMessageText);

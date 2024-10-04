@@ -49,6 +49,7 @@ public:
 	class UCInventorySubMenu* GetInventorySubMenu() { return InventorySubMenuWidget; }
 	class UCInteractionWidget* GetInteractionWidget() { return InteractionWidget; }
 	class UCProduceWidget* GetPlaceableProduceWidget() { return PlaceableProduceWidget; }
+	class UCStatusPanel* GetStatusPanel() { return StatusPanel; }
 
 	//EditAnywhere, BlueprintReadWrite
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
