@@ -1,5 +1,6 @@
 #include "Widget/Map/CMiniMap.h"
 #include "Components/Image.h"
+#include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
 void UCMiniMap::NativeConstruct()
@@ -36,6 +37,8 @@ void UCMiniMap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 FVector2D UCMiniMap::GetCharacterPosOnWorldMap()
 {
 	// 캐릭터의 실제 위치를 WorldMap 텍스쳐 이미지 위치로 변환 (좌상단 0,0 기준)
+	if (!this->GetOwningPlayerPawn())
+		return  FVector2D(-1, -1);
 	FTransform ownerTransform = this->GetOwningPlayerPawn()->GetActorTransform();
 	float ownerLocationX = ownerTransform.GetLocation().X;
 	float ownerLocationY = ownerTransform.GetLocation().Y;

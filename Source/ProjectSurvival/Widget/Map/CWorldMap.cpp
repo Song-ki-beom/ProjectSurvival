@@ -3,6 +3,7 @@
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
 #include "ActorComponents/CBuildComponent.h"
+#include "Character/CSurvivorController.h"
 #include "Character/CSurvivor.h"
 #include "Engine/PackageMapClient.h"
 #include "CGameInstance.h"
@@ -40,6 +41,7 @@ void UCWorldMap::NativeConstruct()
 void UCWorldMap::SetCharacterPosOnWorldMap()
 {
 	// 캐릭터의 실제 위치를 WorldMap 텍스쳐 이미지 위치로 변환 (좌상단 0,0 기준)
+	if (!this->GetOwningPlayerPawn()) return;
 	FTransform ownerTransform = this->GetOwningPlayerPawn()->GetActorTransform();
 	float ownerLocationX = ownerTransform.GetLocation().X;
 	float ownerLocationY = ownerTransform.GetLocation().Y;

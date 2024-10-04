@@ -386,7 +386,7 @@ void ACSurvivor::Die()
 	BroadcastDisableCollision();
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.3f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 1.0f, false);
 }
 
 void ACSurvivor::RemoveCharacter()
@@ -410,8 +410,10 @@ void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 void ACSurvivor::BroadcastDisableCollision_Implementation()
 {
 	//입력 무효화
-	DisableInput(GetWorld()->GetFirstPlayerController());
+	//DisableInput(GetWorld()->GetFirstPlayerController());
+	GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetVisibility(false);
 	// 모든 채널에 대해 충돌 무시
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 }
