@@ -29,8 +29,6 @@ private:
 	class UCMovingComponent* MovingComponent;
 	class UCStateComponent* StateComponent;
 	int32 count;
-
-private:
 	FTimerHandle TimerHandle_RetriggerableDelay;
 
 

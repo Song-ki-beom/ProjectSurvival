@@ -37,6 +37,7 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 		FBlackboardKeySelector TargetFoodActorKey;
+	class ACPickUp* TargetPickUp;
 	UPROPERTY(EditAnywhere, Category = "Montage")
 		UAnimMontage* EatFoodMontage;
 

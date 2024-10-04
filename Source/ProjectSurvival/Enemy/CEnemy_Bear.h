@@ -19,7 +19,8 @@ public:
 	virtual float DoAction() override;
 	virtual void Begin_DoAction() override;
 	virtual void End_DoAction() override;
-	
+
+protected:
 
 protected:
 	virtual void BeginPlay() override;

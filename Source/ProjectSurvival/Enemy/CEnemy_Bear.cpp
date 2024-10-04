@@ -2,9 +2,11 @@
 
 
 #include "Enemy/CEnemy_Bear.h"
-
-ACEnemy_Bear::ACEnemy_Bear()
+#include "Enemy/CEnemyAIController.h"
+#include "ActorComponents/CEnemyAIComponent.h"
+ACEnemy_Bear::ACEnemy_Bear() : ACEnemy()
 {
+
 	//CEnemy 에서 지연 메쉬 호출을 위해 필요한 경로 설정 
 	SkeletalMeshPath = "SkeletalMesh'/Game/PirateIsland/Include/Skeletal/Animal/Bear/SK_Bear.SK_Bear'";
 	AnimInstancePath = "AnimBlueprint'/Game/PirateIsland/Include/Animation/AnimationBlueprint/Animal/Bear/ABP_Bear.ABP_Bear_C'";
@@ -13,6 +15,8 @@ ACEnemy_Bear::ACEnemy_Bear()
 	 DropItemNum= 3;
 	 DropItemID = FName("Consumable_1");
 	 DropOffsetRange = 50.0f;
+
+
 }
 
 float ACEnemy_Bear::DoAction()
@@ -26,6 +30,7 @@ float ACEnemy_Bear::DoAction()
 void ACEnemy_Bear::Begin_DoAction()
 {
 	Super::Begin_DoAction();
+	
 
 }
 
@@ -39,5 +44,9 @@ void ACEnemy_Bear::End_DoAction()
 void ACEnemy_Bear::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//AIState
+	/*if(AIComponent)
+		AIComponent->ChangeAIReputationType(EAIReputationType::Hostile);*/
 
 }

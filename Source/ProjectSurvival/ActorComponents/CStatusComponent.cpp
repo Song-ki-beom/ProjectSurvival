@@ -16,8 +16,14 @@ UCStatusComponent::UCStatusComponent()
 
 bool UCStatusComponent::IsStarving()
 {
-	CDebug::Print("Current Hunger:",CurrentHunger / MaxHunger);
+	//CDebug::Print("Current Hunger:",CurrentHunger / MaxHunger);
 	return (CurrentHunger / MaxHunger) <= 0;
+}
+
+bool UCStatusComponent::IsLowHealth()
+{
+	//CDebug::Print("Current Hunger:", CurrentHealth / MaxHealth);
+	return (CurrentHealth / MaxHealth) <= 0.25;
 }
 
 
@@ -32,6 +38,8 @@ void UCStatusComponent::BeginPlay()
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	CurrentHealth = MaxHealth;
 	CurrentHunger = MaxHunger;
+	CurrentStamina = MaxStamina;
+	CurrentFriendship = 0;
 	if (GetOwner()->HasAuthority()) //서버만 실행 
 	{
 		GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 1.0f, true); //1초마다 반복해서 실행 
@@ -48,13 +56,15 @@ void UCStatusComponent::BeginPlay()
 void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (CurrentHunger <= 0)
+	
+	if (OwnerCharacter->Tags.Contains("Player"))
 	{
-		TimeSinceStarvation += DeltaTime;
-
-
-		if (OwnerCharacter->Tags.Contains("Player"))
+		if (CurrentHunger <= 0)
 		{
+			TimeSinceStarvation += DeltaTime;
+
+
+
 			// 5초가 지났을 때마다 Starvation데미지 적용
 			if (TimeSinceStarvation >= 5.0f)
 			{
@@ -70,15 +80,43 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 				// 타이머 리셋
 				TimeSinceStarvation = 0.0f;
 			}
+
 		}
 	}
+
 		
 }
 
 void UCStatusComponent::RecoverHunger(float RecoverAmount)
 {
-	float NewHunger = CurrentHunger + RecoverAmount;
+	float NewHunger = CurrentHunger + RecoverAmount*5;
 	NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
+	BroadcastUpdateHunger(NewHunger);
+
+}
+
+bool UCStatusComponent::IsExhausted()
+{
+	if (bIsExhausted == true) return true;
+
+	if (IsStarving() && IsLowHealth())
+	{
+		bIsExhausted = true;
+		return true;
+	}
+	return false;
+}
+
+bool UCStatusComponent::IsFriendly()
+{
+	return bIsFriendly;
+}
+
+void UCStatusComponent::StackFriendShip(float StackAmount)
+{
+	float NewFriendShip = CurrentFriendship + StackAmount;
+	NewFriendShip = FMath::Clamp(NewFriendShip, 0.0f, MaxFriendShip);
+	BroadcastUpdateFriendShip(NewFriendShip);
 }
 
 
@@ -149,9 +187,9 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 
 bool UCStatusComponent::CheckHPCoefChanged()
 {
-	if (CoefChanged == true )
+	if (bCoefChanged == true )
 	{
-		CoefChanged = false;
+		bCoefChanged = false;
 		return true;
 	}
 	return false;
@@ -166,7 +204,7 @@ void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
 	if (DamagedHealthCoef != NewDamagedHealthCoef)
 	{
 		DamagedHealthCoef = NewDamagedHealthCoef;
-		CoefChanged = true;
+		bCoefChanged = true;
 	}
 	
 
@@ -188,4 +226,19 @@ void UCStatusComponent::BroadcastUpdateStamina_Implementation(float NewStamina)
 {
 	CurrentStamina = NewStamina;
 	OnStaminaUpdated.Broadcast(CurrentStamina / MaxStamina);
+}
+
+void UCStatusComponent::BroadcastUpdateFriendShip_Implementation(float NewFriendShip)
+{
+	CurrentFriendship = NewFriendShip;
+	/*if (OwnerCharacter->HasAuthority()) 
+	{*/
+		if (CurrentFriendship >= MaxFriendShip)
+		{
+			bIsFriendly = true;
+			OnBecameFriendly.Broadcast();
+		}
+	//}
+	OnFriendShipUpdated.Broadcast(CurrentStamina / MaxStamina);
+
 }

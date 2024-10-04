@@ -10,14 +10,21 @@
 UENUM(BlueprintType)
 enum class EAIStateType : uint8
 {
-	Wait, Approach, Action, Roam, Hitted, Avoid, Dead, Starve,Max
+	Wait, Approach, Action, Roam, Hitted, Avoid, Dead, Exhaust,Max
+};
+
+UENUM(BlueprintType)
+enum class EAIReputationType : uint8
+{
+	Hostile, Neutral, Friendly,Max
 };
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAIStateTypeChanged, EAIStateType, InPrevType, EAIStateType, InNewType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAIReputationTypeChanged, EAIReputationType, InPrevType, EAIReputationType, InNewType);
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PROJECTSURVIVAL_API UCEnemyAIComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -32,6 +39,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Key")
 		FName AIStateTypeKey = "AIState";
 	UPROPERTY(EditAnywhere, Category = "Key")
+		FName AIReputationTypeKey = "AIReputation";
+	UPROPERTY(EditAnywhere, Category = "Key")
 		FName TargetKey = "Target";
 	UPROPERTY(EditAnywhere, Category = "Key")
 		FName RoamLocationKey = "Roam_Location";
@@ -40,12 +49,16 @@ public:
 	class  ACharacter* GetTarget();
 	FVector GetRoamingLocation();
 	void    SetRoamingLocation(const FVector& InLocation);
-	void    ChangeType(EAIStateType InType);
+	void    ChangeAIStateType(EAIStateType InType);
+	void    ChangeAIReputationType(EAIReputationType InType);
+
 private:
-	EAIStateType  GetType();
-	
+	EAIStateType  GetAIStateType();
+	EAIReputationType GetAIReputationType();
 
 public:
+
+	//AIState
 	bool IsWaitMode();
 	bool IsApproachMode();
 	bool IsActionMode();
@@ -53,8 +66,15 @@ public:
 	bool IsHittedMode();
 	bool IsAvoidMode();
 	bool IsDeadMode();
-	bool IsStarveMode();
+	bool IsExhaustMode();
+
+	//AIReputation
+	bool IsHostileMode();
+	bool IsNeutralMode();
+	bool IsFriendlyMode();
+
 public:
+	//AIState
 	void SetWaitMode();
 	void SetApproachMode();
 	void SetActionMode();
@@ -62,12 +82,16 @@ public:
 	void SetHittedMode();
 	void SetAvoidMode();
 	void SetDeadMode();
-	void SetStarveMode();
+	void SetExhaustMode();
 
+	//AIReputation
+	void SetHostileMode();
+	void SetNeutralMode();
+	void SetFriendlyMode();
 
 public: 
 	FAIStateTypeChanged OnAIStateTypeChanged;
-
+	FAIReputationTypeChanged OnAIReputationTypeChanged;
 private:
 	class UBlackboardComponent* Blackboard; 
 

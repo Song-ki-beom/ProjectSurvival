@@ -45,30 +45,48 @@ EBTNodeResult::Type UCBTTaskNode_Encounter::ExecuteTask(UBehaviorTreeComponent& 
 
     OwnerEnemy->SetActorRotation(TargetRot);
 
-    OwnerEnemy->DoEncounter();
+    const float MontageDuration = OwnerEnemy->DoEncounter();
 
-    return EBTNodeResult::InProgress;
+    if (MontageDuration > 0.0f)
+    {
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle_RetriggerableDelay, this, &UCBTTaskNode_Encounter::OnMontageFinished, MontageDuration, false);
+        return EBTNodeResult::InProgress;
+    }
+    return EBTNodeResult::Failed;
+
 }
+
+
+
 
 
 
 EBTNodeResult::Type UCBTTaskNode_Encounter::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-
-    return EBTNodeResult::Succeeded;
+    return EBTNodeResult::Failed;
 }
 
 
-void UCBTTaskNode_Encounter::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+//void UCBTTaskNode_Encounter::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+//{
+//    Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+//    bool bHasEncountered = OwnerComp.GetBlackboardComponent()->GetValueAsBool(EncounterKey.SelectedKeyName);
+//
+//    if (bHasEncountered)
+//    {
+//        CDebug::Print(TEXT("Encounter Ended"));
+//        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //FinishLatentTask : ExecuteTask 에 대해서 InProgress 인 작업을 지연 종료 시킴  
+//        return;
+//    }
+//
+//}
+
+void UCBTTaskNode_Encounter::OnMontageFinished()
 {
-    Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-    bool bHasEncountered = OwnerComp.GetBlackboardComponent()->GetValueAsBool(EncounterKey.SelectedKeyName);
-
-    if (bHasEncountered)
+    // 타이머가 종료되면 Task 완료
+    if (Controller)
     {
-        CDebug::Print(TEXT("Encounter Ended"));
-        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //FinishLatentTask : ExecuteTask 에 대해서 InProgress 인 작업을 지연 종료 시킴  
-        return;
+        UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(Controller->BrainComponent);
+        FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);
     }
-
 }

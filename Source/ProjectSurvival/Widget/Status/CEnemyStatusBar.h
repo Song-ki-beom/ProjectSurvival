@@ -18,6 +18,7 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;
 	void InitializeEnemyCharacter(ACharacter* InCharacter);
+	void UpdateHealthColor(FLinearColor InColor);
 
 private:
 	UFUNCTION()

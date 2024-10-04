@@ -36,7 +36,7 @@
 ACEnemy::ACEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	bReplicates = true; //리플리케이트 설정 
+	bReplicates = true; 
 	SetReplicates(true);
 	Tags.Add(FName("Enemy"));
 
@@ -57,12 +57,14 @@ ACEnemy::ACEnemy()
 	//Component Setting & Replicate
 	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("StatusComponent"));
 	StatusComponent->SetIsReplicated(true);
+	StatusComponent->OnBecameFriendly.AddDynamic(this, &ACEnemy::OnBecameFriendlyHandler);
 
 	MovingComponent = CreateDefaultSubobject<UCMovingComponent>(TEXT("MoveComponent"));
 	MovingComponent->SetIsReplicated(true);
 	
-	AIComponent = CreateDefaultSubobject<UCEnemyAIComponent>(TEXT("AIComponent"));
-	AIComponent->SetIsReplicated(true);
+	EnemyAIComponent = CreateDefaultSubobject<UCEnemyAIComponent>(TEXT("EnemyAIComponent"));
+	EnemyAIComponent->SetIsReplicated(true);
+	
 
 	StateComponent = CreateDefaultSubobject<UCStateComponent>(TEXT("StateComponent"));
 	StateComponent->SetIsReplicated(true);
@@ -90,7 +92,6 @@ ACEnemy::ACEnemy()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxCollision->SetupAttachment(RootComponent);
-	//GetMesh()->SetupAttachment(BoxCollision);
 	// 박스 크기 설정
 	BoxCollision->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
 
@@ -197,6 +198,24 @@ void ACEnemy::BeginPlay()
 		EnemyStatusBar->InitializeEnemyCharacter(this);
 	}
 
+	if (MovingComponent == nullptr)
+	{
+		CDebug::Print(TEXT("MovingComponent is missing in BeginPlay"));
+	}
+	else
+	{
+		CDebug::Print(TEXT("MovingComponent is valid in BeginPlay"));
+	}
+
+
+	if (EnemyAIComponent == nullptr)
+	{
+		CDebug::Print(TEXT("EnemyAIComponent is missing in BeginPlay"));
+	}
+	else
+	{
+		CDebug::Print(TEXT("EnemyAIComponent is valid in BeginPlay"));
+	}
 }
 
 void ACEnemy::Tick(float DeltaTime)
@@ -241,10 +260,12 @@ void ACEnemy::Tick(float DeltaTime)
 			HPBarWidgetComponent->SetWorldRotation(LookAtRotation);
 
 
-
+			
 
 		}
 	}
+	if (EnemyAIComponent == nullptr)
+		CDebug::Print(TEXT("EnemyAIComponent Missing"));
 }
 
 float ACEnemy::DoAction()
@@ -345,13 +366,14 @@ void ACEnemy::End_DoAction()
 	MovingComponent->DisableControlRotation();
 }
 
-void ACEnemy::DoEncounter()
+float ACEnemy::DoEncounter()
 {
 	if (HasAuthority())
 	{
 		BroadcastDoSpecialAction(ESpecialState::Encounter);
+		return MontageComponent->GetMontageDelay();
 	}
-
+	return -1;
 }
 
 void ACEnemy::PerformDoSpecialAction(ESpecialState SpecialState)
@@ -456,7 +478,6 @@ void ACEnemy::ApplyHitData()
 	if (HitDataTable != nullptr)
 	{
 		CDebug::Print(TEXT("Hit Start"));
-		FString HitActorName = FString("_Bear");
 		FName CompleteHitID = FName(*(DamageData.HitID.ToString()) + HitActorName);
 		HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Bear"));
 		if (HitData && HitData->Montage)
@@ -546,7 +567,26 @@ void ACEnemy::DestroyEnemy()
 void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)
 {
 
+}
 
+void ACEnemy::OnBecameFriendlyHandler()
+{
+	if (EnemyAIComponent&& StatusComponent)
+	{
+		BroadcastUpdateHealthBar(FLinearColor::Green);
+		//StatusComponent->
+		EnemyAIComponent->ChangeAIStateType(EAIStateType::Wait);
+		EnemyAIComponent->ChangeAIReputationType(EAIReputationType::Friendly);
+	}
+}
+
+void ACEnemy::BroadcastUpdateHealthBar_Implementation(FLinearColor InColor)
+{
+	UCEnemyStatusBar* EnemyStatusBar = Cast<UCEnemyStatusBar>(HPBarWidgetComponent->GetWidget());
+	if (EnemyStatusBar)
+	{
+		EnemyStatusBar->UpdateHealthColor(FLinearColor::Green);
+	}
 }
 
 void ACEnemy::RotateMeshToSlope(float InDeltaTime)
@@ -709,6 +749,7 @@ void ACEnemy::CreateDropItem()
 void ACEnemy::EatFood(ACPickUp* TargetPickUp)
 {
 	StatusComponent->RecoverHunger(TargetPickUp->ItemReference->ItemStats.DamageValue);
+	StatusComponent->StackFriendShip(TargetPickUp->ItemReference->ItemStats.DamageValue*5);
 	TargetPickUp->Destroy();
 }
 
