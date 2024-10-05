@@ -1,7 +1,29 @@
 #include "Widget/Map/CRespawnLocation.h"
+#include "Widget/Map/CWorldMap.h"
 #include "Build/CStructure_Placeable.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/PanelWidget.h"
+#include "CGameInstance.h"
+#include "Utility/CDebug.h"
+
+void UCRespawnLocation::NativeDestruct()
+{
+	Super::NativeDestruct();
+}
+
+bool UCRespawnLocation::Initialize()
+{
+	bool Sucess = Super::Initialize();
+
+	if (!Sucess)
+		return false;
+
+	if (!IsValid(RespawnLocationButton)) { CDebug::Print("RespawnLocationButton is invalid"); return false; }
+	RespawnLocationButton->OnClicked.AddDynamic(this, &UCRespawnLocation::OnClickRespawnLocationButton);
+
+	return true;
+}
 
 void UCRespawnLocation::SetOwnerActor(class AActor* InActor)
 {
@@ -43,3 +65,12 @@ void UCRespawnLocation::SetRespawnLoctionName(const FText& InText)
 	RespawnLoctionName->SetText(InText);
 }
 
+void UCRespawnLocation::OnClickRespawnLocationButton()
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		gameInstance->WorldMap->SetRespawnButtonStyleToNormal();
+		gameInstance->WorldMap->SetRespawnButtonStyle(RespawnLocationButton);
+	}
+}

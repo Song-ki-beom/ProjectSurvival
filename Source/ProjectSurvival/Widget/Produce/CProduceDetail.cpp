@@ -75,12 +75,12 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 		{
 			if (recipeWidget->CheckProduceable())
 			{
-				CDebug::Print("Enough Resource");
+				//CDebug::Print("Enough Resource");
 				checkNumber++;
 			}
 			else
 			{
-				CDebug::Print("Not Enough Resource");
+				//CDebug::Print("Not Enough Resource");
 				break;
 			}
 		}
@@ -100,8 +100,8 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 				if (survivor)
 				{
 					UCInventoryComponent* inventoryComponent = survivor->GetInventoryComponent();
-					if (inventoryComponent)
-						CDebug::Print("InventoryComponent is valid", FColor::Magenta);
+					//if (inventoryComponent)
+					//	CDebug::Print("InventoryComponent is valid", FColor::Magenta);
 
 					TArray<TWeakObjectPtr<UCItemBase>> itemArray = inventoryComponent->GetInventoryContents();
 
@@ -112,7 +112,7 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 					{
 						if (UCItemBase* itemBase = itemBasePtr.Get())
 						{
-							CDebug::Print("itemBase is valid", FColor::Magenta);
+							//CDebug::Print("itemBase is valid", FColor::Magenta);
 							if (itemBase->ID == recipeWidget->GetResourceID())
 							{
 								if (usedQuantity == 0)
@@ -159,8 +159,8 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 		else
 			CDebug::Print("produceWidget : is not valid", FColor::Magenta);
 	}
-	else
-		CDebug::Print("Can't Produce");
+	//else
+	//	CDebug::Print("Can't Produce");
 }
 
 void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeable* InOwner)
@@ -180,12 +180,12 @@ void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeab
 		{
 			if (recipeWidget->CheckProduceable())
 			{
-				CDebug::Print("Enough Resource");
+				//CDebug::Print("Enough Resource");
 				checkNumber++;
 			}
 			else
 			{
-				CDebug::Print("Not Enough Resource");
+				//CDebug::Print("Not Enough Resource");
 				break;
 			}
 		}
@@ -247,6 +247,6 @@ void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeab
 				survivorController->RequestAddProduceItemToQueue(InID, InOwner);
 		}
 	}
-	else
-		CDebug::Print("Can't Produce");
+	//else
+	//	CDebug::Print("Can't Produce");
 }

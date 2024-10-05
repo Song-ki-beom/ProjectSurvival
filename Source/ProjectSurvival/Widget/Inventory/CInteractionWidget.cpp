@@ -209,7 +209,7 @@ void UCInteractionWidget::ToggleHiddenMenu()
 {
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
-		CDebug::Print("ToggleHiddenMenu", FColor::Magenta);
+		//CDebug::Print("ToggleHiddenMenu", FColor::Magenta);
 
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{

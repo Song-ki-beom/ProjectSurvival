@@ -118,7 +118,7 @@ void ACSurvivorController::SetupInputFunction()
 	}
 	else
 	{
-		CDebug::Print("CSurvivor is not valid");
+		//CDebug::Print("CSurvivor is not valid");
 	}
 }
 

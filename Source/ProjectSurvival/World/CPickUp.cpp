@@ -46,7 +46,6 @@ void ACPickUp::BeginPlay()
 		if (!bTransformTimerUse)
 			GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
 	}
-	CDebug::Print("Replicated Check : ", this->GetIsReplicated());
 }
 
 void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -289,7 +288,7 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 
 void ACPickUp::TakePickup(const ACSurvivor* Taker)
 {
-	CDebug::Print("TakePickup");
+	//CDebug::Print("TakePickup");
 
 	if (!IsPendingKillPending()) //픽업 아이템이 Destroy 되고 있는지 체크 
 	{

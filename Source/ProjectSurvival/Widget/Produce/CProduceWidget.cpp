@@ -49,7 +49,7 @@ void UCProduceWidget::NativeConstruct()
 	}
 	case EWidgetCall::Placeable:
 	{
-		CDebug::Print("Ignite Button Brush Saved");
+		//CDebug::Print("Ignite Button Brush Saved");
 		RefreshProduceDetail();
 		break;
 	}

@@ -27,10 +27,18 @@ public:
 	void CreateRespawnLocationOnWorldMap(class AActor* InActor);
 	void RefreshRespawnLocationOnWorldMap();
 
+	void Test();
+	TArray<TWeakObjectPtr<UCRespawnLocation>> GetRespawnLocationPtrArray() { return RespawnLocationPtrArray; }
+
 	TWeakObjectPtr<UCPlayerLocation> GetPlayerLocationPtr() { return PlayerLocationPtr; }
 
 	void HideSurvivorLocationOnWorldMap(uint32 NetGUIDValue);
 	void ShowSurvivorLocationOnWorldMap(uint32 NetGUIDValue);
+
+	//TArray<class UButton*> GetRespawnButtonArray() { return RespawnButtonArray; }
+	//TMap<class AActor*, class UButton*> GetRespawnButtonMap() { return RespawnButtonMap; }
+	void SetRespawnButtonStyleToNormal();
+	void SetRespawnButtonStyle(class UButton* InSelectedButton);
 
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
@@ -40,7 +48,9 @@ private:
 		class UCanvasPanel* WorldMapCanvasPanel;
 	UPROPERTY(meta = (BindWidget))
 		class UImage* WorldMap;
-
+	UPROPERTY(meta = (BindWidget))
+		class UButton* GetBrushButton;
+	
 	float WorldMapLevelWidth = 41859.0f;
 	float WorldMapLevelHeight = 39879.0f;
 	FVector2D WorldMapLevelTopLeftLocation = FVector2D(15700.0f, -31483.0f);
@@ -69,5 +79,8 @@ private:
 	bool bIsNameTransmitted = false;
 
 	UPROPERTY()
-		TMap<class AActor*, TWeakObjectPtr<UCRespawnLocation>> RespawnLocationMap;
+		TArray<TWeakObjectPtr<UCRespawnLocation>> RespawnLocationPtrArray;
+
+	FSlateBrush ButtonNormalBrush;
+	FSlateBrush ButtonPressedBrush;
 };

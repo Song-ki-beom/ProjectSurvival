@@ -224,7 +224,7 @@ void UCQuickSlot::ProcessConsumableItemInfo(class UCItemBase* InItem, int32 InIn
 
 void UCQuickSlot::RefreshConsumableQuantity()
 {
-    CDebug::Print("RefreshConsumableQuantity Called", FColor::White);
+    //CDebug::Print("RefreshConsumableQuantity Called", FColor::White);
 
     for (int32 i = 0; i < SizeBoxes.Num(); i++)
     {

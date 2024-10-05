@@ -376,7 +376,7 @@ bool ACSurvivor::RequestSetSurvivorName_Validate(const FText& InText)
 
 void ACSurvivor::UpdateSurvivorNameWidget()
 {
-	CDebug::Print("Update Called");
+	//CDebug::Print("Update Called");
 	if (SurvivorNameWidgetComponent)
 	{
 		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
@@ -385,7 +385,7 @@ void ACSurvivor::UpdateSurvivorNameWidget()
 			if (TextBlock)
 			{
 				TextBlock->SetText(ReplicatedSurvivorName);
-				CDebug::Print("SetText Called");
+				//CDebug::Print("SetText Called");
 			}
 			else
 			{
@@ -586,7 +586,14 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 	}
 
 	SetActorEnableCollision(false);
-	SetActorHiddenInGame(true);
+	
+	Head->SetVisibility(false);
+	Pants->SetVisibility(false);
+	Boots->SetVisibility(false);
+	Accessory->SetVisibility(false);
+	Body->SetVisibility(false);
+	Hands->SetVisibility(false);
+
 	SetActorLocation(GetActorLocation() + FVector(0, 0, 10000.0f));
 }
 

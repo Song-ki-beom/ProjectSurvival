@@ -142,7 +142,7 @@ void ACStructure_Door::CheckUp_DoorFrame()
 
 void ACStructure_Door::DoBuildTypeInteract()
 {
-	CDebug::Print("DoBuildTypeInteract Called");
+	//CDebug::Print("DoBuildTypeInteract Called");
 
 	if (this->HasAuthority())
 	{
@@ -168,7 +168,7 @@ void ACStructure_Door::DoBuildTypeInteract()
 
 void ACStructure_Door::BroadcastOpenDoor_Implementation()
 {
-	CDebug::Print("BroadcastOpenDoor_Implementation Called");
+	//CDebug::Print("BroadcastOpenDoor_Implementation Called");
 	GetWorld()->GetTimerManager().SetTimer(OpenTimerHandle, this, &ACStructure_Door::PerformOpenDoor, 0.025f, true);
 }
 
@@ -187,7 +187,7 @@ void ACStructure_Door::PerformOpenDoor()
 
 		if (FMath::IsNearlyEqual(Angle, 0.4f, 0.01f))
 		{
-			CDebug::Print("PerformOpenDoor Ended");
+			//CDebug::Print("PerformOpenDoor Ended");
 			GetWorld()->GetTimerManager().ClearTimer(OpenTimerHandle);
 			Angle = 0.4f;
 			bIsOpened = true;
@@ -212,7 +212,7 @@ void ACStructure_Door::PerformCloseDoor()
 
 		if (FMath::IsNearlyEqual(Angle, 0.0f, 0.01f))
 		{
-			CDebug::Print("PerformCloseDoor Ended");
+			//CDebug::Print("PerformCloseDoor Ended");
 			GetWorld()->GetTimerManager().ClearTimer(CloseTimerHandle);
 			Angle = 0.0f;
 			bIsOpened = false;

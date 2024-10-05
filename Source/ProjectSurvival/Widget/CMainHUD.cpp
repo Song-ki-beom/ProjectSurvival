@@ -127,7 +127,7 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 	}
 	case EWidgetCall::CloseWidget:
 	{
-		CDebug::Print("CloseWidget Called");
+		//CDebug::Print("CloseWidget Called");
 		if (SurvivorInventoryWidget)
 		{
 			SurvivorInventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
