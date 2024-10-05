@@ -6,7 +6,6 @@
 #include "Enemy/CEnemy.h"
 #include "DrawDebugHelpers.h"
 #include "ActorComponents/CEnemyAIComponent.h"
-#include "Enemy/CEnemyAIController.h"
 #include "NavigationSystem.h"
 
 

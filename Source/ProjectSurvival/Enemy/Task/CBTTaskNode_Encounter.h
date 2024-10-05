@@ -28,8 +28,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 		FBlackboardKeySelector EncounterKey;
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
-		FBlackboardKeySelector EncounterLocation;
-	UPROPERTY(EditAnywhere, Category = "Blackboard")
 		FBlackboardKeySelector TargetKey;
 	class ACEnemyAIController* Controller;
 	class ACEnemy* OwnerEnemy;
