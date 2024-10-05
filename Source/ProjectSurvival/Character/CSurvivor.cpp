@@ -575,12 +575,6 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 		Camera->DetachFromParent();
 		Camera->SetWorldLocation(cameraLocation);
 		Camera->SetWorldRotation(cameraRotation);
-
-
-
-
-
-
 		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);	
 		WorldMapOpacityTimeline.PlayFromStart();
 	}
@@ -700,6 +694,60 @@ void ACSurvivor::BroadcastSetLocation_Implementation(float LocationX, float Loca
 void ACSurvivor::RequestSetLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
 {
 	BroadcastSetLocation(LocationX, LocationY, RotationZ, NetGUIDValue);
+}
+
+void ACSurvivor::BroadcastShowPlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		gameInstance->WorldMap->ShowSurvivorLocationOnWorldMap(InNetworkGUIDValue);
+	}
+}
+
+void ACSurvivor::RequestShowPlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	BroadcastShowPlayerLocation(InNetworkGUIDValue);
+}
+
+
+void ACSurvivor::BroadcastRespawnSurvivor_Implementation(FVector InLocation)
+{
+	if (IsLocallyControlled())
+	{
+		Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+		{
+			mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Visible);
+			mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Visible);
+			GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Visible);
+			GameInstance->MiniMap->SetVisibility(ESlateVisibility::Visible);
+			GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = false;
+			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeGameOnly());
+
+			// 스테이터스 변경하는 내용 추가
+		}
+		else
+			CDebug::Print("mainHUD is not valid");
+	}
+
+	SetActorEnableCollision(true);
+
+	Head->SetVisibility(true);
+	Pants->SetVisibility(true);
+	Boots->SetVisibility(true);
+	Accessory->SetVisibility(true);
+	Body->SetVisibility(true);
+	Hands->SetVisibility(true);
+
+	SetActorLocation(InLocation);
+}
+
+void ACSurvivor::RequestRespawnSurvivor_Implementation(FVector InLocation)
+{
+	BroadcastRespawnSurvivor(InLocation);
 }
 
 void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

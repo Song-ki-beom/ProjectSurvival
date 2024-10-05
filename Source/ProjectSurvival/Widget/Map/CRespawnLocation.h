@@ -35,6 +35,8 @@ private:
 		void OnClickRespawnLocationButton();
 
 private:
+	UPROPERTY()
+		class ACStructure_Placeable* BedActor;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* RespawnLocationButton;
 	UPROPERTY(meta = (BindWidget))

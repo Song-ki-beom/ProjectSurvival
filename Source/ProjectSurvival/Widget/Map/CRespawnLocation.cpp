@@ -32,7 +32,10 @@ void UCRespawnLocation::SetOwnerActor(class AActor* InActor)
 		InActor->OnDestroyed.AddDynamic(this, &UCRespawnLocation::DestroyWidget);
 		class ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(InActor);
 		if (placeableStructure)
+		{
+			BedActor = placeableStructure;
 			placeableStructure->OnTextSet.AddDynamic(this, &UCRespawnLocation::SetRespawnLoctionName);
+		}
 			
 	}
 }
@@ -72,5 +75,13 @@ void UCRespawnLocation::OnClickRespawnLocationButton()
 	{
 		gameInstance->WorldMap->SetRespawnButtonStyleToNormal();
 		gameInstance->WorldMap->SetRespawnButtonStyle(RespawnLocationButton);
+
+		if (UCRespawnConfirm* repawnConfirm = gameInstance->WorldMap->GetRespawnConfirm())
+		{
+			repawnConfirm->SelectRespawnLocation(RespawnLoctionName->GetText(), BedActor->GetActorLocation() + FVector(0,0,50));
+
+			if (repawnConfirm->GetVisibility() == ESlateVisibility::Collapsed)
+				repawnConfirm->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }

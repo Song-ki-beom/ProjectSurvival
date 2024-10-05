@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Widget/Map/CPlayerLocation.h"
 #include "Widget/Map/CRespawnLocation.h"
+#include "Widget/Map/CRespawnConfirm.h"
 #include "CWorldMap.generated.h"
 
 UCLASS()
@@ -40,6 +41,8 @@ public:
 	void SetRespawnButtonStyleToNormal();
 	void SetRespawnButtonStyle(class UButton* InSelectedButton);
 
+	class UCRespawnConfirm* GetRespawnConfirm() { return RespawnConfirm; }
+
 private:
 	void DisableNameTransmit() { bIsNameTransmitted = true; }
 
@@ -61,6 +64,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<UCRespawnLocation> RespawnLocationClass;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<UCRespawnConfirm> RespawnConfirmClass;
+
+	UPROPERTY()
+		class UCRespawnConfirm* RespawnConfirm;
 
 	UPROPERTY()
 		TMap<uint32, TWeakObjectPtr<UCPlayerLocation>> PlayerLocationMap;

@@ -222,6 +222,18 @@ public:
 	UFUNCTION(Server, Reliable)
 		void RequestSetLocation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue);
 
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastShowPlayerLocation(uint32 InNetworkGUIDValue);
+
+	UFUNCTION(Server, Reliable)
+		void RequestShowPlayerLocation(uint32 InNetworkGUIDValue);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastRespawnSurvivor(FVector InLocation);
+
+	UFUNCTION(Server, Reliable)
+		void RequestRespawnSurvivor(FVector InLocation);
+
 	UPROPERTY()
 		class UCChattingBox* ChattingBox;
 };

@@ -35,11 +35,18 @@ void UCWorldMap::NativeConstruct()
 
 	// 이름 보내기 중단 (이미 정해져서 업데이트 필요x)
 	FTimerHandle nameTransmitTimer;
-	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 30.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 60.0f, false);
 
 	// 리스폰 위치 검사
 	//FTimerHandle respawnLocationCheckTimer;
 	//GetWorld()->GetTimerManager().SetTimer(respawnLocationCheckTimer, this, &UCWorldMap::Test, 0.5f, true, 5.0f);
+
+	if (RespawnConfirmClass)
+	{
+		RespawnConfirm = CreateWidget<UCRespawnConfirm>(GetWorld(), RespawnConfirmClass);
+		RespawnConfirm->AddToViewport(7);
+		RespawnConfirm->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UCWorldMap::SetCharacterPosOnWorldMap()
