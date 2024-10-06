@@ -31,6 +31,8 @@ ACStructure_Placeable::ACStructure_Placeable()
 
 	DownBox = CreateDefaultSubobject<UBoxComponent>("DownBox");
 	DownBox->SetupAttachment(PickupMesh);
+
+	this->OnDestroyed.AddDynamic(this, &ACStructure_Placeable::CreatePlaceableRemainBag);
 }
 
 void ACStructure_Placeable::BeginPlay()
@@ -59,6 +61,27 @@ void ACStructure_Placeable::BeginPlay()
 				case EPlaceableStructureType::CampFire:
 					PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
 					break;
+				case EPlaceableStructureType::BackPack:
+				{
+					PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 생존자 가방")));
+
+					switch (BeforePlaceableStructureType)
+					{
+					case EPlaceableStructureType::WorkingBench:
+						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 작업대")));
+						break;
+					case EPlaceableStructureType::Furnace:
+						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 화로")));
+						break;
+					case EPlaceableStructureType::CampFire:
+						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
+						break;
+					//case EPlaceableStructureType::BackPack:
+					//	PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 생존자 가방")));
+					//	break;
+					default:;
+					}
+				}
 				default:
 					break;
 				}
@@ -457,6 +480,12 @@ void ACStructure_Placeable::PerformRemoveItem(int32 idxRemove)
 
 	ItemInfoArray.RemoveAt(idxRemove);
 	AddItemInfoToWidget();
+
+	if (((PlaceableStructureType == EPlaceableStructureType::BackPack) || (PlaceableStructureType == EPlaceableStructureType::RemainBag)) && (ItemInfoArray.Num() == 0))
+	{
+		this->Destroy();
+		ActorInventoryWidget->RemoveFromParent();
+	}
 }
 
 void ACStructure_Placeable::BroadcastRemoveItem_Implementation(int32 idxRemove)
@@ -805,6 +834,64 @@ void ACStructure_Placeable::CheckWoodResource()
 		if (!this->PlaceableProduceWidget->CheckWoodResourceUsed())
 		{
 			BroadcastExtinguish();
+		}
+	}
+}
+
+void ACStructure_Placeable::CreatePlaceableRemainBag(class AActor* InDestroyedActor)
+{
+	if (InDestroyedActor)
+	{
+		if (ActorInventoryWidget)
+			ActorInventoryWidget->RemoveFromParent();
+
+		if (ActorProduceWidget)
+			ActorProduceWidget->RemoveFromParent();
+
+		if (this->HasAuthority() && ActorInventoryContents.Num() > 0)
+		{
+			UClass* remainBagClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_RemainBag.BP_CStructure_RemainBag_C'"));
+
+			if (IsValid(remainBagClass))
+			{
+				FTransform additionaltransform(FVector(0.0f, 0.0f, 0.0f));
+
+				switch (PlaceableStructureType)
+				{
+				case EPlaceableStructureType::WorkingBench:
+				{
+					additionaltransform = FTransform(FVector(0, 0, 35.0f));
+					break;
+				}
+				case EPlaceableStructureType::Furnace:
+				{
+					additionaltransform = FTransform(FVector(0, 0, 35.0f));
+					break;
+				}
+				default:;
+				}
+
+				ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(remainBagClass, this->GetActorTransform() + additionaltransform);
+				buildstructure->BroadcastDestroyPreviewBox();
+				ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+				if (placeableStructure)
+				{
+					UStaticMesh* staticMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("StaticMesh'/Game/PirateIsland/Include/Meshes/Props/Items/SM_Seeds_Cabbage_001.SM_Seeds_Cabbage_001'")));
+					if (staticMesh)
+					{
+						placeableStructure->SetReplicates(true);
+						placeableStructure->BeforePlaceableStructureType = this->PlaceableStructureType;
+
+						for (class UCItemBase* tempItem : this->ActorInventoryContents)
+						{
+							if (tempItem)
+							{
+								placeableStructure->BroadcastAddItem(tempItem->ID, tempItem->Quantity, tempItem->NumericData, tempItem->ItemType, tempItem->ItemStats);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

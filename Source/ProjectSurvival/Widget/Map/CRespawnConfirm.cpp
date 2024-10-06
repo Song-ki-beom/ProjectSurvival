@@ -49,9 +49,11 @@ void UCRespawnConfirm::OnClickConfirmButton()
 				survivor->RequestRespawnSurvivor(SelectedRespawnLocation);
 				survivor->RequestShowPlayerLocation(gameInstance->WorldMap->GetPersonalGUID().Value);
 			}
+
+			gameInstance->WorldMap->SetVisibility(ESlateVisibility::Collapsed);
+			this->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		this->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

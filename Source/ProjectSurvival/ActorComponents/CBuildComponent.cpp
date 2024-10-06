@@ -1269,10 +1269,13 @@ void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform
 		ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
 		if (placeableStructure)
 		{
-			placeableStructure->SetReplicates(true);
-			class UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
-			if (gameInstance)
-				gameInstance->WorldMap->SetActorOnWorldMap(placeableStructure);
+			if (placeableStructure->GetPlaceableStructureType() == EPlaceableStructureType::Bed)
+			{
+				//placeableStructure->SetReplicates(true);
+				class UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+				if (gameInstance)
+					gameInstance->WorldMap->SetActorOnWorldMap(placeableStructure);
+			}
 		}
 		bIsSnapped = false;
 	}
