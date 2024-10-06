@@ -45,6 +45,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastDisableMesh();
 	UFUNCTION(NetMulticast, Reliable)
+	virtual void BroadcastChangeMesh();
+
+	UFUNCTION(NetMulticast, Reliable)
 	void BroadcastUpdateHealthBar(FLinearColor InColor);
 	
 //Damage Interface Override
@@ -100,7 +103,7 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	FString SkeletalMeshPath;
 	FString AnimInstancePath; 
 	FString BBAssetPath;
-	
+	FString FriendlyMeshPath;
 	//Drop
 	int32 DropItemNum;
 	FName DropItemID;
@@ -179,6 +182,8 @@ protected:
 
 	//Destroy
 	FTimerHandle RemoveTimerHandle;
+
+	bool bChangeMesh;
 
 public: //ForceInline Getter & Settter
 

@@ -12,6 +12,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, NewHealthRa
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHungerUpdated, float, NewHungerRatio);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaUpdated, float, NewStaminaRatio);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFriendShipUpdated, float, NewFriendShipRatio);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStarvationDetected,bool , bSetVisible);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExhaustDetected, bool, bSetVisible);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBecameFriendly);
 
 
@@ -26,19 +28,25 @@ class PROJECTSURVIVAL_API UCStatusComponent : public UActorComponent
 
 public:	
 	UCStatusComponent();
+
 	//Health
 	void  ApplyDamage(float InAmount);
 	bool CheckHPCoefChanged();
-	bool IsLowHealth();
+	bool IsFatalHealth();
+	void RecoverHealth(float RecoverAmount);
+
 
 	//Stamina
 	void ReduceStamina(float ReduceAmount);
 	bool CanSpendStamina(float ReduceAmount);
 	void SuspendStaminaRecover();
 	void ProceedStaminaRecover();
+	void ReduceHungerByTime();
+	void RecoverStaminaByTime();
 
 	//Hunger
 	bool IsStarving();
+	void ReduceHunger(float DecreaseAmount);
 	void RecoverHunger(float RecoverAmount);
 
 	//Exhaust : 허기와 피가 둘다 없음 
@@ -47,27 +55,35 @@ public:
 	//FrientShip 
 	bool IsFriendly();
 	void StackFriendShip(float StackAmount);
+
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUpdateHealth(float NewHealth);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUpdateHunger(float NewHunger);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUpdateStamina(float NewStamina);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUpdateFriendShip(float NewFriendShip);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastChangeExhausted();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastCancelExhausted();
+
 	
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void ReduceHungerByTime();
-	void RecoverStaminaByTime();
 	
-	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastUpdateHealth(float NewHealth);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastUpdateHunger(float NewHunger);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastUpdateStamina(float NewStamina);
 	
-	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastUpdateFriendShip(float NewFriendShip);
-
+	
 
 public:
 	FOnHealthUpdated OnHealthUpdated;
@@ -76,10 +92,12 @@ public:
 	FOnFriendShipUpdated OnFriendShipUpdated;
 	FOnLowHealthDetected OnLowHealthDetected;
 	FOnBecameFriendly OnBecameFriendly;
+	FOnStarvationDetected OnStarvationDetected;
+	FOnExhaustDetected OnExhaustDetected;
 	FTimerHandle StaminaRecoverTimerHandle;
 	FTimerHandle HungerReductionTimerHandle;
 	FTimerHandle StarvationTimerHandle;
-
+	
 
 	class ACharacter* OwnerCharacter;
 

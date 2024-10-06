@@ -266,6 +266,31 @@ void ACEnemy::Tick(float DeltaTime)
 	}
 	if (EnemyAIComponent == nullptr)
 		CDebug::Print(TEXT("EnemyAIComponent Missing"));
+
+	if (bChangeMesh)
+	{
+		// 스켈레탈 메쉬 로드 (LoadObject를 통해 FString 경로를 사용)
+		USkeletalMesh* NewMesh = LoadObject<USkeletalMesh>(nullptr, *FriendlyMeshPath);
+
+		if (NewMesh)
+		{
+			// 애니메이션이 실행 중이면 중지
+			if (GetMesh()->IsPlayingRootMotion())
+			{
+				GetMesh()->Stop();
+				return;
+			}
+			if (!GetMesh()->IsPlayingRootMotion())
+			{
+				GetMesh()->SetSkeletalMesh(NewMesh);
+				bChangeMesh = false;
+				//GetMesh()->Play(true);
+
+				CreateDynamicMaterial(); //Mesh 에서 원본 Mesh 색 추출, 인스턴스 머터리얼 생성 
+			}
+				
+		}
+	}
 }
 
 float ACEnemy::DoAction()
@@ -401,6 +426,14 @@ void ACEnemy::BroadcastDisableMesh_Implementation()
 void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ACEnemy::BroadcastChangeMesh_Implementation()
+{
+	
+		bChangeMesh = true;
+	
+	
 }
 
 float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
@@ -571,10 +604,11 @@ void ACEnemy::OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType)
 
 void ACEnemy::OnBecameFriendlyHandler()
 {
-	if (EnemyAIComponent)
+	if (EnemyAIComponent && HasAuthority())
 	{
+		BroadcastChangeMesh();
 		BroadcastUpdateHealthBar(FLinearColor::Green);
-		//StatusComponent->
+		StatusComponent->BroadcastCancelExhausted();
 		EnemyAIComponent->ChangeAIStateType(EAIStateType::Wait);
 		EnemyAIComponent->ChangeAIReputationType(EAIReputationType::Friendly);
 	}

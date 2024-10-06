@@ -26,9 +26,10 @@ void UCBTService_Reputation::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
     ACEnemy* Enemy = Cast<ACEnemy>(controller->GetPawn());
 
     UCEnemyAIComponent* AIComponent = Cast<UCEnemyAIComponent>(Enemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
-
+    UCStatusComponent* statusComponent = Cast<UCStatusComponent>(Enemy->GetComponentByClass(UCStatusComponent::StaticClass()));
     if (AIComponent->IsFriendlyMode())
     {
+        statusComponent->InitializeComponent();
         AIComponent->SetFriendlyMode();
         return;
     }

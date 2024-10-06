@@ -16,13 +16,11 @@ UCStatusComponent::UCStatusComponent()
 
 bool UCStatusComponent::IsStarving()
 {
-	//CDebug::Print("Current Hunger:",CurrentHunger / MaxHunger);
 	return (CurrentHunger / MaxHunger) <= 0;
 }
 
-bool UCStatusComponent::IsLowHealth()
+bool UCStatusComponent::IsFatalHealth()
 {
-	//CDebug::Print("Current Hunger:", CurrentHealth / MaxHealth);
 	return (CurrentHealth / MaxHealth) <= 0.25;
 }
 
@@ -87,34 +85,44 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		
 }
 
-void UCStatusComponent::RecoverHunger(float RecoverAmount)
-{
-	float NewHunger = CurrentHunger + RecoverAmount*5;
-	NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
-	BroadcastUpdateHunger(NewHunger);
 
-}
 
 bool UCStatusComponent::IsExhausted()
 {
 	if (bIsExhausted == true) return true;
 
-	if (IsStarving() && IsLowHealth())
+	if (IsStarving() && IsFatalHealth())
 	{
-		bIsExhausted = true;
+		BroadcastChangeExhausted();
 		return true;
 	}
+	
 	return false;
+}
+
+void UCStatusComponent::BroadcastChangeExhausted_Implementation()
+{
+	OnExhaustDetected.Broadcast(true);
+	bIsExhausted = true;
+}
+
+void UCStatusComponent::BroadcastCancelExhausted_Implementation()
+{
+	if (bIsExhausted)
+		bIsExhausted = false;
 }
 
 bool UCStatusComponent::IsFriendly()
 {
+	
 	return bIsFriendly;
+
 }
+
 
 void UCStatusComponent::StackFriendShip(float StackAmount)
 {
-	float NewFriendShip = CurrentFriendship + StackAmount;
+	float NewFriendShip = CurrentFriendship + StackAmount*2;
 	NewFriendShip = FMath::Clamp(NewFriendShip, 0.0f, MaxFriendShip);
 	BroadcastUpdateFriendShip(NewFriendShip);
 }
@@ -129,6 +137,33 @@ void UCStatusComponent::ReduceHungerByTime()
 		NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
 		BroadcastUpdateHunger(NewHunger);
 	}
+
+}
+
+void UCStatusComponent::ReduceHunger(float DecreaseAmount)
+{
+	if (CurrentHunger > 0)
+	{
+		float NewHunger = CurrentHunger - DecreaseAmount;
+		NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
+		BroadcastUpdateHunger(NewHunger);
+	}
+
+}
+
+void UCStatusComponent::RecoverHunger(float RecoverAmount)
+{
+	float NewHunger = CurrentHunger + RecoverAmount;
+	NewHunger = FMath::Clamp(NewHunger, 0.0f, MaxHunger);
+	BroadcastUpdateHunger(NewHunger);
+
+}
+
+void UCStatusComponent::RecoverHealth(float RecoverAmount)
+{
+	float NewHealth = CurrentHealth + RecoverAmount;
+	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHunger);
+	BroadcastUpdateHealth(NewHealth);
 
 }
 
@@ -182,7 +217,6 @@ void UCStatusComponent::ApplyDamage(float InAmount)
 	NewHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
 	BroadcastUpdateHealth(NewHealth);
 	
-	
 }
 
 bool UCStatusComponent::CheckHPCoefChanged()
@@ -218,6 +252,9 @@ void UCStatusComponent::BroadcastUpdateHealth_Implementation(float NewHealth)
 void UCStatusComponent::BroadcastUpdateHunger_Implementation(float NewHunger)
 {
 	CurrentHunger = NewHunger;
+	if ((!bIsExhausted) && (CurrentHunger / MaxHunger <= 0))
+		OnStarvationDetected.Broadcast(true);
+
 	OnHungerUpdated.Broadcast(CurrentHunger / MaxHunger);
 };
 
@@ -231,14 +268,18 @@ void UCStatusComponent::BroadcastUpdateStamina_Implementation(float NewStamina)
 void UCStatusComponent::BroadcastUpdateFriendShip_Implementation(float NewFriendShip)
 {
 	CurrentFriendship = NewFriendShip;
-	if (OwnerCharacter->HasAuthority()) 
-	{
+	
 		if (CurrentFriendship >= MaxFriendShip)
 		{
+			if (OwnerCharacter->HasAuthority())
+			{
+			RecoverHunger(MaxHunger);
+			RecoverHealth(MaxHealth);
+			}
 			bIsFriendly = true;
 			OnBecameFriendly.Broadcast();
 		}
-	}
-	OnFriendShipUpdated.Broadcast(CurrentStamina / MaxStamina);
+	
+	OnFriendShipUpdated.Broadcast(CurrentFriendship / MaxFriendShip);
 
 }

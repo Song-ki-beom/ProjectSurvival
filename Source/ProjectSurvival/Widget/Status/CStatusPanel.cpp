@@ -23,8 +23,7 @@ void UCStatusPanel::NativeConstruct()
 	StatusComponent->OnHealthUpdated.AddDynamic(this, &UCStatusPanel::UpdateHealthProgressBar);
 	StatusComponent->OnHungerUpdated.AddDynamic(this, &UCStatusPanel::UpdateHungerProgressBar);
 	StatusComponent->OnStaminaUpdated.AddDynamic(this, &UCStatusPanel::UpdateStaminaProgressBar);
-
-
+	
 	InventoryComponent = Cast<UCInventoryComponent>(OwnerCharacter->GetComponentByClass(UCInventoryComponent::StaticClass()));
 	InventoryComponent->OnInventoryUpdated.AddUObject(this, &UCStatusPanel::UpdateWeightProgressBar);
 

@@ -30,7 +30,7 @@ bool UCBTD_IsFoodAround::CalculateRawConditionValue(UBehaviorTreeComponent& Owne
 
 
 
-	float SphereRadius = 500.0f; // 탐색 반지름 설정
+	float SphereRadius = 700.0f; // 탐색 반지름 설정
 
 	FVector TraceStart = ControlledPawn->GetActorLocation();
 

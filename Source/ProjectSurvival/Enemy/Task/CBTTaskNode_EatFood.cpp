@@ -47,7 +47,7 @@ EBTNodeResult::Type UCBTTaskNode_EatFood::ExecuteTask(UBehaviorTreeComponent& Ow
             MontageComponent->BindFoodMontageEnded();
             if(!MontageComponent->OnFoodMontageNotifyEnd.IsBound())
                 MontageComponent->OnFoodMontageNotifyEnd.AddDynamic(this, &UCBTTaskNode_EatFood::OnEatFoodMontageEnded);
-            AnimInstance->Montage_Play(EatFoodMontage , 1.5f);
+            MontageComponent->BroadcastMontage_Play(EatFoodMontage , 1.5f);
         }
     }
 
@@ -76,7 +76,6 @@ void UCBTTaskNode_EatFood::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 void UCBTTaskNode_EatFood::OnEatFoodMontageEnded()
 {
-
     Enemy->EatFood(TargetPickUp);
     bIsMontageEnded = true;
 
