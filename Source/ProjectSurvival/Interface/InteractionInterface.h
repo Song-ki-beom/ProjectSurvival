@@ -31,6 +31,7 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 		Quantity(0),
 		InteractionDuration(0.0f),
 		ID(""),
+		bIsCantPickUp(false),
 		bIsDoorOpened(false)
 		{
 		
@@ -58,6 +59,9 @@ struct FInteractableData // 상호작용되는 액터 or Object에 대한 정보
 
 	UPROPERTY(EditInstanceOnly)
 	bool bIsDropMesh;
+
+	UPROPERTY(EditInstanceOnly)
+	bool bIsCantPickUp;
 
 	UPROPERTY(EditInstanceOnly)
 	bool bIsDoorOpened;
