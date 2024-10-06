@@ -31,7 +31,9 @@
 #include "Widget/Map/CWorldMap.h"
 #include "Widget/Map/CMiniMap.h"
 #include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Widget/Status/CStatusPanel.h"
+#include "Build/CStructure_Placeable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/CSurvivorController.h"
@@ -577,6 +579,78 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 		Camera->SetWorldRotation(cameraRotation);
 		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);	
 		WorldMapOpacityTimeline.PlayFromStart();
+	}
+
+	if (this->HasAuthority())
+	{
+		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0)
+		{
+			CDebug::Print("InventoryContents Found and Create BackPack At Server", FColor::Green);
+
+			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
+
+			if (IsValid(backPackClass))
+			{
+				this->GetBuildComponent()->PerformCreateBackPack(backPackClass, this->GetActorTransform());
+
+				//if (buildstructure)
+				//{
+				//	ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+				//	if (placeableStructure)
+				//	{
+				//		//placeableStructure->SetReplicates(true);
+				//
+				//		for (TWeakObjectPtr<UCItemBase> tempPtr : this->GetInventoryComponent()->GetInventoryContents())
+				//		{
+				//			if (tempPtr.IsValid())
+				//			{
+				//				placeableStructure->BroadcastAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+				//				this->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
+				//			}
+				//		}
+				//	}
+				//}
+			}
+			else
+				CDebug::Print("InClass Is Not Valid In Server", FColor::Green);
+		}
+		else
+			CDebug::Print("InventoryContents is Empty In Server", FColor::Green);
+	}
+	else
+	{
+		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0)
+		{
+			CDebug::Print("InventoryContents Found and Create BackPack In Client", FColor::Red);
+
+			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
+			
+			if (IsValid(backPackClass))
+			{
+				this->GetBuildComponent()->RequestCreateBackPack(backPackClass, this->GetActorTransform());
+
+			//	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(backPackClass, this->GetActorTransform());
+			//	buildstructure->BroadcastDestroyPreviewBox();
+			//	ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+			//	if (placeableStructure)
+			//	{
+			//		placeableStructure->SetReplicates(true);
+			//
+			//		for (TWeakObjectPtr<UCItemBase> tempPtr : this->GetInventoryComponent()->GetInventoryContents())
+			//		{
+			//			if (tempPtr.IsValid())
+			//			{
+			//				placeableStructure->BroadcastAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+			//				this->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
+			//			}
+			//		}
+			//	}
+			}
+			else
+				CDebug::Print("InClass Is Not Valid In Client", FColor::Red);
+		}
+		else
+			CDebug::Print("InventoryContents is Empty In Client", FColor::Red);
 	}
 
 	SetActorEnableCollision(false);

@@ -186,6 +186,8 @@ void UCInteractionWidget::ShowHiddenMenu()
 
 void UCInteractionWidget::HideHiddenMenu()
 {
+	CDebug::Print("Hide Hidden Menu Called");
+
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Visible && !bIsDropMesh)
@@ -194,6 +196,10 @@ void UCInteractionWidget::HideHiddenMenu()
 		ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(DefaultButtonStyle);
 		ExtraButtonArray[ExtraButtonFoucsIndex]->OnClicked.Broadcast();
 		ExtraButtonFoucsIndex = 0;
+		}
+		if (MoreInfoBox->GetVisibility() == ESlateVisibility::Visible)
+		{
+			MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 	else
@@ -207,28 +213,44 @@ void UCInteractionWidget::HideHiddenMenu()
 
 void UCInteractionWidget::ToggleHiddenMenu()
 {
+	CDebug::Print("ToggleHiddenMenu Called", FColor::Magenta);
+
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
-		//CDebug::Print("ToggleHiddenMenu", FColor::Magenta);
+		if (bIsCantPickUp)
+		{
 
-		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
-		{
-		ExtraOptionBox->SetVisibility(ESlateVisibility::Visible);
-		ExtraButtonFoucsIndex = 0;
-		FButtonStyle HoveredStyle = ExtraButtonArray[ExtraButtonFoucsIndex]->WidgetStyle;
-		HoveredStyle.Normal = HoveredStyle.Hovered;
-		ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(HoveredStyle);
+			if (MoreInfoBox->GetVisibility() == ESlateVisibility::Collapsed)
+			{
+				MoreInfoBox->SetVisibility(ESlateVisibility::Visible);
+			}
+			else if (MoreInfoBox->GetVisibility() == ESlateVisibility::Visible)
+			{
+				MoreInfoBox->SetVisibility(ESlateVisibility::Collapsed);
+			}
 		}
-		else if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Visible)
+		else
 		{
-		ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(DefaultButtonStyle);
-		ExtraButtonArray[ExtraButtonFoucsIndex]->OnClicked.Broadcast();
-		ExtraOptionBox->SetVisibility(ESlateVisibility::Collapsed);
-		ExtraButtonFoucsIndex = 0;
+			CDebug::Print("bIsCantPickUp FALSE", FColor::Magenta);
+
+			if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
+			{
+				ExtraOptionBox->SetVisibility(ESlateVisibility::Visible);
+				ExtraButtonFoucsIndex = 0;
+				FButtonStyle HoveredStyle = ExtraButtonArray[ExtraButtonFoucsIndex]->WidgetStyle;
+				HoveredStyle.Normal = HoveredStyle.Hovered;
+				ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(HoveredStyle);
+			}
+			else if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Visible)
+			{
+				ExtraButtonArray[ExtraButtonFoucsIndex]->SetStyle(DefaultButtonStyle);
+				ExtraButtonArray[ExtraButtonFoucsIndex]->OnClicked.Broadcast();
+				ExtraOptionBox->SetVisibility(ESlateVisibility::Collapsed);
+				ExtraButtonFoucsIndex = 0;
+			}
 		}
 
 	}
-
 	else
 	{
 		if (MoreInfoBox->GetVisibility() == ESlateVisibility::Collapsed)

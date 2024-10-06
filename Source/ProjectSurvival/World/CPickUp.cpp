@@ -281,23 +281,18 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 			{
 				if (InstanceInteractableData.bIsCantPickUp)
 				{
-
-				}
-
-				if (InstanceInteractableData.bIsDropMesh)
-				{
-					
-					{
-						OpenActorInventory(PlayerCharacter, this);
-					}
-					else
-					{
-						TakePickup(PlayerCharacter);
-					}
+					OpenActorInventory(PlayerCharacter, this);
 				}
 				else
 				{
-					OpenActorInventory(PlayerCharacter, this);
+					if (InstanceInteractableData.bIsDropMesh)
+					{
+						TakePickup(PlayerCharacter);
+					}
+					else
+					{
+						OpenActorInventory(PlayerCharacter, this);
+					}
 				}
 			}
 		}

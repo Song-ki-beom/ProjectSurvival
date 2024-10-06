@@ -11,6 +11,8 @@ class PROJECTSURVIVAL_API UCBuildComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+friend class ACSurvivor;
+
 public:	
 	UCBuildComponent();
 
@@ -51,6 +53,14 @@ private:
 	void PerformBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform);
 	UFUNCTION(Server, Reliable, WithValidation)
 		void RequestBuild(TSubclassOf<ACStructure> InClass, FTransform InTransform);
+
+	void PerformCreateBackPack(TSubclassOf<ACStructure> InClass, FTransform InTransform);
+
+	UFUNCTION(Server, Reliable)
+		void RequestCreateBackPack(TSubclassOf<ACStructure> InClass, FTransform InTransform);
+
+	UFUNCTION(Client, Reliable)
+		void ReceiveSpawnedActor(class ACStructure_Placeable* SpawnedActor);
 
 private:
 	class ACSurvivor* Survivor;
