@@ -298,6 +298,8 @@ void UCBuildComponent::BroadcastRegisterOnWorldMap_Implementation(class AActor* 
 			gameInstance->WorldMap->CreateRespawnLocationOnWorldMap(InActor);
 		}
 	}
+	else
+		CDebug::Print("InActor is Valid At BuildComponent 291Line", FColor::Purple);
 }
 
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)

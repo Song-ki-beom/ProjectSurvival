@@ -313,54 +313,81 @@ void UCInventorySubMenu::HandleBuildRegisterButton()
 
 void UCInventorySubMenu::SelectQ()
 {
+    if (SelectedStructureKey == ESelectedStructure::Q)
+        return;
+
     SetButtonStyle(Button_Q);
     SelectedStructureKey = ESelectedStructure::Q;
 }
 
 void UCInventorySubMenu::SelectW()
 {
+    if (SelectedStructureKey == ESelectedStructure::W)
+        return;
+
     SetButtonStyle(Button_W);
     SelectedStructureKey = ESelectedStructure::W;
 }
 
 void UCInventorySubMenu::SelectE()
 {
+    if (SelectedStructureKey == ESelectedStructure::E)
+        return;
+
     SetButtonStyle(Button_E);
     SelectedStructureKey = ESelectedStructure::E;
 }
 
 void UCInventorySubMenu::SelectA()
 {
+    if (SelectedStructureKey == ESelectedStructure::A)
+        return;
+
     SetButtonStyle(Button_A);
     SelectedStructureKey = ESelectedStructure::A;
 }
 
 void UCInventorySubMenu::SelectS()
 {
+    if (SelectedStructureKey == ESelectedStructure::S)
+        return;
+
     SetButtonStyle(Button_S);
     SelectedStructureKey = ESelectedStructure::S;
 }
 
 void UCInventorySubMenu::SelectD()
 {
+    if (SelectedStructureKey == ESelectedStructure::D)
+        return;
+
     SetButtonStyle(Button_D);
     SelectedStructureKey = ESelectedStructure::D;
 }
 
 void UCInventorySubMenu::SelectZ()
 {
+    if (SelectedStructureKey == ESelectedStructure::Z)
+        return;
+
     SetButtonStyle(Button_Z);
     SelectedStructureKey = ESelectedStructure::Z;
 }
 
 void UCInventorySubMenu::SelectX()
 {
+    if (SelectedStructureKey == ESelectedStructure::X)
+        return;
+
     SetButtonStyle(Button_X);
     SelectedStructureKey = ESelectedStructure::X;
 }
 
 void UCInventorySubMenu::SelectC()
 {
+    if (SelectedStructureKey == ESelectedStructure::C)
+        return;
+
     SetButtonStyle(Button_C);
     SelectedStructureKey = ESelectedStructure::C;
 }
@@ -369,12 +396,18 @@ void UCInventorySubMenu::SetButtonStyle(class UButton* InSelectedButton)
 {
     for (UButton* button : BuildButtons)
     {
-        FButtonStyle style = button->WidgetStyle;
-        style.Normal = ButtonNormalBrush;
-        button->SetStyle(style);
+        if (IsValid(button))
+        {
+            FButtonStyle style = button->WidgetStyle;
+            if (style.Normal == ButtonNormalBrush)
+                continue;
+
+            style.Normal = ButtonNormalBrush;
+            button->SetStyle(style);
+        }
     }
 
-    if (InSelectedButton)
+    if (IsValid(InSelectedButton))
     {
         FButtonStyle selectedStyle = InSelectedButton->WidgetStyle;
         selectedStyle.Normal = ButtonPressedBrush;

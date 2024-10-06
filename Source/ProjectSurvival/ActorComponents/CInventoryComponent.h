@@ -42,7 +42,7 @@ struct FItemAddResult
 		FItemAddResult AddedNoneResult;
 		AddedNoneResult.ActualAmountAdded = 0;
 		AddedNoneResult.OperationResult = EItemAddResult::NoItemAdded;
-		AddedNoneResult.ResultMessage = Message;
+		//AddedNoneResult.ResultMessage = Message;
 		return AddedNoneResult;
 	};
 
@@ -51,7 +51,7 @@ struct FItemAddResult
 		FItemAddResult AddedPartialResult;
 		AddedPartialResult.ActualAmountAdded = PartialAmountAdded;
 		AddedPartialResult.OperationResult = EItemAddResult::PartialItemAdded;
-		AddedPartialResult.ResultMessage = Message;
+		//AddedPartialResult.ResultMessage = Message;
 		return AddedPartialResult;
 	};
 	static FItemAddResult AddedAll(const int32 AllAmountAdded, const FText& Message)
@@ -59,7 +59,7 @@ struct FItemAddResult
 		FItemAddResult AddedAllResult;
 		AddedAllResult.ActualAmountAdded = AllAmountAdded;
 		AddedAllResult.OperationResult = EItemAddResult::AllItemAdded;
-		AddedAllResult.ResultMessage = Message;
+		//AddedAllResult.ResultMessage = Message;
 		return AddedAllResult;
 	};
 

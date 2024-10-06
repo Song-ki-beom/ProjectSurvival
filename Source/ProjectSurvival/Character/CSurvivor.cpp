@@ -30,11 +30,12 @@
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/Map/CWorldMap.h"
 #include "Widget/Map/CMiniMap.h"
+#include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Status/CStatusPanel.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/CSurvivorController.h"
 #include "GameFramework/PlayerState.h"
-#include "Widget/Map/CWorldMap.h"
 #include "EngineUtils.h"
 #include "Engine/PackageMapClient.h"
 
@@ -164,12 +165,26 @@ void ACSurvivor::BeginPlay()
 
 	FTimerHandle nameTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(nameTimerHandle, this, &ACSurvivor::SetSurvivorNameVisibility, 0.5f, true);
+
+	if (WorldMapOpacityTimelineCurve)
+	{
+		FOnTimelineFloat WorldMapCallback;
+
+		WorldMapCallback.BindUFunction(this, FName("SetWorldMapOpacity"));
+
+		WorldMapOpacityTimeline.AddInterpFloat(WorldMapOpacityTimelineCurve, WorldMapCallback);
+		WorldMapOpacityTimeline.SetTimelineLength(WorldMapOpacityTimelineLength);
+	}
 }
 
 void ACSurvivor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (WorldMapOpacityTimeline.IsPlaying())
+	{
+		WorldMapOpacityTimeline.TickTimeline(DeltaTime);
+	}
 }
 
 void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -317,13 +332,75 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 
 }
 
-void ACSurvivor::BroadCastApplyHitData_Implementation(FDamageData InDamageData)
+void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 {
-	if (!HasAuthority())
+	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+}
+
+void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
+{
+	PerformDoSpecialAction(SpecialState);
+
+	if (IsLocallyControlled())
 	{
-		DamageData = InDamageData;
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+		{
+			mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Hidden);
+			mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Hidden);
+			GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Hidden);
+			GameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
+			GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = true;
+			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+		}
+		else
+			CDebug::Print("mainHUD is not valid");
 	}
-	ApplyHitData();
+}
+
+void ACSurvivor::PerformSetSurvivorName(const FText& InText)
+{
+	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
+	UpdateSurvivorNameWidget();
+}
+
+void ACSurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
+{
+	PerformSetSurvivorName(InText);
+}
+
+bool ACSurvivor::RequestSetSurvivorName_Validate(const FText& InText)
+{
+	return true;
+}
+
+void ACSurvivor::UpdateSurvivorNameWidget()
+{
+	//CDebug::Print("Update Called");
+	if (SurvivorNameWidgetComponent)
+	{
+		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
+		{
+			UTextBlock* TextBlock = Cast<UTextBlock>(SurvivorNameWidgetComponent->GetUserWidgetObject()->GetWidgetFromName(TEXT("SurvivorName")));
+			if (TextBlock)
+			{
+				TextBlock->SetText(ReplicatedSurvivorName);
+				//CDebug::Print("SetText Called");
+			}
+			else
+			{
+				CDebug::Print("TextBlock is not valid");
+			}
+		}
+		else
+		{
+			CDebug::Print("UserWidgetObject is not valid");
+		}
+	}
+	else
+	{
+		CDebug::Print("SurvivorNameWidgetComponent is not valid");
+	}
 }
 
 void ACSurvivor::ApplyHitData()
@@ -338,7 +415,7 @@ void ACSurvivor::ApplyHitData()
 	{
 		FString HitActorName = FString("_Survivor");
 		FName CompleteHitID = FName(*(DamageData.HitID.ToString()) + HitActorName);
-			HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Survivor"));
+		HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Survivor"));
 		if (HitData && HitData->Montage)
 		{
 			MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate);
@@ -351,21 +428,42 @@ void ACSurvivor::ApplyHitData()
 			APlayerController* PlayerController = Cast<APlayerController>(GetController());
 			HitData->PlayCameraShake(PlayerController, 1.0f);
 		}
-		
+
 
 		if (!StatusComponent->IsDead())
 		{
 			FVector start = GetActorLocation();
-			UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);  
+			UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
 			AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());
 			FVector target = targetActor->GetActorLocation();
 			FVector direction = target - start;
 			direction = direction.GetSafeNormal();
-			LaunchCharacter(-direction*HitData->Launch, false, false);
+			LaunchCharacter(-direction * HitData->Launch, false, false);
 		}
 		if (StatusComponent->IsDead())
 		{
 			StateComponent->ChangeType(EStateType::Dead);
+
+			UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+			if (gameInstance)
+			{
+				if (NetDriver && NetDriver->GuidCache)
+				{
+					FNetworkGUID deadSurvivorGUID = NetDriver->GuidCache->GetOrAssignNetGUID(this);
+					if (deadSurvivorGUID.IsValid())
+					{
+						if (this->HasAuthority())
+						{
+							BroadcastHidePlayerLocation(deadSurvivorGUID.Value);
+						}
+						else
+						{
+							RequestHidePlayerLocation(deadSurvivorGUID.Value);
+						}
+					}
+				}
+			}
+
 			Die();
 			return;
 		}
@@ -375,15 +473,22 @@ void ACSurvivor::ApplyHitData()
 		DamageData.HitID = "";
 
 	}
-	
+
+}
+
+void ACSurvivor::BroadCastApplyHitData_Implementation(FDamageData InDamageData)
+{
+	if (!HasAuthority())
+	{
+		DamageData = InDamageData;
+	}
+	ApplyHitData();
 }
 
 void ACSurvivor::Die()
 {
-	if (IsLocallyControlled())
-			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
-
-	BroadcastDoSpecialAction(ESpecialState::Dead);
+	if (this->HasAuthority())
+		BroadcastDoSpecialAction(ESpecialState::Dead);
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACSurvivor::RemoveCharacter, 2.0f, false);
@@ -395,16 +500,6 @@ void ACSurvivor::RemoveCharacter()
 		BroadcastRemoveSurvivor();
 	else
 		RequestRemoveSurvivor();
-}
-
-void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
-{
-	PerformDoSpecialAction(SpecialState);
-}
-
-void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
-{
-	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
 }
 
 void ACSurvivor::SetSurvivorNameVisibility()
@@ -473,13 +568,26 @@ void ACSurvivor::SetSurvivorNameVisibility()
 
 void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 {
-	SetActorHiddenInGame(true);
-	FVector cameraLocation = Camera->GetComponentLocation();
-	FRotator cameraRotation = Camera->GetComponentRotation();
-	Camera->DetachFromParent();
-	Camera->SetWorldLocation(cameraLocation);
-	Camera->SetWorldRotation(cameraRotation);
-	GetCharacterMovement()->GravityScale = 0.0f;
+	if (IsLocallyControlled())
+	{
+		FVector cameraLocation = Camera->GetComponentLocation();
+		FRotator cameraRotation = Camera->GetComponentRotation();
+		Camera->DetachFromParent();
+		Camera->SetWorldLocation(cameraLocation);
+		Camera->SetWorldRotation(cameraRotation);
+		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);	
+		WorldMapOpacityTimeline.PlayFromStart();
+	}
+
+	SetActorEnableCollision(false);
+	
+	Head->SetVisibility(false);
+	Pants->SetVisibility(false);
+	Boots->SetVisibility(false);
+	Accessory->SetVisibility(false);
+	Body->SetVisibility(false);
+	Hands->SetVisibility(false);
+
 	SetActorLocation(GetActorLocation() + FVector(0, 0, 10000.0f));
 }
 
@@ -488,50 +596,27 @@ void ACSurvivor::RequestRemoveSurvivor_Implementation()
 	BroadcastRemoveSurvivor();
 }
 
-void ACSurvivor::PerformSetSurvivorName(const FText& InText)
+void ACSurvivor::BroadcastHidePlayerLocation_Implementation(uint32 InNetworkGUIDValue)
 {
-	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
-	UpdateSurvivorNameWidget();
-}
-
-void ACSurvivor::RequestSetSurvivorName_Implementation(const FText& InText)
-{
-	PerformSetSurvivorName(InText);
-}
-
-bool ACSurvivor::RequestSetSurvivorName_Validate(const FText& InText)
-{
-	return true;
-}
-
-void ACSurvivor::UpdateSurvivorNameWidget()
-{
-	CDebug::Print("Update Called");
-	if (SurvivorNameWidgetComponent)
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		if (SurvivorNameWidgetComponent->GetUserWidgetObject())
-		{
-			UTextBlock* TextBlock = Cast<UTextBlock>(SurvivorNameWidgetComponent->GetUserWidgetObject()->GetWidgetFromName(TEXT("SurvivorName")));
-			if (TextBlock)
-			{
-				TextBlock->SetText(ReplicatedSurvivorName);
-				CDebug::Print("SetText Called");
-			}
-			else
-			{
-				CDebug::Print("TextBlock is not valid");
-			}
-		}
-		else
-		{
-			CDebug::Print("UserWidgetObject is not valid");
-		}
+		gameInstance->WorldMap->HideSurvivorLocationOnWorldMap(InNetworkGUIDValue);
 	}
-	else
-	{
-		CDebug::Print("SurvivorNameWidgetComponent is not valid");
-	}
+}
 
+void ACSurvivor::RequestHidePlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	BroadcastHidePlayerLocation(InNetworkGUIDValue);
+}
+
+void ACSurvivor::SetWorldMapOpacity(float Value)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		gameInstance->WorldMap->SetColorAndOpacity(FLinearColor(1, 1, 1, Value));
+	}
 }
 
 void ACSurvivor::OnRep_ReplicatedSurvivorName()
@@ -609,6 +694,60 @@ void ACSurvivor::BroadcastSetLocation_Implementation(float LocationX, float Loca
 void ACSurvivor::RequestSetLocation_Implementation(float LocationX, float LocationY, float RotationZ, uint32 NetGUIDValue)
 {
 	BroadcastSetLocation(LocationX, LocationY, RotationZ, NetGUIDValue);
+}
+
+void ACSurvivor::BroadcastShowPlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		gameInstance->WorldMap->ShowSurvivorLocationOnWorldMap(InNetworkGUIDValue);
+	}
+}
+
+void ACSurvivor::RequestShowPlayerLocation_Implementation(uint32 InNetworkGUIDValue)
+{
+	BroadcastShowPlayerLocation(InNetworkGUIDValue);
+}
+
+
+void ACSurvivor::BroadcastRespawnSurvivor_Implementation(FVector InLocation)
+{
+	if (IsLocallyControlled())
+	{
+		Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+		{
+			mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Visible);
+			mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Visible);
+			GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Visible);
+			GameInstance->MiniMap->SetVisibility(ESlateVisibility::Visible);
+			GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = false;
+			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeGameOnly());
+
+			// 스테이터스 변경하는 내용 추가
+		}
+		else
+			CDebug::Print("mainHUD is not valid");
+	}
+
+	SetActorEnableCollision(true);
+
+	Head->SetVisibility(true);
+	Pants->SetVisibility(true);
+	Boots->SetVisibility(true);
+	Accessory->SetVisibility(true);
+	Body->SetVisibility(true);
+	Hands->SetVisibility(true);
+
+	SetActorLocation(InLocation);
+}
+
+void ACSurvivor::RequestRespawnSurvivor_Implementation(FVector InLocation)
+{
+	BroadcastRespawnSurvivor(InLocation);
 }
 
 void ACSurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

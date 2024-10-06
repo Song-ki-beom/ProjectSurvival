@@ -111,15 +111,6 @@ void ACStructure_Placeable::BeginPlay()
 		}
 		break;
 	}
-
-	if (this->HasAuthority())
-	{
-		CDebug::Print("HasAuthority", FColor::Green);
-	}
-	else
-	{
-		CDebug::Print("No HasAuthority", FColor::Red);
-	}
 }
 
 void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)

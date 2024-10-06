@@ -131,6 +131,8 @@ public:
 		FText BuildInteractText;
 	UPROPERTY(EditAnywhere)
 		EInteractableBuildType InteractableBuildType;
+	UPROPERTY(EditAnywhere)
+		bool bIsCantPickUp;
 	UPROPERTY()
 		bool bIsDoorOpened = false;
 };

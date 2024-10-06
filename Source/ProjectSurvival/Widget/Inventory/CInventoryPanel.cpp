@@ -65,7 +65,7 @@ void UCInventoryPanel::SetInfoText()
                 quickSlotWeight += tempItemSlot->GetItemReference()->GetItemSingleWeight();
         }
 
-        CDebug::Print("weight : ", quickSlotWeight, FColor::Magenta);
+        //CDebug::Print("weight : ", quickSlotWeight, FColor::Magenta);
     }
 
     WeightInfo->SetText(FText::FromString(FString::SanitizeFloat(InventoryReference->GetInventoryTotalWeight() + quickSlotWeight) + "/" + FString::SanitizeFloat(InventoryReference->GetWeightCapacity())));

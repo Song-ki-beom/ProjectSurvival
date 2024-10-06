@@ -2,6 +2,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/Button.h"
 #include "ActorComponents/CBuildComponent.h"
 #include "Character/CSurvivorController.h"
 #include "Character/CSurvivor.h"
@@ -25,17 +26,27 @@ void UCWorldMap::NativeConstruct()
 		}
 	}
 
+	ButtonNormalBrush = GetBrushButton->WidgetStyle.Normal;
+	ButtonPressedBrush = GetBrushButton->WidgetStyle.Pressed;
+
 	// 위치정보 보내기
 	FTimerHandle worldMapUpdateTimer;
 	GetWorld()->GetTimerManager().SetTimer(worldMapUpdateTimer, this, &UCWorldMap::SetCharacterPosOnWorldMap, 0.025f, true, 3.0f);
 
 	// 이름 보내기 중단 (이미 정해져서 업데이트 필요x)
 	FTimerHandle nameTransmitTimer;
-	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 30.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(nameTransmitTimer, this, &UCWorldMap::DisableNameTransmit, 60.0f, false);
 
 	// 리스폰 위치 검사
-	FTimerHandle respawnLocationCheckTimer;
-	GetWorld()->GetTimerManager().SetTimer(respawnLocationCheckTimer, this, &UCWorldMap::RefreshRespawnLocationOnWorldMap, 0.5f, true, 5.0f);
+	//FTimerHandle respawnLocationCheckTimer;
+	//GetWorld()->GetTimerManager().SetTimer(respawnLocationCheckTimer, this, &UCWorldMap::Test, 0.5f, true, 5.0f);
+
+	if (RespawnConfirmClass)
+	{
+		RespawnConfirm = CreateWidget<UCRespawnConfirm>(GetWorld(), RespawnConfirmClass);
+		RespawnConfirm->AddToViewport(7);
+		RespawnConfirm->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UCWorldMap::SetCharacterPosOnWorldMap()
@@ -149,7 +160,7 @@ void UCWorldMap::CreateSurvivorLocationOnWorldMap(const FText& InText, uint32 Ne
 					canvasSlot->SetPosition(FVector2D(370.0f, 50.0f));
 				}
 
-				CDebug::Print("Added On Canvas Panel");
+				//CDebug::Print("Added On Canvas Panel");
 			}
 			else
 			{
@@ -179,10 +190,15 @@ void UCWorldMap::RefreshSurvivorLocationOnWorldMap(float LocationX, float Locati
 
 void UCWorldMap::SetActorOnWorldMap(class AActor* InActor)
 {
+	CDebug::Print("SetActorOnWorldMap Called", FColor::White);
 	if (InActor)
 	{
-		PersonalSurvivor->GetBuildComponent()->BroadcastRegisterOnWorldMap(InActor);
+		CDebug::Print("InActor Is Valid");
+		if (PersonalSurvivor->HasAuthority())
+			PersonalSurvivor->GetBuildComponent()->BroadcastRegisterOnWorldMap(InActor);
 	}
+	else
+		CDebug::Print("InActor Is Not Valid", FColor::Silver);
 }
 
 void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
@@ -191,6 +207,8 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 
 	if (InActor)
 	{
+		CDebug::Print("CreateRespawnLocationOnWorldMap Called", FColor::Red);
+
 		float actorLocationX = InActor->GetActorLocation().X;
 		float actorLocationY = InActor->GetActorLocation().Y;
 
@@ -206,7 +224,7 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 			UCRespawnLocation* newRespawnLocation = CreateWidget<UCRespawnLocation>(GetWorld(), RespawnLocationClass);
 
 			// 맵에 추가
-			RespawnLocationMap.Add(InActor, TWeakObjectPtr<UCRespawnLocation>(newRespawnLocation));
+			//RespawnLocationMap.Add(InActor, TWeakObjectPtr<UCRespawnLocation>(newRespawnLocation));
 
 			// 방금 추가한 객체를 바로 캐시
 			UCRespawnLocation* addedRespawnLocation = newRespawnLocation;
@@ -214,6 +232,8 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 			// 위젯이 유효하면 WorldMapCanvasPanel에 추가
 			if (addedRespawnLocation)
 			{
+				CDebug::Print("addedRespawnLocation is Valid", FColor::Red);
+
 				WorldMapCanvasPanel->AddChild(addedRespawnLocation);
 
 				UCanvasPanelSlot* canvasSlot = Cast<UCanvasPanelSlot>(addedRespawnLocation->Slot);
@@ -223,44 +243,121 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 				}
 				addedRespawnLocation->SetOwnerActor(InActor);
 				addedRespawnLocation->SetRespawnLocationOnWorldMap(translationX, translationY);
+
+				//RespawnButtonArray.Add(addedRespawnLocation->GetRespawnButton());
+				//
+				//for (class UButton* tempButton : RespawnButtonArray)
+				//{
+				//	if (IsValid(tempButton))
+				//	{
+				//		CDebug::Print("Button Is Valid : ", tempButton, FColor::Cyan);
+				//	}
+				//	else
+				//		CDebug::Print("Button Is Not Valid", FColor::Cyan);
+				//}
+
+				RespawnLocationPtrArray.Add(addedRespawnLocation);
+
+
+
+				CDebug::Print("Array Num : ", RespawnLocationPtrArray.Num(), FColor::Cyan);
 			}
+			else
+				CDebug::Print("addedRespawnLocation is Not Valid", FColor::Red);
 		}
 	}
+	else
+		CDebug::Print("InActor Is Not Valid At WorldMap", FColor::Red);
 }
 
 void UCWorldMap::RefreshRespawnLocationOnWorldMap()
 {
-	//// 유효하지 않은 키들을 따로 저장하기 위한 배열
-	//TArray<AActor*> InvalidKeys;
+	//TArray<TWeakObjectPtr<UCRespawnLocation>> tempArray = RespawnLocationPtrArray;
 
-	//// 맵을 순회하며 nullptr 키를 찾음
-	//for (const TPair<AActor*, TWeakObjectPtr<UCRespawnLocation>>& Elem : RespawnLocationMap)
-	//{
-	//	AActor* Key = Elem.Key;
 
-	//	// 키가 nullptr인 경우
-	//	if (Key == nullptr)
-	//	{
-	//		// 해당 값이 유효한지 확인
-	//		if (Elem.Value.IsValid())
-	//		{
-	//			// 값을 얻어와 파괴 (MarkPendingKill 호출)
-	//			UCRespawnLocation* RespawnLocation = Elem.Value.Get();
-	//			if (RespawnLocation)
-	//			{
-	//				RespawnLocation->RemoveFromParent();  // 위젯을 UI에서 제거 (필요한 경우)
-	//				RespawnLocation->MarkPendingKill();   // UObject 파괴
-	//			}
-	//		}
 
-	//		// 유효하지 않은 키를 배열에 저장
-	//		InvalidKeys.Add(Key);
-	//	}
-	//}
-
-	//// 유효하지 않은 키들을 맵에서 제거
-	//for (AActor* InvalidKey : InvalidKeys)
-	//{
-	//	RespawnLocationMap.Remove(InvalidKey);
-	//}
+	
 }
+
+void UCWorldMap::Test()
+{
+	CDebug::Print("Array Num : ", RespawnLocationPtrArray.Num(), FColor::Cyan);
+}
+
+void UCWorldMap::HideSurvivorLocationOnWorldMap(uint32 NetGUIDValue)
+{
+	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
+
+	if (playerLocationPtr && playerLocationPtr->IsValid())
+	{
+		UCPlayerLocation* playerLocation = playerLocationPtr->Get();
+		if (playerLocation)
+		{
+			playerLocation->HidePlayerLocation();
+		}
+	}
+}
+
+void UCWorldMap::ShowSurvivorLocationOnWorldMap(uint32 NetGUIDValue)
+{
+	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
+
+	if (playerLocationPtr && playerLocationPtr->IsValid())
+	{
+		UCPlayerLocation* playerLocation = playerLocationPtr->Get();
+		if (playerLocation)
+		{
+			playerLocation->ShowPlayerLocation();
+		}
+	}
+}
+
+void UCWorldMap::SetRespawnButtonStyleToNormal()
+{
+	for (int32 i = RespawnLocationPtrArray.Num() - 1; i >= 0; --i)
+	{
+		if (RespawnLocationPtrArray[i].IsValid())
+		{
+			FButtonStyle style = RespawnLocationPtrArray[i].Get()->GetRespawnButton()->WidgetStyle;
+			if (style.Normal == ButtonNormalBrush)
+			{
+				continue;
+			}
+
+			style.Normal = ButtonNormalBrush;
+			style.Hovered = ButtonNormalBrush;
+			RespawnLocationPtrArray[i].Get()->GetRespawnButton()->SetStyle(style);
+		}
+	}
+}
+
+void UCWorldMap::SetRespawnButtonStyle(UButton* InSelectedButton)
+{
+	for (int32 i = RespawnLocationPtrArray.Num() - 1; i >= 0; --i)
+	{
+		if (IsValid(InSelectedButton))
+		{
+			FButtonStyle selectedStyle = InSelectedButton->WidgetStyle;
+			selectedStyle.Normal = ButtonPressedBrush;
+			selectedStyle.Hovered = ButtonPressedBrush;
+			InSelectedButton->SetStyle(selectedStyle);
+		}
+	}
+}
+
+
+
+//for (UButton* button : BuildButtons)
+//{
+//	if (IsValid(button))
+//	{
+//		FButtonStyle style = button->WidgetStyle;
+//		if (style.Normal == ButtonNormalBrush)
+//			continue;
+//
+//		style.Normal = ButtonNormalBrush;
+//		button->SetStyle(style);
+//	}
+//}
+//
+

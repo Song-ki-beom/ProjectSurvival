@@ -38,6 +38,8 @@ class PROJECTSURVIVAL_API ACStructure_Placeable : public ACStructure
 {
 	GENERATED_BODY()
 
+friend class ACPickUp;
+
 public:
 	ACStructure_Placeable();
 

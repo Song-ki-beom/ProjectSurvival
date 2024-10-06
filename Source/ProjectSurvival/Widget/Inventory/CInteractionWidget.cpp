@@ -209,7 +209,7 @@ void UCInteractionWidget::ToggleHiddenMenu()
 {
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
-		CDebug::Print("ToggleHiddenMenu", FColor::Magenta);
+		//CDebug::Print("ToggleHiddenMenu", FColor::Magenta);
 
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 		{
@@ -260,6 +260,7 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 
 	NameText->SetText(InteractableData->Name); // 아이템 이름 
 	bIsDropMesh = InteractableData->bIsDropMesh;
+	bIsCantPickUp = InteractableData->bIsCantPickUp;
 	bIsDoorOpened = InteractableData->bIsDoorOpened;
 	ActionText->SetText(InteractableData->Action); //상호작용 Text
 	InteractType = InteractableData->InteractableType;
@@ -277,7 +278,14 @@ void UCInteractionWidget::UpdateWidget(const struct FInteractableData* Interacta
 	case EInteractableType::Container:
 		if (bIsDropMesh)
 		{
-			ActionText->SetText(FText::FromString(TEXT("줍기"))); //상호작용 Text
+			if (bIsCantPickUp)
+			{
+				ActionText->SetText(FText::FromString(TEXT("인벤토리"))); //상호작용 Text
+			}
+			else
+			{
+				ActionText->SetText(FText::FromString(TEXT("줍기"))); //상호작용 Text
+			}
 		}
 		else
 		{

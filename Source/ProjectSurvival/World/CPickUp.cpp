@@ -46,7 +46,6 @@ void ACPickUp::BeginPlay()
 		if (!bTransformTimerUse)
 			GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
 	}
-	CDebug::Print("Replicated Check : ", this->GetIsReplicated());
 }
 
 void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -248,6 +247,7 @@ void ACPickUp::UpdateInteractableData()
 	InstanceInteractableData.Quantity = ItemReference->Quantity;
 	InstanceInteractableData.ID = ItemReference->ID;
 	InstanceInteractableData.bIsDropMesh = ItemReference->bIsDropMesh; //DropMesh(주머니) 일때 참조 bool 
+	InstanceInteractableData.bIsCantPickUp = ItemReference->BuildData.bIsCantPickUp;
 	InstanceInteractableData.bIsDoorOpened = ItemReference->BuildData.bIsDoorOpened;
 	InteractableData = InstanceInteractableData; // InteractableData 는 인터페이스에서 선언된 FInteractableData
 }
@@ -278,7 +278,28 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 			if (bIsLongPressed)
 				TakePickup(PlayerCharacter);
 			else
-				OpenActorInventory(PlayerCharacter, this);
+			{
+				if (InstanceInteractableData.bIsCantPickUp)
+				{
+
+				}
+
+				if (InstanceInteractableData.bIsDropMesh)
+				{
+					
+					{
+						OpenActorInventory(PlayerCharacter, this);
+					}
+					else
+					{
+						TakePickup(PlayerCharacter);
+					}
+				}
+				else
+				{
+					OpenActorInventory(PlayerCharacter, this);
+				}
+			}
 		}
 		else
 		{
@@ -289,7 +310,7 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 
 void ACPickUp::TakePickup(const ACSurvivor* Taker)
 {
-	CDebug::Print("TakePickup");
+	//CDebug::Print("TakePickup");
 
 	if (!IsPendingKillPending()) //픽업 아이템이 Destroy 되고 있는지 체크 
 	{
@@ -346,7 +367,7 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 
 void ACPickUp::OpenActorInventory(const ACSurvivor* Survivor, class AActor* Actor)
 {
-	// Container 클래스 자체에서 함수내용 구현
+	// 하위 클래스 자체에서 함수내용 구현
 }
 
 void ACPickUp::DoBuildTypeInteract()

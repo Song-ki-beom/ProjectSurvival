@@ -61,6 +61,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
 		bool  bIsDropMesh; // 아이템이 주머니(DropMesh) 상태 인지
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
+		bool  bIsCantPickUp; // 줍기 가능한 상태인지
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category = "Interaction widget | Interactable Data")
 		bool  bIsDoorOpened; // 열린상태인지
 
 	//상호작용에 쓰이는 변수들 
