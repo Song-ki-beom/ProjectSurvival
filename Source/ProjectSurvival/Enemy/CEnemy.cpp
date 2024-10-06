@@ -127,7 +127,7 @@ ACEnemy::ACEnemy()
 
 void ACEnemy::BeginPlay()
 {
-	
+	HPBarWidgetComponent->SetCastShadow(false); //명암 효과 x 
 
 	Super::BeginPlay();
 	NetDriver = GetWorld()->GetNetDriver();
@@ -222,7 +222,7 @@ void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//RotateMeshToSlope(DeltaTime);
-	
+
 	if (IsValid(GetWorld()) && GetWorld()->IsClient())  // 클라이언트에서만 실행
 	{
 		if (IsValid(HPBarWidgetComponent) && HPBarWidgetComponent->IsVisible())
