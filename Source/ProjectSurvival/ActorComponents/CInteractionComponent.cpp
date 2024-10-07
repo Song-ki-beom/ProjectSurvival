@@ -108,7 +108,10 @@ void UCInteractionComponent::FinishInteract()
 			if (ElapsedTime < 0.25f && ElapsedTime >= 0) //0.25 초 내의 짧은 E 키 Released 면 
 				BeginInteract();
 			else
+			{
+				HUD->HideHiddenMenu();
 				EndInteract();
+			}
 		}
 
 	}

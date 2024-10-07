@@ -243,7 +243,7 @@ void UCQuickSlot::RefreshConsumableQuantity()
                     quantity += itemBase.Get()->Quantity;
             }
             CDebug::Print("total Quantity : ", quantity, FColor::White);
-            //tempItemSlot->GetItemReference()->SetQuantity(quantity);
+            tempItemSlot->GetItemReference()->SetQuantity(quantity);
             tempItemSlot->SetItemQuantityText(quantity);
         }
     }

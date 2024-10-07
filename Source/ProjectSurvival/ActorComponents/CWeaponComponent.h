@@ -10,7 +10,7 @@
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	Axe, Max,
+	StonePick, StoneAxe, WoodClub, WoodSpear, Bow, IronPick, IronAxe, IronSpear, IronPolearm, CrossBow, Axe, Max,
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponTypeChanged, EWeaponType, InPrevType, EWeaponType, InNewType);
@@ -50,8 +50,8 @@ public:
 	void DestroyWeapon();
 
 
-private:
 	void SetMode(EWeaponType InNewType);
+private:
 	void SetModeReplicate();
 	void ChangeType(EWeaponType InType);
 	UFUNCTION(Server, Reliable)

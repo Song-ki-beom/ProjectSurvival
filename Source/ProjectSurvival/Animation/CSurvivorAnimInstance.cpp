@@ -37,6 +37,7 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Speed = UKismetMathLibrary::FInterpTo(Speed, OwnerCharacter->GetVelocity().Size2D(), DeltaSeconds, 25);
 
 		FRotator characterRotation = OwnerCharacter->GetActorRotation();
+		Rotation = characterRotation;
 		FVector worldVelocity = OwnerCharacter->GetMovementComponent()->Velocity;
 		FVector localVelocity = characterRotation.UnrotateVector(worldVelocity);
 		Direction = CalculateDirection(localVelocity, FRotator(0, 0, 0));
@@ -47,13 +48,7 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UCSurvivorAnimInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UCSurvivorAnimInstance, WeaponType);
 
-
-}
 
 
 void UCSurvivorAnimInstance::OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType)
@@ -65,5 +60,11 @@ void UCSurvivorAnimInstance::OnRep_WeaponTypeChanged()
 {
 	CDebug::Print(TEXT("On AnimInstance WeaponType Changed"));
 
+}
+
+void UCSurvivorAnimInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UCSurvivorAnimInstance, WeaponType);
 }
 

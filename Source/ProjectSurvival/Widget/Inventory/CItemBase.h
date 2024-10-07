@@ -97,6 +97,8 @@ public:
 		FItemAssetData AssetData;
 	UPROPERTY(EditAnywhere, Category = "Item")
 		FBuildData BuildData;
+	UPROPERTY(EditAnywhere, Category = "Item")
+		FHuntData HuntData;
 
 	bool bIsCopy;
 	bool bIsPickup;

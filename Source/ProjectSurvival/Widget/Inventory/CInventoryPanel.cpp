@@ -47,7 +47,6 @@ void UCInventoryPanel::NativeConstruct()
 void UCInventoryPanel::RemoveItem(UCItemBase* ItemToRemove)
 {
     InventoryReference->RemoveSingleItem(ItemToRemove);
-
 }
 
 //인벤토리로부터 수량과 용량 정보 업데이트 

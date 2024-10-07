@@ -20,7 +20,6 @@ public:
 	class UCBuildWidget* GetBuildWidget() { return BuildWidget; }
 	void SetupBuildWidget();
 
-
 private:
 	// Init
 	void GetSurvivor();
@@ -59,16 +58,7 @@ private:
 	void ToggleWorldMap();
 
 	//QuickSlot
-	void PressQuickSlot1();
-	void PressQuickSlot2();
-	void PressQuickSlot3();
-	void PressQuickSlot4();
-	void PressQuickSlot5();
-	void PressQuickSlot6();
-	void PressQuickSlot7();
-	void PressQuickSlot8();
-	void PressQuickSlot9();
-	void PressQuickSlot10();
+	void PressQuickSlot(FKey InPressedKey);
 
 	//BuildInteract
 	void ShowBuildInteractWidget();

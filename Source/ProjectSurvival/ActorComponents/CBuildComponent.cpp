@@ -1269,15 +1269,20 @@ void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform
 		ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
 		if (placeableStructure)
 		{
-			placeableStructure->SetReplicates(true);
-			class UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
-			if (gameInstance)
-				gameInstance->WorldMap->SetActorOnWorldMap(placeableStructure);
+			if (placeableStructure->GetPlaceableStructureType() == EPlaceableStructureType::Bed)
+			{
+				//placeableStructure->SetReplicates(true);
+				class UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+				if (gameInstance)
+					gameInstance->WorldMap->SetActorOnWorldMap(placeableStructure);
+			}
 		}
 		bIsSnapped = false;
 	}
 	else
+	{
 		CDebug::Print("InClass Is Not Valid");
+	}
 }
 
 void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InClass, FTransform InTransform)
@@ -1296,6 +1301,54 @@ void UCBuildComponent::RequestBuild_Implementation(TSubclassOf<ACStructure> InCl
 bool UCBuildComponent::RequestBuild_Validate(TSubclassOf<ACStructure> InClass, FTransform InTransform)
 {
 	return true;
+}
+
+void UCBuildComponent::PerformCreateBackPack(TSubclassOf<ACStructure> InClass, FTransform InTransform)
+{
+	if (IsValid(InClass))
+	{
+		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, InTransform);
+		buildstructure->BroadcastDestroyPreviewBox();
+		ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+		if (placeableStructure)
+		{
+			placeableStructure->SetReplicates(true);
+			ReceiveSpawnedActor(placeableStructure);
+		}
+	}
+	else
+	{
+		CDebug::Print("InClass Is Not Valid");
+	}
+}
+
+void UCBuildComponent::RequestCreateBackPack_Implementation(TSubclassOf<ACStructure> InClass, FTransform InTransform)
+{
+	if (IsValid(InClass))
+	{
+		PerformCreateBackPack(InClass, InTransform);
+	}
+}
+
+void UCBuildComponent::ReceiveSpawnedActor_Implementation(class ACStructure_Placeable* SpawnedActor)
+{
+	if (SpawnedActor)
+	{
+		CDebug::Print("Clinet Function Called And Spawnd Actor Is Valid : ", SpawnedActor);
+
+		for (TWeakObjectPtr<UCItemBase> tempPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+		{
+			if (tempPtr.IsValid())
+			{
+				ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwner()->GetInstigatorController());
+				if (survivorController)
+				{
+					survivorController->RequestAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, SpawnedActor, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+					Survivor->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
+				}
+			}
+		}
+	}
 }
 
 void UCBuildComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTextSet, const FText&, InText);
 UENUM()
 enum class EPlaceableStructureType : uint8
 {
-	WorkingBench, Furnace, CampFire, None
+	WorkingBench, Furnace, CampFire, Bed, BackPack, RemainBag, None
 };
 
 USTRUCT()
@@ -150,10 +150,17 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastSetRespawnLocationName(const FText& InText);
 
+	
+
+
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
 	bool CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex);
 	void CheckWoodResource();
+
+	//Create Placeable Remain Bag
+	UFUNCTION()
+		void CreatePlaceableRemainBag(class AActor* InDestroyedActor);
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -167,6 +174,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		EPlaceableStructureType PlaceableStructureType;
+
+	UPROPERTY()
+		EPlaceableStructureType BeforePlaceableStructureType;
 
 	UPROPERTY(EditAnywhere)
 		EWidgetCall WidgetCaller;

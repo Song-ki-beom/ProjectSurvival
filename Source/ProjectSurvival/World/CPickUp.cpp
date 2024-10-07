@@ -127,6 +127,7 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			ItemReference->AssetData = ItemData->AssetData;
 			ItemReference->ItemStats = ItemData->ItemStats;
 			ItemReference->BuildData = ItemData->BuildData;
+			ItemReference->HuntData = ItemData->HuntData;
 
 			if (InQuantity <= 0) //0보다 작으면 
 			{
@@ -281,23 +282,18 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 			{
 				if (InstanceInteractableData.bIsCantPickUp)
 				{
-
-				}
-
-				if (InstanceInteractableData.bIsDropMesh)
-				{
-					
-					/*{
-						OpenActorInventory(PlayerCharacter, this);
-					}*/
-					//else
-					{
-						TakePickup(PlayerCharacter);
-					}
+					OpenActorInventory(PlayerCharacter, this);
 				}
 				else
 				{
-					OpenActorInventory(PlayerCharacter, this);
+					if (InstanceInteractableData.bIsDropMesh)
+					{
+						TakePickup(PlayerCharacter);
+					}
+					else
+					{
+						OpenActorInventory(PlayerCharacter, this);
+					}
 				}
 			}
 		}

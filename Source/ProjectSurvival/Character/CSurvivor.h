@@ -58,6 +58,7 @@ public:
 	class UCInteractionComponent* GetInteractionComponent() const {
 		return InteractionComponent;
 	}
+	class UCMontageComponent* GetMontageComponent() { return MontageComponent; }
 
 
 	void SelectStructure(ESelectedStructure InKey, TSubclassOf< ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
@@ -89,6 +90,8 @@ public:
 
 
 	
+	UFUNCTION(Server, Reliable)
+		void RequestDoSpecialAction(ESpecialState SpecialState);
 
 private:
 	//Name  

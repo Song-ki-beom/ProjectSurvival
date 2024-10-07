@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "Net/UnrealNetwork.h"
+#include "ActorComponents/CWeaponComponent.h"
 #include "CItemDataStructures.generated.h"
 
 UENUM()
@@ -138,6 +139,15 @@ public:
 };
 
 USTRUCT()
+struct FHuntData :public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+		EWeaponType WeaponType;
+};
+
+USTRUCT()
 struct FItemData :public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
@@ -158,5 +168,7 @@ public:
 		FProduceWidgetData ProduceData;
 	UPROPERTY(EditAnywhere, Category = "Item Data")
 		FBuildData BuildData;
+	UPROPERTY(EditAnywhere, Category = "Item Data")
+		FHuntData HuntData;
 };
 
