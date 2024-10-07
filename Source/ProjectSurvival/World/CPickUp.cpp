@@ -127,6 +127,7 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			ItemReference->AssetData = ItemData->AssetData;
 			ItemReference->ItemStats = ItemData->ItemStats;
 			ItemReference->BuildData = ItemData->BuildData;
+			ItemReference->HuntData = ItemData->HuntData;
 
 			if (InQuantity <= 0) //0보다 작으면 
 			{

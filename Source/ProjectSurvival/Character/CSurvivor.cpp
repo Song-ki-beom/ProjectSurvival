@@ -336,28 +336,37 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 
 void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 {
-	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(DoSpecialActionDatas[(int32)SpecialState].Montage))
+		MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
 {
 	PerformDoSpecialAction(SpecialState);
 
-	if (IsLocallyControlled())
+	if (SpecialState == ESpecialState::Dead)
 	{
-		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
-		if (mainHUD)
+		if (IsLocallyControlled())
 		{
-			mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Hidden);
-			mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Hidden);
-			GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Hidden);
-			GameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
-			GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = true;
-			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+			ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+			if (mainHUD)
+			{
+				mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Hidden);
+				mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Hidden);
+				GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Hidden);
+				GameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
+				GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = true;
+				GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+			}
+			else
+				CDebug::Print("mainHUD is not valid");
 		}
-		else
-			CDebug::Print("mainHUD is not valid");
 	}
+}
+
+void ACSurvivor::RequestDoSpecialAction_Implementation(ESpecialState SpecialState)
+{
+	BroadcastDoSpecialAction(SpecialState);
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)

@@ -341,7 +341,6 @@ void ACEnemy::AttackTraceHit()
 				FActionDamageEvent e;
 				e.HitID = DoActionDatas[AttackIdx].ActionID;
 				HitPlayer->TakeDamage(0, e, this->GetController(),this);
-
 			}
 		}
 	}

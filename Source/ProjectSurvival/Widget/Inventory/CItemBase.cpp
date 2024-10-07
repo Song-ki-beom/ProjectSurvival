@@ -31,6 +31,7 @@ UCItemBase* UCItemBase::CreateItemCopy()
 	ItemCopy->AssetData = this->AssetData;
 	ItemCopy->bIsCopy = true;
 	ItemCopy->BuildData = this->BuildData;
+	ItemCopy->HuntData = this->HuntData;
 	
 	return ItemCopy;
 }
@@ -46,6 +47,7 @@ FItemData UCItemBase::CreateFItemData(UCItemBase* ItemReference)
 	returnData.NumericData = ItemReference->NumericData;
 	returnData.TextData = ItemReference->TextData;
 	returnData.BuildData = ItemReference->BuildData;
+	returnData.HuntData = ItemReference->HuntData;
 	return returnData;
 }
 
@@ -59,6 +61,7 @@ void UCItemBase::CopyFromItemData(FItemData ItemDataReference)
 	this->NumericData = ItemDataReference.NumericData;
 	this->TextData = ItemDataReference.TextData;
 	this->BuildData = ItemDataReference.BuildData;
+	this->HuntData = ItemDataReference.HuntData;
 }
 
 

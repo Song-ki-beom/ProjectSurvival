@@ -25,7 +25,10 @@ void UCWeaponComponent::BeginPlay()
 	for (int32 i = 0; i < (int32)EWeaponType::Max; i++)
 	{
 		if (!!DataAssets[i])
+		{
+			CDebug::Print("Index Is Valid At ", i, FColor::Emerald);
 			DataAssets[i]->BeginPlay(OwnerCharacter, &Datas[i]);
+		}
 		else
 			Datas[i] = nullptr;
 	}

@@ -1,23 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Weapon/CAttachment.h"
 #include "GameFramework/Character.h"
 #include "Components/SceneComponent.h"
-#include "Components/ShapeComponent.h"    
-
-
-
+#include "Components/ShapeComponent.h"
+#include "Components/BoxComponent.h"
+#include "Utility/CDebug.h"
 
 ACAttachment::ACAttachment()
 {
-	
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh2"));
 	Mesh->SetupAttachment(Root);
-
+	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
 }
-
 
 void ACAttachment::BeginPlay()
 {
@@ -31,8 +25,12 @@ void ACAttachment::BeginPlay()
 	SetActorEnableCollision(false);
 	SetActorHiddenInGame(true);
 	Super::BeginPlay();
-}
 
+	if (Mesh->DoesSocketExist(FName("HitSocket")))
+	{
+		HitBox->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("HitSocket"));
+	}
+}
 
 void ACAttachment::OnBeginEquip_Implementation()
 {
@@ -53,7 +51,3 @@ void ACAttachment::AttachTo(FName InSocketName)
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),
 		InSocketName);
 }
-
-
-
-

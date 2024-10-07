@@ -8,11 +8,14 @@
 #include "GameFramework/Actor.h"
 #include "ActorComponents/CBuildComponent.h"
 #include "ActorComponents/CMovingComponent.h"
+#include "ActorComponents/CInventoryComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Widget/Build/CBuildItemSlot.h"
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Inventory/CInventoryPanel_Placeable.h"
+#include "Widget/Menu/CInventoryMenu.h"
 #include "Utility/CDebug.h"
 #include "CGameInstance.h"
 #include "Build/CStructure_Placeable.h"
@@ -57,10 +60,6 @@ void ACSurvivorController::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(UpdateListenerTransformHandle, this, &ACSurvivorController::UpdateListenerTransform, 0.1f, true);
 }
 
-void ACSurvivorController::GetSurvivor()
-{
-	Survivor = Cast<ACSurvivor>(this->GetCharacter());
-}
 
 void ACSurvivorController::SetupBuildWidget()
 {
@@ -71,6 +70,11 @@ void ACSurvivorController::SetupBuildWidget()
 		BuildWidget->SetVisibility(ESlateVisibility::Collapsed);
 		bIsBuildWidgetOn = false;
 	}
+}
+
+void ACSurvivorController::GetSurvivor()
+{
+	Survivor = Cast<ACSurvivor>(this->GetCharacter());
 }
 
 void ACSurvivorController::SetupInputFunction()
@@ -96,16 +100,16 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("MouseWheelDown", IE_Pressed,this, &ACSurvivorController::HandleMouseWheelDown);
 		InputComponent->BindAction("Chat", IE_Pressed,this, &ACSurvivorController::FocusChattingBox);
 		InputComponent->BindAction("WorldMap", IE_Pressed,this, &ACSurvivorController::ToggleWorldMap);
-		InputComponent->BindAction("QuickSlot1", IE_Pressed, this, &ACSurvivorController::PressQuickSlot1);
-		InputComponent->BindAction("QuickSlot2", IE_Pressed, this, &ACSurvivorController::PressQuickSlot2);
-		InputComponent->BindAction("QuickSlot3", IE_Pressed, this, &ACSurvivorController::PressQuickSlot3);
-		InputComponent->BindAction("QuickSlot4", IE_Pressed, this, &ACSurvivorController::PressQuickSlot4);
-		InputComponent->BindAction("QuickSlot5", IE_Pressed, this, &ACSurvivorController::PressQuickSlot5);
-		InputComponent->BindAction("QuickSlot6", IE_Pressed, this, &ACSurvivorController::PressQuickSlot6);
-		InputComponent->BindAction("QuickSlot7", IE_Pressed, this, &ACSurvivorController::PressQuickSlot7);
-		InputComponent->BindAction("QuickSlot8", IE_Pressed, this, &ACSurvivorController::PressQuickSlot8);
-		InputComponent->BindAction("QuickSlot9", IE_Pressed, this, &ACSurvivorController::PressQuickSlot9);
-		InputComponent->BindAction("QuickSlot10", IE_Pressed, this, &ACSurvivorController::PressQuickSlot10);
+		InputComponent->BindAction("QuickSlot1", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot2", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot3", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot4", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot5", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot6", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot7", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot8", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot9", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("QuickSlot10", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
 
 		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
@@ -366,10 +370,16 @@ void ACSurvivorController::ShowWidget()
 	if (bIsBuildWidgetOn)
 		return;
 
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		if (gameInstance->WorldMap->GetVisibility() == ESlateVisibility::Visible)
+			return;
+	}
+
 	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
 	if (mainHUD)
 		mainHUD->SetWidgetVisibility(EWidgetCall::Survivor);
-	//Survivor->ToggleMenu();
 }
 
 void ACSurvivorController::HandleMouseWheelUp()
@@ -400,8 +410,15 @@ void ACSurvivorController::FocusChattingBox()
 
 void ACSurvivorController::ToggleWorldMap()
 {
-	if (bIsProduceWidgetOn)
+	if (bIsBuildWidgetOn)
 		return;
+
+	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
+	if (mainHUD)
+	{
+		if (mainHUD->GetSurvivorInventoryWidget()->GetVisibility() == ESlateVisibility::Visible)
+			return;
+	}
 
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance)
@@ -421,24 +438,54 @@ void ACSurvivorController::ToggleWorldMap()
 	}
 }
 
-void ACSurvivorController::PressQuickSlot1()
+void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 {
-}
+	int32 index = -1;
 
-void ACSurvivorController::PressQuickSlot2()
-{
-}
+	if (InPressedKey == EKeys::One)
+	{
+		index = 0;
+	}
+	else if (InPressedKey == EKeys::Two)
+	{
+		index = 1;
+	}
+	else if (InPressedKey == EKeys::Three)
+	{
+		index = 2;
+	}
+	else if (InPressedKey == EKeys::Four)
+	{
+		index = 3;
+	}
+	else if (InPressedKey == EKeys::Five)
+	{
+		index = 4;
+	}
+	else if (InPressedKey == EKeys::Six)
+	{
+		index = 5;
+	}
+	else if (InPressedKey == EKeys::Seven)
+	{
+		index = 6;
+	}
+	else if (InPressedKey == EKeys::Eight)
+	{
+		index = 7;
+	}
+	else if (InPressedKey == EKeys::Nine)
+	{
+		index = 8;
+	}
+	else if (InPressedKey == EKeys::Zero)
+	{
+		index = 9;
+	}
 
-void ACSurvivorController::PressQuickSlot3()
-{
-}
+	if (index == -1)
+		return;
 
-void ACSurvivorController::PressQuickSlot4()
-{
-}
-
-void ACSurvivorController::PressQuickSlot5()
-{
 	ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
 	if (!mainHUD)
 		return;
@@ -447,7 +494,7 @@ void ACSurvivorController::PressQuickSlot5()
 	if (!quickSlot)
 		return;
 
-	USizeBox* sizeBox = quickSlot->GetSizeBoxArray()[4];
+	USizeBox* sizeBox = quickSlot->GetSizeBoxArray()[index];
 	if (!sizeBox)
 		return;
 
@@ -459,33 +506,64 @@ void ACSurvivorController::PressQuickSlot5()
 	if (!quickSlotItem)
 		return;
 
-	if (quickSlotItem->ItemType == EItemType::Hunt)
+	if (quickSlotItem->ItemType == EItemType::Consumable)
 	{
-		int32 durability = quickSlotItem->ItemStats.RemainDurability--;
-		quickSlotItemWidget->SetRemainDurability(durability);
+		// 퀵슬롯에 등록된 아이템 사용
+		if (quickSlotItem->Quantity > 1)
+		{
+			for (TWeakObjectPtr<UCItemBase> tempObjectPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+			{
+				if (tempObjectPtr.IsValid())
+				{
+					if (tempObjectPtr->ID == quickSlotItem->ID)
+					{
+						Survivor->GetInventoryComponent()->RemoveAmountOfItem(tempObjectPtr.Get(), 1);
+						break;
+					}
+				}
+			}
+		}
+		else if (quickSlotItem->Quantity == 1)
+		{
+			for (TWeakObjectPtr<UCItemBase> tempObjectPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+			{
+				if (tempObjectPtr.IsValid())
+				{
+					if (tempObjectPtr->ID == quickSlotItem->ID)
+					{
+						Survivor->GetInventoryComponent()->RemoveSingleItem(tempObjectPtr.Get());
+						break;
+					}
+				}
+			}
+		}
+
+		// 먹는 몽타주 재생
+		if (this->HasAuthority())
+		{
+			Survivor->BroadcastDoSpecialAction(ESpecialState::Eat);
+		}
+		else
+		{
+			Survivor->RequestDoSpecialAction(ESpecialState::Eat);
+		}
 	}
+	else if (quickSlotItem->ItemType == EItemType::Hunt)
+	{
+		FString enumValueAsString = StaticEnum<EWeaponType>()->GetNameByValue((int64)quickSlotItem->HuntData.WeaponType).ToString();
 
-	// ID나 여러타입에 따른 스위치문함수 필요
-}
+		CDebug::Print("QuickSlot WeaponType : ", enumValueAsString);
 
-void ACSurvivorController::PressQuickSlot6()
-{
-}
-
-void ACSurvivorController::PressQuickSlot7()
-{
-}
-
-void ACSurvivorController::PressQuickSlot8()
-{
-}
-
-void ACSurvivorController::PressQuickSlot9()
-{
-}
-
-void ACSurvivorController::PressQuickSlot10()
-{
+		// 장착
+		if (quickSlotItem->HuntData.WeaponType == EWeaponType::StonePick)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::StonePick);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::StoneAxe)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
+		}
+	}
 }
 
 void ACSurvivorController::ShowBuildInteractWidget()
@@ -589,3 +667,33 @@ void ACSurvivorController::RequestDestroyPlayerLocation_Implementation()
 {
 	BroadcastDestroyPlayerLocation();
 }
+
+////내구도감소
+
+//ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());
+//if (!mainHUD)
+//	return;
+
+//UCQuickSlot* quickSlot = mainHUD->GetQuickSlotWidget();
+//if (!quickSlot)
+//	return;
+
+//USizeBox* sizeBox = quickSlot->GetSizeBoxArray()[4];
+//if (!sizeBox)
+//	return;
+
+//UCInventoryItemSlot* quickSlotItemWidget = Cast<UCInventoryItemSlot>(sizeBox->GetChildAt(0));
+//if (!quickSlotItemWidget)
+//	return;
+
+//UCItemBase* quickSlotItem = quickSlotItemWidget->GetItemReference();
+//if (!quickSlotItem)
+//	return;
+
+//if (quickSlotItem->ItemType == EItemType::Hunt)
+//{
+//	int32 durability = quickSlotItem->ItemStats.RemainDurability--;
+//	quickSlotItemWidget->SetRemainDurability(durability);
+//}
+
+//// ID나 여러타입에 따른 스위치문함수 필요

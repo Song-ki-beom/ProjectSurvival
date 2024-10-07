@@ -29,6 +29,8 @@ protected: // ABP에서 사용할 변수
 		float Speed;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 		float Direction;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		FRotator Rotation;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, ReplicatedUsing = OnRep_WeaponTypeChanged)
 		EWeaponType WeaponType = EWeaponType::Max;
 

@@ -366,7 +366,7 @@ void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
 		//return;
 	}
 
-	ItemReference->ID = ItemIn->ID;
+	 ItemReference->ID = ItemIn->ID;
 	 ItemReference->Quantity = ItemIn->Quantity;
 	 ItemReference->ItemType = ItemIn->ItemType;
 	 ItemReference->TextData = ItemIn->TextData;
@@ -374,11 +374,14 @@ void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
 	 ItemReference->NumericData = ItemIn->NumericData;
 	 ItemReference->AssetData = ItemIn->AssetData;
 	 ItemReference->bIsCopy = ItemIn->bIsCopy;
+	 ItemReference->HuntData.WeaponType = ItemIn->HuntData.WeaponType;
 }
  
 void UCInventoryItemSlot::SetItemQuantityText(int32 InQuantity)
 {
-	ItemQuantity->SetText(FText::AsNumber(InQuantity));
+	FText quantityText = FText::Format(FText::FromString("x{0}"), InQuantity);
+	ItemQuantity->SetText(quantityText);
+	//ItemQuantity->SetText(FText::AsNumber(InQuantity));
 }
 
 void UCInventoryItemSlot::SetRemainDurability(int32 InDurability)

@@ -15,7 +15,7 @@ enum class EStateType : uint8
 UENUM(BlueprintType)
 enum class ESpecialState : uint8
 {
-    Encounter, Roll, Evade, Dead
+    Encounter, Roll, Evade, Dead, Eat, Drink
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);
