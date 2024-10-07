@@ -31,7 +31,9 @@
 #include "Widget/Map/CWorldMap.h"
 #include "Widget/Map/CMiniMap.h"
 #include "Widget/Inventory/CQuickSlot.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Widget/Status/CStatusPanel.h"
+#include "Build/CStructure_Placeable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Character/CSurvivorController.h"
@@ -51,7 +53,7 @@ ACSurvivor::ACSurvivor()
 	Tags.Add(FName("Player"));
 	//인터렉션 세팅
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
-	
+
 	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 	//컴포넌트 세팅
@@ -83,7 +85,7 @@ ACSurvivor::ACSurvivor()
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
 
-	
+
 
 	//카메라 세팅 
 	SpringArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -107,7 +109,7 @@ ACSurvivor::ACSurvivor()
 		UE_LOG(LogTemp, Warning, TEXT("skeletalMeshFinder Failed - ACSurvivor"));
 	}
 
-	
+
 
 	bUseControllerRotationYaw = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -117,7 +119,7 @@ ACSurvivor::ACSurvivor()
 	SpringArm->TargetArmLength = 400;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
-	
+
 	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
 	if (survivorNameClassFinder.Succeeded())
 	{
@@ -319,8 +321,8 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 {
 
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
-	if (this->HasAuthority()) 
+
+	if (this->HasAuthority())
 	{
 		if (NetDriver && NetDriver->GuidCache)
 		{
@@ -348,35 +350,43 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 
 void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 {
-	MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(DoSpecialActionDatas[(int32)SpecialState].Montage))
+		MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
 {
 	PerformDoSpecialAction(SpecialState);
 
-	if (IsLocallyControlled())
+	if (SpecialState == ESpecialState::Dead)
 	{
-		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
-		if (mainHUD)
+		if (IsLocallyControlled())
 		{
-			mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Hidden);
-			mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Hidden);
-			GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Hidden);
-			GameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
-			GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = true;
-			GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+			ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+			if (mainHUD)
+			{
+				mainHUD->GetQuickSlotWidget()->SetVisibility(ESlateVisibility::Hidden);
+				mainHUD->GetStatusPanel()->SetVisibility(ESlateVisibility::Hidden);
+				GameInstance->ChattingBox->SetVisibility(ESlateVisibility::Hidden);
+				GameInstance->MiniMap->SetVisibility(ESlateVisibility::Hidden);
+				GameInstance->WorldMap->GetPersonalSurvivorController()->bShowMouseCursor = true;
+				GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
+			}
+			else
+				CDebug::Print("mainHUD is not valid");
 		}
-		else
-			CDebug::Print("mainHUD is not valid");
 	}
+}
+
+void ACSurvivor::RequestDoSpecialAction_Implementation(ESpecialState SpecialState)
+{
+	BroadcastDoSpecialAction(SpecialState);
 }
 
 void ACSurvivor::SetGenericTeamId(const FGenericTeamId& NewTeamId)
 {
 	TeamId = NewTeamId;
 }
-
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {
 	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
@@ -594,12 +604,84 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 		Camera->DetachFromParent();
 		Camera->SetWorldLocation(cameraLocation);
 		Camera->SetWorldRotation(cameraRotation);
-		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);	
+		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);
 		WorldMapOpacityTimeline.PlayFromStart();
 	}
 
+	if (this->HasAuthority())
+	{
+		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0)
+		{
+			CDebug::Print("InventoryContents Found and Create BackPack At Server", FColor::Green);
+
+			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
+
+			if (IsValid(backPackClass))
+			{
+				this->GetBuildComponent()->PerformCreateBackPack(backPackClass, this->GetActorTransform());
+
+				//if (buildstructure)
+				//{
+				//	ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+				//	if (placeableStructure)
+				//	{
+				//		//placeableStructure->SetReplicates(true);
+				//
+				//		for (TWeakObjectPtr<UCItemBase> tempPtr : this->GetInventoryComponent()->GetInventoryContents())
+				//		{
+				//			if (tempPtr.IsValid())
+				//			{
+				//				placeableStructure->BroadcastAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+				//				this->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
+				//			}
+				//		}
+				//	}
+				//}
+			}
+			else
+				CDebug::Print("InClass Is Not Valid In Server", FColor::Green);
+		}
+		else
+			CDebug::Print("InventoryContents is Empty In Server", FColor::Green);
+	}
+	else
+	{
+		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0)
+		{
+			CDebug::Print("InventoryContents Found and Create BackPack In Client", FColor::Red);
+
+			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
+
+			if (IsValid(backPackClass))
+			{
+				this->GetBuildComponent()->RequestCreateBackPack(backPackClass, this->GetActorTransform());
+
+				//	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(backPackClass, this->GetActorTransform());
+				//	buildstructure->BroadcastDestroyPreviewBox();
+				//	ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+				//	if (placeableStructure)
+				//	{
+				//		placeableStructure->SetReplicates(true);
+				//
+				//		for (TWeakObjectPtr<UCItemBase> tempPtr : this->GetInventoryComponent()->GetInventoryContents())
+				//		{
+				//			if (tempPtr.IsValid())
+				//			{
+				//				placeableStructure->BroadcastAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+				//				this->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
+				//			}
+				//		}
+				//	}
+			}
+			else
+				CDebug::Print("InClass Is Not Valid In Client", FColor::Red);
+		}
+		else
+			CDebug::Print("InventoryContents is Empty In Client", FColor::Red);
+	}
+
 	SetActorEnableCollision(false);
-	
+
 	Head->SetVisibility(false);
 	Pants->SetVisibility(false);
 	Boots->SetVisibility(false);
