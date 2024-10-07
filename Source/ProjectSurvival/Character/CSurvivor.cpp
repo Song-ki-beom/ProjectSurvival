@@ -38,17 +38,20 @@
 #include "GameFramework/PlayerState.h"
 #include "EngineUtils.h"
 #include "Engine/PackageMapClient.h"
-
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+#include "Perception/AISense_Hearing.h"
 
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	SetReplicates(true);
+	SetGenericTeamId(FGenericTeamId(1));
 	Tags.Add(FName("Player"));
 	//인터렉션 세팅
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
-
+	
 	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
 
 	//컴포넌트 세팅
@@ -134,6 +137,17 @@ ACSurvivor::ACSurvivor()
 	SurvivorNameWidgetComponent->InitWidget();
 
 	MovingComponent->SetSpeed(ESpeedType::Run);
+
+	////AI 피아식별 세팅
+	//  // AIPerceptionStimuliSourceComponent 생성
+	//PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
+	//
+	//// 시각 또는 청각 같은 인식 가능한 자극을 등록
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Hearing>());
+
+	//// AI에 의한 인식 자극을 활성화
+	//PerceptionStimuliSource->bAutoRegister = true;
 
 }
 
@@ -356,6 +370,11 @@ void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialSt
 		else
 			CDebug::Print("mainHUD is not valid");
 	}
+}
+
+void ACSurvivor::SetGenericTeamId(const FGenericTeamId& NewTeamId)
+{
+	TeamId = NewTeamId;
 }
 
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)

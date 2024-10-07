@@ -59,7 +59,6 @@ void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 
 
     float  distance = Enemy->GetDistanceTo(target);
-    //CDebug::Print(TEXT("Distance Between Enemy and Player: "), distance);
     if (distance < ActionRange)
     {
         AIComponent->SetActionMode();

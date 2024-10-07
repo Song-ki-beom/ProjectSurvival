@@ -19,34 +19,32 @@ ACEnemyAIController::ACEnemyAIController()
     //PrimaryActorTick.bCanEverTick = true;
     bReplicates = true;
     SetReplicates(true);
-
+    SetGenericTeamId(FGenericTeamId(3));
     Blackboard =  CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoard"));
     Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception"));
 
-    {
-        Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
-        Sight->SightRadius = 1000;      
-        Sight->LoseSightRadius = 1100;  
-        Sight->PeripheralVisionAngleDegrees = 180; // 인식하는 시야 범위 
-        Sight->SetMaxAge(3);  //인식한 상대를 기억하는 시간 
-    }
+    Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
+    SetPerceptionComponent(*Perception);
 
+    Sight->SightRadius = 1000;      
+    Sight->LoseSightRadius = 1100;  
+    Sight->PeripheralVisionAngleDegrees = 100; // 인식하는 시야 범위 
+    Sight->SetMaxAge(3);  //인식한 상대를 기억하는 시간 
+
+    Sight->DetectionByAffiliation.bDetectEnemies = true;        
+    Sight->DetectionByAffiliation.bDetectNeutrals = false;
+    Sight->DetectionByAffiliation.bDetectFriendlies = false;    
    
-    {
-        Sight->DetectionByAffiliation.bDetectEnemies = false;        
-        Sight->DetectionByAffiliation.bDetectNeutrals = true;   
-        Sight->DetectionByAffiliation.bDetectFriendlies = false;    
-    }
-   
-    Perception->ConfigureSense(*Sight);   
-    Perception->SetDominantSense(*Sight->GetSenseImplementation());
+    GetPerceptionComponent()->ConfigureSense(*Sight);
+    GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
+    GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
+    
 
 }
 
 void ACEnemyAIController::BeginPlay()
 {
     Super::BeginPlay();
-    Perception->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
     GetWorld()->GetTimerManager().SetTimer(TickTimerHandle, this, &ACEnemyAIController::CustomTick, 0.1f, true);
 
 }
@@ -58,7 +56,6 @@ void ACEnemyAIController::OnPossess(APawn* InPawn)
     Super::OnPossess(InPawn);
 
     Enemy = Cast<ACEnemy>(InPawn);
-    SetGenericTeamId(FGenericTeamId(Enemy->GetTeamID()));
 
   
     if(Enemy->GetBehaviorTree() == nullptr) 
@@ -90,6 +87,47 @@ void ACEnemyAIController::StopAI()
     BehaviorTreeComponent->StopTree(EBTStopMode::Safe);
 }
 
+ETeamAttitude::Type ACEnemyAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+    const APawn* OtherPawn = Cast<APawn>(&Other);
+    if (OtherPawn == nullptr)
+    {
+        return ETeamAttitude::Neutral;
+    }
+
+    const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(&Other);
+    if (OtherTeamAgent)
+    {
+        FGenericTeamId OtherTeamId = OtherTeamAgent->GetGenericTeamId();
+        FGenericTeamId MyTeamID = GetGenericTeamId();
+        
+        if (OtherTeamId == MyTeamID)
+        {
+            return ETeamAttitude::Friendly; //Friendly
+        }
+        else if (OtherTeamId == FGenericTeamId(2))
+        {
+            return ETeamAttitude::Neutral;
+        }
+        else
+        {
+            return ETeamAttitude::Hostile; //Hostile
+        }
+    }
+
+    return ETeamAttitude::Neutral;
+}
+
+FGenericTeamId ACEnemyAIController::GetGenericTeamId() const
+{
+    return TeamId;
+}
+
+void ACEnemyAIController::SetGenericTeamId(const FGenericTeamId& NewTeamId)
+{
+    TeamId = NewTeamId;
+}
+
 void ACEnemyAIController::OnUnPossess()
 {
     Super::OnUnPossess();
@@ -97,7 +135,7 @@ void ACEnemyAIController::OnUnPossess()
 
 void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-  
+    CDebug::Print("Player Detected!!!!!!");
 
     if (!bIsAggroCoolDown) return;
 
@@ -143,6 +181,17 @@ void ACEnemyAIController::CustomTick()
         GetWorld()->GetTimerManager().ClearTimer(AggroTimerHandle);
         EnableAggroCoolDown();
     }
+
+    /*    TArray<AActor*> PerceivedActors;
+        Perception->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
+
+        for (AActor* Actor : PerceivedActors)
+        {
+            if (Actor)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Perceived Actor: %s"), *Actor->GetName());
+            }
+        }*/
 }
 
 void ACEnemyAIController::ChangeTarget(AActor* InTarget) 
@@ -155,4 +204,14 @@ void ACEnemyAIController::ChangeTarget(AActor* InTarget)
     Blackboard->SetValueAsObject("Target", TargetActor); 
     
 
+}
+
+void ACEnemyAIController::ChangeFriendlyTarget(AActor* InTarget)
+{
+    if (InTarget == nullptr) return;
+    if (FriendlyTargetActor == InTarget) return;
+
+    FriendlyTargetActor = InTarget;
+    bIsAggroCoolDown = false;
+    Blackboard->SetValueAsObject("FriendlyTarget", FriendlyTargetActor);
 }

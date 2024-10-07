@@ -32,6 +32,9 @@
 #include "Widget/Map/CWorldMap.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/GameStateBase.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+#include "Perception/AISense_Hearing.h"
 
 ACEnemy::ACEnemy()
 {
@@ -39,7 +42,7 @@ ACEnemy::ACEnemy()
 	bReplicates = true; 
 	SetReplicates(true);
 	Tags.Add(FName("Enemy"));
-
+	SetGenericTeamId(FGenericTeamId(3));
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
 	{
@@ -123,6 +126,17 @@ ACEnemy::ACEnemy()
 	HPBarWidgetComponent->SetVisibility(true);
 	//HPBarWidgetComponent->PrimaryComponentTick.bCanEverTick = true;
 	//HPBarWidgetComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+
+		//AI 피아식별 세팅
+	  // AIPerceptionStimuliSourceComponent 생성
+	PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
+
+	// 시각 또는 청각 같은 인식 가능한 자극을 등록
+	PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+	PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Hearing>());
+
+	// AI에 의한 인식 자극을 활성화
+	PerceptionStimuliSource->bAutoRegister = true;
 }
 
 void ACEnemy::BeginPlay()
@@ -536,7 +550,7 @@ void ACEnemy::ApplyHitData()
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();
 
-				if (hitCnt >= 4)
+				if (hitCnt >= 3)
 				{
 					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
 					if (this->HasAuthority()) AIController->ChangeTarget(targetActor); //타겟 변경 
@@ -609,8 +623,61 @@ void ACEnemy::OnBecameFriendlyHandler()
 		BroadcastChangeMesh();
 		BroadcastUpdateHealthBar(FLinearColor::Green);
 		StatusComponent->BroadcastCancelExhausted();
-		EnemyAIComponent->ChangeAIStateType(EAIStateType::Wait);
 		EnemyAIComponent->ChangeAIReputationType(EAIReputationType::Friendly);
+		EnemyAIComponent->ChangeAIStateType(EAIStateType::Wait);
+
+		FVector TraceStart = GetActorLocation();
+
+		TArray<FHitResult> HitResults;
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+
+		FCollisionObjectQueryParams ObjectQueryParams; //다중 검출 PARAM
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+		float SearchSphereRadius = 1000.0f;
+		// 멀티 스피어 트레이스 실행
+		bool bHit = GetWorld()->SweepMultiByObjectType(
+			HitResults,
+			TraceStart,
+			TraceStart,
+			FQuat::Identity,
+			ObjectQueryParams,
+			FCollisionShape::MakeSphere(SearchSphereRadius),
+			QueryParams
+		);
+		DrawDebugSphere(GetWorld(), TraceStart, SearchSphereRadius, 50, FColor::Green, false, 0.1f);
+
+
+		if (bHit)
+		{
+			AActor* NewTargetActor = NULL;
+			float shortestDistance = 99999.0f;
+			for (const FHitResult& Hit : HitResults)
+			{
+
+				if (IsValid(Hit.GetActor()))
+				{
+					if (ACSurvivor* survivor = Cast<ACSurvivor>(Hit.GetActor()))
+					{
+						if (!Hit.GetActor()->ActorHasTag("Player")) continue;
+						float distanceTo = GetDistanceTo(Hit.GetActor());
+						if (distanceTo < shortestDistance)
+						{
+							shortestDistance = distanceTo;
+							NewTargetActor = Hit.GetActor();
+						}
+					}
+				}
+			}
+
+			// 디버그 스피어 그리기
+			if (NewTargetActor)
+			{
+				AIController->ChangeFriendlyTarget(NewTargetActor);
+				//AIController->ChangeTarget(NULL);
+
+			}
+		}
 	}
 }
 
@@ -783,8 +850,13 @@ void ACEnemy::CreateDropItem()
 void ACEnemy::EatFood(ACPickUp* TargetPickUp)
 {
 	StatusComponent->RecoverHunger(TargetPickUp->ItemReference->ItemStats.DamageValue);
-	StatusComponent->StackFriendShip(TargetPickUp->ItemReference->ItemStats.DamageValue*5);
+	StatusComponent->StackFriendShip(TargetPickUp->ItemReference->ItemStats.DamageValue*3);
 	TargetPickUp->Destroy();
+}
+
+void ACEnemy::SetGenericTeamId(const FGenericTeamId& NewTeamId)
+{
+	TeamId = NewTeamId;
 }
 
 

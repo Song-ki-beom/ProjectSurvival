@@ -17,7 +17,10 @@ void UCEnemyAIComponent::BeginPlay()
 }
 
 
-
+ACharacter* UCEnemyAIComponent::GetFriendlyTarget()
+{
+	return Cast<ACharacter>(Blackboard->GetValueAsObject(FriendlyTargetKey));
+}
 
 ACharacter* UCEnemyAIComponent::GetTarget()
 {
@@ -110,6 +113,11 @@ bool UCEnemyAIComponent::IsExhaustMode()
 	return GetAIStateType() == EAIStateType::Exhaust;
 }
 
+bool UCEnemyAIComponent::IsFollowingMode()
+{
+	return GetAIStateType() == EAIStateType::Following;
+}
+
 bool UCEnemyAIComponent::IsHostileMode()
 {
 	return GetAIReputationType() == EAIReputationType::Hostile;
@@ -163,6 +171,11 @@ void UCEnemyAIComponent::SetDeadMode()
 void UCEnemyAIComponent::SetExhaustMode()
 {
 	ChangeAIStateType(EAIStateType::Exhaust);
+}
+
+void UCEnemyAIComponent::SetFollowingMode()
+{
+	ChangeAIStateType(EAIStateType::Following);
 }
 
 void UCEnemyAIComponent::SetHostileMode()

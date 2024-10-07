@@ -36,6 +36,7 @@ ACSurvivorController::ACSurvivorController()
 	else
 		CDebug::Print("buildWidgetFinder Failed", FColor::Red);
 
+	
 	//static ConstructorHelpers::FClassFinder<UUserWidget> registerRespawnLocationFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Build/WBP_BuildWidget.WBP_BuildWidget_C'"));
 	//if (registerRespawnLocationFinder.Succeeded())
 	//{
@@ -72,6 +73,42 @@ void ACSurvivorController::SetupBuildWidget()
 		bIsBuildWidgetOn = false;
 	}
 }
+
+//FGenericTeamId ACSurvivorController::GetGenericTeamId() const
+//{
+//	return TeamId;
+//}
+//
+//void ACSurvivorController::SetGenericTeamId(const FGenericTeamId& NewTeamId)
+//{
+//	TeamId = NewTeamId;
+//}
+
+//ETeamAttitude::Type ACSurvivorController::GetTeamAttitudeTowards(const AActor& Other) const
+//{
+//	const IGenericTeamAgentInterface* OtherTeamAgent = Cast<IGenericTeamAgentInterface>(&Other);
+//	if (OtherTeamAgent)
+//	{
+//		FGenericTeamId OtherTeamId = OtherTeamAgent->GetGenericTeamId();
+//		FGenericTeamId MyTeamID = GetGenericTeamId();
+//
+//		if (OtherTeamId == MyTeamID)
+//		{
+//			return ETeamAttitude::Friendly;
+//		}
+//		else if (OtherTeamId == FGenericTeamId(2))
+//		{
+//			return ETeamAttitude::Neutral;
+//		}
+//		else
+//		{
+//			return ETeamAttitude::Hostile;
+//		}
+//	}
+//
+//	return ETeamAttitude::Neutral; 
+//	
+//}
 
 void ACSurvivorController::SetupInputFunction()
 {

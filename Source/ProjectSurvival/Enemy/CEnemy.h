@@ -6,12 +6,14 @@
 #include "GameFramework/Character.h"
 #include "ActorComponents/CStateComponent.h"
 #include "Struct/CWeaponStructures.h"
+#include "Perception/AISightTargetInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "CEnemy.generated.h"
 
 
 
 UCLASS()
-class PROJECTSURVIVAL_API ACEnemy : public ACharacter
+class PROJECTSURVIVAL_API ACEnemy : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -60,6 +62,11 @@ public:
 
 	//Eat Food
 	void EatFood(class ACPickUp* TargetPickUp);
+
+	// 팀 ID 설정 및 반환 함수
+	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; };
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamId) override;
+	//virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	
 private:
 	//Hit
@@ -141,9 +148,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-		uint8 TeamID = 2; // Enemy 가 속한 TeamID
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class ACEnemyAIController* AIController;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	FGenericTeamId TeamId; // 팀 ID 저장 변수
 	
 	
 	//Component
@@ -157,7 +164,8 @@ protected:
 	class UCMontageComponent* MontageComponent;
 	UPROPERTY(VisibleAnywhere)
 	class UCEnemyAIComponent* EnemyAIComponent;
-
+	UPROPERTY(VisibleAnywhere)
+	class UAIPerceptionStimuliSourceComponent* PerceptionStimuliSource;
 
 	//Attack
 	float TraceDistance = 45.0f;
@@ -187,7 +195,6 @@ protected:
 
 public: //ForceInline Getter & Settter
 
-FORCEINLINE uint8 GetTeamID() { return TeamID; }
 
 FORCEINLINE class UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
 	
