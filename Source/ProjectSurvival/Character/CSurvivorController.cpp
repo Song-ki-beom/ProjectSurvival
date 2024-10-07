@@ -359,6 +359,7 @@ void ACSurvivorController::SubAction()
 
 void ACSurvivorController::HoldAxe()
 {
+
 	if (Survivor)
 	{
 		Survivor->HoldAxe();
@@ -562,6 +563,20 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::StoneAxe)
 		{
 			Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::WoodClub)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::WoodClub);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::WoodSpear)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::WoodSpear);
+		}
+
+		if (quickSlotItem && quickSlotItemWidget)
+		{
+			CDebug::Print("Set Using Weapon Called");
+			Survivor->GetWeaponComponent()->SetUsingWeapon(quickSlotItem, quickSlotItemWidget);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "Weapon/CEquipment.h"
 #include "Weapon/CDoAction.h"
 #include "Net/UnrealNetwork.h"
+#include "Widget/Inventory/CItemBase.h"
 #include "Utility/CDebug.h"
 #include "GameFramework/Character.h"
 
@@ -139,7 +140,7 @@ void UCWeaponComponent::SetMode(EWeaponType InNewType)
 		if (Datas[(int32)InNewType]->GetEquipment() == nullptr) return;
 
 
-		
+		CDebug::Print("SetMode Called");
 		
 		//FString Name = OwnerCharacter->GetName();
 		//Broadcast_Equip(Name);

@@ -26,6 +26,4 @@ private:
 	//float TraceOffset = 100.0f;
 
 	class UBoxComponent* HitBox;
-
-
 };

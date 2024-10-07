@@ -51,6 +51,15 @@ public:
 
 
 	void SetMode(EWeaponType InNewType);
+
+	void SetUsingWeapon(class UCItemBase* InItem, class UCInventoryItemSlot* InItemSlot)
+	{
+		UsingWeapon = InItem;
+		UsingWeaponSlot = InItemSlot;
+	}
+	class UCItemBase* GetUsingWeapon() { return UsingWeapon; }
+	class UCInventoryItemSlot* GetUsingWeaponSlot() { return UsingWeaponSlot; }
+
 private:
 	void SetModeReplicate();
 	void ChangeType(EWeaponType InType);
@@ -83,5 +92,10 @@ private:
 	EWeaponType Type = EWeaponType::Max;
 	UPROPERTY()
 		class UCWeaponData* Datas[(int32)EWeaponType::Max];
+
+	UPROPERTY()
+		class UCItemBase* UsingWeapon;
+	UPROPERTY()
+		class UCInventoryItemSlot* UsingWeaponSlot;
 
 };
