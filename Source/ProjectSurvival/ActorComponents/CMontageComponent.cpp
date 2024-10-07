@@ -1,6 +1,7 @@
 #include "ActorComponents/CMontageComponent.h"
 #include "GameFramework/Character.h"
 #include "Utility/CDebug.h"
+#include "Net/UnrealNetwork.h"
 #include "Components/SkeletalMeshComponent.h"
 
 UCMontageComponent::UCMontageComponent()
@@ -74,6 +75,10 @@ void UCMontageComponent::OnFoodMontageEnded(UAnimMontage* Montage, bool bInterru
 
 }
 
+void UCMontageComponent::BroadcastMontage_Play_Implementation(UAnimMontage* InMontage, float InPlayRate)
+{
+	Montage_Play(InMontage, InPlayRate);
+}
 
 
 // session

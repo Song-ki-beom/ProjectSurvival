@@ -9,6 +9,8 @@
 #include "GameFramework/Character.h"
 #include "Struct/CWeaponStructures.h"
 #include "CustomDataType/BuildStructureDataType.h"
+#include "Perception/AISightTargetInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "Components/TimeLineComponent.h"
 #include "CSurvivor.generated.h"
 #define NO_INDEX -1
@@ -16,7 +18,7 @@
 
 
 UCLASS()
-class PROJECTSURVIVAL_API ACSurvivor : public ACharacter 
+class PROJECTSURVIVAL_API ACSurvivor : public ACharacter , public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -80,6 +82,13 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
+
+
+	// 팀 ID 설정 및 반환 함수
+	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; };
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamId) override;
+
+
 	
 	UFUNCTION(Server, Reliable)
 		void RequestDoSpecialAction(ESpecialState SpecialState);
@@ -116,6 +125,12 @@ private:
 
 	UFUNCTION()
 		void SetWorldMapOpacity(float Value);
+
+protected:
+	UPROPERTY()
+		FGenericTeamId TeamId; // 팀 ID 저장 변수
+
+
 private:
 	float MaxDistanceForNameVisibility = 2000.0f;
 
@@ -173,6 +188,8 @@ private:
 		class UCStateComponent* StateComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCMontageComponent* MontageComponent;
+	//UPROPERTY(VisibleAnywhere)
+	//class UAIPerceptionStimuliSourceComponent* PerceptionStimuliSource;
 	
 	//Inventory
 	UPROPERTY(VisibleAnywhere)

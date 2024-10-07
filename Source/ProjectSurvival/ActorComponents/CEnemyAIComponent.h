@@ -10,7 +10,7 @@
 UENUM(BlueprintType)
 enum class EAIStateType : uint8
 {
-	Wait, Approach, Action, Roam, Hitted, Avoid, Dead, Exhaust,Max
+	Wait, Approach, Action, Roam, Hitted, Avoid, Dead, Exhaust,Following,Max
 };
 
 UENUM(BlueprintType)
@@ -43,10 +43,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Key")
 		FName TargetKey = "Target";
 	UPROPERTY(EditAnywhere, Category = "Key")
+		FName FriendlyTargetKey = "FriendlyTarget";
+	UPROPERTY(EditAnywhere, Category = "Key")
 		FName RoamLocationKey = "Roam_Location";
 
 public:
 	class  ACharacter* GetTarget();
+	class ACharacter* GetFriendlyTarget();
 	FVector GetRoamingLocation();
 	void    SetRoamingLocation(const FVector& InLocation);
 	void    ChangeAIStateType(EAIStateType InType);
@@ -67,6 +70,7 @@ public:
 	bool IsAvoidMode();
 	bool IsDeadMode();
 	bool IsExhaustMode();
+	bool IsFollowingMode();
 
 	//AIReputation
 	bool IsHostileMode();
@@ -83,6 +87,7 @@ public:
 	void SetAvoidMode();
 	void SetDeadMode();
 	void SetExhaustMode();
+	void SetFollowingMode();
 
 	//AIReputation
 	void SetHostileMode();

@@ -40,13 +40,16 @@
 #include "GameFramework/PlayerState.h"
 #include "EngineUtils.h"
 #include "Engine/PackageMapClient.h"
-
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+#include "Perception/AISense_Hearing.h"
 
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	SetReplicates(true);
+	SetGenericTeamId(FGenericTeamId(1));
 	Tags.Add(FName("Player"));
 	//인터렉션 세팅
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
@@ -82,7 +85,7 @@ ACSurvivor::ACSurvivor()
 	Body = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
 	Hands = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
 
-	
+
 
 	//카메라 세팅 
 	SpringArm = this->CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -106,7 +109,7 @@ ACSurvivor::ACSurvivor()
 		UE_LOG(LogTemp, Warning, TEXT("skeletalMeshFinder Failed - ACSurvivor"));
 	}
 
-	
+
 
 	bUseControllerRotationYaw = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -116,7 +119,7 @@ ACSurvivor::ACSurvivor()
 	SpringArm->TargetArmLength = 400;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
-	
+
 	static ConstructorHelpers::FClassFinder<UUserWidget> survivorNameClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/WBP_CSurvivorName.WBP_CSurvivorName_C'"));
 	if (survivorNameClassFinder.Succeeded())
 	{
@@ -136,6 +139,17 @@ ACSurvivor::ACSurvivor()
 	SurvivorNameWidgetComponent->InitWidget();
 
 	MovingComponent->SetSpeed(ESpeedType::Run);
+
+	////AI 피아식별 세팅
+	//  // AIPerceptionStimuliSourceComponent 생성
+	//PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
+	//
+	//// 시각 또는 청각 같은 인식 가능한 자극을 등록
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Hearing>());
+
+	//// AI에 의한 인식 자극을 활성화
+	//PerceptionStimuliSource->bAutoRegister = true;
 
 }
 
@@ -307,8 +321,8 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 {
 
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	
-	if (this->HasAuthority()) 
+
+	if (this->HasAuthority())
 	{
 		if (NetDriver && NetDriver->GuidCache)
 		{
@@ -369,6 +383,10 @@ void ACSurvivor::RequestDoSpecialAction_Implementation(ESpecialState SpecialStat
 	BroadcastDoSpecialAction(SpecialState);
 }
 
+void ACSurvivor::SetGenericTeamId(const FGenericTeamId& NewTeamId)
+{
+	TeamId = NewTeamId;
+}
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {
 	ReplicatedSurvivorName = InText; // OnRep_ReplicatedSurvivorName() 트리거 (변수가 바뀌었으므로)
@@ -586,7 +604,7 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 		Camera->DetachFromParent();
 		Camera->SetWorldLocation(cameraLocation);
 		Camera->SetWorldRotation(cameraRotation);
-		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);	
+		GameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);
 		WorldMapOpacityTimeline.PlayFromStart();
 	}
 
@@ -633,27 +651,27 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 			CDebug::Print("InventoryContents Found and Create BackPack In Client", FColor::Red);
 
 			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
-			
+
 			if (IsValid(backPackClass))
 			{
 				this->GetBuildComponent()->RequestCreateBackPack(backPackClass, this->GetActorTransform());
 
-			//	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(backPackClass, this->GetActorTransform());
-			//	buildstructure->BroadcastDestroyPreviewBox();
-			//	ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
-			//	if (placeableStructure)
-			//	{
-			//		placeableStructure->SetReplicates(true);
-			//
-			//		for (TWeakObjectPtr<UCItemBase> tempPtr : this->GetInventoryComponent()->GetInventoryContents())
-			//		{
-			//			if (tempPtr.IsValid())
-			//			{
-			//				placeableStructure->BroadcastAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
-			//				this->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
-			//			}
-			//		}
-			//	}
+				//	ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(backPackClass, this->GetActorTransform());
+				//	buildstructure->BroadcastDestroyPreviewBox();
+				//	ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
+				//	if (placeableStructure)
+				//	{
+				//		placeableStructure->SetReplicates(true);
+				//
+				//		for (TWeakObjectPtr<UCItemBase> tempPtr : this->GetInventoryComponent()->GetInventoryContents())
+				//		{
+				//			if (tempPtr.IsValid())
+				//			{
+				//				placeableStructure->BroadcastAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+				//				this->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
+				//			}
+				//		}
+				//	}
 			}
 			else
 				CDebug::Print("InClass Is Not Valid In Client", FColor::Red);
@@ -663,7 +681,7 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 	}
 
 	SetActorEnableCollision(false);
-	
+
 	Head->SetVisibility(false);
 	Pants->SetVisibility(false);
 	Boots->SetVisibility(false);

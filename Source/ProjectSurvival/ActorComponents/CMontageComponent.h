@@ -44,9 +44,12 @@ protected:
 
 public:
 	UFUNCTION()
-	void  Montage_Play(UAnimMontage* InMontage, float InPlayRate);
+		void  Montage_Play(UAnimMontage* InMontage, float InPlayRate);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastMontage_Play(UAnimMontage* InMontage, float InPlayRate);
+
 	UFUNCTION()
-	void  Montage_Play_Section(UAnimMontage* InMontage, FName SectionName);
+		void  Montage_Play_Section(UAnimMontage* InMontage, FName SectionName);
 
 	UFUNCTION()
 		void OnMontageNotifyBegin(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);

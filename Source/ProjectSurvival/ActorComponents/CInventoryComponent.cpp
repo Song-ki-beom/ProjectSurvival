@@ -18,7 +18,6 @@ void UCInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UCInventoryComponent, HUD);
 
-
 }
 
 
