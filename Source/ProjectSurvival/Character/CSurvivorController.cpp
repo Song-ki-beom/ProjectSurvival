@@ -362,7 +362,8 @@ void ACSurvivorController::HoldAxe()
 
 	if (Survivor)
 	{
-		Survivor->HoldAxe();
+		Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
+		//Survivor->HoldAxe();
 	}
 }
 

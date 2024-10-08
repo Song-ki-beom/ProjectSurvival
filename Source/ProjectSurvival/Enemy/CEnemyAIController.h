@@ -19,7 +19,18 @@ public:
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamId) override;
+	//virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
+	/*UFUNCTION()
+		void RetryMoveToLocation();*/
+	UFUNCTION()
+	void TameEnemyToPlayer(class APlayerController* PlayerController);
+
+	UFUNCTION()
+		void ChangeTargetLocation(FVector InTargetLocation);
+	UFUNCTION()
+		FVector GetCurrentTargetLocation();
+		
 	UFUNCTION()
 		void ChangeTarget(class AActor* InTarget);
 	UFUNCTION()
@@ -63,4 +74,7 @@ private:
 	TArray<AActor*> CandidateActors;
 	AActor* TargetActor;
 	AActor* FriendlyTargetActor;
+	FVector TargetLocation;
+
+	
 };

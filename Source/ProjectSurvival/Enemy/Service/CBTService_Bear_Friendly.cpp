@@ -14,7 +14,7 @@
 UCBTService_Bear_Friendly::UCBTService_Bear_Friendly()
 {
     this->NodeName = "Bear_Service_Friendly";
-    this->Interval = 0.1f;
+    this->Interval = 0.01f;
     this->RandomDeviation = 0.0f;
 }
 
@@ -38,7 +38,7 @@ void UCBTService_Bear_Friendly::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 
    
     ACharacter* target = AIComponent->GetTarget(); // 적 발견 시 
-    if (true)//target == nullptr
+    if (target == nullptr)
     {
         AIComponent->SetFollowingMode();
         return;

@@ -18,7 +18,7 @@
 UCBTService_Bear::UCBTService_Bear()
 {
     this->NodeName = "Bear_Service";  
-    this->Interval = 0.1f;     
+    this->Interval = 0.01f;     
     this->RandomDeviation = 0.0f;
 }
 
@@ -64,7 +64,7 @@ void UCBTService_Bear::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         AIComponent->SetActionMode();
         return;
     }
-    if (target != nullptr)
+    if (target != nullptr && !(state->IsActionMode()))
     {
         AIComponent->SetApproachMode();
         return;
