@@ -120,7 +120,17 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 				if (quickSlot)
 				{
 					if (ItemDragDrop->DragStartWidget == quickSlot)
+					{
 						mainHUD->GetQuickSlotWidget()->ProcessDragToInventoryMenu(ItemDragDrop->SourceItem);
+						ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+						if (survivor)
+						{
+							if (survivor->GetWeaponComponent()->GetUsingWeapon() == ItemDragDrop->SourceItem)
+							{
+								survivor->GetWeaponComponent()->SetMode(ItemDragDrop->SourceItem->HuntData.WeaponType);
+							}
+						}
+					}
 				}
 			}
 		}

@@ -52,6 +52,9 @@ public:
 
 	void SetMode(EWeaponType InNewType);
 
+	UFUNCTION(Server, Reliable)
+		void RequestSetMode(EWeaponType InType);
+
 	void SetUsingWeapon(class UCItemBase* InItem, class UCInventoryItemSlot* InItemSlot)
 	{
 		UsingWeapon = InItem;
@@ -63,8 +66,6 @@ public:
 private:
 	void SetModeReplicate();
 	void ChangeType(EWeaponType InType);
-	UFUNCTION(Server, Reliable)
-		void RequestSetMode(EWeaponType InType);
 	UFUNCTION(NetMulticast , Reliable)
 		void Broadcast_Equip(const FString& InName);
 	UFUNCTION(Server, Reliable)

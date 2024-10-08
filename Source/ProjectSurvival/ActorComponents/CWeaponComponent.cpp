@@ -162,6 +162,7 @@ void UCWeaponComponent::SetMode(EWeaponType InNewType)
 
 	else
 	{
+		CDebug::Print("Request Set Mode Called", FColor::Magenta);
 		RequestSetMode(InNewType);
 	}
 }

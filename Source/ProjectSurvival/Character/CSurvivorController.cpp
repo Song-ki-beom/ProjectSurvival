@@ -572,6 +572,30 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 		{
 			Survivor->GetWeaponComponent()->SetMode(EWeaponType::WoodSpear);
 		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::Bow)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::Bow);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::IronPick)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronPick);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::IronAxe)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronAxe);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::IronSpear)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronSpear);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::IronPolearm)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronPolearm);
+		}
+		else if (quickSlotItem->HuntData.WeaponType == EWeaponType::CrossBow)
+		{
+			Survivor->GetWeaponComponent()->SetMode(EWeaponType::CrossBow);
+		}
 
 		if (quickSlotItem && quickSlotItemWidget)
 		{
