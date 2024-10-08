@@ -23,6 +23,8 @@ public:
 
 	/*UFUNCTION()
 		void RetryMoveToLocation();*/
+	UFUNCTION()
+	void TameEnemyToPlayer(class APlayerController* PlayerController);
 
 	UFUNCTION()
 		void ChangeTargetLocation(FVector InTargetLocation);

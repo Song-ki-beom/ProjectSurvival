@@ -633,8 +633,8 @@ void ACEnemy::OnBecameFriendlyHandler()
 		BroadcastChangeMesh();
 		BroadcastUpdateHealthBar(FLinearColor::Green);
 		StatusComponent->BroadcastCancelExhausted();
-		EnemyAIComponent->ChangeAIReputationType(EAIReputationType::Friendly);
 		EnemyAIComponent->ChangeAIStateType(EAIStateType::Wait);
+		EnemyAIComponent->ChangeAIReputationType(EAIReputationType::Friendly);
 
 		FVector TraceStart = GetActorLocation();
 
@@ -680,11 +680,10 @@ void ACEnemy::OnBecameFriendlyHandler()
 				}
 			}
 
-			// 디버그 스피어 그리기
 			if (NewTargetActor)
 			{
 				AIController->ChangeFriendlyTarget(NewTargetActor);
-				//AIController->ChangeTarget(NULL);
+				AIController->ChangeTarget(NULL);
 
 			}
 		}

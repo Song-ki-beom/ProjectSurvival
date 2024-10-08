@@ -46,7 +46,7 @@ void UCAnimNotifyState_Hit::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeq
 	MovingComponent->Move();
 	UCStateComponent* StateComponent = Cast<UCStateComponent>(MeshComp->GetOwner()->GetComponentByClass(UCStateComponent::StaticClass()));
 	if (StateComponent == nullptr) return;
-	StateComponent->ChangeType(EStateType::Idle);
+	StateComponent->ChangeType(EStateType::Combat);
 
 
 }

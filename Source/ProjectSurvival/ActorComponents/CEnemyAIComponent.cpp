@@ -58,16 +58,15 @@ EAIReputationType UCEnemyAIComponent::GetAIReputationType()
 
 void UCEnemyAIComponent::ChangeAIStateType(EAIStateType InType)
 {
-	EAIStateType prevType = GetAIStateType();
+	//EAIStateType prevType = GetAIStateType();
 	Blackboard->SetValueAsEnum(AIStateTypeKey, (uint8)InType);
 	//if(OnAIStateTypeChanged.IsBound())
 		//OnAIStateTypeChanged.Broadcast(prevType, InType);
 }
 void UCEnemyAIComponent::ChangeAIReputationType(EAIReputationType InType)
 {
-	EAIReputationType prevType = GetAIReputationType();
+	//EAIReputationType prevType = GetAIReputationType();
 	Blackboard->SetValueAsEnum(AIReputationTypeKey, (uint8)InType);
-	this;
 	//if(OnAIReputationTypeChanged.IsBound())
 		//OnAIReputationTypeChanged.Broadcast(prevType, InType);
 }

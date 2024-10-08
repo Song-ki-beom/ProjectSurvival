@@ -34,5 +34,6 @@ private:
 	class UCEnemyAIComponent* AIComponent;
 	class UCMovingComponent* MovingComponent;
 	class UCStateComponent* StateComponent;
-	FTimerHandle TimerHandle_RetriggerableDelay;
+	//FTimerHandle TimerHandle_RetriggerableDelay;
+	FTimerHandle TimerHandle_AbortDelay;
 };

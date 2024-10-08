@@ -85,6 +85,11 @@ void ACEnemyAIController::BeginPlay()
 //            MoveTo(MoveRequest, &NavPath);
 //}
 
+void ACEnemyAIController::TameEnemyToPlayer(APlayerController* PlayerController)
+{
+
+}
+
 void ACEnemyAIController::ChangeTargetLocation(FVector InTargetLocation)
 {
     TargetLocation = InTargetLocation;
@@ -195,7 +200,11 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
         for (AActor* CandidateActor : CandidateActors)
         {
             if (GetPawn() == nullptr) return;
-
+            if (CandidateActor == FriendlyTargetActor)
+            {
+                CDebug::Print(TEXT("FriendlyTargetActor Detected"));
+                return;
+            }
             float distanceTo  = GetPawn()->GetDistanceTo(CandidateActor);
             if (distanceTo < shortestDistance)
             {
@@ -242,9 +251,8 @@ void ACEnemyAIController::CustomTick()
 
 void ACEnemyAIController::ChangeTarget(AActor* InTarget) 
 {
-    if (InTarget == nullptr) return;
     if(TargetActor == InTarget) return;
-    
+    if (InTarget == FriendlyTargetActor) return;
     TargetActor = InTarget;
     bIsAggroCoolDown = false;
     Blackboard->SetValueAsObject("Target", TargetActor); 
@@ -258,6 +266,7 @@ void ACEnemyAIController::ChangeFriendlyTarget(AActor* InTarget)
     if (FriendlyTargetActor == InTarget) return;
 
     FriendlyTargetActor = InTarget;
+    ChangeTarget(nullptr);
     bIsAggroCoolDown = false;
     Blackboard->SetValueAsObject("FriendlyTarget", FriendlyTargetActor);
 }

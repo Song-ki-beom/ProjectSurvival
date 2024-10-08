@@ -59,7 +59,19 @@ EBTNodeResult::Type UCBTTaskNode_Encounter::ExecuteTask(UBehaviorTreeComponent& 
 
 EBTNodeResult::Type UCBTTaskNode_Encounter::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    return EBTNodeResult::Failed;
+    // Task를 즉시 종료하지 않고 몇 초 후에 종료하기 위해 타이머 설정
+    GetWorld()->GetTimerManager().SetTimer(
+        TimerHandle_AbortDelay,
+        FTimerDelegate::CreateLambda([this, &OwnerComp]()
+            {
+                FinishLatentTask(OwnerComp, EBTNodeResult::Aborted); // 몇 초 후에 Task 종료
+            }),
+        3.0f, // 대기할 시간 (초 단위)
+                false
+                );
+
+    OwnerEnemy->End_DoAction();
+    return EBTNodeResult::InProgress;
 }
 
 
