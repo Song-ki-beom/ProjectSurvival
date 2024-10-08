@@ -71,7 +71,10 @@ public:
 	FOnFoodMontageNotifyEnd OnFoodMontageNotifyEnd;
 
 private:
-	class ACharacter* OwnerCharacter;     
+	class ACharacter* OwnerCharacter;    
+	class UCStateComponent* StateComponent;
+	class UCMovingComponent* MovingComponent;
+
 	float MontageDelay = 0.0f;
 
 public:

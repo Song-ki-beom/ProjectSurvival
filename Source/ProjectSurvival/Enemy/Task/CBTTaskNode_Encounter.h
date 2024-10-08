@@ -19,10 +19,10 @@ public:
 protected:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	//void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	
 private:
-	void OnMontageFinished();
+	//void OnMontageFinished();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
@@ -33,5 +33,6 @@ private:
 	class ACEnemy* OwnerEnemy;
 	class UCEnemyAIComponent* AIComponent;
 	class UCMovingComponent* MovingComponent;
+	class UCStateComponent* StateComponent;
 	FTimerHandle TimerHandle_RetriggerableDelay;
 };

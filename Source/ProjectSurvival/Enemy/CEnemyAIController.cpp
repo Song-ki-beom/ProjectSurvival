@@ -28,7 +28,7 @@ ACEnemyAIController::ACEnemyAIController()
 
     Sight->SightRadius = 1000;      
     Sight->LoseSightRadius = 1100;  
-    Sight->PeripheralVisionAngleDegrees = 100; // 인식하는 시야 범위 
+    Sight->PeripheralVisionAngleDegrees = 120; // 인식하는 시야 범위 
     Sight->SetMaxAge(3);  //인식한 상대를 기억하는 시간 
 
     Sight->DetectionByAffiliation.bDetectEnemies = true;        
@@ -39,17 +39,61 @@ ACEnemyAIController::ACEnemyAIController()
     GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
     GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
     
-
+  
 }
+
+
+
 
 void ACEnemyAIController::BeginPlay()
 {
     Super::BeginPlay();
     GetWorld()->GetTimerManager().SetTimer(TickTimerHandle, this, &ACEnemyAIController::CustomTick, 0.1f, true);
 
+    //// PathFollowingComponent의 Repathing 기능을 사용하여 경로 재계산 설정
+    //if (UPathFollowingComponent* PathFollowingComp = GetPathFollowingComponent())
+    //{
+    //    PathFollowingComp->OnRequestFinished.AddUObject(this, &ACEnemyAIController::OnMoveCompleted);
+    //}
+
 }
 
+//void ACEnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+//{
+//    Super::OnMoveCompleted(RequestID, Result);
+//      if (Result.IsInterrupted())
+//    {
+//    CDebug::Print(TEXT("Path is blocked, recalculating..."));
+//
+//    // 경로가 막혔을 경우 경로 재계산 로직 추가
+//    FTimerHandle RetryMoveHandle;
+//    GetWorld()->GetTimerManager().SetTimer(RetryMoveHandle, this, &ACEnemyAIController::RetryMoveToLocation, 0.5f, false);
+//    }
+//}
 
+//void ACEnemyAIController::RetryMoveToLocation()
+//{
+//    FNavPathSharedPtr NavPath;
+//    FAIMoveRequest MoveRequest(TargetLocation);
+//
+//    MoveRequest.SetUsePathfinding(true);
+//    //MoveRequest.SetAllowPartialPath(true);  // 차단된 경우에도 가능한 경로 사용
+//    MoveRequest.SetProjectGoalLocation(true);
+//    MoveRequest.SetAcceptanceRadius(50.0f);
+//    // 새로운 경로를 계산하여 다시 이동 시도
+//    if(!TargetLocation.IsZero())
+//            MoveTo(MoveRequest, &NavPath);
+//}
+
+void ACEnemyAIController::ChangeTargetLocation(FVector InTargetLocation)
+{
+    TargetLocation = InTargetLocation;
+}
+
+FVector ACEnemyAIController::GetCurrentTargetLocation()
+{
+     return TargetLocation; 
+}
 
 void ACEnemyAIController::OnPossess(APawn* InPawn)
 {
@@ -128,6 +172,8 @@ void ACEnemyAIController::SetGenericTeamId(const FGenericTeamId& NewTeamId)
     TeamId = NewTeamId;
 }
 
+
+
 void ACEnemyAIController::OnUnPossess()
 {
     Super::OnUnPossess();
@@ -135,7 +181,7 @@ void ACEnemyAIController::OnUnPossess()
 
 void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-    CDebug::Print("Player Detected!!!!!!");
+    //CDebug::Print("Player Detected!!!!!!");
 
     if (!bIsAggroCoolDown) return;
 

@@ -6,6 +6,7 @@
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CMontageComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "Widget/Status/CEnemyStatusBar.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
@@ -137,6 +138,11 @@ ACEnemy::ACEnemy()
 
 	// AI에 의한 인식 자극을 활성화
 	PerceptionStimuliSource->bAutoRegister = true;
+
+	GetCharacterMovement()->bUseRVOAvoidance = true;  // RVO 회피 활성화
+	GetCharacterMovement()->AvoidanceConsiderationRadius = 1000.0f;  // 회피 반경 설정
+	GetCharacterMovement()->AvoidanceWeight = 1.0f;  // 회피 우선순위 설정
+	
 }
 
 void ACEnemy::BeginPlay()
@@ -333,6 +339,7 @@ void ACEnemy::RequestDoAction_Implementation()
 void ACEnemy::PerformDoAction(int32 InAttackIdx)
 {
 	AttackIdx = InAttackIdx;
+	Begin_DoAction();
 	MontageComponent->Montage_Play(DoActionDatas[InAttackIdx].Montage, 1.0f);
 }
 
@@ -392,15 +399,19 @@ void ACEnemy::Begin_DoAction()
 {
 	StateComponent->ChangeType(EStateType::Action);
 	if (!DoActionDatas[AttackIdx].bCanMove)
-		MovingComponent->Stop();
+	{
+		if(HasAuthority())
+		AIController->StopMovement();
+
+	}
 	MovingComponent->EnableControlRotation();
 }
 
 void ACEnemy::End_DoAction()
 {
 	StateComponent->ChangeType(EStateType::Combat);
-	if (!DoActionDatas[AttackIdx].bCanMove)
-		MovingComponent->Move();
+	//if (!DoActionDatas[AttackIdx].bCanMove)
+		//GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	MovingComponent->DisableControlRotation();
 }
 
@@ -733,12 +744,13 @@ void ACEnemy::RotateMeshToSlope(float InDeltaTime)
 
 void ACEnemy::OnMontageFinalEnded()
 {
-	
+	End_DoAction();
+
 }
 
 void ACEnemy::OnMontageInterrupted()
 {
-	
+	End_DoAction();
 }
 
 void ACEnemy::OnPlayMontageNotifyBegin()

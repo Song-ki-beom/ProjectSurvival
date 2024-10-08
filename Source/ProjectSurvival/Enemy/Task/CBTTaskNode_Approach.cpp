@@ -47,10 +47,19 @@ void UCBTTaskNode_Approach::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
   
     ACharacter* Target = AIComponent->GetTarget();
     if (Target == nullptr) return;
-    FVector Targetlocation = Target->GetActorLocation();
+    FVector TargetLocation = Target->GetActorLocation();
 
  
-    EPathFollowingRequestResult::Type result = controller->MoveToLocation(Targetlocation, AcceptanceDistance, true);
+    //EPathFollowingRequestResult::Type result = controller->MoveToLocation(TargetLocation, AcceptanceDistance, true);
+    FNavPathSharedPtr NavPath;
+    FAIMoveRequest MoveRequest(TargetLocation);
+    controller->ChangeTargetLocation(TargetLocation);
+
+    MoveRequest.SetUsePathfinding(true);
+    //MoveRequest.SetAllowPartialPath(true);  // 차단된 경우에도 가능한 경로 사용
+    MoveRequest.SetProjectGoalLocation(true);
+    MoveRequest.SetAcceptanceRadius(AcceptanceDistance);
+    EPathFollowingRequestResult::Type result = controller->MoveTo(MoveRequest, &NavPath);
 
     switch (result)
     {
