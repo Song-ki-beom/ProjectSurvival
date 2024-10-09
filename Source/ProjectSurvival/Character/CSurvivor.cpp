@@ -321,7 +321,10 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 {
 
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
+	if (StateComponent->IsDeadMode()) return -1;
+	IGenericTeamAgentInterface* TeamAgentInterface = Cast<IGenericTeamAgentInterface>(EventInstigator);
+	if (TeamAgentInterface == nullptr) return -1;
+	if (TeamAgentInterface->GetGenericTeamId() == GetGenericTeamId()) return -1;
 	if (this->HasAuthority())
 	{
 		if (NetDriver && NetDriver->GuidCache)

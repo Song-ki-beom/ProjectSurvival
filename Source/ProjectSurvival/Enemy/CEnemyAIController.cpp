@@ -17,11 +17,10 @@
 
 ACEnemyAIController::ACEnemyAIController()
 {
-    //PrimaryActorTick.bCanEverTick = true;
     bReplicates = true;
     SetReplicates(true);
     SetGenericTeamId(FGenericTeamId(3));
-    Blackboard =  CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoard"));
+   
     Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception"));
 
     Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
@@ -40,15 +39,7 @@ ACEnemyAIController::ACEnemyAIController()
     GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
     GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
     
-    //// Perception Stimuli Source 컴포넌트 생성
-    //PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSourceComponent"));
-
-    //// 시야 감각을 StimuliSource에 추가
-    //if (PerceptionStimuliSourceComponent)
-    //{
-    //    PerceptionStimuliSourceComponent->RegisterForSense(TSubclassOf<UAISense_Sight>());
-    //    PerceptionStimuliSourceComponent->SetAutoRegister(true);
-    //}
+  
 }
 
 
@@ -157,20 +148,44 @@ void ACEnemyAIController::OnPossess(APawn* InPawn)
     if (!Enemy->HasAuthority()) return;
 
     RunAI();
-
+    if (Blackboard == NULL) return;
     AIComponent = Cast<UCEnemyAIComponent>(Enemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
-    if(AIComponent == nullptr) return;
+    if(AIComponent == NULL) return;
     AIComponent->SetBlackboard(Blackboard); //AIComponent에 여기서 설정된 BlackBoard를 AIComponent 가 사용하는 BlackBoard 로 설정(추후에 블랙보드 참조하기 위함)
-  
+   // CDebug::Print(TEXT("Enemy Got BlackBoard : "), Enemy->GetName());
 
 }
 
 void ACEnemyAIController::RunAI()
 {
-    if (UseBlackboard(Enemy->GetBehaviorTree()->BlackboardAsset, Blackboard))
+    if (bIsBehaviorTreeInitialized)
     {
-        RunBehaviorTree(Enemy->GetBehaviorTree()); 
+        CDebug::Print(TEXT("Behavior Tree and Blackboard are already initialized"));
+        return;
+    };
+
+    Blackboard = NewObject<UBlackboardComponent>(this);
+    if (Blackboard && UseBlackboard(Enemy->GetBehaviorTree()->BlackboardAsset, Blackboard))
+    {
+        RunBehaviorTree(Enemy->GetBehaviorTree());
+        bIsBehaviorTreeInitialized = true;
     }
+    
+        // Blackboard를 각 인스턴스마다 독립적으로 설정
+    //Blackboard = NewObject<UBlackboardComponent>(this);
+    //if (Blackboard && UseBlackboard(Enemy->GetBehaviorTree()->BlackboardAsset, Blackboard))
+    //{
+    //    // 동적으로 새로운 Behavior Tree 생성 및 할당
+    //    UBehaviorTreeComponent* NewBehaviorTreeComponent = NewObject<UBehaviorTreeComponent>(this);
+    //    NewBehaviorTreeComponent->StartTree(*Enemy->GetBehaviorTree(), EBTExecutionMode::Looped);
+    //    BehaviorTreeComp = NewBehaviorTreeComponent;
+    //    bIsBehaviorTreeInitialized = true; // 초기화 완료로 설정
+    //    UE_LOG(LogTemp, Log, TEXT("Behavior Tree and Blackboard successfully initialized."));
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Failed to initialize Blackboard or run Behavior Tree."));
+    //}
 }
 
 void ACEnemyAIController::StopAI()

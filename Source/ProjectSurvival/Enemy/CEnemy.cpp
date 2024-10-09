@@ -54,7 +54,7 @@ ACEnemy::ACEnemy()
 	static ConstructorHelpers::FClassFinder<ACEnemyAIController> AIControllerFinder(TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Character/Animal/Bear/BP_CEnemyAIController_Bear.BP_CEnemyAIController_Bear_C'"));
 	if (AIControllerFinder.Class != nullptr)
 	{
-		AIControllerClass = AIControllerFinder.Class; //AIController 클래스 설정
+		AIControllerClass = AIControllerFinder.Class; //AIController 클래스 설정..이 클래스를 기반으로 게임 시작 시 자동설정
 		AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; //이 캐릭터가 스폰될때 AIController 에 의해 빙의됨 
 	}
 
@@ -140,8 +140,8 @@ ACEnemy::ACEnemy()
 	PerceptionStimuliSource->bAutoRegister = true;
 
 	GetCharacterMovement()->bUseRVOAvoidance = true;  // RVO 회피 활성화
-	GetCharacterMovement()->AvoidanceConsiderationRadius = 1000.0f;  // 회피 반경 설정
-	GetCharacterMovement()->AvoidanceWeight = 1.0f;  // 회피 우선순위 설정
+	GetCharacterMovement()->AvoidanceConsiderationRadius = 2000.0f;  // 회피 반경 설정
+	GetCharacterMovement()->AvoidanceWeight = 2.0f;  // 회피 우선순위 설정
 	
 }
 
@@ -185,14 +185,6 @@ void ACEnemy::BeginPlay()
 	}
 
 	
-
-	//BB
-	UBlackboardData* BBAsset = Cast<UBlackboardData>(AssetLoader.LoadSynchronous(FSoftObjectPath(BBAssetPath)));
-	if (BBAsset != nullptr)
-	{
-		GetBehaviorTree()->BlackboardAsset = BBAsset;
-	}
-
 
 	// AI 컨트롤러가 제대로 빙의되었는지 확인
 	AIController = Cast<ACEnemyAIController>(GetController());
@@ -391,6 +383,7 @@ void ACEnemy::AttackTraceHit()
 			}
 			else if ((Hit.GetActor() != nullptr) && (HitCharacter = Cast<ACharacter>(Hit.GetActor()))) //Character 로 형변환 가능하면 적에게 데미지
 			{
+				
 				FActionDamageEvent e;
 				e.HitID = DoActionDatas[AttackIdx].ActionID;
 				HitCharacter->TakeDamage(0, e, this->GetController(), this);
@@ -471,7 +464,9 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (StatusComponent->IsDead()) return -1;
-
+	IGenericTeamAgentInterface* TeamAgentInterface = Cast<IGenericTeamAgentInterface>(EventInstigator);
+	if (TeamAgentInterface == nullptr) return -1;
+	if (TeamAgentInterface->GetGenericTeamId() == GetGenericTeamId()) return -1;
 	if (this->HasAuthority())
 	{
 		if (NetDriver && NetDriver->GuidCache)

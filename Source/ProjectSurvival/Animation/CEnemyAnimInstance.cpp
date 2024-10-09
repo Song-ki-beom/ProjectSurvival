@@ -22,7 +22,7 @@ void UCEnemyAnimInstance::NativeInitializeAnimation()
 	bCastEnded = true;
 	RootMotionMode = ERootMotionMode::IgnoreRootMotion;
 	StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
-	if (!StateComponent->OnStateTypeChanged.IsBound())
+	if (StateComponent->OnStateTypeChanged.IsBound())
 	{
 		StateComponent->OnStateTypeChanged.AddDynamic(this, &UCEnemyAnimInstance::OnStateTypeChangedHandler);
 	}

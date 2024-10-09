@@ -71,6 +71,10 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 		class UAIPerceptionComponent* Perception;
+	UPROPERTY()
+		class UBehaviorTreeComponent* BehaviorTreeComp;
+	
+	bool bIsBehaviorTreeInitialized;
  
 	class  ACEnemy* Enemy;
 	class  UAISenseConfig_Sight* Sight;

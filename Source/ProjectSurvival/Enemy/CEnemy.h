@@ -109,7 +109,6 @@ protected: // 하위 클래스에서 설정하고 동적 로딩하기 위해 Pro
 	//Mesh
 	FString SkeletalMeshPath;
 	FString AnimInstancePath; 
-	FString BBAssetPath;
 	FString FriendlyMeshPath;
 	//Drop
 	int32 DropItemNum;
@@ -145,9 +144,9 @@ protected:
 	class ACharacter* PlayerCharacter;
 
 	//AI 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 		class UBehaviorTree* BehaviorTree;
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 		class ACEnemyAIController* AIController;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	FGenericTeamId TeamId; // 팀 ID 저장 변수
