@@ -3,16 +3,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Struct/CItemDataStructures.h"
+#include "Perception/AISightTargetInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "CSurvivorController.generated.h"
 
 UCLASS()
-class PROJECTSURVIVAL_API ACSurvivorController : public APlayerController
+class PROJECTSURVIVAL_API ACSurvivorController : public APlayerController, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
 	ACSurvivorController();
-
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamId) override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -25,6 +28,8 @@ private:
 	void GetSurvivor();
 	void SetupInputFunction();
 	void UpdateListenerTransform();
+
+
 	// Build
 	void ToggleBuildWidget();
 	void SelectQ();
@@ -65,6 +70,8 @@ private:
 
 private:
 	class ACSurvivor* Survivor;
+	
+	FGenericTeamId TeamId;
 
 	bool bIsBuildWidgetOn;
 	bool bIsProduceWidgetOn;

@@ -51,7 +51,6 @@ EBTNodeResult::Type UCBTTaskNode_RunAway::ExecuteTask(UBehaviorTreeComponent& Ow
 
     if (AttemptCnt >= MaxAttempts)
     {
-        // 실패 처리 (예: 특정 로그를 출력하거나 실패를 반환)
         return EBTNodeResult::Failed;
     }
 

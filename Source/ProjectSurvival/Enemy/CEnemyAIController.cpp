@@ -2,16 +2,17 @@
 
 
 #include "Enemy/CEnemyAIController.h"
-
-
+#include "Kismet/GameplayStatics.h"
 #include "Enemy/CEnemyAIController.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Enemy/CEnemy.h"
 #include "Utility/CDebug.h"
+#include "CoreMinimal.h"
 #include "ActorComponents/CEnemyAIComponent.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
 ACEnemyAIController::ACEnemyAIController()
@@ -39,7 +40,15 @@ ACEnemyAIController::ACEnemyAIController()
     GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
     GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
     
-  
+    //// Perception Stimuli Source 컴포넌트 생성
+    //PerceptionStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSourceComponent"));
+
+    //// 시야 감각을 StimuliSource에 추가
+    //if (PerceptionStimuliSourceComponent)
+    //{
+    //    PerceptionStimuliSourceComponent->RegisterForSense(TSubclassOf<UAISense_Sight>());
+    //    PerceptionStimuliSourceComponent->SetAutoRegister(true);
+    //}
 }
 
 
@@ -85,10 +94,46 @@ void ACEnemyAIController::BeginPlay()
 //            MoveTo(MoveRequest, &NavPath);
 //}
 
+void ACEnemyAIController::UpdatePerception()
+{
+    if (GetPerceptionComponent())
+    {
+       // GetPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
+        TArray<AActor*> AllActors;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
+
+        for (AActor* Actor : AllActors)
+        {
+            APawn* OtherPawn = Cast<APawn>(Actor);
+            if (OtherPawn) 
+            {
+                ETeamAttitude::Type Attitude = GetTeamAttitudeTowards(*Actor);
+                UE_LOG(LogTemp, Warning, TEXT("Updated attitude towards %s: %d"), *Actor->GetName(), (int32)Attitude);
+            }
+               
+        }
+    }
+}
+
 void ACEnemyAIController::TameEnemyToPlayer(APlayerController* PlayerController)
 {
+    if (PlayerController == nullptr) return;
 
+        // 플레이어의 TeamID를 가져와서 설정
+        IGenericTeamAgentInterface* TeamAgentInterface = Cast<IGenericTeamAgentInterface>(PlayerController);
+        if (TeamAgentInterface)
+        {
+            if (TeamAgentInterface->GetGenericTeamId())
+            {
+             
+                SetGenericTeamId(TeamAgentInterface->GetGenericTeamId());
+                PerceptionComponent->RequestStimuliListenerUpdate();
+                //PerceptionComponent->RegisterWithPerceptionSystem();
+                //UpdatePerception();
+            }
+        }
 }
+
 
 void ACEnemyAIController::ChangeTargetLocation(FVector InTargetLocation)
 {
@@ -200,11 +245,6 @@ void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActo
         for (AActor* CandidateActor : CandidateActors)
         {
             if (GetPawn() == nullptr) return;
-            if (CandidateActor == FriendlyTargetActor)
-            {
-                CDebug::Print(TEXT("FriendlyTargetActor Detected"));
-                return;
-            }
             float distanceTo  = GetPawn()->GetDistanceTo(CandidateActor);
             if (distanceTo < shortestDistance)
             {
@@ -229,24 +269,27 @@ void ACEnemyAIController::EnableAggroCoolDown()
 
 void ACEnemyAIController::CustomTick()
 {
-        if (TargetActor &&GetPawn()->GetDistanceTo(TargetActor) >= 5000.0f)
+    if (TargetActor == nullptr) return;
+        if (GetPawn()->GetDistanceTo(TargetActor) >= 5000.0f)
     {
         TargetActor = NULL;
         Blackboard->SetValueAsObject("Target", TargetActor);
         GetWorld()->GetTimerManager().ClearTimer(AggroTimerHandle);
         EnableAggroCoolDown();
     }
-
-    /*    TArray<AActor*> PerceivedActors;
-        Perception->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
-
-        for (AActor* Actor : PerceivedActors)
+        if (FriendlyTargetActor) 
         {
-            if (Actor)
+            TArray<AActor*> PerceivedActors;
+            Perception->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
+
+            for (AActor* Actor : PerceivedActors)
             {
-                UE_LOG(LogTemp, Warning, TEXT("Perceived Actor: %s"), *Actor->GetName());
+                if (Actor)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Perceived Actor: %s"), *Actor->GetName());
+                }
             }
-        }*/
+        }
 }
 
 void ACEnemyAIController::ChangeTarget(AActor* InTarget) 
@@ -260,6 +303,11 @@ void ACEnemyAIController::ChangeTarget(AActor* InTarget)
 
 }
 
+AActor* ACEnemyAIController::GetTarget()
+{
+    return TargetActor;
+}
+
 void ACEnemyAIController::ChangeFriendlyTarget(AActor* InTarget)
 {
     if (InTarget == nullptr) return;
@@ -269,4 +317,31 @@ void ACEnemyAIController::ChangeFriendlyTarget(AActor* InTarget)
     ChangeTarget(nullptr);
     bIsAggroCoolDown = false;
     Blackboard->SetValueAsObject("FriendlyTarget", FriendlyTargetActor);
+}
+
+AActor* ACEnemyAIController::GetFriendlyTarget()
+{
+    return FriendlyTargetActor;
+}
+
+void ACEnemyAIController::ForceUpdatePerception()
+{
+    if (GetPerceptionComponent())
+    {
+        // 현재 감지된 모든 액터를 잊게 함으로써 Perception을 강제로 업데이트
+        TArray<AActor*> AllActors;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
+
+        for (AActor* Actor : AllActors)
+        {
+            APawn* OtherPawn = Cast<APawn>(Actor);
+            if (OtherPawn)
+            {
+                GetPerceptionComponent()->ForgetActor(Actor);
+
+            }
+           
+        }
+
+    }
 }

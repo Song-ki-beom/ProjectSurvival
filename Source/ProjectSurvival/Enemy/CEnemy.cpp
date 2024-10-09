@@ -358,14 +358,15 @@ void ACEnemy::AttackTraceHit()
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
-
+	FCollisionObjectQueryParams objectQueryParams; //다중 검출 PARAM
+	objectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 	//BoxTrace 
-	bool bHit = GetWorld()->SweepMultiByChannel(
+	bool bHit = GetWorld()->SweepMultiByObjectType(
 		HitResults,
 		Start,
 		End,
 		Rot,
-		ECC_Pawn,
+		objectQueryParams,
 		FCollisionShape::MakeBox(HalfSize),
 		CollisionParams
 	);
@@ -381,18 +382,27 @@ void ACEnemy::AttackTraceHit()
 
 		for (const FHitResult& Hit : HitResults)
 		{
-			ACharacter* HitPlayer;
-			if ((Hit.GetActor() != nullptr) && (HitPlayer = Cast<ACharacter>(Hit.GetActor())))
+			ACharacter* HitCharacter;
+			UPrimitiveComponent* HitComponent = Hit.GetComponent();
+			if (HitComponent && HitComponent->IsA<USkeletalMeshComponent>()) //스켈레탈 메시가 검출되었는지
+			{
+				FActionDamageEvent e;
+				continue; // Skeletal Mesh는 무시
+			}
+			else if ((Hit.GetActor() != nullptr) && (HitCharacter = Cast<ACharacter>(Hit.GetActor()))) //Character 로 형변환 가능하면 적에게 데미지
 			{
 				FActionDamageEvent e;
 				e.HitID = DoActionDatas[AttackIdx].ActionID;
-				HitPlayer->TakeDamage(0, e, this->GetController(),this);
+				HitCharacter->TakeDamage(0, e, this->GetController(), this);
+
 			}
+			
+
 		}
-	}
-
 	
-
+	
+	
+	}
 }
 
 void ACEnemy::Begin_DoAction()
@@ -402,7 +412,6 @@ void ACEnemy::Begin_DoAction()
 	{
 		if(HasAuthority())
 		AIController->StopMovement();
-
 	}
 	MovingComponent->EnableControlRotation();
 }
@@ -454,16 +463,14 @@ void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ACEnemy::BroadcastChangeMesh_Implementation()
 {
-	
 		bChangeMesh = true;
-	
-	
 }
 
 float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser) 
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (StatusComponent->IsDead()) return -1;
 
 	if (this->HasAuthority())
 	{
@@ -570,6 +577,10 @@ void ACEnemy::ApplyHitData()
 					SetActorRotation(LookAtRotation);
 					LaunchCharacter(-direction * HitData->Launch, false, false);
 					hitCnt = 0;
+				}
+				else
+				{
+					LaunchCharacter(-direction * HitData->Launch*(0.75f), false, false);
 				}
 		
 
@@ -683,8 +694,20 @@ void ACEnemy::OnBecameFriendlyHandler()
 			if (NewTargetActor)
 			{
 				AIController->ChangeFriendlyTarget(NewTargetActor);
-				AIController->ChangeTarget(NULL);
+				APawn* TargetPawn = Cast<APawn>(NewTargetActor);
+				if (TargetPawn)
+				{
+					APlayerController* PlayerController = Cast<APlayerController>(TargetPawn->GetController());
+					if (PlayerController)
+					{
+						AIController->ChangeTarget(NULL);
+						SetGenericTeamId(FGenericTeamId(1));
+						AIController->ForceUpdatePerception();
+						AIController->TameEnemyToPlayer(PlayerController);
+						AIController->EnableAggroCoolDown();
 
+					}
+				}
 			}
 		}
 	}
