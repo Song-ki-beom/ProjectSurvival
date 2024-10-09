@@ -10,6 +10,7 @@
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CInventoryComponent.h"
 #include "ActorComponents/CMontageComponent.h"
+#include "ActorComponents/CStateComponent.h"
 #include "Widget/CMainHUD.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Widget/Build/CBuildItemSlot.h"
@@ -26,6 +27,7 @@
 #include "Widget/Map/CMiniMap.h"
 #include "Widget/Map/CWorldMap.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
+#include "Weapon/CDoAction.h"
 #include "Components/SizeBox.h"
 
 ACSurvivorController::ACSurvivorController()
@@ -556,6 +558,17 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 
 		CDebug::Print("QuickSlot WeaponType : ", enumValueAsString);
 
+		if (quickSlotItem->ItemStats.RemainDurability == 0)
+			return;
+
+		if (Survivor->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+		{
+			CDebug::Print("Montage is Playing");
+			return;
+		}
+
+		
+
 		// 장착
 		if (quickSlotItem->HuntData.WeaponType == EWeaponType::StonePick)
 		{
@@ -611,10 +624,10 @@ void ACSurvivorController::ShowBuildInteractWidget()
 	//RespawnLocationRegisterClass
 }
 
-void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats)
+void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats, EWeaponType InWeaponType)
 {
 	//InPlaceable->PerformAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats);
-	InPlaceable->BroadcastAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats);
+	InPlaceable->BroadcastAddItem(ItemID, InQuantity, InNumericData, ItemType, InItemStats, InWeaponType);
 }
 
 void ACSurvivorController::RequestSwapItem_Implementation(int32 idxBase, int32  idxDrag, class ACStructure_Placeable* InPlaceable)

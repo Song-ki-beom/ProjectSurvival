@@ -387,7 +387,7 @@ void ACStructure_Placeable::SetRespawnLocationText(const FText& InText)
 	}
 }
 
-void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats)
+void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType)
 {
 	//FItemInformation addedItemInfo;
 	//addedItemInfo.ItemID = InID;
@@ -437,6 +437,7 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	addedItemInfo.ItemType = InItemType;
 	CDebug::Print("PerformAddItem Durability : ", InItemStats.RemainDurability);
 	addedItemInfo.ItemStats = InItemStats;
+	addedItemInfo.WeaponType = InWeaponType;
 
 	// 스택이 가능한 아이템인지 검사
 	if (addedItemInfo.NumericData.bIsStackable)
@@ -454,7 +455,7 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 				ItemInfoArray[resultIndex].Quantity += addQuantity;
 
 				// 최대 스택만큼 더하고 남은 양만큼 다시 PerformAddItem 호출
-				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData, addedItemInfo.ItemType, addedItemInfo.ItemStats);
+				PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData, addedItemInfo.ItemType, addedItemInfo.ItemStats, addedItemInfo.WeaponType);
 			}
 			else
 				ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
@@ -466,9 +467,9 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	AddItemInfoToWidget();
 }
 
-void ACStructure_Placeable::BroadcastAddItem_Implementation(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats)
+void ACStructure_Placeable::BroadcastAddItem_Implementation(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType WeaponType)
 {
-	PerformAddItem(InID, InQuantity, InNumericData, InItemType, InItemStats);
+	PerformAddItem(InID, InQuantity, InNumericData, InItemType, InItemStats, WeaponType);
 }
 
 void ACStructure_Placeable::PerformRemoveItem(int32 idxRemove)
@@ -658,6 +659,7 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 			ItemCopy->ItemStats = ItemInfoArray[tempIndex].ItemStats;
 			ItemCopy->NumericData = itemData->NumericData;
 			ItemCopy->AssetData = itemData->AssetData;
+			ItemCopy->HuntData = itemData->HuntData;
 			ItemCopy->bIsCopy = true;
 
 			ActorInventoryContents.Add(ItemCopy);
@@ -886,7 +888,7 @@ void ACStructure_Placeable::CreatePlaceableRemainBag(class AActor* InDestroyedAc
 						{
 							if (tempItem)
 							{
-								placeableStructure->BroadcastAddItem(tempItem->ID, tempItem->Quantity, tempItem->NumericData, tempItem->ItemType, tempItem->ItemStats);
+								placeableStructure->BroadcastAddItem(tempItem->ID, tempItem->Quantity, tempItem->NumericData, tempItem->ItemType, tempItem->ItemStats, tempItem->HuntData.WeaponType);
 							}
 						}
 					}

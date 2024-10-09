@@ -8,6 +8,7 @@
 #include "ActorComponents/CHarvestComponent.h"
 #include "ActorComponents/CStateComponent.h"
 #include "ActorComponents/CStatusComponent.h"
+#include "ActorComponents/CMovingComponent.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
 #include "Widget/Map/CWorldMap.h"
@@ -18,17 +19,105 @@
 
 void UCDoAction_Weapon::DoAction()
 {
+	bool bIsCanDoAction = true;
+
+	UWorld* world = OwnerCharacter->GetWorld();
+
+	if (!world)
+	{
+		CDebug::Print("world is not valid", FColor::Magenta);
+	}
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(world->GetGameInstance());
+	if (gameInstance)
+	{
+		ACSurvivor* personalSurvivor = gameInstance->WorldMap->GetPersonalSurvivor();
+
+		if (personalSurvivor)
+		{
+			UCItemBase* usingItem = personalSurvivor->GetWeaponComponent()->GetUsingWeapon();
+			UCInventoryItemSlot* usingItemSlot = personalSurvivor->GetWeaponComponent()->GetUsingWeaponSlot();
+			if (usingItem && usingItemSlot)
+			{
+				if (usingItem->ItemStats.RemainDurability == 0)
+				{
+					bIsCanDoAction = false;
+				}
+			}
+		}
+	}
+
+	if (!bIsCanDoAction)
+		return;
+
 	Super::DoAction();
 }
 
 void UCDoAction_Weapon::Begin_DoAction()
 {
+	bool bIsCanDoAction = true;
+
+	UWorld* world = OwnerCharacter->GetWorld();
+
+	if (!world)
+	{
+		CDebug::Print("world is not valid", FColor::Magenta);
+	}
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(world->GetGameInstance());
+	if (gameInstance)
+	{
+		ACSurvivor* personalSurvivor = gameInstance->WorldMap->GetPersonalSurvivor();
+
+		if (personalSurvivor)
+		{
+			UCItemBase* usingItem = personalSurvivor->GetWeaponComponent()->GetUsingWeapon();
+			UCInventoryItemSlot* usingItemSlot = personalSurvivor->GetWeaponComponent()->GetUsingWeaponSlot();
+			if (usingItem && usingItemSlot)
+			{
+				if (usingItem->ItemStats.RemainDurability == 0)
+				{
+					bIsCanDoAction = false;
+				}
+			}
+		}
+	}
+
+	if (!bIsCanDoAction)
+		return;
+
 	Super::Begin_DoAction();
 }
 
 void UCDoAction_Weapon::End_DoAction()
 {
 	Super::End_DoAction();
+
+	UWorld* world = OwnerCharacter->GetWorld();
+
+	if (!world)
+	{
+		CDebug::Print("world is not valid", FColor::Magenta);
+	}
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(world->GetGameInstance());
+	if (gameInstance)
+	{
+		ACSurvivor* personalSurvivor = gameInstance->WorldMap->GetPersonalSurvivor();
+
+		if (personalSurvivor)
+		{
+			UCItemBase* usingItem = personalSurvivor->GetWeaponComponent()->GetUsingWeapon();
+			UCInventoryItemSlot* usingItemSlot = personalSurvivor->GetWeaponComponent()->GetUsingWeaponSlot();
+			if (usingItem && usingItemSlot)
+			{
+				if (usingItem->ItemStats.RemainDurability == 0)
+				{
+					personalSurvivor->GetWeaponComponent()->SetMode(usingItem->HuntData.WeaponType);
+				}
+			}
+		}
+	}
 }
 
 void UCDoAction_Weapon::WeaponHitTrace()
@@ -119,8 +208,14 @@ void UCDoAction_Weapon::WeaponHitTrace()
 							UCInventoryItemSlot* usingItemSlot = personalSurvivor->GetWeaponComponent()->GetUsingWeaponSlot();
 							if (usingItem && usingItemSlot)
 							{
-								int32 durability = usingItem->ItemStats.RemainDurability--;
-								usingItemSlot->SetRemainDurability(durability);
+								usingItem->ItemStats.RemainDurability--;
+								usingItemSlot->SetRemainDurability(usingItem->ItemStats.RemainDurability);
+								if (usingItem->ItemStats.RemainDurability == 0)
+								{
+									usingItemSlot->SetRedXVisibility(ESlateVisibility::Visible);
+									//personalSurvivor->GetWeaponComponent()->SetMode(usingItem->HuntData.WeaponType);
+									//End_DoAction();
+								}
 							}
 						}
 					}
@@ -212,6 +307,17 @@ void UCDoAction_Weapon::WeaponHitTrace()
 								{
 									int32 durability = usingItem->ItemStats.RemainDurability--;
 									usingItemSlot->SetRemainDurability(durability);
+									if (durability == 0)
+									{
+										usingItem->ItemStats.RemainDurability--;
+										usingItemSlot->SetRemainDurability(usingItem->ItemStats.RemainDurability);
+										if (usingItem->ItemStats.RemainDurability == 0)
+										{
+											usingItemSlot->SetRedXVisibility(ESlateVisibility::Visible);
+											//personalSurvivor->GetWeaponComponent()->SetMode(usingItem->HuntData.WeaponType);
+											//End_DoAction();
+										}
+									}
 								}
 							}
 						}

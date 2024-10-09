@@ -31,6 +31,8 @@ public:
 		FItemNumericData NumericData;
 	UPROPERTY()
 		FItemStats ItemStats;
+	UPROPERTY()
+		EWeaponType WeaponType;
 };
 
 UCLASS()
@@ -67,10 +69,10 @@ public:
 	FOnTextSet OnTextSet;
 
 	//Add
-	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
+	void PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType);
 
 	UFUNCTION(NetMulticast, Reliable)
-		void BroadcastAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats);
+		void BroadcastAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType WeaponType);
 
 
 

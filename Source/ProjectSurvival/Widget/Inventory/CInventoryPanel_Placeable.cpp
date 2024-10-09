@@ -313,12 +313,12 @@ void UCInventoryPanel_Placeable::AddItem(class UCItemBase* InItem, const int32 Q
 		// Server
 		[=](ACStructure_Placeable* placeableActor)
 		{
-			placeableActor->BroadcastAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
+			placeableActor->BroadcastAddItem(InItem->ID, QuantityToAdd, InItem->NumericData, InItem->ItemType, InItem->ItemStats, InItem->HuntData.WeaponType);
 		},
 		// Client
 			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
 		{
-			playerController->RequestAddItem(InItem->ID, QuantityToAdd, placeableActor, InItem->NumericData, InItem->ItemType, InItem->ItemStats);
+			playerController->RequestAddItem(InItem->ID, QuantityToAdd, placeableActor, InItem->NumericData, InItem->ItemType, InItem->ItemStats, InItem->HuntData.WeaponType);
 		}
 		);
 

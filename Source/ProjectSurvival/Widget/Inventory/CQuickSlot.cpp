@@ -159,10 +159,25 @@ void UCQuickSlot::ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex, b
     UCInventoryItemSlot* itemSlot = CreateWidget<UCInventoryItemSlot>(this, InventorySlotClass);
     itemSlot->SetItemReference(InItem);
     
-    if (SizeBoxes[InIndex]->HasAnyChildren())
+    if (SizeBoxes[InIndex]->HasAnyChildren() && !bDragStartFromQuickSlot)
     {
         CDebug::Print("ClearChildren");
-        SizeBoxes[InIndex]->ClearChildren();
+        //SizeBoxes[InIndex]->ClearChildren();
+
+        ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+        if (survivor)
+        {
+            if (SizeBoxes[InIndex]->HasAnyChildren())
+            {
+                UCInventoryItemSlot* tempItemSlot = Cast<UCInventoryItemSlot>(SizeBoxes[InIndex]->GetChildAt(0));
+                if (tempItemSlot)
+                {
+                    survivor->GetInventoryComponent()->AddNewItem(tempItemSlot->GetItemReference(), 1);
+                    SizeBoxes[InIndex]->ClearChildren();
+                }
+            }
+        }
+
     }
     SizeBoxes[InIndex]->AddChild(itemSlot);
     
@@ -388,6 +403,7 @@ class UCItemBase* UCQuickSlot::CreateItem(class UCItemBase* InItem)
     itemCopy->ItemStats = InItem->ItemStats;
     itemCopy->NumericData = InItem->NumericData;
     itemCopy->AssetData = InItem->AssetData;
+    itemCopy->HuntData = InItem->HuntData;
     itemCopy->bIsCopy = true;
 
     return itemCopy;

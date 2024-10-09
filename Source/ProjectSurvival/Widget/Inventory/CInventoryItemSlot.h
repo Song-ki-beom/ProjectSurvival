@@ -74,6 +74,7 @@ public:
 	void SetUniqueItemIndexInWrapBox(int32 InIndex) { UniqueItemIndexInWrapBox = InIndex; }
 	void SetItemQuantityText(int32 InQuantity);
 	void SetRemainDurability(int32 InDurability);
+	void SetRedXVisibility(ESlateVisibility InVisibility);
 
 protected:
 
@@ -99,6 +100,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
 	class UProgressBar* DurabilityProgressBar; // 내구도 
+
+	UPROPERTY(VisibleAnywhere, Category = "Inventory Slot", meta = (BindWidget))
+	class UImage* RedX; //내구도 0인 장비 표시하는 텍스쳐 
 
 	UPROPERTY(VisibleAnywhere, Category = "HUD")
 	class ACMainHUD* HUDReference; //SubMenu를 표시할 HUD 

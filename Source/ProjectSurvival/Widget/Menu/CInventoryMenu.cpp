@@ -127,7 +127,8 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 						{
 							if (survivor->GetWeaponComponent()->GetUsingWeapon() == ItemDragDrop->SourceItem)
 							{
-								survivor->GetWeaponComponent()->SetMode(ItemDragDrop->SourceItem->HuntData.WeaponType);
+								if (survivor->GetWeaponComponent()->GetWeaponType() != EWeaponType::Max)
+									survivor->GetWeaponComponent()->SetMode(ItemDragDrop->SourceItem->HuntData.WeaponType);
 							}
 						}
 					}

@@ -89,7 +89,10 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 		else
 			SetRemainDurability(ItemReference->ItemStats.RemainDurability);
 
-		
+		if (ItemReference->ItemType == EItemType::Hunt && ItemReference->ItemStats.RemainDurability == 0)
+			RedX->SetVisibility(ESlateVisibility::Visible);
+
+		CDebug::Print("RamainDurability is ", ItemReference->ItemStats.RemainDurability, FColor::Purple);
 	}
 
 }
@@ -127,6 +130,9 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		}
 
 		if (RightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget && !this->GetItemReference()->NumericData.bIsStackable)
+			return Reply.Unhandled();
+
+		if (this->GetItemReference()->ItemType == EItemType::Hunt && this->GetItemReference()->Quantity == 1)
 			return Reply.Unhandled();
 
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetOwningPlayer()->GetHUD());
@@ -393,4 +399,9 @@ void UCInventoryItemSlot::SetRemainDurability(int32 InDurability)
 
 		DurabilityProgressBar->SetPercent(static_cast<float>(InDurability) / static_cast<float>(ItemReference->ItemStats.MaxDurability));
 	}
+}
+
+void UCInventoryItemSlot::SetRedXVisibility(ESlateVisibility InVisibility)
+{
+	RedX->SetVisibility(InVisibility);
 }

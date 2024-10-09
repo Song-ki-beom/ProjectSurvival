@@ -198,7 +198,7 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 				case EWidgetCall::Placeable:
 					if (produceWidget->GetOwnerActor()->HasAuthority())
 					{
-						produceWidget->GetOwnerActor()->BroadcastAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats);
+						produceWidget->GetOwnerActor()->BroadcastAddItem(ProduceTargetItem->ID, 1, ProduceTargetItem->NumericData, ProduceTargetItem->ItemType, ProduceTargetItem->ItemStats, ProduceTargetItem->HuntData.WeaponType);
 					}
 					break;
 				}

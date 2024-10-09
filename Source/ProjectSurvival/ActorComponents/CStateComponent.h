@@ -36,7 +36,7 @@ public:
     void ChangeType(EStateType InType);
     UFUNCTION(NetMulticast, Reliable)
      void BroadcastChangeType(EStateType InType);
-
+    EStateType GetStateType() { return Type; }
 
 private:
     void SetIdleMode();

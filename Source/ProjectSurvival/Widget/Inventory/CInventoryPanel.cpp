@@ -164,7 +164,16 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
                 if (quickSlot)
                 {
                     if (ItemDragDrop->DragStartWidget == quickSlot)
+                    {
                         mainHUD->GetQuickSlotWidget()->ProcessDragToInventoryPanel(ItemDragDrop->SourceItem);
+
+                        ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
+                        if (survivor)
+                        {
+                            if (survivor->GetWeaponComponent()->GetWeaponType() != EWeaponType::Max)
+                                survivor->GetWeaponComponent()->SetMode(ItemDragDrop->SourceItem->HuntData.WeaponType);
+                        }
+                    }
                 }
             }
             return true;

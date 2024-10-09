@@ -610,7 +610,25 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 
 	if (this->HasAuthority())
 	{
-		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0)
+		//퀵슬롯 아이템 검사
+
+		bool bIsQuickSlotItemValid = false;
+
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+		{
+			for (USizeBox* tempSizeBox : mainHUD->GetQuickSlotWidget()->GetSizeBoxArray())
+			{
+				UCInventoryItemSlot* tempItemSlot = Cast<UCInventoryItemSlot>(tempSizeBox->GetChildAt(0));
+				if (tempItemSlot)
+				{
+					bIsQuickSlotItemValid = true;
+					break;
+				}
+			}
+		}
+
+		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0 || bIsQuickSlotItemValid)
 		{
 			CDebug::Print("InventoryContents Found and Create BackPack At Server", FColor::Green);
 
@@ -646,7 +664,25 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 	}
 	else
 	{
-		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0)
+		//퀵슬롯 아이템 검사
+
+		bool bIsQuickSlotItemValid = false;
+
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(GameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+		{
+			for (USizeBox* tempSizeBox : mainHUD->GetQuickSlotWidget()->GetSizeBoxArray())
+			{
+				UCInventoryItemSlot* tempItemSlot = Cast<UCInventoryItemSlot>(tempSizeBox->GetChildAt(0));
+				if (tempItemSlot)
+				{
+					bIsQuickSlotItemValid = true;
+					break;
+				}
+			}
+		}
+
+		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0 || bIsQuickSlotItemValid)
 		{
 			CDebug::Print("InventoryContents Found and Create BackPack In Client", FColor::Red);
 

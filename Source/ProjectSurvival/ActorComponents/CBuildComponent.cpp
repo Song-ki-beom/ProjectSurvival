@@ -14,6 +14,7 @@
 #include "Widget/Build/CBuildItemSlot.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryPanel.h"
+#include "Widget/Inventory/CQuickSlot.h"
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/Map/CWorldMap.h"
 #include "CGameInstance.h"
@@ -1334,18 +1335,49 @@ void UCBuildComponent::ReceiveSpawnedActor_Implementation(class ACStructure_Plac
 {
 	if (SpawnedActor)
 	{
-		CDebug::Print("Clinet Function Called And Spawnd Actor Is Valid : ", SpawnedActor);
+		//CDebug::Print("Clinet Function Called And Spawnd Actor Is Valid : ", SpawnedActor);
 
-		for (TWeakObjectPtr<UCItemBase> tempPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+		ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwner()->GetInstigatorController());
+		
+		if (survivorController)
 		{
-			if (tempPtr.IsValid())
+
+			for (TWeakObjectPtr<UCItemBase> tempPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
 			{
-				ACSurvivorController* survivorController = Cast<ACSurvivorController>(this->GetOwner()->GetInstigatorController());
-				if (survivorController)
+				if (tempPtr.IsValid())
 				{
-					survivorController->RequestAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, SpawnedActor, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats);
+					survivorController->RequestAddItem(tempPtr.Get()->ID, tempPtr.Get()->Quantity, SpawnedActor, tempPtr.Get()->NumericData, tempPtr.Get()->ItemType, tempPtr.Get()->ItemStats, tempPtr.Get()->HuntData.WeaponType);
 					Survivor->GetInventoryComponent()->RemoveSingleItem(tempPtr.Get());
 				}
+			}
+
+			ACMainHUD* mainHUD = Cast<ACMainHUD>(survivorController->GetHUD());
+			if (mainHUD)
+			{
+				for (USizeBox* tempSizeBox : mainHUD->GetQuickSlotWidget()->GetSizeBoxArray())
+				{
+					if (tempSizeBox)
+					{
+						UCInventoryItemSlot* itemSlot = Cast<UCInventoryItemSlot>(tempSizeBox->GetChildAt(0));
+						if (itemSlot)
+						{
+							if (itemSlot->GetItemReference()->ItemType == EItemType::Hunt)
+							{
+								survivorController->RequestAddItem(itemSlot->GetItemReference()->ID, 1, SpawnedActor, itemSlot->GetItemReference()->NumericData, itemSlot->GetItemReference()->ItemType, itemSlot->GetItemReference()->ItemStats, itemSlot->GetItemReference()->HuntData.WeaponType);
+								itemSlot->RemoveFromParent();
+								itemSlot->MarkPendingKill();
+							}
+						}
+					}
+				}
+			}
+
+			ACSurvivor* survivor = Cast<ACSurvivor>(survivorController->GetPawn());
+			if (survivor)
+			{
+				EWeaponType weaponType = survivor->GetWeaponComponent()->GetUsingWeapon()->HuntData.WeaponType;
+				if (survivor->GetWeaponComponent()->GetWeaponType() != EWeaponType::Max)
+					survivor->GetWeaponComponent()->SetMode(weaponType);
 			}
 		}
 	}

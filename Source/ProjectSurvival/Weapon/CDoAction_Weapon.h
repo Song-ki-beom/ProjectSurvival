@@ -19,11 +19,17 @@ public:
 	void Begin_DoAction() override;
 	void End_DoAction() override;
 	void WeaponHitTrace();
+	void SetDoActionDamage(float InStoneHarvestDamage, float InWoodHarvestDamage)
+	{
+		StoneHarvestDamage = InStoneHarvestDamage;
+		WoodHarvestDamage = InWoodHarvestDamage;
+	}
 
 private:
 	float HarvestDamage = 50.0f;
-	//float TraceDistance = 45.0f;
-	//float TraceOffset = 100.0f;
+
+	float StoneHarvestDamage = 0.0f;
+	float WoodHarvestDamage = 0.0f;
 
 	class UBoxComponent* HitBox;
 };

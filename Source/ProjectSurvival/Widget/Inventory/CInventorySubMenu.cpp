@@ -147,14 +147,16 @@ void UCInventorySubMenu::UpdateSubMenu(ERightClickStartWidget InRightClickStartW
         case EItemType::Consumable:
             if (IsValid(ActionButton))
             {
-                if (InRightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget)
-                    ActionButton->SetVisibility(ESlateVisibility::Collapsed);
-                else
-                {
-                    ActionButton->SetVisibility(ESlateVisibility::Visible);
-                    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
-                    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
-                }
+                ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+
+                //if (InRightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget)
+                //    ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+                //else
+                //{
+                //    ActionButton->SetVisibility(ESlateVisibility::Visible);
+                //    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
+                //    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+                //}
             }
             if (IsValid(SplitButton))
             {

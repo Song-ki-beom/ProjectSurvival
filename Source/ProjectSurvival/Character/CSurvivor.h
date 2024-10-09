@@ -59,7 +59,7 @@ public:
 		return InteractionComponent;
 	}
 	class UCMontageComponent* GetMontageComponent() { return MontageComponent; }
-
+	class UCStateComponent* GetStateComponent() { return StateComponent; }
 
 	void SelectStructure(ESelectedStructure InKey, TSubclassOf< ACStructure> InClass, EBuildStructureElement InElement, FName InItemID);
 
