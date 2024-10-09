@@ -23,8 +23,15 @@ public:
 
 	/*UFUNCTION()
 		void RetryMoveToLocation();*/
+
+	UFUNCTION()
+	void UpdatePerception();
 	UFUNCTION()
 	void TameEnemyToPlayer(class APlayerController* PlayerController);
+	UFUNCTION()
+	void ForceUpdatePerception();
+	UFUNCTION()
+	void EnableAggroCoolDown();
 
 	UFUNCTION()
 		void ChangeTargetLocation(FVector InTargetLocation);
@@ -34,7 +41,11 @@ public:
 	UFUNCTION()
 		void ChangeTarget(class AActor* InTarget);
 	UFUNCTION()
+		class AActor* GetTarget();
+	UFUNCTION()
 		void ChangeFriendlyTarget(AActor* InTarget);
+	UFUNCTION()
+		class AActor* GetFriendlyTarget();
 
 	UFUNCTION()
 		void RunAI();
@@ -50,8 +61,6 @@ protected:
 private:
 	UFUNCTION()
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
-	UFUNCTION()
-		void EnableAggroCoolDown();
 	UFUNCTION()
 		void CustomTick();
 

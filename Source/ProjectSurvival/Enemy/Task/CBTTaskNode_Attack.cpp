@@ -27,13 +27,7 @@ EBTNodeResult::Type UCBTTaskNode_Attack::ExecuteTask(UBehaviorTreeComponent& Own
 
     if (Enemy)
     {
-        Enemy->Begin_DoAction();
         Enemy->DoAction();
-    /*    if (MontageDuration > 0.0f)
-        {
-            GetWorld()->GetTimerManager().SetTimer(TimerHandle_RetriggerableDelay, this, &UCBTTaskNode_Attack::OnMontageFinished, MontageDuration, false);
-            return EBTNodeResult::InProgress;
-        }*/
     }
     return EBTNodeResult::InProgress;
     

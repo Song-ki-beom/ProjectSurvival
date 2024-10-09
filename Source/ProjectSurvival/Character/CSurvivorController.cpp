@@ -51,6 +51,19 @@ ACSurvivorController::ACSurvivorController()
 
 	bIsBuildWidgetOn = false;
 	bIsProduceWidgetOn = false;
+
+	SetGenericTeamId(FGenericTeamId(1));
+
+}
+
+FGenericTeamId ACSurvivorController::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
+void ACSurvivorController::SetGenericTeamId(const FGenericTeamId& NewTeamId)
+{
+	TeamId = NewTeamId;
 }
 
 void ACSurvivorController::BeginPlay()
