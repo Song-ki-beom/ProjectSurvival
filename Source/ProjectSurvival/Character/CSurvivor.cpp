@@ -55,7 +55,7 @@ ACSurvivor::ACSurvivor()
 	BaseEyeHeight = 67.0f; //Pawn의 Default 눈 높이 세팅
 
 	GameInstance = Cast<UCGameInstance>(UGameplayStatics::GetGameInstance(this));
-
+	
 	//컴포넌트 세팅
 	WeaponComponent = CreateDefaultSubobject<UCWeaponComponent>(TEXT("Weapon"));
 	WeaponComponent->SetIsReplicated(true);

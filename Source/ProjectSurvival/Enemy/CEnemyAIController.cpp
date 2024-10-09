@@ -270,6 +270,7 @@ void ACEnemyAIController::EnableAggroCoolDown()
 void ACEnemyAIController::CustomTick()
 {
     if (TargetActor == nullptr) return;
+    if (GetPawn() == nullptr) return;
         if (GetPawn()->GetDistanceTo(TargetActor) >= 5000.0f)
     {
         TargetActor = NULL;
