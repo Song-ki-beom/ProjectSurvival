@@ -876,7 +876,7 @@ void ACSurvivor::BroadcastRespawnSurvivor_Implementation(FVector InLocation)
 	SetActorEnableCollision(true);
 
 
-	CustomizeComponent->DoSkeletalMeshReplicate();
+	
 	
 	Head->SetVisibility(true);
 	Pants->SetVisibility(true);
@@ -886,6 +886,16 @@ void ACSurvivor::BroadcastRespawnSurvivor_Implementation(FVector InLocation)
 	Hands->SetVisibility(true);
 
 	StatusComponent->SetRespawnStatus();
+
+	CustomizeComponent->DoSkeletalMeshReplicate();
+
+	if (this->HasAuthority())
+	{
+		if (!StatusComponent->IsDead())
+		{
+			StateComponent->ChangeType(EStateType::Idle);
+		}
+	}
 
 	SetActorLocation(InLocation);
 }
