@@ -205,6 +205,9 @@ void UCInventoryPanel_Placeable::SetWidgetItems(TArray<UCItemBase*> InArray)
 		WidgetItems[i]->ItemStats = InArray[i]->ItemStats;
 		WidgetItems[i]->NumericData = InArray[i]->NumericData;
 		WidgetItems[i]->AssetData = InArray[i]->AssetData;
+		WidgetItems[i]->ProduceData = InArray[i]->ProduceData;
+		WidgetItems[i]->BuildData = InArray[i]->BuildData;
+		WidgetItems[i]->HuntData = InArray[i]->HuntData;
 		WidgetItems[i]->bIsCopy = InArray[i]->bIsCopy;
 		
 	}
@@ -324,6 +327,24 @@ void UCInventoryPanel_Placeable::AddItem(class UCItemBase* InItem, const int32 Q
 
 }
 
+void UCInventoryPanel_Placeable::RepairItem(UCItemBase* ItemToRepair)
+{
+	int32 idxRepair = FindItemIndex(ItemToRepair);
+
+	PerformActionIfHasAuthority(
+		// Server
+		[=](ACStructure_Placeable* placeableActor)
+		{
+			placeableActor->BroadcastRepair(idxRepair, ItemToRepair->ID, 1, ItemToRepair->NumericData, ItemToRepair->ItemType, ItemToRepair->ItemStats, ItemToRepair->HuntData.WeaponType);
+		},
+		// Client
+			[=](ACSurvivorController* playerController, ACStructure_Placeable* placeableActor)
+		{
+			playerController->RequestRepair(idxRepair, placeableActor, ItemToRepair->ID, 1, ItemToRepair->NumericData, ItemToRepair->ItemType, ItemToRepair->ItemStats, ItemToRepair->HuntData.WeaponType);
+		}
+		);
+}
+
 void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* ItemFromDrag)
 {
 	//int32 idxBase = FindItemIndex(ItemOnBase);
@@ -344,7 +365,7 @@ void UCInventoryPanel_Placeable::SwapItem(UCItemBase* ItemOnBase, UCItemBase* It
 	//	}
 	//	);
 
-		int32 idxBase = FindItemIndex(ItemOnBase);
+	int32 idxBase = FindItemIndex(ItemOnBase);
 	int32 idxDrag = FindItemIndex(ItemFromDrag);
 
 	if (idxBase < 0 || idxDrag<0) return; //Item이 업데이트 되어 사라졌으면 

@@ -25,13 +25,14 @@ UCItemBase* UCItemBase::CreateItemCopy()
 	ItemCopy->ID = this->ID;
 	ItemCopy->Quantity = this->Quantity;
 	ItemCopy->ItemType = this->ItemType;
-	ItemCopy->TextData = this->TextData;
 	ItemCopy->ItemStats = this->ItemStats;
+	ItemCopy->TextData = this->TextData;
 	ItemCopy->NumericData = this->NumericData;
 	ItemCopy->AssetData = this->AssetData;
-	ItemCopy->bIsCopy = true;
+	ItemCopy->ProduceData = this->ProduceData;
 	ItemCopy->BuildData = this->BuildData;
 	ItemCopy->HuntData = this->HuntData;
+	ItemCopy->bIsCopy = true;
 	
 	return ItemCopy;
 }
@@ -46,6 +47,7 @@ FItemData UCItemBase::CreateFItemData(UCItemBase* ItemReference)
 	returnData.ItemType = ItemReference->ItemType;
 	returnData.NumericData = ItemReference->NumericData;
 	returnData.TextData = ItemReference->TextData;
+	returnData.ProduceData = ItemReference->ProduceData;
 	returnData.BuildData = ItemReference->BuildData;
 	returnData.HuntData = ItemReference->HuntData;
 	return returnData;
@@ -60,6 +62,7 @@ void UCItemBase::CopyFromItemData(FItemData ItemDataReference)
 	this->ItemType = ItemDataReference.ItemType;
 	this->NumericData = ItemDataReference.NumericData;
 	this->TextData = ItemDataReference.TextData;
+	this->ProduceData = ItemDataReference.ProduceData;
 	this->BuildData = ItemDataReference.BuildData;
 	this->HuntData = ItemDataReference.HuntData;
 }

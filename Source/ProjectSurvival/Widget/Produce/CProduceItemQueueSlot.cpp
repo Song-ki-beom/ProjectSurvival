@@ -72,6 +72,9 @@ void UCProduceItemQueueSlot::InitProduce()
 		ProduceTargetItem->ItemStats = itemData->ItemStats;
 		ProduceTargetItem->NumericData = itemData->NumericData;
 		ProduceTargetItem->AssetData = itemData->AssetData;
+		ProduceTargetItem->ProduceData = itemData->ProduceData;
+		ProduceTargetItem->BuildData = itemData->BuildData;
+		ProduceTargetItem->HuntData = itemData->HuntData;
 		ProduceTargetItem->bIsCopy = true;
 	}
 

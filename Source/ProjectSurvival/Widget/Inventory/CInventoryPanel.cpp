@@ -83,19 +83,16 @@ void UCInventoryPanel::RefreshInventory()
         //WrapBox에 정보를 추가하기 전에 기존 이미지 삭제
         InventoryPanel->ClearChildren();
 
-
         //for 문 Iterate : 
         for (TWeakObjectPtr<UCItemBase> InventoryItem : InventoryReference->GetInventoryContents())
         {
             UCInventoryItemSlot* ItemSlot = CreateWidget<UCInventoryItemSlot>(this, InventorySlotClass);
+            CDebug::Print("Widget Created, ID is ", InventoryItem->ID, FColor::Magenta);
             ItemSlot->SetItemReference(InventoryItem.Get());
             ItemSlot->SetHUDReference(InventoryReference->GetHUDReference());
             InventoryPanel->AddChildToWrapBox(ItemSlot);
-
         }
         SetInfoText();
-
-
     }
 
     ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetOwningPlayer()->GetHUD());
@@ -109,6 +106,8 @@ void UCInventoryPanel::RefreshInventory()
     }
     else
         CDebug::Print("mainHUD is not Valid");
+
+    CDebug::Print(TEXT("확인지점0 - Refresh 완료"));
 }
 
 
@@ -129,6 +128,9 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
         if (placeablePanel)
         {
             FItemAddResult AddResult = InventoryReference->HandleAddItem(ItemDragDrop->SourceItem);
+
+            CDebug::Print(TEXT("확인지점2 - Panel 드랍 HandleAddITem 끝난 직후"));
+
             if (AddResult.OperationResult == EItemAddResult::NoItemAdded)
             {
                 return false;
@@ -170,7 +172,7 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
                         ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
                         if (survivor)
                         {
-                            if (survivor->GetWeaponComponent()->GetWeaponType() != EWeaponType::Max)
+                            if (survivor->GetWeaponComponent()->GetWeaponType() != EWeaponType::Max && survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference() == ItemDragDrop->SourceItem)
                                 survivor->GetWeaponComponent()->SetMode(ItemDragDrop->SourceItem->HuntData.WeaponType);
                         }
                     }

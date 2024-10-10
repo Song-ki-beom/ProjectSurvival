@@ -875,12 +875,17 @@ void ACSurvivor::BroadcastRespawnSurvivor_Implementation(FVector InLocation)
 
 	SetActorEnableCollision(true);
 
+
+	CustomizeComponent->DoSkeletalMeshReplicate();
+	
 	Head->SetVisibility(true);
 	Pants->SetVisibility(true);
 	Boots->SetVisibility(true);
 	Accessory->SetVisibility(true);
 	Body->SetVisibility(true);
 	Hands->SetVisibility(true);
+
+	StatusComponent->SetRespawnStatus();
 
 	SetActorLocation(InLocation);
 }

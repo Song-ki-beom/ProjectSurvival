@@ -152,7 +152,11 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastSetRespawnLocationName(const FText& InText);
 
-	
+	//Repair
+	void PerformRepair(int32 ItemIdx, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastRepair(int32 ItemIdx, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType);
 
 
 private:

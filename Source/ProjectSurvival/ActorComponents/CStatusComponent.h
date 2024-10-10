@@ -56,6 +56,9 @@ public:
 	bool IsFriendly();
 	void StackFriendShip(float StackAmount);
 
+	//Respawn
+	void SetRespawnStatus();
+
 
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastUpdateHealth(float NewHealth);

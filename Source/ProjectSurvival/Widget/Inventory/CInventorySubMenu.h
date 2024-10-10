@@ -59,7 +59,7 @@ public:
 
 private:
 	UFUNCTION()
-	void HandleOnUseButtonClicked();
+	void HandleOnRepairButtonClicked();
 	UFUNCTION()
 	void HandleOnBuildButtonClicked();
 	UFUNCTION()
@@ -91,12 +91,17 @@ private:
 	void SelectC();
 
 	void SetButtonStyle(class UButton* InSelectedButton);
+	int CalculateRepairDemand(int32 ResourceDemand);
+	UFUNCTION()
+	void Repair();
 
 public:
 	FOnFocusOnSubMenuEnded OnFocusOnSubMenuEnded;
 	FOnUseButtonClicked OnUseButtonClicked;
 	//FOnSplitButtonClicked OnSplitButtonClicked;
 
+	UPROPERTY(meta = (BindWidget))
+		class UWidgetSwitcher* SubMenuWidgetSwitcher;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* ActionButton;
 	UPROPERTY(meta = (BindWidget))
@@ -138,6 +143,12 @@ public:
 		class UButton* BuildRegisterCancelButton;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* BuildRegisterButton;
+	UPROPERTY(meta = (BindWidget))
+		class UScrollBox* RepairRecipeScroll;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* RepairButton;
+	UPROPERTY(meta = (BindWidget))
+		class UButton* RepairCancleButton;
 	
 private:
 	TArray<UButton*> BuildButtons;
@@ -148,6 +159,9 @@ private:
 	bool bBeforeHideActionButton = false;
 	FSlateBrush ButtonNormalBrush;
 	FSlateBrush ButtonPressedBrush;
+
+	UPROPERTY()
+		class ACStructure_Placeable* Placeable;
 
 
 

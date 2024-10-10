@@ -399,10 +399,12 @@ class UCItemBase* UCQuickSlot::CreateItem(class UCItemBase* InItem)
     }
     itemCopy->Quantity = quantity;
     itemCopy->ItemType = InItem->ItemType;
-    itemCopy->TextData = InItem->TextData;
     itemCopy->ItemStats = InItem->ItemStats;
+    itemCopy->TextData = InItem->TextData;
     itemCopy->NumericData = InItem->NumericData;
     itemCopy->AssetData = InItem->AssetData;
+    itemCopy->ProduceData = InItem->ProduceData;
+    itemCopy->BuildData = InItem->BuildData;
     itemCopy->HuntData = InItem->HuntData;
     itemCopy->bIsCopy = true;
 

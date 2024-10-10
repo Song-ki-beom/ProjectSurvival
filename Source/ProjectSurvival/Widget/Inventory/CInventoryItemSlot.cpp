@@ -16,6 +16,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Border.h"
 #include "Components/ProgressBar.h"
+#include "Build/CStructure_Placeable.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Utility/CDebug.h"
 #include "Kismet/GameplayStatics.h"
@@ -91,8 +92,6 @@ void UCInventoryItemSlot::NativeConstruct() // 위젯 생성 -> UI 그래픽 요
 
 		if (ItemReference->ItemType == EItemType::Hunt && ItemReference->ItemStats.RemainDurability == 0)
 			RedX->SetVisibility(ESlateVisibility::Visible);
-
-		CDebug::Print("RamainDurability is ", ItemReference->ItemStats.RemainDurability, FColor::Purple);
 	}
 
 }
@@ -121,7 +120,16 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 			UCInventoryPanel_Placeable* placeableInventoryPanel = Cast<UCInventoryPanel_Placeable>(OwnerWidget);
 
 			if (placeableInventoryPanel)
-				RightClickStartWidget = ERightClickStartWidget::HideActionButtonWidget;
+			{
+				if (placeableInventoryPanel->GetOwnerActor()->GetPlaceableStructureType() == EPlaceableStructureType::WorkingBench)
+				{
+					RightClickStartWidget = ERightClickStartWidget::WorkingBenchInventory;
+				}
+				else
+				{
+					RightClickStartWidget = ERightClickStartWidget::HideActionButtonWidget;
+				}
+			}
 			else
 			{
 				RightClickStartWidget = ERightClickStartWidget::None;
@@ -132,7 +140,7 @@ FReply UCInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 		if (RightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget && !this->GetItemReference()->NumericData.bIsStackable)
 			return Reply.Unhandled();
 
-		if (this->GetItemReference()->ItemType == EItemType::Hunt && this->GetItemReference()->Quantity == 1)
+		if (this->GetItemReference()->ItemType == EItemType::Hunt && this->GetItemReference()->Quantity == 1 && RightClickStartWidget != ERightClickStartWidget::WorkingBenchInventory)
 			return Reply.Unhandled();
 
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetOwningPlayer()->GetHUD());
@@ -172,7 +180,7 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 {
 	if (DragItemVisualClass)
 	{
-
+		CDebug::Print("DragVisual Item ID : ", ItemReference->ID, FColor::Silver);
 
 		UCDragItemVisual* DragVisual = CreateWidget<UCDragItemVisual>(this, DragItemVisualClass); //ui이므로 에디터에 있는 블루프린트 위젯 클래스로부터 동적 생성
 
@@ -369,7 +377,7 @@ void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
 	if (ItemReference == nullptr)
 	{
 		ItemReference = ItemIn;
-		//return;
+		CDebug::Print("ItemReference ID is ", ItemIn->ID ,FColor::Blue);
 	}
 
 	 ItemReference->ID = ItemIn->ID;
@@ -379,8 +387,10 @@ void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
 	 ItemReference->ItemStats = ItemIn->ItemStats;
 	 ItemReference->NumericData = ItemIn->NumericData;
 	 ItemReference->AssetData = ItemIn->AssetData;
-	 ItemReference->bIsCopy = ItemIn->bIsCopy;
+	 ItemReference->ProduceData = ItemIn->ProduceData;
+	 ItemReference->BuildData = ItemIn->BuildData;
 	 ItemReference->HuntData.WeaponType = ItemIn->HuntData.WeaponType;
+	 ItemReference->bIsCopy = ItemIn->bIsCopy;
 }
  
 void UCInventoryItemSlot::SetItemQuantityText(int32 InQuantity)
