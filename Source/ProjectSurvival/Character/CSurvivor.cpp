@@ -43,7 +43,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Hearing.h"
-
+#include "Enemy/CEnemy_Bear.h"
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -389,6 +389,47 @@ void ACSurvivor::RequestDoSpecialAction_Implementation(ESpecialState SpecialStat
 void ACSurvivor::SetGenericTeamId(const FGenericTeamId& NewTeamId)
 {
 	TeamId = NewTeamId;
+}
+void ACSurvivor::SpawnBear()
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr) return;
+
+	// 블루프린트 경로 (에디터에서 복사해서 사용 가능)
+	FString BlueprintPath = TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Character/Animal/Bear/BP_CEnemy_Bear.BP_CEnemy_Bear'");
+	UBlueprint* BlueprintAsset = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *BlueprintPath));
+
+	if (BlueprintAsset == nullptr)
+	{
+		CDebug::Print("Bear Asset Not Found");
+		return;
+	}
+
+	if (BlueprintAsset && BlueprintAsset->GeneratedClass)
+	{
+		UClass* SpawnClass = BlueprintAsset->GeneratedClass;
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		FVector SpawnLocation = GetActorLocation()+FVector(300.0f, 0.f, 50.0f); // 스폰 위치
+		FRotator SpawnRotation = FRotator::ZeroRotator;
+
+		// 스폰
+		ACEnemy_Bear* SpawnedCharacter = World->SpawnActor<ACEnemy_Bear>(SpawnClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+		if (SpawnedCharacter)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Character spawned successfully."));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to spawn character."));
+		}
+	}
+	
+
+	
 }
 void ACSurvivor::PerformSetSurvivorName(const FText& InText)
 {

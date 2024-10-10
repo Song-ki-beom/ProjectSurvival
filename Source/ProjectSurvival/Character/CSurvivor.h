@@ -93,6 +93,9 @@ public:
 	UFUNCTION(Server, Reliable)
 		void RequestDoSpecialAction(ESpecialState SpecialState);
 
+	UFUNCTION()
+	void SpawnBear();
+
 private:
 	//Name  
 	void PerformSetSurvivorName(const FText& InText);

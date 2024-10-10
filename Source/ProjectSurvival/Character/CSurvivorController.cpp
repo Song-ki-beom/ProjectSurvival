@@ -377,11 +377,12 @@ void ACSurvivorController::HoldAxe()
 
 	if (Survivor)
 	{
+		Survivor->SpawnBear();
 		//Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
 		//Survivor->HoldAxe();
-		int32 durability = Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference()->ItemStats.RemainDurability--;
+		//int32 durability = Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference()->ItemStats.RemainDurability--;
 
-		Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->SetRemainDurability(durability);
+		//Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->SetRemainDurability(durability);
 	}
 }
 

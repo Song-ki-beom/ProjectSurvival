@@ -77,10 +77,12 @@ void ACLobbyGameMode::StartGame()
 	//	// 컨트롤러를 해제하고 삭제
 	//	LobbySurvivorController->Destroy();
 	//}
-
-
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACLobbyGameMode::TriggerSeamlessTravel, 0.5f, false);
+	bUseSeamlessTravel = true;
+	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
+	
+	
+	/*FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACLobbyGameMode::TriggerSeamlessTravel, 0.5f, false);*/
 
 	
 }
@@ -88,7 +90,7 @@ void ACLobbyGameMode::StartGame()
 void ACLobbyGameMode::TriggerSeamlessTravel()
 {
 	// Seamless Travel을 사용하도록 설정
-	bUseSeamlessTravel = true;
+	//bUseSeamlessTravel = true;
 
 	/*FLatentActionInfo LatentInfo;
 	LatentInfo.CallbackTarget = this;
@@ -96,7 +98,7 @@ void ACLobbyGameMode::TriggerSeamlessTravel()
 
 	
 	// 새로운 맵으로 이동
-	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
+	//GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
 }
 
 
