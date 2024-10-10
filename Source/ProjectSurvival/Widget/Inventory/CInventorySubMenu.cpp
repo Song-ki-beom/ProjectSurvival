@@ -1,11 +1,19 @@
 #include "Widget/Inventory/CInventorySubMenu.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
+#include "Widget/Inventory/CInventoryPanel_Placeable.h"
+#include "Widget/CMainHUD.h"
 #include "Widget/Build/CBuildWidget.h"
+#include "Widget/Menu/CInventoryMenu.h"
+#include "Widget/Produce/CProduceRecipe.h"
+#include "ActorComponents/CInventoryComponent.h"
 #include "Character/CSurvivorController.h"
+#include "Components/WidgetSwitcher.h"
 #include "Components/EditableText.h" 
 #include "Components/Button.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
+#include "Components/ScrollBox.h"
+#include "Build/CStructure_Placeable.h"
 #include "Utility/CDebug.h"
 //#include "CustomDataType/BuildStructureDataType.h"
 
@@ -84,6 +92,11 @@ bool UCInventorySubMenu::Initialize()
         Button_X->OnClicked.AddDynamic(this, &UCInventorySubMenu::SelectX);
     if (IsValid(Button_C))
         Button_C->OnClicked.AddDynamic(this, &UCInventorySubMenu::SelectC);
+    if (IsValid(RepairButton))
+        RepairButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::Repair);
+    if (IsValid(RepairCancleButton))
+        RepairCancleButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnCancelButtonClicked);
+    
 
     TextItemType = EItemType::NoType;
 
@@ -105,6 +118,9 @@ void UCInventorySubMenu::UpdateSubMenu(ERightClickStartWidget InRightClickStartW
 
     if (SlotReference)
     {
+        SubMenuWidgetSwitcher->SetActiveWidgetIndex(0);
+        RepairRecipeScroll->ClearChildren();
+
         ActionButton->OnClicked.Clear();
         TextItemType = SlotReference->GetItemReference()->ItemType;
 
@@ -125,14 +141,19 @@ void UCInventorySubMenu::UpdateSubMenu(ERightClickStartWidget InRightClickStartW
             {
                 if (InRightClickStartWidget == ERightClickStartWidget::HideActionButtonWidget)
                 {
-                    CDebug::Print("Collapsed ActionButton : ", FColor::Cyan);
                     ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+                }
+                else if (InRightClickStartWidget == ERightClickStartWidget::WorkingBenchInventory)
+                {
+                    ActionButton->SetVisibility(ESlateVisibility::Visible);
+                    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+                    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnRepairButtonClicked);
                 }
                 else
                 {
-                    ActionButton->SetVisibility(ESlateVisibility::Visible);
-                    ActionButton->OnClicked.AddDynamic(this, &UCInventorySubMenu::HandleOnUseButtonClicked);
-                    ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
+                    ActionButton->SetVisibility(ESlateVisibility::Collapsed);
+                    //ActionButton->SetVisibility(ESlateVisibility::Visible);
+                    //ActionText->SetText(SlotReference->GetItemReference()->TextData.UsageText);
                 }
             }
             if (IsValid(SplitButton))
@@ -215,12 +236,213 @@ void UCInventorySubMenu::UpdateSubMenu(ERightClickStartWidget InRightClickStartW
 
 }
 
-void UCInventorySubMenu::HandleOnUseButtonClicked()
+void UCInventorySubMenu::HandleOnRepairButtonClicked()
 {
-   // OnUseButtonClicked.Broadcast();
-    OnFocusOnSubMenuEnded.Broadcast();
-    SlotReference->ToggleTooltip();
-    //Item Use 구현 부분 
+    // OnUseButtonClicked.Broadcast();
+    //OnFocusOnSubMenuEnded.Broadcast();
+    //SlotReference->ToggleTooltip();
+    ////Item Use 구현 부분 
+
+    UCInventoryPanel_Placeable* placeableInventoryPanel = Cast<UCInventoryPanel_Placeable>(SlotReference->GetParent()->GetTypedOuter<UUserWidget>());
+    if (!placeableInventoryPanel)
+    {
+        OnUseButtonClicked.Broadcast();
+        OnFocusOnSubMenuEnded.Broadcast();
+        SlotReference->ToggleTooltip();
+        return;
+    }
+    else
+    {
+        Placeable = placeableInventoryPanel->GetOwnerActor();
+        if (Placeable)
+        {
+            CDebug::Print("placeableInventoryPanel And Placeable Valid");
+        }
+    }
+
+    UClass* widgetClass = LoadClass<UUserWidget>(nullptr, TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Produce/WBP_CProduceRecipe.WBP_CProduceRecipe_C'"));
+
+    if (SlotReference)
+    {
+        if (SlotReference->GetItemReference()->ItemStats.RemainDurability == SlotReference->GetItemReference()->ItemStats.MaxDurability)
+        {
+            OnUseButtonClicked.Broadcast();
+            OnFocusOnSubMenuEnded.Broadcast();
+            SlotReference->ToggleTooltip();
+            return;
+        }
+
+        SubMenuSizeBox->SetVisibility(ESlateVisibility::Collapsed);
+
+        if (SlotReference->GetItemReference()->ProduceData.ProduceResource_1.ResourceIcon != nullptr)
+        {
+            if (widgetClass)
+            {
+                CDebug::Print("widgetClass is valid");
+
+
+                UCProduceRecipe* recipeWidget = CreateWidget<UCProduceRecipe>(GetWorld(), widgetClass);
+                if (recipeWidget)
+                {
+                    if (ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn()))
+                    {
+                        int placeableInventoryQuantity = 0;
+                        int demandQuantity = 0;
+
+                        for (UCItemBase* tempItem : placeableInventoryPanel->GetWidgetItems())
+                        {
+                            if (tempItem->ID == SlotReference->GetItemReference()->ProduceData.ProduceResource_1.ResourceID)
+                            {
+                                placeableInventoryQuantity += tempItem->Quantity;
+                            }
+                        }
+
+                        demandQuantity = CalculateRepairDemand(SlotReference->GetItemReference()->ProduceData.ProduceResource_1.ProduceResourceDemand);
+
+                        recipeWidget->SetResourceID(SlotReference->GetItemReference()->ProduceData.ProduceResource_1.ResourceID);
+                        recipeWidget->SetResourceIcon(SlotReference->GetItemReference()->ProduceData.ProduceResource_1.ResourceIcon);
+                        recipeWidget->SetResourceName(SlotReference->GetItemReference()->ProduceData.ProduceResource_1.ResourceName);
+                        recipeWidget->SetResourceQuantity(placeableInventoryQuantity, demandQuantity);
+                        RepairRecipeScroll->AddChild(recipeWidget);
+                    }
+                }
+            }
+        }
+
+        if (SlotReference->GetItemReference()->ProduceData.ProduceResource_2.ResourceIcon != nullptr)
+        {
+            if (widgetClass)
+            {
+                UCProduceRecipe* recipeWidget = CreateWidget<UCProduceRecipe>(GetWorld(), widgetClass);
+                if (recipeWidget)
+                {
+                    if (ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn()))
+                    {
+                        int placeableInventoryQuantity = 0;
+                        int demandQuantity = 0;
+
+                        for (UCItemBase* tempItem : placeableInventoryPanel->GetWidgetItems())
+                        {
+                            if (tempItem->ID == SlotReference->GetItemReference()->ProduceData.ProduceResource_2.ResourceID)
+                            {
+                                placeableInventoryQuantity += tempItem->Quantity;
+                            }
+                        }
+
+                        demandQuantity = CalculateRepairDemand(SlotReference->GetItemReference()->ProduceData.ProduceResource_2.ProduceResourceDemand);
+
+                        recipeWidget->SetResourceID(SlotReference->GetItemReference()->ProduceData.ProduceResource_2.ResourceID);
+                        recipeWidget->SetResourceIcon(SlotReference->GetItemReference()->ProduceData.ProduceResource_2.ResourceIcon);
+                        recipeWidget->SetResourceName(SlotReference->GetItemReference()->ProduceData.ProduceResource_2.ResourceName);
+                        recipeWidget->SetResourceQuantity(placeableInventoryQuantity, demandQuantity);
+                        RepairRecipeScroll->AddChild(recipeWidget);
+                    }
+                }
+            }
+        }
+
+        if (SlotReference->GetItemReference()->ProduceData.ProduceResource_3.ResourceIcon != nullptr)
+        {
+            if (widgetClass)
+            {
+                UCProduceRecipe* recipeWidget = CreateWidget<UCProduceRecipe>(GetWorld(), widgetClass);
+                if (recipeWidget)
+                {
+                    if (ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn()))
+                    {
+                        int placeableInventoryQuantity = 0;
+                        int demandQuantity = 0;
+
+                        for (UCItemBase* tempItem : placeableInventoryPanel->GetWidgetItems())
+                        {
+                            if (tempItem->ID == SlotReference->GetItemReference()->ProduceData.ProduceResource_3.ResourceID)
+                            {
+                                placeableInventoryQuantity += tempItem->Quantity;
+                            }
+                        }
+
+                        demandQuantity = CalculateRepairDemand(SlotReference->GetItemReference()->ProduceData.ProduceResource_3.ProduceResourceDemand);
+
+                        recipeWidget->SetResourceID(SlotReference->GetItemReference()->ProduceData.ProduceResource_3.ResourceID);
+                        recipeWidget->SetResourceIcon(SlotReference->GetItemReference()->ProduceData.ProduceResource_3.ResourceIcon);
+                        recipeWidget->SetResourceName(SlotReference->GetItemReference()->ProduceData.ProduceResource_3.ResourceName);
+                        recipeWidget->SetResourceQuantity(placeableInventoryQuantity, demandQuantity);
+                        RepairRecipeScroll->AddChild(recipeWidget);
+                    }
+                }
+            }
+        }
+
+        if (SlotReference->GetItemReference()->ProduceData.ProduceResource_4.ResourceIcon != nullptr)
+        {
+            if (widgetClass)
+            {
+                UCProduceRecipe* recipeWidget = CreateWidget<UCProduceRecipe>(GetWorld(), widgetClass);
+                if (recipeWidget)
+                {
+                    if (ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn()))
+                    {
+                        int placeableInventoryQuantity = 0;
+                        int demandQuantity = 0;
+
+                        for (UCItemBase* tempItem : placeableInventoryPanel->GetWidgetItems())
+                        {
+                            if (tempItem->ID == SlotReference->GetItemReference()->ProduceData.ProduceResource_4.ResourceID)
+                            {
+                                placeableInventoryQuantity += tempItem->Quantity;
+                            }
+                        }
+
+                        demandQuantity = CalculateRepairDemand(SlotReference->GetItemReference()->ProduceData.ProduceResource_4.ProduceResourceDemand);
+
+                        recipeWidget->SetResourceID(SlotReference->GetItemReference()->ProduceData.ProduceResource_4.ResourceID);
+                        recipeWidget->SetResourceIcon(SlotReference->GetItemReference()->ProduceData.ProduceResource_4.ResourceIcon);
+                        recipeWidget->SetResourceName(SlotReference->GetItemReference()->ProduceData.ProduceResource_4.ResourceName);
+                        recipeWidget->SetResourceQuantity(placeableInventoryQuantity, demandQuantity);
+                        RepairRecipeScroll->AddChild(recipeWidget);
+                    }
+                }
+            }
+        }
+
+        if (SlotReference->GetItemReference()->ProduceData.ProduceResource_5.ResourceIcon != nullptr)
+        {
+            if (widgetClass)
+            {
+                UCProduceRecipe* recipeWidget = CreateWidget<UCProduceRecipe>(GetWorld(), widgetClass);
+                if (recipeWidget)
+                {
+                    if (ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn()))
+                    {
+                        int placeableInventoryQuantity = 0;
+                        int demandQuantity = 0;
+
+                        for (UCItemBase* tempItem : placeableInventoryPanel->GetWidgetItems())
+                        {
+                            if (tempItem->ID == SlotReference->GetItemReference()->ProduceData.ProduceResource_5.ResourceID)
+                            {
+                                placeableInventoryQuantity += tempItem->Quantity;
+                            }
+                        }
+
+                        demandQuantity = CalculateRepairDemand(SlotReference->GetItemReference()->ProduceData.ProduceResource_5.ProduceResourceDemand);
+
+                        recipeWidget->SetResourceID(SlotReference->GetItemReference()->ProduceData.ProduceResource_5.ResourceID);
+                        recipeWidget->SetResourceIcon(SlotReference->GetItemReference()->ProduceData.ProduceResource_5.ResourceIcon);
+                        recipeWidget->SetResourceName(SlotReference->GetItemReference()->ProduceData.ProduceResource_5.ResourceName);
+                        recipeWidget->SetResourceQuantity(placeableInventoryQuantity, demandQuantity);
+                        RepairRecipeScroll->AddChild(recipeWidget);
+                    }
+                }
+            }
+        }
+
+    }
+    
+    SubMenuWidgetSwitcher->SetActiveWidgetIndex(1);
+
+    //OnFocusOnSubMenuEnded.Broadcast();
+    //SlotReference->ToggleTooltip();
 }
 
 void UCInventorySubMenu::HandleOnBuildButtonClicked()
@@ -286,7 +508,7 @@ void UCInventorySubMenu::HandleOnCancelButtonClicked()
     SetButtonStyle(nullptr);
 
     OnFocusOnSubMenuEnded.Broadcast();
-     SlotReference->ToggleTooltip();
+    SlotReference->ToggleTooltip();
 }
 
 void UCInventorySubMenu::HandleBuildRegisterButton()
@@ -308,6 +530,11 @@ void UCInventorySubMenu::HandleBuildRegisterButton()
         SetButtonStyle(nullptr);
         OnFocusOnSubMenuEnded.Broadcast();
         SlotReference->ToggleTooltip();
+        ACMainHUD* mainHUD = Cast<ACMainHUD>(SurvivorController->GetHUD());
+        if (mainHUD)
+        {
+            mainHUD->GetSurvivorInventoryWidget()->SetFocus();
+        }
     }
     else
         CDebug::Print("BuildWidget is not Valid");
@@ -414,6 +641,99 @@ void UCInventorySubMenu::SetButtonStyle(class UButton* InSelectedButton)
         FButtonStyle selectedStyle = InSelectedButton->WidgetStyle;
         selectedStyle.Normal = ButtonPressedBrush;
         InSelectedButton->SetStyle(selectedStyle);
+    }
+}
+
+int UCInventorySubMenu::CalculateRepairDemand(int32 ResourceDemand)
+{
+    float remainDurability = SlotReference->GetItemReference()->ItemStats.RemainDurability;
+    float maxDurability = SlotReference->GetItemReference()->ItemStats.MaxDurability;
+    float durabilityRatio = remainDurability / maxDurability;
+    float repairNeedRatio = 1.0 - durabilityRatio;
+
+    float demandQuantity = ResourceDemand * repairNeedRatio * 0.5f;
+    int castedDemandQuantity = static_cast<int>(ceil(demandQuantity));
+
+    return castedDemandQuantity;
+}
+
+void UCInventorySubMenu::Repair()
+{
+    int32 recipeNumber = RepairRecipeScroll->GetAllChildren().Num();
+    int32 checkNumber = 0;
+
+    for (UWidget* childWidget : RepairRecipeScroll->GetAllChildren())
+    {
+        if (UCProduceRecipe* recipeWidget = Cast<UCProduceRecipe>(childWidget))
+        {
+            if (recipeWidget->CheckProduceable())
+            {
+                //CDebug::Print("Enough Resource");
+                checkNumber++;
+            }
+            else
+            {
+                //CDebug::Print("Not Enough Resource");
+                break;
+            }
+        }
+    }
+
+    if (recipeNumber == checkNumber)
+    {
+        CDebug::Print("Can Repair");
+    }
+
+    if (recipeNumber == checkNumber)
+    {
+        for (UWidget* childWidget : RepairRecipeScroll->GetAllChildren())
+        {
+            if (UCProduceRecipe* recipeWidget = Cast<UCProduceRecipe>(childWidget))
+            {
+                int32 inventoryTotalQuantity = recipeWidget->GetInventoryQuantity();
+                int32 demandQuantity = recipeWidget->GetDemandQuantity();
+
+                recipeWidget->SetResourceQuantity(inventoryTotalQuantity - demandQuantity, demandQuantity);
+
+                if (Placeable)
+                {
+                    int32 usedQuantity = demandQuantity;
+
+                    for (UCItemBase* tempItem : Placeable->GetPlaceableInventoryWidget()->GetWidgetItems())
+                    {
+                        if (tempItem)
+                        {
+                            if (tempItem->ID == recipeWidget->GetResourceID())
+                            {
+                                if (usedQuantity == 0)
+                                    break;
+
+                                if (tempItem->Quantity > usedQuantity)
+                                {
+                                    Placeable->GetPlaceableInventoryWidget()->RemoveAmountOfItem(tempItem, usedQuantity);
+                                    break;
+                                }
+                                else
+                                {
+                                    int32 partialUsedQuantity = tempItem->Quantity;
+                                    Placeable->GetPlaceableInventoryWidget()->RemoveItem(tempItem);
+                                    usedQuantity -= partialUsedQuantity;
+                                }
+                            }
+                        }
+                        else
+                            CDebug::Print("tempItem is not Valid");
+                    }
+                }
+                else
+                    CDebug::Print("Placeable is not Valid", FColor::Magenta);
+            }
+        }
+
+        Placeable->GetPlaceableInventoryWidget()->RepairItem(SlotReference->GetItemReference());
+
+        OnFocusOnSubMenuEnded.Broadcast();
+        SlotReference->ToggleTooltip();
     }
 }
 

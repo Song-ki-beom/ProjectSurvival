@@ -127,7 +127,16 @@ void UCStatusComponent::StackFriendShip(float StackAmount)
 	BroadcastUpdateFriendShip(NewFriendShip);
 }
 
+void UCStatusComponent::SetRespawnStatus()
+{
+	CurrentHealth = MaxHealth;
+	CurrentHunger = MaxHunger;
+	CurrentStamina = MaxStamina;
 
+	BroadcastUpdateHunger(CurrentHunger);
+	BroadcastUpdateHealth(CurrentHunger);
+	BroadcastUpdateStamina(CurrentStamina);
+}
 
 void UCStatusComponent::ReduceHungerByTime()
 {

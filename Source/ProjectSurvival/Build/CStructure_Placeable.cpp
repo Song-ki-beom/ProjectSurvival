@@ -101,9 +101,11 @@ void ACStructure_Placeable::BeginPlay()
 				case EPlaceableStructureType::WorkingBench:
 					PlaceableProduceWidget->SetProduceWindowName(FText::FromString(TEXT("제작 - 작업대")));
 					// 작업대 생산 아이템 추가
-					PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 16);
+					PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 18);
 					PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
+					PlaceableProduceWidget->CreateToolProduceItemSlot(6, 7);
 					PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+					PlaceableProduceWidget->CreateWeaponProduceItemSlot(8, 9);
 					PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Collapsed);
 					break;
 				case EPlaceableStructureType::Furnace:
@@ -121,7 +123,7 @@ void ACStructure_Placeable::BeginPlay()
 					// 모닥불 생산 아이템 추가
 					PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Collapsed, ESlateVisibility::Visible);
 					PlaceableProduceWidget->SetProducePanelSwitcherIndex(4);
-					PlaceableProduceWidget->CreateConsumableProduceItemSlot(28, 28);
+					PlaceableProduceWidget->CreateConsumableProduceItemSlot(2, 2);
 
 					IgniteButtonNormalBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Normal;
 					IgniteButtonPressedBrush = PlaceableProduceWidget->GetIgniteButton()->WidgetStyle.Pressed;
@@ -435,7 +437,6 @@ void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNu
 	addedItemInfo.Quantity = InQuantity;
 	addedItemInfo.NumericData = InNumericData;
 	addedItemInfo.ItemType = InItemType;
-	CDebug::Print("PerformAddItem Durability : ", InItemStats.RemainDurability);
 	addedItemInfo.ItemStats = InItemStats;
 	addedItemInfo.WeaponType = InWeaponType;
 
@@ -659,6 +660,8 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 			ItemCopy->ItemStats = ItemInfoArray[tempIndex].ItemStats;
 			ItemCopy->NumericData = itemData->NumericData;
 			ItemCopy->AssetData = itemData->AssetData;
+			ItemCopy->ProduceData = itemData->ProduceData;
+			ItemCopy->BuildData = itemData->BuildData;
 			ItemCopy->HuntData = itemData->HuntData;
 			ItemCopy->bIsCopy = true;
 
@@ -804,6 +807,30 @@ void ACStructure_Placeable::PerformExtinguish()
 void ACStructure_Placeable::BroadcastSetRespawnLocationName_Implementation(const FText& InText)
 {
 	OnTextSet.Broadcast(InText);
+}
+
+void ACStructure_Placeable::PerformRepair(int32 ItemIdx, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType)
+{
+	ItemInfoArray.RemoveAt(ItemIdx);
+
+	FItemInformation addedItemInfo;
+	addedItemInfo.ItemID = InID;
+	addedItemInfo.Quantity = InQuantity;
+	addedItemInfo.NumericData = InNumericData;
+	addedItemInfo.ItemType = InItemType;
+	addedItemInfo.ItemStats = InItemStats;
+	addedItemInfo.ItemStats.RemainDurability = addedItemInfo.ItemStats.MaxDurability;
+	addedItemInfo.WeaponType = InWeaponType;
+
+
+
+	ItemInfoArray.Insert(addedItemInfo, ItemIdx);
+	AddItemInfoToWidget();
+}
+
+void ACStructure_Placeable::BroadcastRepair_Implementation(int32 ItemIdx, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType)
+{
+	PerformRepair(ItemIdx, InID, InQuantity, InNumericData, InItemType, InItemStats, InWeaponType);
 }
 
 int32 ACStructure_Placeable::GetIndexOfNonFullStackByID(const FItemInformation InItemInformation)

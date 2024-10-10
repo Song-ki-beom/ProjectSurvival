@@ -377,8 +377,11 @@ void ACSurvivorController::HoldAxe()
 
 	if (Survivor)
 	{
-		Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
+		//Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
 		//Survivor->HoldAxe();
+		int32 durability = Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference()->ItemStats.RemainDurability--;
+
+		Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->SetRemainDurability(durability);
 	}
 }
 
@@ -734,6 +737,10 @@ void ACSurvivorController::RequestDestroyPlayerLocation_Implementation()
 	BroadcastDestroyPlayerLocation();
 }
 
+void ACSurvivorController::RequestRepair_Implementation(int32 ItemIdx, class ACStructure_Placeable* InPlaceable, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType)
+{
+	InPlaceable->BroadcastRepair(ItemIdx, InID, InQuantity, InNumericData, InItemType, InItemStats, InWeaponType);
+}
 ////내구도감소
 
 //ACMainHUD* mainHUD = Cast<ACMainHUD>(this->GetHUD());

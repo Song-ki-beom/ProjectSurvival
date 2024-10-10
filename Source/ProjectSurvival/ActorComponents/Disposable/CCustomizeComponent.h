@@ -21,9 +21,9 @@ protected:
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-private:
 	void DoSkeletalMeshReplicate();
 
+private:
 	// 머리
 	void PerformSetHeadMesh(FName InHeadName, FName InHeadColorName, FName InPantsName, FName InBootsName, FName InSingleName, FName InSkinColorName);
 	UFUNCTION(Server, Reliable, WithValidation)

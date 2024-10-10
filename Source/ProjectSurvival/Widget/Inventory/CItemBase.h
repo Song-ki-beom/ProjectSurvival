@@ -96,6 +96,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Item")
 		FItemAssetData AssetData;
 	UPROPERTY(EditAnywhere, Category = "Item")
+		FProduceWidgetData ProduceData;
+	UPROPERTY(EditAnywhere, Category = "Item")
 		FBuildData BuildData;
 	UPROPERTY(EditAnywhere, Category = "Item")
 		FHuntData HuntData;

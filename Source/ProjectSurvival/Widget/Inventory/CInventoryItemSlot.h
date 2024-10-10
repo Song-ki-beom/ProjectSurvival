@@ -10,6 +10,7 @@ UENUM()
 enum class ERightClickStartWidget : uint8
 {
 	SurvivorInventory,
+	WorkingBenchInventory,
 	HideActionButtonWidget,
 	None
 };

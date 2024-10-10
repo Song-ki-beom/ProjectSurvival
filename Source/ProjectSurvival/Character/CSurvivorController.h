@@ -127,6 +127,8 @@ public:
 		void BroadcastDestroyPlayerLocation();
 	UFUNCTION(Server, Reliable)
 		void RequestDestroyPlayerLocation();
+	UFUNCTION(Server, Reliable)
+		void RequestRepair(int32 ItemIdx, class ACStructure_Placeable* InPlaceable, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType);
 	
 };
 

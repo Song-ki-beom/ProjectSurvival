@@ -186,7 +186,7 @@ void UCInteractionWidget::ShowHiddenMenu()
 
 void UCInteractionWidget::HideHiddenMenu()
 {
-	CDebug::Print("Hide Hidden Menu Called");
+	//CDebug::Print("Hide Hidden Menu Called");
 
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{

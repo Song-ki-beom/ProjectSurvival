@@ -1308,7 +1308,11 @@ void UCBuildComponent::PerformCreateBackPack(TSubclassOf<ACStructure> InClass, F
 {
 	if (IsValid(InClass))
 	{
-		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, InTransform);
+		FTransform spawnTransform;
+		spawnTransform.SetLocation(InTransform.GetLocation() - FVector(0, 0, 60));
+		spawnTransform.SetRotation(InTransform.GetRotation());
+
+		ACStructure* buildstructure = GetWorld()->SpawnActor<ACStructure>(InClass, spawnTransform);
 		buildstructure->BroadcastDestroyPreviewBox();
 		ACStructure_Placeable* placeableStructure = Cast<ACStructure_Placeable>(buildstructure);
 		if (placeableStructure)

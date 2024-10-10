@@ -19,6 +19,8 @@ protected:
 
 public:
 	void SetOwnerActor(class ACStructure_Placeable* InActor) { OwnerActor = InActor; }
+	class ACStructure_Placeable* GetOwnerActor() { return OwnerActor; }
+
 	void SetInventoryWindowName(FText InText);
 
 	UFUNCTION()
@@ -39,6 +41,8 @@ public:
 	TArray<UCItemBase*> GetWidgetItems() { return WidgetItems; }
 
 	void AddItem(class UCItemBase* InItem, const int32 QuantityToAdd, class AActor* InActor);
+
+	void RepairItem(class UCItemBase* ItemOnBase);
 
 private:
 	int32 FindItemIndex(class UCItemBase* Item);

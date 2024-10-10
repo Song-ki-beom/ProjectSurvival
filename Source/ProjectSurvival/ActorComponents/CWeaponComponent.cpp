@@ -27,7 +27,7 @@ void UCWeaponComponent::BeginPlay()
 	{
 		if (!!DataAssets[i])
 		{
-			CDebug::Print("Index Is Valid At ", i, FColor::Emerald);
+			//CDebug::Print("Index Is Valid At ", i, FColor::Emerald);
 			DataAssets[i]->BeginPlay(OwnerCharacter, &Datas[i]);
 		}
 		else

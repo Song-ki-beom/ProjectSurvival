@@ -126,6 +126,7 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			ItemReference->TextData = ItemData->TextData;
 			ItemReference->AssetData = ItemData->AssetData;
 			ItemReference->ItemStats = ItemData->ItemStats;
+			ItemReference->ProduceData = ItemData->ProduceData;
 			ItemReference->BuildData = ItemData->BuildData;
 			ItemReference->HuntData = ItemData->HuntData;
 

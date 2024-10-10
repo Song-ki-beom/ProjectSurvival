@@ -38,7 +38,7 @@ void UCProduceWidget::NativeConstruct()
 		if (Survivor)
 		{
 			SetProduceWindowName(FText::FromString(TEXT("제작 - 생존자")));
-			CreateBuildProduceItemSlot(1, 16);
+			CreateBuildProduceItemSlot(1, 18);
 			CreateToolProduceItemSlot(1, 2);
 			CreateWeaponProduceItemSlot(3, 4);
 			IgniteButton->GetParent()->SetVisibility(ESlateVisibility::Collapsed);
@@ -119,7 +119,9 @@ bool UCProduceWidget::Initialize()
 
 	ItemData = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'")));
 	if (!IsValid(ItemData))
-		CDebug::Print("ItemData is not Valid");
+	{
+		CDebug::Print("ItemData is not Valid", FColor::Cyan);
+	}
 
 	return true;
 }
