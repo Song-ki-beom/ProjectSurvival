@@ -24,6 +24,7 @@ ACMainHUD::ACMainHUD()
 void ACMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
+	CDebug::Print(TEXT("FUCK YOU Main Map"));
 
 	if (InteractionWidgetClass)
 	{

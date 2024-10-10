@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Engine/EngineTypes.h"
 #include "Lobby/CLobbyInterface.h"
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineSessionInterface.h"
@@ -61,6 +62,14 @@ private:
 	void CreateSession();
 	void CheckNetDriver();
 
+	UFUNCTION()
+		void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld);
+	
+		void OnLevelAddedToWorld(UWorld* World, ELevelTick TickType, float DeltaSeconds);
+		UFUNCTION()
+		void OnPreLoadMap(const FString& MapName);
+		UFUNCTION()
+		void OnPostLoadMapWithWorld(UWorld* InLoadedWorld);
 public:
 	UPROPERTY()
 		FString playerName;

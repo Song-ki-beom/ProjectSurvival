@@ -17,22 +17,11 @@ class PROJECTSURVIVAL_API ACLoadingScreenManager : public AActor
 
 public:
     virtual void BeginPlay() override;
-    void StartLevelStreaming(const FString& LevelName);
+    void Tick(float DeltaSeconds) override;
+
+
 
 private:
-    void UpdateLoadingScreen(float Progress);
-
-
-private:
-    UPROPERTY()
-        UUserWidget* LoadingScreenWidget;
-
-    UPROPERTY()
-        TSubclassOf<UUserWidget> LoadingScreenClass;
-
-    UPROPERTY()
-        UProgressBar* LoadingProgressBar;
-
-    FStreamableManager StreamableManager;
-
+    class UCGameInstance* GameInstance;
+    bool bLoadStarted = false;
 };

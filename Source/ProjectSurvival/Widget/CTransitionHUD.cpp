@@ -20,5 +20,5 @@ void ACTransitionHUD::BeginPlay()
 		LoadingScreenWidget->SetVisibility(ESlateVisibility::Visible);
 		LoadingScreenWidget->bIsFocusable = true;
 	}
-	CDebug::Print(TEXT("FUCK YOU"));
+	CDebug::Print(TEXT("FUCK YOU Transition"));
 }

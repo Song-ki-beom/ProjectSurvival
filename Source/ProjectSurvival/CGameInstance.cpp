@@ -21,6 +21,11 @@
 #include "Widget/Map/CMiniMap.h"
 #include "Widget/World/CLoadingScreenWidget.h"
 
+#include "Engine/Engine.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "MoviePlayer.h"
+
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
@@ -66,11 +71,28 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 	ConstructorHelpers::FClassFinder<UUserWidget> LoadingScreenWidgetClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/World/WBP_LoadingScreen.WBP_LoadingScreen_C'"));
 	if (LoadingScreenWidgetClassFinder.Succeeded())
 		LoadingScreenWidgetClass = LoadingScreenWidgetClassFinder.Class;
+
 }
 
 void UCGameInstance::Init()
 {
+
 	Super::Init();
+
+	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
+	LoadingScreenWidget->SetDesiredSizeInViewport(FVector2D(1920, 1080)); // 원하는 해상도로 설정
+	LoadingScreenWidget->SetAnchorsInViewport(FAnchors(0.f, 0.f, 1.f, 1.f)); // 화면 전체를 덮도록 앵커 설정
+	LoadingScreenWidget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f)); // 중심에 정렬
+
+	//잘 되는거(Single Player일때)
+	//FWorldDelegates::LevelRemovedFromWorld.AddUObject(this, &UCGameInstance::OnLevelRemovedFromWorld);
+
+
+	//FWorldDelegates::OnWorldPostActorTick.AddUObject(this, &UCGameInstance::OnLevelAddedToWorld);
+	//FWorldDelegates::OnWorldInitializedActors.AddUObject(this, &UCGameInstance::OnLevelAddedToWorld);
+	FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UCGameInstance::OnPreLoadMap);
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UCGameInstance::OnPostLoadMapWithWorld);
+
 	IOnlineSubsystem* SubSystem = IOnlineSubsystem::Get();
 	if (SubSystem != nullptr)
 	{
@@ -317,9 +339,77 @@ void UCGameInstance::CheckNetDriver()
 	}
 }
 
+void UCGameInstance::OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)
+{
+	
+	if (LoadingScreenWidget)
+	{
+		LoadingScreenWidget->AddToViewport();
+	}
+
+
+}
+
+void UCGameInstance::OnLevelAddedToWorld(UWorld* World, ELevelTick TickType, float DeltaSeconds)
+{
+	if (LoadingScreenWidget)
+	{
+		//UGameViewportSubsystem::Get(InWorld)->RemoveWidget(YourWidget);
+		LoadingScreenWidget->RemoveFromViewport();
+	}
+}
+
+void UCGameInstance::OnPreLoadMap(const FString& MapName)
+{
+	if (!IsRunningDedicatedServer())
+	{
+		FLoadingScreenAttributes LoadingScreen;
+		LoadingScreen.MoviePaths.Init("LoadingScreen", 3);
+		LoadingScreen.bAutoCompleteWhenLoadingCompletes = false;
+		//LoadingScreen.WidgetLoadingScreen = LoadingScreenWidget->TakeWidget();
+		//LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
+		LoadingScreen.MinimumLoadingScreenDisplayTime = 3;
+		LoadingScreen.bMoviesAreSkippable = false;
+		LoadingScreen.bWaitForManualStop = false;
+		LoadingScreen.PlaybackType = EMoviePlaybackType::MT_LoadingLoop;
+		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
+	}
+
+	/*if (LoadingScreenWidget)
+	{
+		CDebug::Print(TEXT("OnPreLoadMap"));
+		LoadingScreenWidget->AddToViewport();
+	}*/
+
+}
+
+void UCGameInstance::OnPostLoadMapWithWorld(UWorld* InLoadedWorld)
+{
+
+	GetMoviePlayer()->StopMovie();
+
+	/*if (LoadingScreenWidget)
+	{
+		CDebug::Print(TEXT("OnPostLoadMapWithWorld"));
+		LoadingScreenWidget->RemoveFromViewport();
+	}*/
+}
+
+
+
+
+
+
+
 void UCGameInstance::CreateLoadingScreen()
 {
-	BroadcastCreateLoadingScreen();
+	CDebug::Print(TEXT("Loading Screen Widget Added"));
+	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
+	if (LoadingScreenWidget)
+	{
+		LoadingScreenWidget->AddToViewport();
+	}
+	//BroadcastCreateLoadingScreen();
 }
 
 void UCGameInstance::BroadcastCreateLoadingScreen_Implementation()

@@ -80,8 +80,8 @@ void ACLobbyGameMode::StartGame()
 	bUseSeamlessTravel = true;
 	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
 	
-	
-	/*FTimerHandle TimerHandle;
+	/*
+	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACLobbyGameMode::TriggerSeamlessTravel, 0.5f, false);*/
 
 	

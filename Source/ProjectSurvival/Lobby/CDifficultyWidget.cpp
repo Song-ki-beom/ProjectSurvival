@@ -221,6 +221,7 @@ void UCDifficultyWidget::OnExtreme()
 void UCDifficultyWidget::OnStart()
 {
 	ACLobbyGameMode* lobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
+
 	//ShowLoadingScreen();
 	lobbyGameMode->StartGame();
 }
