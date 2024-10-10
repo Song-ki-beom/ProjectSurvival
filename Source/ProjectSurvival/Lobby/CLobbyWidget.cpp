@@ -1,4 +1,4 @@
-﻿#include "Lobby/CLobbyWidget.h"
+#include "Lobby/CLobbyWidget.h"
 #include "Lobby/CServerRow.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"

@@ -19,14 +19,19 @@ public:
 protected:
 	void PostLogin(APlayerController* NewPlayer) override;
 	void Tick(float DeltaSeconds) override;
+	
+private:
+	UFUNCTION()
+		void TriggerSeamlessTravel();
 
 public:
 	void ReadyPlayer();
 	bool CheckPlayer();
 	void StartGame();
+	
 
 private:
 	int32 NumberOfSurvivors = 0;
 	int32 NumberOfReadySurvivors = 0;
-
+	
 };

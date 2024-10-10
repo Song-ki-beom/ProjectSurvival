@@ -38,6 +38,11 @@ public:
 		void CreateChattingBox();
 	UFUNCTION(BlueprintCallable)
 		void CreateMap();
+	UFUNCTION(BlueprintCallable)
+		void CreateLoadingScreen();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastCreateLoadingScreen();
+
 
 	void SaveCustomizeRowNames(TArray<FName> InRowNames) { CustomizeRowNames = InRowNames; }
 	TArray<FName> GetCustomizeRowNames() { return CustomizeRowNames; }
@@ -71,6 +76,10 @@ private:
 		TSubclassOf<class UUserWidget> LobbyClass;
 	UPROPERTY()
 		class UCLobbyWidget* LobbyWidget;
+	UPROPERTY(VisibleAnywhere)
+		class TSubclassOf<class UUserWidget> LoadingScreenWidgetClass;
+	UPROPERTY()
+		class UCLoadingScreenWidget* LoadingScreenWidget;
 
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;

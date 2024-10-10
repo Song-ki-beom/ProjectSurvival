@@ -8,6 +8,10 @@
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widget/Chatting/CChattingBox.h"
+#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "CGameInstance.h"
+#include "Net/UnrealNetwork.h" 
 #include "CGameInstance.h"
 
 FReply UCDifficultyWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -217,8 +221,17 @@ void UCDifficultyWidget::OnExtreme()
 void UCDifficultyWidget::OnStart()
 {
 	ACLobbyGameMode* lobbyGameMode = Cast<ACLobbyGameMode>(GetWorld()->GetAuthGameMode());
+	ShowLoadingScreen();
 	lobbyGameMode->StartGame();
 }
 
-
+void UCDifficultyWidget::ShowLoadingScreen()
+{
+	GameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance)
+	{
+		GameInstance->CreateLoadingScreen();
+	}
+	
+}
 

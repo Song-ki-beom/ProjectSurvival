@@ -60,6 +60,8 @@ private:
 		void OnExtreme();
 	UFUNCTION()
 		void OnStart();
+	UFUNCTION()
+		void ShowLoadingScreen();
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -89,6 +91,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* StartSwitcher;
+	UPROPERTY()
+		class UCGameInstance* GameInstance;
+	
 
 	class UDataTable* DifficultyData;
 	int32 ServerDifficultyIndex = 0;

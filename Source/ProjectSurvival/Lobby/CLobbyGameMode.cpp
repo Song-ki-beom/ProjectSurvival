@@ -3,6 +3,8 @@
 #include "Lobby/CLobbySurvivor.h"
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CLobbySurvivorController.h"
+#include "Net/UnrealNetwork.h" 
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 ACLobbyGameMode::ACLobbyGameMode()
@@ -76,10 +78,25 @@ void ACLobbyGameMode::StartGame()
 	//	LobbySurvivorController->Destroy();
 	//}
 
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACLobbyGameMode::TriggerSeamlessTravel, 0.5f, false);
+
+	
+}
+
+void ACLobbyGameMode::TriggerSeamlessTravel()
+{
 	// Seamless Travel을 사용하도록 설정
 	bUseSeamlessTravel = true;
 
+	/*FLatentActionInfo LatentInfo;
+	LatentInfo.CallbackTarget = this;
+	UGameplayStatics::LoadStreamLevel(this, "/Game/PirateIsland/Exclude/Maps/Main", true, true, LatentInfo);*/
+
+	
 	// 새로운 맵으로 이동
 	GetWorld()->ServerTravel("/Game/PirateIsland/Exclude/Maps/Main?listen");
 }
+
 

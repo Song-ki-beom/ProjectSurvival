@@ -10,6 +10,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Utility/CDebug.h"
+#include "Net/UnrealNetwork.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Struct/CDestructibleStructures.h"
 #include "Environment/CDestructibleActor.h"
@@ -18,6 +19,7 @@
 #include "Widget/Chatting/CChattingBox.h"
 #include "Widget/Map/CWorldMap.h"
 #include "Widget/Map/CMiniMap.h"
+#include "Widget/World/CLoadingScreenWidget.h"
 
 const static FName SESSION_NAME = TEXT("SurvivalSession");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
@@ -60,6 +62,10 @@ UCGameInstance::UCGameInstance(const FObjectInitializer& ObjectInitializer)
 	ConstructorHelpers::FClassFinder<UUserWidget> worldMapClassClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Map/WBP_CWorldMap.WBP_CWorldMap_C'"));
 	if (worldMapClassClassFinder.Succeeded())
 		WorldMapClass = worldMapClassClassFinder.Class;
+
+	ConstructorHelpers::FClassFinder<UUserWidget> LoadingScreenWidgetClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/World/WBP_LoadingScreen.WBP_LoadingScreen_C'"));
+	if (LoadingScreenWidgetClassFinder.Succeeded())
+		LoadingScreenWidgetClass = LoadingScreenWidgetClassFinder.Class;
 }
 
 void UCGameInstance::Init()
@@ -311,4 +317,18 @@ void UCGameInstance::CheckNetDriver()
 	}
 }
 
+void UCGameInstance::CreateLoadingScreen()
+{
+	BroadcastCreateLoadingScreen();
+}
 
+void UCGameInstance::BroadcastCreateLoadingScreen_Implementation()
+{
+	CDebug::Print(TEXT("Loading Screen Widget Added"));
+	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
+	if (LoadingScreenWidget)
+	{
+		LoadingScreenWidget->AddToViewport();
+	}
+
+}
