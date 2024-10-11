@@ -19,6 +19,7 @@
 #include "Widget/Map/CWorldMap.h"
 #include "CGameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/DataTable.h"
@@ -1279,6 +1280,20 @@ void UCBuildComponent::PerformBuild(TSubclassOf<ACStructure> InClass, FTransform
 			}
 		}
 		bIsSnapped = false;
+
+		if (buildstructure || (placeableStructure && placeableStructure->GetPlaceableStructureType() != EPlaceableStructureType::Bed))
+		{
+			UGameplayStatics::SpawnSoundAtLocation(
+				GetWorld(),
+				BuildSound,
+				buildstructure->GetActorLocation(),
+				buildstructure->GetActorRotation(),
+				1.0f,
+				1.0f,
+				0.0f,
+				BuildSoundAttenuation
+			);
+		}
 	}
 	else
 	{

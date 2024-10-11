@@ -92,4 +92,9 @@ protected:
 		class UCStatusPanel* StatusPanel;
 	UPROPERTY()
 		class UCLowHealthWidget* LowHealthWidget;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* OpenInventory;
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CloseInventory;
 };

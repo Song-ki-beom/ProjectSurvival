@@ -15,6 +15,7 @@
 #include "Widget/Map/CMiniMap.h"
 #include "Widget/Map/CWorldMap.h"
 #include "Character/CSurvivorController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 ACMainHUD::ACMainHUD()
@@ -113,6 +114,10 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
+		if (OpenInventory)
+		{
+			UGameplayStatics::PlaySound2D(this, OpenInventory);
+		}
 		break;
 	}
 	case EWidgetCall::Placeable:
@@ -123,6 +128,10 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 		const FInputModeUIOnly InputMode;// 마우스와 키보드 입력이 UI에만 영향 
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(true);
+		if (OpenInventory)
+		{
+			UGameplayStatics::PlaySound2D(this, OpenInventory);
+		}
 		break;
 	}
 	case EWidgetCall::CloseWidget:
@@ -153,6 +162,10 @@ void ACMainHUD::SetWidgetVisibility(EWidgetCall InWidgetCall, class UUserWidget*
 		const FInputModeGameOnly InputMode;// 마우스와 키보드 입력이 InGame Action에만 반영
 		GetOwningPlayerController()->SetInputMode(InputMode);
 		GetOwningPlayerController()->SetShowMouseCursor(false);
+		if (CloseInventory)
+		{
+			UGameplayStatics::PlaySound2D(this, CloseInventory);
+		}
 		break;
 	}
 	}
