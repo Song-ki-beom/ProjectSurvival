@@ -7,6 +7,7 @@
 #include "CGameInstance.h"
 #include "Engine/PackageMapClient.h"
 #include "ActorComponents/CInteractionComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 ACStructure_Door::ACStructure_Door()
@@ -168,14 +169,40 @@ void ACStructure_Door::DoBuildTypeInteract()
 
 void ACStructure_Door::BroadcastOpenDoor_Implementation()
 {
-	//CDebug::Print("BroadcastOpenDoor_Implementation Called");
 	GetWorld()->GetTimerManager().SetTimer(OpenTimerHandle, this, &ACStructure_Door::PerformOpenDoor, 0.025f, true);
+
+	if (OpenSound && DoorSoundAttenuation)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(
+			GetWorld(),
+			OpenSound,
+			this->GetActorLocation(),
+			this->GetActorRotation(),
+			0.5f,
+			1.0f,
+			0.0f,
+			DoorSoundAttenuation
+		);
+	}
 }
 
 void ACStructure_Door::BroadcastCloseDoor_Implementation()
 {
-
 	GetWorld()->GetTimerManager().SetTimer(CloseTimerHandle, this, &ACStructure_Door::PerformCloseDoor, 0.025f, true);
+
+	if (CloseSound && DoorSoundAttenuation)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(
+			GetWorld(),
+			CloseSound,
+			this->GetActorLocation(),
+			this->GetActorRotation(),
+			0.5f,
+			1.0f,
+			0.0f,
+			DoorSoundAttenuation
+		);
+	}
 }
 
 void ACStructure_Door::PerformOpenDoor()

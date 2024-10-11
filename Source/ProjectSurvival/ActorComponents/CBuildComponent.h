@@ -97,4 +97,9 @@ private:
 	bool bIsBuildable;
 	bool bIsSnapped;
 	bool bIsBuilding;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* BuildSound;
+	UPROPERTY(EditAnywhere)
+		class USoundAttenuation* BuildSoundAttenuation;
 };

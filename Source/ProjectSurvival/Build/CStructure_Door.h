@@ -58,4 +58,11 @@ private:
 	FTimerHandle WaitTimerHandle;
 	float Angle;
 
+	UPROPERTY(EditAnywhere)
+		class USoundWave* OpenSound;
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CloseSound;
+	UPROPERTY(EditAnywhere)
+		class USoundAttenuation* DoorSoundAttenuation;
+
 };
