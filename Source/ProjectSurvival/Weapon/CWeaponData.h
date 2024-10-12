@@ -19,10 +19,11 @@ public:
 	void  SetAttachment(class ACAttachment* InAttachment);
 	void  SetEquipment(class  UCEquipment* InEquipment);
 	void  SetDoAction(class  UCDoAction* InDoAction);
+	void  SetSubAction(class  UCSubAction* InSubAction);
 	class ACAttachment* GetAttachment() { return Attachment; }
 	class UCEquipment* GetEquipment() { return Equipment; }
 	class UCDoAction* GetDoAction() { return DoAction; }
-
+	class UCSubAction* GetSubAction() { return SubAction; }
 
 private:
 	UPROPERTY()
@@ -31,7 +32,8 @@ private:
 		class UCEquipment* Equipment;
 	UPROPERTY()
 		class UCDoAction* DoAction;
-	
+	UPROPERTY()
+		class UCSubAction* SubAction;
 
 
 

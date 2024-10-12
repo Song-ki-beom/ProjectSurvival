@@ -7,6 +7,7 @@
 #include "Weapon/CWeaponData.h"
 #include "Weapon/CEquipment.h"
 #include "Weapon/CDoAction.h"
+#include "Weapon/CSubAction.h"
 
 UCWeaponAsset::UCWeaponAsset()
 {
@@ -55,12 +56,22 @@ void UCWeaponAsset::BeginPlay(ACharacter* InOwner, UCWeaponData** OutWeaponData)
 		}
 	}
 
+
+	// SubAction
+	UCSubAction* SubAction = nullptr;
+	if (!!SubActionClass)
+	{
+		SubAction = NewObject<UCSubAction>(this, SubActionClass);
+		SubAction->BeginPlay(InOwner, Attachment, Equipment, DoAction);
+	}
+
+
 	//WeaponData에 동적 할당 
 	*OutWeaponData = NewObject<UCWeaponData>();
 	(*OutWeaponData)->SetAttachment(Attachment);
 	(*OutWeaponData)->SetEquipment(Equipment);
 	(*OutWeaponData)->SetDoAction(DoAction);
-
+	(*OutWeaponData)->SetSubAction(SubAction);
 
 }
 

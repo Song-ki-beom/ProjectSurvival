@@ -96,9 +96,10 @@ void ACSurvivorController::SetupInputFunction()
 {
 	if (IsValid(Survivor))
 	{
-		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::HoldAxe);
+		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::TestInputKeyAction);
 		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
-		InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ACSurvivorController::SubAction);
+		InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ACSurvivorController::SubActionPressed);
+		InputComponent->BindKey(EKeys::RightMouseButton, IE_Released, this, &ACSurvivorController::SubActionReleased);
 		InputComponent->BindAction("Build", IE_Pressed, this, &ACSurvivorController::ToggleBuildWidget);
 		InputComponent->BindAction("SelectQ", IE_Pressed, this, &ACSurvivorController::SelectQ);
 		InputComponent->BindAction("SelectW", IE_Pressed, this, &ACSurvivorController::SelectW);
@@ -125,6 +126,8 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("QuickSlot8", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
 		InputComponent->BindAction("QuickSlot9", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
 		InputComponent->BindAction("QuickSlot10", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+	
+
 
 		UCMovingComponent* movingComponent = Survivor->GetMovingComponent();
 		if (IsValid(movingComponent))
@@ -359,7 +362,7 @@ void ACSurvivorController::DoAction()
 	}
 }
 
-void ACSurvivorController::SubAction()
+void ACSurvivorController::SubActionPressed()
 {
 	if (Survivor)
 	{
@@ -368,17 +371,25 @@ void ACSurvivorController::SubAction()
 			Survivor->CancleBuild();
 			return;
 		}
-		Survivor->SubAction();
+		Survivor->SubActionPressed();
 	}
 }
 
-void ACSurvivorController::HoldAxe()
+void ACSurvivorController::SubActionReleased()
+{
+	if (Survivor)
+	{
+		Survivor->SubActionReleased();
+	}
+}
+
+void ACSurvivorController::TestInputKeyAction()
 {
 
 	if (Survivor)
 	{
-		Survivor->SpawnBear();
-		//Survivor->GetWeaponComponent()->SetMode(EWeaponType::StoneAxe);
+		//Survivor->SpawnBear();
+		Survivor->GetWeaponComponent()->SetMode(EWeaponType::Bow);
 		//Survivor->HoldAxe();
 		//int32 durability = Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference()->ItemStats.RemainDurability--;
 

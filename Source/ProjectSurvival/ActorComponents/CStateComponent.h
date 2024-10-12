@@ -38,7 +38,13 @@ public:
      void BroadcastChangeType(EStateType InType);
     EStateType GetStateType() { return Type; }
 
+    //SubAction
+    void OnSubActionMode();
+    void OffSubActionMode();
+
+
 private:
+    //Mode
     void SetIdleMode();
     void SetEquipMode();
     void SetCombatMode();

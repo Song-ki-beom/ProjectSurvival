@@ -44,14 +44,17 @@ public:
 	bool IsUnarmedMode();
 	bool IsAxeMode(); 
 	bool IsIdleMode();
-
+	bool IsBowMode();
 	void DoAction();
+
+	UFUNCTION(BlueprintCallable) void SubAction_Pressed();
+	UFUNCTION(BlueprintCallable) void SubAction_Released();
+
 
 	void DestroyWeapon();
 
 
 	void SetMode(EWeaponType InNewType);
-
 	UFUNCTION(Server, Reliable)
 		void RequestSetMode(EWeaponType InType);
 
@@ -72,6 +75,17 @@ private:
 		void RequestDoAction();
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastPlayDoAction();
+	UFUNCTION(Server, Reliable)
+		void RequestPressSubAction();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastPressSubAction();
+	UFUNCTION(Server, Reliable)
+		void RequestReleaseSubAction();
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastReleaseSubAction();
+
+
+
 	UFUNCTION()
 		void OnRef_PrevTypeChanged();
 	UFUNCTION()
@@ -81,7 +95,7 @@ public:
 	class ACAttachment* GetAttachment();
 	class UCEquipment* GetEquipment();
 	class UCDoAction* GetDoAction();
-
+	class UCSubAction* GetSubAction();
 public:
 	FWeaponTypeChanged  OnWeaponTypeChanged;
 

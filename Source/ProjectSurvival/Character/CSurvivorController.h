@@ -45,8 +45,9 @@ private:
 
 	// DoAction + Harvest
 	void DoAction();
-	void SubAction();
-	void HoldAxe();
+	void SubActionPressed();
+	void SubActionReleased();
+	void TestInputKeyAction();
 
 	//Inventory and Produce
 	void ShowWidget();

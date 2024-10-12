@@ -35,6 +35,6 @@ void UCAnimNotifyState_EnemyAction::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 	Enemy = Cast<ACEnemy>(MeshComp->GetOwner());
 	if (Enemy == nullptr) return;
 	Enemy->End_DoAction();
-	CDebug::Print(TEXT("!!!!!!!!!!!!!!Attack Notify Ended!!!!!!!!!!!!"));
+	//CDebug::Print(TEXT("!!!!!!!!!!!!!!Attack Notify Ended!!!!!!!!!!!!"));
 
 }

@@ -176,7 +176,7 @@ protected:
 	FHitData* HitData;
 	FTimerHandle DieTimerHandle;
 	int32 hitCnt = 0;
-	
+	int32 MaxhitCnt = 3;
 	//Material
 	FLinearColor OriginalMeshColor = FLinearColor::White;
 	FTimerHandle ResetColorTimerHandle;

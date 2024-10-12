@@ -28,10 +28,9 @@ private:
 		FEquipmentData  EquipmentData;                   
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UCDoAction>  DoActionClass;    
-
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UCSubAction>  SubActionClass;    
 	UPROPERTY(EditAnywhere)
 		TArray<FDoActionData> DoActionDatas;        
 	
-	//UPROPERTY(EditAnywhere) 
-	//TArray<FHitData> HitDatas;        
 };

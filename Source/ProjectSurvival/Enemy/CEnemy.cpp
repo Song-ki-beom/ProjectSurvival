@@ -42,6 +42,7 @@ ACEnemy::ACEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true; 
 	SetReplicates(true);
+	bUseControllerRotationYaw = true;
 	Tags.Add(FName("Enemy"));
 	SetGenericTeamId(FGenericTeamId(3));
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
@@ -51,12 +52,12 @@ ACEnemy::ACEnemy()
 	}
 
 	//AI 세팅
-	static ConstructorHelpers::FClassFinder<ACEnemyAIController> AIControllerFinder(TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Character/Animal/Bear/BP_CEnemyAIController_Bear.BP_CEnemyAIController_Bear_C'"));
-	if (AIControllerFinder.Class != nullptr)
-	{
-		AIControllerClass = AIControllerFinder.Class; //AIController 클래스 설정..이 클래스를 기반으로 게임 시작 시 자동설정
+	/*static ConstructorHelpers::FClassFinder<ACEnemyAIController> AIControllerFinder(TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Character/Animal/Bear/BP_CEnemyAIController_Bear.BP_CEnemyAIController_Bear_C'"));*/
+	/*if (AIControllerFinder.Class != nullptr)
+	{*/
+		//AIControllerClass = AIControllerFinder.Class; //AIController 클래스 설정..이 클래스를 기반으로 게임 시작 시 자동설정
 		AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; //이 캐릭터가 스폰될때 AIController 에 의해 빙의됨 
-	}
+	//}
 
 	//Component Setting & Replicate
 	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("StatusComponent"));
@@ -100,6 +101,7 @@ ACEnemy::ACEnemy()
 	BoxCollision->SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
 
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 
 	// Pawn 제외 모두 블록 처리
@@ -403,7 +405,7 @@ void ACEnemy::Begin_DoAction()
 	StateComponent->ChangeType(EStateType::Action);
 	if (!DoActionDatas[AttackIdx].bCanMove)
 	{
-		if(HasAuthority())
+		if (HasAuthority())
 		AIController->StopMovement();
 	}
 	MovingComponent->EnableControlRotation();
@@ -562,7 +564,7 @@ void ACEnemy::ApplyHitData()
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();
 
-				if (hitCnt >= 3)
+				if (hitCnt >= MaxhitCnt)
 				{
 					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
 					if (this->HasAuthority()) AIController->ChangeTarget(targetActor); //타겟 변경 

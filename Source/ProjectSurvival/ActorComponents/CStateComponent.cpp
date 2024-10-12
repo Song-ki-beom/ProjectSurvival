@@ -63,3 +63,12 @@ void ::UCStateComponent::BroadcastChangeType_Implementation(EStateType InType)
 	if (OnStateTypeChanged.IsBound())
 		OnStateTypeChanged.Broadcast(prevType, Type);
 }
+
+void UCStateComponent::OnSubActionMode()
+{
+	bInSubActionMode = true;
+}
+void UCStateComponent::OffSubActionMode()
+{
+	bInSubActionMode = false;
+}

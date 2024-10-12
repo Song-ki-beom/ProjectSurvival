@@ -33,7 +33,8 @@ protected:
 public:
 	//Weapon
 	void DoAction();
-	void SubAction();
+	void SubActionPressed();
+	void SubActionReleased();
 	void HoldAxe();
 
 	//Interact

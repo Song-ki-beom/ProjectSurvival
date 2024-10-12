@@ -21,3 +21,8 @@ void UCWeaponData::SetDoAction(UCDoAction* InDoAction)
 	DoAction = InDoAction;
 }
 
+void UCWeaponData::SetSubAction(UCSubAction* InSubAction)
+{
+	SubAction = InSubAction;
+}
+

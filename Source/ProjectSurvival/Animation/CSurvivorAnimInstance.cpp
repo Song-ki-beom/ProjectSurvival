@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Utility/CDebug.h"
 #include "Net/UnrealNetwork.h"
+#include "Weapon/CSubAction.h"
 #include "Character/CSurvivor.h"
 
 void UCSurvivorAnimInstance::NativeBeginPlay()
@@ -46,6 +47,57 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OwnerCharacter is not valid - UCSurvivorAnimInstance"));
 	}
+
+	float NewPitch = UKismetMathLibrary::FInterpTo(Pitch, OwnerCharacter->GetBaseAimRotation().Pitch, DeltaSeconds, 25);
+	if (!OwnerCharacter->IsLocallyControlled())
+	{
+		const FVector AimDirWS = OwnerCharacter->GetBaseAimRotation().Vector();
+		const FVector AimDirLS = OwnerCharacter->ActorToWorld().InverseTransformVectorNoScale(AimDirWS);//월드 공간->로컬 공간으로 변환..월드 좌표에서의 회전값과 로컬 좌표에서의 회전값이 다르게 해석되었기 때문임
+		const FRotator AimRotLS = AimDirLS.Rotation();
+		NewPitch = AimRotLS.Pitch;
+	}
+	Pitch = NewPitch;
+
+
+	/*if (OwnerCharacter->HasAuthority())
+	{
+		
+		CDebug::Print(TEXT("Client Pitch: "), Pitch);
+	}
+	else
+	{
+		RequestSetPitch(NewPitch);
+		CDebug::Print(TEXT("Server Pitch: "), Pitch);
+	}*/
+
+	bFalling = OwnerCharacter->GetCharacterMovement()->IsFalling();
+
+	if(Weapon ==nullptr) return;
+		bBow_Aiming = false;
+		if (!!Weapon->GetSubAction())
+		{
+			if (WeaponType != EWeaponType::Bow) bBow_Aiming = true;
+			if (Weapon->GetSubAction()->GetInAction()) bBow_Aiming = true;
+
+		}
+	
+	
+
+
+}
+
+void UCSurvivorAnimInstance::SetPitch(float InNewPitch)
+{
+	/*if (!OwnerCharacter->IsLocallyControlled())
+	{
+		NewPitch = OwnerCharacter->RemoteViewPitch * 360.f / 255.f;
+	}
+	Pitch = InNewPitch;*/
+}
+
+void UCSurvivorAnimInstance::RequestSetPitch_Implementation(float InNewPitch)
+{
+	Pitch = InNewPitch;
 }
 
 
@@ -66,5 +118,6 @@ void UCSurvivorAnimInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UCSurvivorAnimInstance, WeaponType);
+	DOREPLIFETIME(UCSurvivorAnimInstance, bBow_Aiming);
 }
 

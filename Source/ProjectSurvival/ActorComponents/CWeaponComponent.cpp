@@ -6,6 +6,7 @@
 #include "Weapon/CAttachment.h"
 #include "Weapon/CEquipment.h"
 #include "Weapon/CDoAction.h"
+#include "Weapon/CSubAction.h"
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/CItemBase.h"
 #include "Utility/CDebug.h"
@@ -80,6 +81,11 @@ bool UCWeaponComponent::IsAxeMode()
 	return Type == EWeaponType::Axe;
 }
 
+bool UCWeaponComponent::IsBowMode()
+{
+	return Type == EWeaponType::Bow;
+}
+
 bool UCWeaponComponent::IsIdleMode()
 {
 	UCStateComponent* StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
@@ -87,10 +93,12 @@ bool UCWeaponComponent::IsIdleMode()
 	 
 }
 
+
+
 void UCWeaponComponent::DoAction()
 {
 
-	if (!!GetDoAction()) {
+	if (GetDoAction()) {
 		if (OwnerCharacter->HasAuthority())
 		{
 			BroadcastPlayDoAction();
@@ -104,6 +112,64 @@ void UCWeaponComponent::DoAction()
 	}
 
 }
+
+UFUNCTION(BlueprintCallable) void UCWeaponComponent::SubAction_Pressed()
+{
+	if (GetSubAction())
+	{
+		if (OwnerCharacter->HasAuthority())
+		{
+			BroadcastPressSubAction();
+
+		}
+		else
+		{
+			RequestPressSubAction();
+		}
+	}
+}
+
+UFUNCTION(BlueprintCallable) void UCWeaponComponent::SubAction_Released()
+{
+	if (GetSubAction())
+	{
+		if (OwnerCharacter->HasAuthority())
+		{
+			BroadcastReleaseSubAction();
+
+		}
+		else
+		{
+			RequestReleaseSubAction();
+		}
+	}
+}
+
+void UCWeaponComponent::RequestPressSubAction_Implementation()
+{
+	BroadcastPressSubAction();
+}
+
+void UCWeaponComponent::BroadcastPressSubAction_Implementation()
+{
+
+	GetSubAction()->Pressed();
+}
+
+
+void UCWeaponComponent::RequestReleaseSubAction_Implementation()
+{
+	BroadcastReleaseSubAction();
+}
+
+void UCWeaponComponent::BroadcastReleaseSubAction_Implementation()
+{
+	GetSubAction()->Released();
+}
+
+
+
+
 
 void UCWeaponComponent::RequestDoAction_Implementation()
 {
@@ -264,5 +330,13 @@ UCDoAction* UCWeaponComponent::GetDoAction()
 	if (IsUnarmedMode()) return nullptr;
 	if (!Datas[(int32)Type]) return nullptr;
 	return Datas[(int32)Type]->GetDoAction();
+}
+
+UCSubAction* UCWeaponComponent::GetSubAction()
+{
+	if (IsUnarmedMode()) return nullptr;
+	if (!Datas[(int32)Type]) return nullptr;
+	return Datas[(int32)Type]->GetSubAction();
+
 }
 

@@ -19,9 +19,9 @@ public:
 		class ACAttachment* InAttachment,
 		class UCEquipment* InEquipment
 		, const TArray<FDoActionData>& InDoActionData
-		//,const TArray<FHitData>& InHitData
+		
 	);
-	//virtual void Tick(float InDeltaTime) {};
+	virtual void Tick(float InDeltaTime) {};
 
 public:
 	bool GetBeginDoAction() { return bBeginAction; }

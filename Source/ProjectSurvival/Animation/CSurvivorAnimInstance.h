@@ -19,6 +19,12 @@ public:
 	void NativeBeginPlay() override;
 	void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UFUNCTION(Server, Reliable)
+		void RequestSetPitch(float InNewPitch);
+	UFUNCTION()
+		void SetPitch(float InNewPitch);
+
+
 private:
 	UFUNCTION()
 		void OnWeaponTypeChanged(EWeaponType InPrevType, EWeaponType InNewType);
@@ -33,7 +39,14 @@ protected: // ABP에서 사용할 변수
 		FRotator Rotation;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Replicated, ReplicatedUsing = OnRep_WeaponTypeChanged)
 		EWeaponType WeaponType = EWeaponType::Max;
-
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		float  Pitch;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		bool bFalling;
+	UPROPERTY(Replicated,BlueprintReadOnly, EditAnywhere)
+		bool bBow_Aiming;
+	
+	
 
 private:
 	class ACharacter* OwnerCharacter;

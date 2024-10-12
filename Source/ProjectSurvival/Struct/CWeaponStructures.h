@@ -16,6 +16,7 @@ enum class EHitActorType : uint8
 {
 	Survivor UMETA(DisplayName = "Survivor"),
 	Bear UMETA(DisplayName = "Bear"),
+	Boar UMETA(DisplayName = "Boar"),
 	MAX UMETA(DisplayName = "MAX")
 };
 

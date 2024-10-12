@@ -214,9 +214,16 @@ void ACSurvivor::DoAction()
 	WeaponComponent->DoAction();
 }
 
-void ACSurvivor::SubAction()
+void ACSurvivor::SubActionPressed()
 {
+	if (WeaponComponent->IsUnarmedMode()) return;
+	WeaponComponent->SubAction_Pressed();
+}
 
+void ACSurvivor::SubActionReleased()
+{
+	if (WeaponComponent->IsUnarmedMode()) return;
+	WeaponComponent->SubAction_Released();
 }
 
 void ACSurvivor::HoldAxe()
@@ -500,6 +507,10 @@ void ACSurvivor::ApplyHitData()
 			HitData->PlayEffect(GetWorld(), GetActorLocation(), GetActorRotation());
 			APlayerController* PlayerController = Cast<APlayerController>(GetController());
 			HitData->PlayCameraShake(PlayerController, 1.0f);
+		}
+		else
+		{
+			return;
 		}
 
 

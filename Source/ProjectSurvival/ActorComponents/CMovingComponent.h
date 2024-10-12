@@ -63,6 +63,9 @@ public:
 	FORCEINLINE void Move() { bCanMove = true; }
 	FORCEINLINE void Stop() { bCanMove = false; }
 
+
+	FORCEINLINE void SetSpeed(ESpeedType SpeedType, float NewSpeed) {  Speed[(int32)SpeedType]= NewSpeed; }
+
 	FORCEINLINE float GetWalkSpeed() { return Speed[(int32)ESpeedType::Walk]; }
 	FORCEINLINE float GetRunSpeed() { return Speed[(int32)ESpeedType::Run]; }
 	FORCEINLINE float GetSprintSpeed() { return Speed[(int32)ESpeedType::Sprint]; }

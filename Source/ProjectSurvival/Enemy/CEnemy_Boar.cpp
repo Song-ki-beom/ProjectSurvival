@@ -3,6 +3,7 @@
 
 #include "Enemy/CEnemy_Boar.h"
 #include "Enemy/CEnemyAIController.h"
+#include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CEnemyAIComponent.h"
 
 
@@ -16,15 +17,17 @@ ACEnemy_Boar::ACEnemy_Boar() : ACEnemy()
 	DropItemNum = 3;
 	DropItemID = FName("Consumable_1");
 	DropOffsetRange = 50.0f;
-
-
+	HitActorName  = FString("_Boar");
+	MovingComponent->SetSpeed(ESpeedType::Run, 500.0f);
+	MaxhitCnt = 1;
 }
+
+
 
 float ACEnemy_Boar::DoAction()
 {
 	return Super::DoAction();
 	//Attack 몽타주 실행부분 
-
 
 }
 
