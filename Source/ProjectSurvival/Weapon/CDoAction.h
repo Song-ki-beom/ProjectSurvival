@@ -55,6 +55,8 @@ protected:
 	UPROPERTY()  
 		class ACharacter* OwnerCharacter;
 	UPROPERTY()
+		class ACSurvivorController* OwnerController;
+	UPROPERTY()
 		class UCMovingComponent* MovingComponent;
 	UPROPERTY()
 		class UCStateComponent* StateComponent;

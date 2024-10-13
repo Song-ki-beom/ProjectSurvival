@@ -45,7 +45,7 @@ void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 	if (bInterrupted) //중간에 중단 
 	{
 	
-		CDebug::Print("OnMontageInterrupted: ", Montage->GetFName().ToString());
+		//CDebug::Print("OnMontageInterrupted: ", Montage->GetFName().ToString());
 			OnMontageInterrupted.Broadcast();
 		
 	}
@@ -61,7 +61,7 @@ void UCMontageComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted
 			return;
 		}*/
 
-		CDebug::Print("OnMontageFinalEnded", Montage->GetFName().ToString());
+		//CDebug::Print("OnMontageFinalEnded", Montage->GetFName().ToString());
 			OnMontageFinalEnded.Broadcast();
 	
 		

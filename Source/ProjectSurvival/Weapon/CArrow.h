@@ -21,19 +21,24 @@ public:
 protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
+    virtual void Tick(float DeltaTime) override;
 private:
     UFUNCTION()
         void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
             UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+    void RotateArrow();
+
+
 
 private:  
+
     UPROPERTY(VisibleAnywhere)
         class UCapsuleComponent* Capsule;
     UPROPERTY(VisibleAnywhere)
         class UProjectileMovementComponent* Projectile;
-
+    UPROPERTY()
+        class ACharacter* OwnerCharacter;
 private:
     UPROPERTY(EditDefaultsOnly, Category = "LifeSpan")
         float LifeSpanAfterCollision = 1.0f;
@@ -44,7 +49,10 @@ public:
 
 public:
     void  Shoot(const FVector& InFoward);
-
+    UFUNCTION(NetMulticast, Reliable)
+        void BroadcastShoot(const FVector& InFoward);
+    UFUNCTION(Server, Reliable)
+        void RequestShoot(const FVector& InFoward);
 
 private:
     TArray<AActor*> Ignores;

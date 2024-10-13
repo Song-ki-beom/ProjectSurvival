@@ -41,6 +41,7 @@ public:
 private:
 	class USpringArmComponent* SpringArm;
 	class UCameraComponent* Camera;
+	class UCAmmoComponent* AmmoComponent;
 	class UCBowAnimInstance* AnimInstance_Bow;
 private:
 	UPROPERTY(EditAnywhere, Category = "Aiming")
@@ -55,7 +56,6 @@ private:
 		void OnAiming(FVector Output);
 private: 
 	FTimeline Timeline;
-	class UCDoAction_Bow* BowDoAction;
 private:
 	FAimData  OriginData; 
 	float* Bend = nullptr;

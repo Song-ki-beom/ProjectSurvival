@@ -19,9 +19,7 @@ class PROJECTSURVIVAL_API UCDoAction_Bow : public UCDoAction
 			const TArray<FDoActionData>& InDoActionData
 		) override;
 	virtual void Tick(float InDeltaTime) override;
-public:
-	UPROPERTY(EditDefaultsOnly, Category = "Arrow")
-		TSubclassOf<class ACArrow> ArrowClass;
+
 public:
 	void DoAction()         override;
 	void Begin_DoAction()   override;
@@ -29,20 +27,11 @@ public:
 
 	void OnBeginEquip() override;
 	void OnUnEquip()    override;
-public:
-	UFUNCTION() void OnArrowHit(class AActor* InCauser, class ACharacter* InOtherCharacter);
-	UFUNCTION() void OnArrowEndPlay(class ACArrow* InDestroyer);
-	UFUNCTION() void ShowAttachedArrow();
-	UFUNCTION() void HideAttachedArrow();
 
 private: 
 	class UPoseableMeshComponent* PoseableMesh; 
 	class USkeletalMeshComponent* SkeletalMesh;
-
-private:
-	void CreateArrow();  
-	int32 GetAttachedArrow();
-	
+	class UCAmmoComponent* AmmoComponent;
 public:
 	void End_BowString();   
 	class  UCBowAnimInstance* AnimInstance_Bow;
@@ -50,23 +39,16 @@ private:
 	FVector OriginLocation;        
 	bool    bAttachedString = true; 
 
-private:
 	float* Bend = nullptr;
 	const  bool* bEquipped;    
 
 public:
 	void DestroyWeapon() override;
 
-private:
-	struct FArrow
-	{
-		bool bShooting = false;
-		class ACArrow* Arrow = nullptr;
-	};
 
-	TArray<FArrow> Arrows;
-
-
+public:
+	UPROPERTY(EditDefaultsOnly, Category = "Arrow")
+		TSubclassOf<class ACArrow> ArrowClass;
 	
 
 };

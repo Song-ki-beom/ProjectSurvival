@@ -6,6 +6,7 @@
 #include "ActorComponents/CStateComponent.h"
 #include "ActorComponents/CMovingComponent.h"
 #include "ActorComponents/CStatusComponent.h"
+#include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
 
 void UCDoAction::BeginPlay
@@ -18,6 +19,11 @@ void UCDoAction::BeginPlay
 )
 {
 	OwnerCharacter = InOwner;
+	if (OwnerCharacter)
+	{
+		OwnerController = Cast<ACSurvivorController>(OwnerCharacter->GetController());
+
+	}
 	World = OwnerCharacter->GetWorld();
 	DoActionDatas = InDoActionData;
 	MovingComponent = Cast<UCMovingComponent>(OwnerCharacter->GetComponentByClass(UCMovingComponent::StaticClass()));

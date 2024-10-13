@@ -192,6 +192,9 @@ private:
 		class UCStateComponent* StateComponent;
 	UPROPERTY(VisibleAnywhere)
 		class UCMontageComponent* MontageComponent;
+	UPROPERTY(VisibleAnywhere)
+		class UCAmmoComponent* AmmoComponent;
+
 	//UPROPERTY(VisibleAnywhere)
 	//class UAIPerceptionStimuliSourceComponent* PerceptionStimuliSource;
 	

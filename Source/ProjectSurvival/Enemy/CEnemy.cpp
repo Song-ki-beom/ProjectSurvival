@@ -722,42 +722,42 @@ void ACEnemy::BroadcastUpdateHealthBar_Implementation(FLinearColor InColor)
 void ACEnemy::RotateMeshToSlope(float InDeltaTime)
 {
 
-	//FVector Start = SlopeCheckArrow->GetComponentLocation();
-	//FVector End = Start + (SlopeCheckArrow->GetUpVector() * (-500.0f));  //아래로 라인트레이스
-	//FHitResult HitResult;
-	////FCollisionQueryParams TraceParams;
-	////TraceParams.
-
+	FVector Start = SlopeCheckArrow->GetComponentLocation();
+	FVector End = Start + (SlopeCheckArrow->GetUpVector() * (-500.0f));  //아래로 라인트레이스
+	FHitResult HitResult;
 	//FCollisionQueryParams TraceParams;
-	//TraceParams.bTraceComplex = true;
-	//TraceParams.AddIgnoredActor(this);
-	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 2.0f);
+	//TraceParams.
 
-	//if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams))
-	//{
-	//	FVector ImpactNormal = HitResult.ImpactNormal;
-	//	FVector ImpactStart = HitResult.ImpactPoint;
-	//	FVector ImpactEnd = ImpactStart + (ImpactNormal * 150.0f);
-	//	DrawDebugLine(GetWorld(), ImpactStart, ImpactEnd, FColor::Green, false, 1.0f, 0, 2.0f);
+	FCollisionQueryParams TraceParams;
+	TraceParams.bTraceComplex = true;
+	TraceParams.AddIgnoredActor(this);
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 2.0f);
 
-
-	//	//FRotator TargetRotator = FRotationMatrix::MakeFromZ(ImpactNormal).Rotator();
-
-	//	FRotator MeshRotator = GetMesh()->GetComponentRotation();
-	//	
-	//	FMatrix MeshRightMatrix = FRotationMatrix::MakeFromYZ(GetMesh()->GetRightVector(),ImpactNormal);
-	//	FRotator MeshRightRotator = MeshRightMatrix.Rotator();
-
-	//	FMatrix MeshForwardMatrix = FRotationMatrix::MakeFromYZ(GetMesh()->GetForwardVector(), ImpactNormal);
-	//	FRotator MeshForwardRotator = MeshForwardMatrix.Rotator();
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams))
+	{
+		FVector ImpactNormal = HitResult.ImpactNormal;
+		FVector ImpactStart = HitResult.ImpactPoint;
+		FVector ImpactEnd = ImpactStart + (ImpactNormal * 150.0f);
+		DrawDebugLine(GetWorld(), ImpactStart, ImpactEnd, FColor::Green, false, 1.0f, 0, 2.0f);
 
 
-	//	FRotator TargetRotator = FRotator(MeshRightRotator.Pitch, MeshRotator.Yaw,MeshForwardRotator.Roll);
-	//	//BoxCollision
-	//	TargetRotator = FMath::RInterpTo(MeshRotator, TargetRotator, InDeltaTime, 5.0f);
-	//	GetMesh()->SetWorldRotation(TargetRotator);
-	//	
-	//}
+		//FRotator TargetRotator = FRotationMatrix::MakeFromZ(ImpactNormal).Rotator();
+
+		FRotator MeshRotator = GetMesh()->GetComponentRotation();
+		
+		FMatrix MeshRightMatrix = FRotationMatrix::MakeFromYZ(GetMesh()->GetRightVector(),ImpactNormal);
+		FRotator MeshRightRotator = MeshRightMatrix.Rotator();
+
+		FMatrix MeshForwardMatrix = FRotationMatrix::MakeFromYZ(GetMesh()->GetForwardVector(), ImpactNormal);
+		FRotator MeshForwardRotator = MeshForwardMatrix.Rotator();
+
+
+		FRotator TargetRotator = FRotator(MeshRightRotator.Pitch, MeshRotator.Yaw,MeshForwardRotator.Roll);
+		//BoxCollision
+		TargetRotator = FMath::RInterpTo(MeshRotator, TargetRotator, InDeltaTime, 5.0f);
+		GetMesh()->SetWorldRotation(TargetRotator);
+		
+	}
 
 }
 

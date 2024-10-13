@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ActorComponents/CAmmoComponent.h"
 #include "Animation/CBowAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "ActorComponents/CStateComponent.h"
@@ -22,7 +23,7 @@ void  UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* 
 	Super::BeginPlay(InOwner, InAttachment, InEquipment, InDoAction);
 
 	{
-		
+		AmmoComponent = Cast<UCAmmoComponent>(InOwner->GetComponentByClass(UCAmmoComponent::StaticClass()));
 		SpringArm = Cast<USpringArmComponent>(InOwner->GetComponentByClass(USpringArmComponent::StaticClass()));
 		Camera = Cast<UCameraComponent>(InOwner->GetComponentByClass(UCameraComponent::StaticClass()));
 		
@@ -42,7 +43,6 @@ void  UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* 
 	if (bow)
 		Bend = bow->GetBend();
 
-	BowDoAction = Cast<UCDoAction_Bow>(DoAction);
 }
 void  UCSubAction_Bow::Tick_Implementation(float InDeltaTime)
 {
@@ -76,9 +76,9 @@ void UCSubAction_Bow::Pressed()
 
 	Timeline.PlayFromStart();
 	
-	if (BowDoAction)
+	if (AmmoComponent)
 	{
-		BowDoAction->ShowAttachedArrow();
+		AmmoComponent->ShowAttachedArrow();
 	}
 	
 }
@@ -103,9 +103,9 @@ void UCSubAction_Bow::Released()
 
 	Timeline.ReverseFromEnd();
 
-	if (BowDoAction)
+	if (AmmoComponent)
 	{
-		BowDoAction->HideAttachedArrow();
+		AmmoComponent->HideAttachedArrow();
 	}
 }
 
