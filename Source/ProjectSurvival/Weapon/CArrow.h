@@ -17,6 +17,8 @@ class PROJECTSURVIVAL_API ACArrow : public AActor
 
 public:
     ACArrow();
+public:
+    void Shoot(const FVector& InFoward);
 
 protected:
     virtual void BeginPlay() override;
@@ -26,10 +28,23 @@ private:
     UFUNCTION()
         void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
             UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
     void RotateArrow();
 
 
+public:
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
+        UParticleSystemComponent* ParticleSystemComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+        UParticleSystem* TrailParticleEffect;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
+        class UStaticMeshComponent* ArrowMesh;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+        UStaticMesh* MeshAsset;
+
+
+public:
+    FProjectileHit       OnHit;
+    FProjectileEndPlay   OnEndPlay;
 
 private:  
 
@@ -37,25 +52,10 @@ private:
         class UCapsuleComponent* Capsule;
     UPROPERTY(VisibleAnywhere)
         class UProjectileMovementComponent* Projectile;
-    UPROPERTY(VisibleAnywhere)
-        class UStaticMeshComponent* ArrowMesh;
     UPROPERTY()
         class ACharacter* OwnerCharacter;
-
-private:
     UPROPERTY(EditDefaultsOnly, Category = "LifeSpan")
         float LifeSpanAfterCollision = 1.0f;
-
-public: 
-    FProjectileHit       OnHit;
-    FProjectileEndPlay   OnEndPlay;
-
-public:
-    void  Shoot(const FVector& InFoward);
-    UFUNCTION(NetMulticast, Reliable)
-        void BroadcastShoot(const FVector& InFoward);
-    UFUNCTION(Server, Reliable)
-        void RequestShoot(const FVector& InFoward);
 
 private:
     TArray<AActor*> Ignores;
