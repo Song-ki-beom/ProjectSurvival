@@ -2,7 +2,6 @@
 #include "Build/CStructure_Foundation.h"
 #include "Build/CStructure_Ceiling.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "ActorComponents/CActorInventoryComponent.h"
 #include "ActorComponents/CInteractionComponent.h"
 #include "Character/CSurvivor.h"
 #include "Character/CSurvivorController.h"

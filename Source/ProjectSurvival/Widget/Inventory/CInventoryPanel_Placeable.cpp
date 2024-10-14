@@ -6,7 +6,6 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Widget/Build/CBuildWidget.h"
 #include "Widget/CMainHUD.h"
-#include "ActorComponents/CActorInventoryComponent.h"
 #include "Build/CStructure_Placeable.h"
 #include "Components/WrapBox.h"
 #include "Components/Button.h"

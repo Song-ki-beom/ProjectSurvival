@@ -29,6 +29,7 @@
 #include "Widget/Inventory/CInventoryItemSlot.h"
 #include "Weapon/CDoAction.h"
 #include "Components/SizeBox.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ACSurvivorController::ACSurvivorController()
 {
@@ -126,6 +127,7 @@ void ACSurvivorController::SetupInputFunction()
 		InputComponent->BindAction("QuickSlot8", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
 		InputComponent->BindAction("QuickSlot9", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
 		InputComponent->BindAction("QuickSlot10", IE_Pressed, this, &ACSurvivorController::PressQuickSlot);
+		InputComponent->BindAction("Jump", IE_Pressed, this, &ACSurvivorController::Jump);
 	
 
 
@@ -351,7 +353,7 @@ void ACSurvivorController::SelectC()
 
 void ACSurvivorController::DoAction()
 {
-	if (Survivor)
+	if (Survivor && !Survivor->GetCharacterMovement()->IsFalling())
 	{
 		if (Survivor->GetBuildComponent()->CheckIsBuilding())
 		{
@@ -647,9 +649,12 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 	}
 }
 
-void ACSurvivorController::ShowBuildInteractWidget()
+void ACSurvivorController::Jump()
 {
-	//RespawnLocationRegisterClass
+	if (Survivor->HasAuthority())
+		Survivor->BroadcastDoSpecialAction(ESpecialState::Jump);
+	else
+		Survivor->RequestDoSpecialAction(ESpecialState::Jump);
 }
 
 void ACSurvivorController::RequestAddItem_Implementation(FName ItemID, int32 InQuantity, class ACStructure_Placeable* InPlaceable, FItemNumericData InNumericData, EItemType ItemType, FItemStats InItemStats, EWeaponType InWeaponType)

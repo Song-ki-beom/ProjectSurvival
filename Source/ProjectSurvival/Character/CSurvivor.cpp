@@ -212,6 +212,14 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void ACSurvivor::Landed(const FHitResult& Hit)
+{
+	if (this->HasAuthority())
+		BroadcastDoSpecialAction(ESpecialState::Land);
+	else
+		RequestDoSpecialAction(ESpecialState::Land);
+}
+
 void ACSurvivor::DoAction()
 {
 	if (WeaponComponent->IsUnarmedMode()) return;
@@ -364,8 +372,20 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 
 void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 {
-	if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(DoSpecialActionDatas[(int32)SpecialState].Montage))
+	if (!DoSpecialActionDatas[(int32)SpecialState].bCanMove)
+		MovingComponent->Stop();
+
+	if (SpecialState != ESpecialState::Jump)
+	{
+		if (!GetMesh()->GetAnimInstance()->Montage_IsPlaying(DoSpecialActionDatas[(int32)SpecialState].Montage))
+			MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+	}
+
+	if (SpecialState == ESpecialState::Jump && !this->GetCharacterMovement()->IsFalling() && !GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
+	{
 		MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
+		this->Jump();
+	}
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)

@@ -66,8 +66,8 @@ private:
 	//QuickSlot
 	void PressQuickSlot(FKey InPressedKey);
 
-	//BuildInteract
-	void ShowBuildInteractWidget();
+	//Jump
+	void Jump();
 
 private:
 	class ACSurvivor* Survivor;
