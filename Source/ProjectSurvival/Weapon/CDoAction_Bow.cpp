@@ -43,7 +43,7 @@ void UCDoAction_Bow::DoAction()
 {
     if(!StateComponent->IsIdleMode()) return;
     if(!StateComponent->IsSubActionMode()) return;
-
+    //if (!AmmoComponent->GetIsArrowFullyCreated()) return;
     Super::DoAction();
     //DoActionDatas[0].DoAction(OwnerCharacter);
 
@@ -104,9 +104,9 @@ void UCDoAction_Bow::Begin_DoAction()
         {
             // 라인 트레이스를 이용하여 크로스헤어가 가리키는 월드 지점 찾기
             FVector Start = CameraLocation;
-            FVector End = Start + (WorldDirection * 20000.0f); 
+            FVector End = Start + (WorldDirection * 200000.0f); 
             
-
+        
             AmmoComponent->ShootArrow(Start, End);
 
            

@@ -10,7 +10,9 @@ USTRUCT()
 struct FArrow
 {
 	GENERATED_BODY()
+	UPROPERTY()
 	bool bShooting = false;
+	UPROPERTY()
 	class ACArrow* Arrow = nullptr;
 };
 
@@ -75,7 +77,12 @@ private:
 	class ACharacter* OwnerCharacter;
 	class UCStateComponent* StateComponent;
 	TArray<FArrow> Arrows;
+	bool bArrowFullyCreated;
 	
+public:
+	FORCEINLINE bool GetIsArrowFullyCreated() {
+		return bArrowFullyCreated;
+	}
 
 
 };

@@ -37,8 +37,11 @@ private:
         class UCapsuleComponent* Capsule;
     UPROPERTY(VisibleAnywhere)
         class UProjectileMovementComponent* Projectile;
+    UPROPERTY(VisibleAnywhere)
+        class UStaticMeshComponent* ArrowMesh;
     UPROPERTY()
         class ACharacter* OwnerCharacter;
+
 private:
     UPROPERTY(EditDefaultsOnly, Category = "LifeSpan")
         float LifeSpanAfterCollision = 1.0f;
@@ -56,7 +59,8 @@ public:
 
 private:
     TArray<AActor*> Ignores;
-
+    bool bIsShooting;
+    FVector ForwardVector;
 public:
     FORCEINLINE void AddIgnoreActor(AActor* InActor) { Ignores.Add(InActor); }
 

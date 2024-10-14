@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "DrawDebugHelpers.h"
+#include "Utility/CDebug.h"
 #include "Components/CapsuleComponent.h"
 
 ACArrow::ACArrow()
@@ -13,10 +15,17 @@ ACArrow::ACArrow()
 	SetReplicates(true);
 	PrimaryActorTick.bCanEverTick = true;
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
+	RootComponent = Capsule;
 	Projectile = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile"));
+	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
+	ArrowMesh->SetupAttachment(Capsule);
+	ArrowMesh->SetCollisionProfileName("NoCollision");
+	Projectile->InitialSpeed = 300000.0f;
+	Projectile->MaxSpeed = 300000.0f;
 	Projectile->ProjectileGravityScale = 0.0f;              
 	Capsule->BodyInstance.bNotifyRigidBodyCollision = true;   
 	Capsule->SetCollisionProfileName("BlockAll");
+	bIsShooting = false;
 }
 	
 
@@ -40,14 +49,36 @@ void ACArrow::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ACArrow::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RotateArrow();
+	if(bIsShooting)
+		RotateArrow();
+	//CDebug::Print("Projectile Speed: ", Projectile->Velocity);
+	FVector CapsuleLocation = Capsule->GetComponentLocation();
+	FRotator CapsuleRotation = Capsule->GetComponentRotation();
+	float CapsuleHalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+	float CapsuleRadius = Capsule->GetScaledCapsuleRadius();
+
+	 //캡슐 디버그 드로잉 (파라미터: 월드, 위치, 회전, 반지름, 절반 높이, 세그먼트 수, 색상, 지속 시간, 두께)
+	DrawDebugCapsule(
+		GetWorld(),
+		CapsuleLocation,
+		CapsuleHalfHeight,
+		CapsuleRadius,
+		CapsuleRotation.Quaternion(),
+		FColor::Green,  // 표시할 색상
+		false,          // 지속적으로 그릴지 여부 (false면 1초 동안만 그려짐)
+		-1.0f,          // 그려진 시간이 끝나는 시간 (-1이면 계속 표시)
+		0,              // 깊이 우선 순위 (0이면 기본값)
+		2.0f            // 선의 두께
+	);
 
 }
 
 void ACArrow::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	bIsShooting = false;
+	//RotateArrow();
 	SetLifeSpan(LifeSpanAfterCollision);
-
+	
 	for (AActor* actor : Ignores)
 		if (actor == OtherActor) return;
 
@@ -64,12 +95,11 @@ void ACArrow::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 
 void ACArrow::Shoot(const FVector& InFoward)
 {
-	if(GetAttachParentActor() )//GetAttachParentActor() && !Arrow->GetAttachParentActor()->IsPendingKill()
-		DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	Projectile->Velocity = InFoward * Projectile->InitialSpeed;
-	//RotateArrow();
+	ForwardVector = InFoward;
+	Projectile->Velocity = ForwardVector * Projectile->InitialSpeed;
+	RotateArrow();
 	Projectile->Activate();
-	Projectile->bRotationFollowsVelocity = true;
+	bIsShooting = true;
 	Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 }
@@ -84,18 +114,23 @@ void ACArrow::RequestShoot_Implementation(const FVector& InFoward)
 
 void ACArrow::BroadcastShoot_Implementation(const FVector& InFoward)
 {
-	DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	Projectile->Velocity = InFoward * Projectile->InitialSpeed;
+	//DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	//Projectile->Velocity = InFoward * Projectile->InitialSpeed;
+	//
+	//Projectile->Activate();
 	//RotateArrow();
-	Projectile->Activate();
-	Projectile->bRotationFollowsVelocity = true;
-	Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	////Projectile->bRotationFollowsVelocity = true;
+	//Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void ACArrow::RotateArrow()
 {
-	//FRotator ProjectileRotator = Projectile->Velocity.Rotation();
-	//FRotator newRotator = FRotator(ProjectileRotator.Pitch, GetActorRotation().Yaw, GetActorRotation().Roll);
-	//SetActorRotation(newRotator);
+	//FRotator NewRotation = FRotationMatrix::MakeFromX(ForwardVector).Rotator(); //look at 
+	FRotator NewRotation = FRotationMatrix::MakeFromX(Projectile->Velocity).Rotator(); //look at 
+	//NewRotation = FRotator(NewRotation.Pitch, NewRotation.Yaw, NewRotation.Roll);
+	//FRotator MeshRotationOffset(0.0f, -90.0f, 15.0f); //화살촉 rotation 조정 
+	//NewRotation = NewRotation + MeshRotationOffset;
+	Capsule->SetWorldRotation(NewRotation);
+
 }
 

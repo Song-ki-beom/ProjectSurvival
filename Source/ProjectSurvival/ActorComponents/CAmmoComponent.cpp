@@ -22,7 +22,7 @@
 UCAmmoComponent::UCAmmoComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-    
+    bArrowFullyCreated = false;
     
 }
 
@@ -121,7 +121,7 @@ void UCAmmoComponent::CreateArrow()
     
     if (GetWorld()->bIsTearingDown == true)
         return;
-
+    bArrowFullyCreated = false;
     //새로 만들 화살 초기화
     TempArrow.Arrow = NULL;
     TempArrow.bShooting = false;
@@ -129,16 +129,11 @@ void UCAmmoComponent::CreateArrow()
     TempArrow.Arrow = OwnerCharacter->GetWorld()->SpawnActorDeferred<ACArrow>(ArrowClass, transform,
         nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
-
     if (TempArrow.Arrow == nullptr) return;
-  
-  
-    BroadcastInitializeArrow(TempArrow.Arrow);
+    
     UGameplayStatics::FinishSpawningActor(TempArrow.Arrow, transform);
+    BroadcastInitializeArrow(TempArrow.Arrow);
     Arrows.Add(TempArrow);
-    //BroadcastAddArrow(TempArrow.Arrow);
-   
-
 
 }
 
@@ -170,9 +165,11 @@ void UCAmmoComponent::PerformShootArrow(FVector Start, FVector End)
     // 라인 트레이스 실행
     if (OwnerCharacter->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
     {
+        CDebug::Print("Arrow Hit Actor:", HitResult.Component->GetName());
         // 라인 트레이스가 맞은 지점을 목표로 설정
         FVector TargetLocation = HitResult.ImpactPoint;
         int32 AttachedIdx = GetAttachedArrow();
+        if (AttachedIdx<0 || AttachedIdx >= Arrows.Num()) return;
         Arrows[AttachedIdx].bShooting = true;
         ACArrow* arrow = Arrows[AttachedIdx].Arrow;
         if (arrow == nullptr) return;
@@ -190,6 +187,11 @@ void UCAmmoComponent::PerformShootArrow(FVector Start, FVector End)
 
 void UCAmmoComponent::BroadcastShootArrow_Implementation(ACArrow* TargetArrow, FVector Direction)
 {
+    if (TargetArrow == nullptr) return;
+    AActor* ParentActor = TargetArrow->GetAttachParentActor();
+    if (!IsValid(ParentActor)) return;
+    if (ParentActor && IsValid(ParentActor) && !ParentActor->IsPendingKill())
+        TargetArrow->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
     TargetArrow->Shoot(Direction);
 }
 void UCAmmoComponent::RequestShootArrow_Implementation(FVector Start, FVector End)
@@ -209,16 +211,14 @@ void UCAmmoComponent::BroadcastInitializeArrow_Implementation(class ACArrow* Tar
             TargetArrow->AttachToComponent(OwnerCharacter->GetMesh(), rule, "Hand_Bow_Right_Arrow");
         if (StateComponent &&!StateComponent->IsSubActionMode())
             TargetArrow->SetActorHiddenInGame(true);
+        bArrowFullyCreated = true;
        
 }
 
 void UCAmmoComponent::BroadcastAddArrow_Implementation(class ACArrow* TargetArrow)
 {
     FArrow newArrrowData = {false, TargetArrow };
-   // if (!Arrows.Contains(newArrrowData))
-    //{
         Arrows.Add(newArrrowData);
-    //}
 }
 
 
