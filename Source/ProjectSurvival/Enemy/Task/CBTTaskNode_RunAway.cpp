@@ -55,7 +55,7 @@ EBTNodeResult::Type UCBTTaskNode_RunAway::ExecuteTask(UBehaviorTreeComponent& Ow
     }
 
     AIComponent->SetRoamingLocation(point.Location);
-    DrawDebug(Enemy->GetWorld(), point.Location);
+    //DrawDebug(Enemy->GetWorld(), point.Location);
 
     return  EBTNodeResult::InProgress;
 
@@ -67,6 +67,7 @@ EBTNodeResult::Type UCBTTaskNode_RunAway::AbortTask(UBehaviorTreeComponent& Owne
 {
     Super::AbortTask(OwnerComp, NodeMemory);
     //Enemy->End_DoAction();
+    controller->StopMovement();
     return EBTNodeResult::Failed;
 
 }
@@ -100,6 +101,7 @@ void UCBTTaskNode_RunAway::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 
 void UCBTTaskNode_RunAway::DrawDebug(UWorld* InWorld, FVector InLocation)
 {
-    if (bDebugMode)
-        DrawDebugSphere(InWorld, InLocation, 10, 10, FColor::Green, true, 5);
+    //if (bDebugMode)
+        //DrawDebugSphere(InWorld, InLocation, 10, 10, FColor::Green, true, 5);
 }
+

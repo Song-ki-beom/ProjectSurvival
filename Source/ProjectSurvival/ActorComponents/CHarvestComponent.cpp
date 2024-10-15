@@ -58,30 +58,7 @@ void UCHarvestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmount)
 {
-		////Trace 관련 세팅
-		//FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
-		//FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
-		//FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
-		//FQuat Rot = FQuat(OwnerCharacter->GetActorRotation());
-
-		//FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 2.0f, TraceDistance / 2.0f);
-		//FHitResult HitResult;
-		//FCollisionQueryParams CollisionParams;
-		//CollisionParams.AddIgnoredActor(OwnerCharacter);
-
-		////BoxTrace 
-		//bool bHit = GetWorld()->SweepSingleByChannel(
-		//	HitResult,
-		//	Start,
-		//	End,
-		//	Rot,
-		//	ECC_WorldStatic,
-		//	FCollisionShape::MakeBox(HalfSize),
-		//	CollisionParams
-		//);
-
-		//DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
-		//DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+		
 
 			FString hitObjectName = *HitResult.Component->GetName();
 

@@ -161,11 +161,11 @@ void UCAmmoComponent::PerformShootArrow(FVector Start, FVector End)
     FCollisionQueryParams Params;
     Params.AddIgnoredActor(OwnerCharacter); // 자신의 캐릭터는 트레이스에서 제외
 
-    DrawDebugLine(OwnerCharacter->GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
+    //DrawDebugLine(OwnerCharacter->GetWorld(), Start, End, FColor::Green, false, 1.0f, 0, 1.0f);
     // 라인 트레이스 실행
     if (OwnerCharacter->GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
     {
-        CDebug::Print("Arrow Hit Actor:", HitResult.Component->GetName());
+        //CDebug::Print("Arrow Hit Actor:", HitResult.Component->GetName());
         // 라인 트레이스가 맞은 지점을 목표로 설정
         FVector TargetLocation = HitResult.ImpactPoint;
         int32 AttachedIdx = GetAttachedArrow();

@@ -43,6 +43,7 @@ private:
 	class UCameraComponent* Camera;
 	class UCAmmoComponent* AmmoComponent;
 	class UCBowAnimInstance* AnimInstance_Bow;
+	class ACMainHUD* MainHUD;
 private:
 	UPROPERTY(EditAnywhere, Category = "Aiming")
 		class UCurveVector* Curve;   

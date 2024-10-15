@@ -145,6 +145,9 @@ void UCDoAction_Weapon::WeaponHitTrace()
 		objectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 		objectQueryParams.AddObjectTypesToQuery(ECC_Destructible);
 
+
+
+
 		World = OwnerCharacter->GetWorld();
 
 		//BoxTrace 

@@ -391,7 +391,10 @@ void ACSurvivorController::TestInputKeyAction()
 	if (Survivor)
 	{
 		//Survivor->SpawnBear();
-		Survivor->GetWeaponComponent()->SetMode(EWeaponType::Bow);
+
+		//Survivor->GetWeaponComponent()->SetMode(EWeaponType::Bow);
+		Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronAxe);
+
 		//Survivor->HoldAxe();
 		//int32 durability = Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference()->ItemStats.RemainDurability--;
 
@@ -580,7 +583,9 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 		else
 		{
 			Survivor->RequestDoSpecialAction(ESpecialState::Eat);
+
 		}
+
 	}
 	else if (quickSlotItem->ItemType == EItemType::Hunt)
 	{
