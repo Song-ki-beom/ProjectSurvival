@@ -67,5 +67,4 @@ private:
 	class ACDestructibleActor* DestructibleActor;
 
 
-
 };

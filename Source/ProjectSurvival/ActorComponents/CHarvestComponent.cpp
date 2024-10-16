@@ -108,9 +108,6 @@ void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAm
 					AddForceToDestructible(FinalDamageAmount, DestructibleActor);
 			}
 
-		
-
-	
 	
 }
 
@@ -145,17 +142,13 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 void UCHarvestComponent::RemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
 {
 	
-	
-	
 	if (OwnerCharacter->HasAuthority()) 
 	{
 		BroadCastRemoveFoliageInstance(InInstanceToRemove, InInstanceIndex);
 	}
 	
-	
 
 }
-
 
 
 void UCHarvestComponent::BroadCastRemoveFoliageInstance_Implementation(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex)
@@ -213,7 +206,7 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 				}
 
 				destructibleActor->SetUp(InSpawnTransform,Row);
-				//destructibleActor->AccumulateDamage(damageAmount);
+				destructibleActor->AccumulateDamage(damageAmount);
 				
 		
 
@@ -228,9 +221,6 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 			UE_LOG(LogTemp, Warning, TEXT("Data Table is null"));
 		}
 
-		
-	
-	
 }
 
 

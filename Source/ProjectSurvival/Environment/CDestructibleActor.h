@@ -57,7 +57,7 @@ private:
 	FTimerHandle TimerHandle;
 	UPROPERTY(VisibleAnywhere)
 		class UDestructibleComponent* DestructibleComponent;
-	UPROPERTY(VisibleAnywhere) //, Replicated, ReplicatedUsing = OnRef_DestructibleMeshSet
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRef_DestructibleMeshSet) 
 		class UDestructibleMesh* DestructibleMesh;
 	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;

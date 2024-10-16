@@ -20,15 +20,7 @@ ACDestructibleActor::ACDestructibleActor()
 	MaxDamageThreshold = 100.0f;
 	DropItemNum = 3.0f;
 	DropOffsetRange = 50.0f;
-	//DestructibleComponent->SetupAttachment(GetRootComponent());
-
-	//static ConstructorHelpers::FObjectFinder<UDestructibleMesh> MeshAsset(TEXT("'/Game/PirateIsland/Include/Meshes/Foliage/Trees/SM_Common_Tree_04_DM.SM_Common_Tree_04_DM'"));
-
-	//if (MeshAsset.Succeeded())
-	//{
-	//	// Destructible Mesh를 DestructibleComponent에 설정
-	//	DestructibleComponent->SetDestructibleMesh(MeshAsset.Object);
-	//}
+	
 
 	
 
@@ -43,11 +35,11 @@ ACDestructibleActor::ACDestructibleActor()
 void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	//DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
+	DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
 	DOREPLIFETIME(ACDestructibleActor, AccumulatedDamage);
 	DOREPLIFETIME(ACDestructibleActor, EarnItemRatio);
 	DOREPLIFETIME(ACDestructibleActor, MaxDamageThreshold);
-	//DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
+	DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
 
 }
 
@@ -55,8 +47,8 @@ void ACDestructibleActor::SetUp(FTransform InstanceTransform, FDestructibleStruc
 {
 	DestructibleMesh = DestructibleStruct->DestructibleMesh;
 
-	//DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
-	//DestructibleComponent->SetWorldTransform(InstanceTransform);
+	DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
+	DestructibleComponent->SetWorldTransform(InstanceTransform);
 	MaxDamageThreshold = DestructibleStruct->MaxDamageThreshold;
 	EarnItemRatio = DestructibleStruct->EarnItemRatio;
 	DropItemID = DestructibleStruct->DropItemID;
@@ -179,7 +171,6 @@ void ACDestructibleActor::CreateDropItem()
 
 	}
 	
-
 
 }
 
