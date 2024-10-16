@@ -14,32 +14,33 @@
 #include "Weapon/CDoAction_Bow.h"
 #include "Weapon/CAttachment_Bow.h"
 #include "Widget/CMainHUD.h"
+#include "CGameInstance.h"
+#include "Widget/Map/CWorldMap.h"
+#include "Character/CSurvivorController.h"
 
 UCSubAction_Bow::UCSubAction_Bow()
 {
 
 }
-void  UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* InAttachment, class UCEquipment* InEquipment, class UCDoAction* InDoAction)
+void UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* InAttachment, class UCEquipment* InEquipment, class UCDoAction* InDoAction)
 {
 	Super::BeginPlay(InOwner, InAttachment, InEquipment, InDoAction);
 
+	AmmoComponent = Cast<UCAmmoComponent>(InOwner->GetComponentByClass(UCAmmoComponent::StaticClass()));
+	SpringArm = Cast<USpringArmComponent>(InOwner->GetComponentByClass(USpringArmComponent::StaticClass()));
+	Camera = Cast<UCameraComponent>(InOwner->GetComponentByClass(UCameraComponent::StaticClass()));		
+
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(InOwner->GetWorld()->GetGameInstance());
+	if (gameInstance)
 	{
-		AmmoComponent = Cast<UCAmmoComponent>(InOwner->GetComponentByClass(UCAmmoComponent::StaticClass()));
-		SpringArm = Cast<USpringArmComponent>(InOwner->GetComponentByClass(USpringArmComponent::StaticClass()));
-		Camera = Cast<UCameraComponent>(InOwner->GetComponentByClass(UCameraComponent::StaticClass()));
-		APlayerController* PlayerController = Cast<APlayerController>(InOwner->GetController());
-		MainHUD = Cast<ACMainHUD>(PlayerController->GetHUD());
-		
+		MainHUD = Cast<ACMainHUD>(gameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
 	}
 
-	{
-		FOnTimelineVector timeLine;
-
-		timeLine.BindUFunction(this, "OnAiming");
-		Timeline.AddInterpVector(Curve, timeLine);
-		Timeline.SetPlayRate(AimingSpeed);
-	}
-
+	FOnTimelineVector timeLine;
+	timeLine.BindUFunction(this, "OnAiming");
+	Timeline.AddInterpVector(Curve, timeLine);
+	Timeline.SetPlayRate(AimingSpeed);
+	
 	ACAttachment_Bow* bow = Cast<ACAttachment_Bow>(InAttachment);
 	AnimInstance_Bow = Cast<UCBowAnimInstance>(bow->SkeletalMesh->GetAnimInstance());
 	
@@ -62,8 +63,9 @@ void UCSubAction_Bow::Pressed()
 	if(Camera==nullptr) return;
 	
 	Super::Pressed();
+	
 	if(MainHUD)
-	MainHUD->ShowCrossHair();
+		MainHUD->ShowCrossHair();
 
 	State->OnSubActionMode();
 	{
@@ -97,8 +99,10 @@ void UCSubAction_Bow::Released()
 	if(Camera == nullptr) return;
 
 	Super::Released();
+
 	if (MainHUD)
 		MainHUD->HideCrossHair();
+
 	State->OffSubActionMode();
 
 	{
