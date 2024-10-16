@@ -44,7 +44,9 @@ void UCProduceWidget::NativeConstruct()
 			IgniteButton->GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
+		{
 			CDebug::Print("Survivor is Not Valid");
+		}
 		break;
 	}
 	case EWidgetCall::Placeable:
@@ -87,10 +89,14 @@ FReply UCProduceWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 				gameInstance->ChattingBox->SetInputMode();
 			}
 			else
+			{
 				CDebug::Print("gameInstance->ChattingBox is not Valid");
+			}
 		}
 		else
+		{
 			CDebug::Print("gameInstance is not Valid");
+		}
 
 		return FReply::Handled();
 	}
@@ -953,5 +959,7 @@ void UCProduceWidget::CheckWrapBox(class UWrapBox* InWrapBox)
 		}
 	}
 	else
+	{
 		CDebug::Print("WrapBox is not Valid", FColor::White);
+	}
 }

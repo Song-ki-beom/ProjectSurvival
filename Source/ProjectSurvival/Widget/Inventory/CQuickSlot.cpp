@@ -44,10 +44,14 @@ FReply UCQuickSlot::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
                 gameInstance->ChattingBox->SetInputMode();
             }
             else
+            {
                 CDebug::Print("gameInstance->ChattingBox is not Valid");
+            }
         }
         else
+        {
             CDebug::Print("gameInstance is not Valid");
+        }
 
         return FReply::Handled();
     }
@@ -93,11 +97,11 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
     const UCItemDragDropOperation* itemDragDrop = Cast<UCItemDragDropOperation>(InOperation);
     if (itemDragDrop && itemDragDrop->SourceItem) // 아이템이 DragDropOperation에서 감지되면 위젯 검사 (아이템이 Drag 중이면)
     {
-        CDebug::Print("NativeOnDrop Called", FColor::Cyan);
+        //CDebug::Print("NativeOnDrop Called", FColor::Cyan);
 
         if (itemDragDrop->DragStartWidget->IsA(UCInventoryPanel_Placeable::StaticClass()))
         {
-            CDebug::Print("Drag From Placeable, Ignore", FColor::Red);
+            //CDebug::Print("Drag From Placeable, Ignore", FColor::Red);
             return false;
         }
 
@@ -122,12 +126,14 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
                     if (childGeometry.IsUnderLocation(dropPosition))
                     {
                         droppedSlotIndex = i;
-                        CDebug::Print("droppedSlotIndex", droppedSlotIndex);
+                        //CDebug::Print("droppedSlotIndex", droppedSlotIndex);
                         break;
                     }
                 }
                 else
+                {
                     CDebug::Print("NoSizeBox");
+                }
             }
         
             if (droppedSlotIndex != INDEX_NONE)
@@ -143,7 +149,9 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
                     ProcessConsumableItemInfo(itemDragDrop->SourceItem, droppedSlotIndex);
             }
             else
+            {
                 CDebug::Print(TEXT("No Dropped Index"));
+            }
         }
         
         return true;
@@ -154,14 +162,14 @@ bool UCQuickSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent
 void UCQuickSlot::ProcessHuntItemInfo(class UCItemBase* InItem, int32 InIndex, bool bDragStartFromQuickSlot)
 {
     
-    CDebug::Print("ProcessHuntItemInfo Called", FColor::Cyan);
+    //CDebug::Print("ProcessHuntItemInfo Called", FColor::Cyan);
     
     UCInventoryItemSlot* itemSlot = CreateWidget<UCInventoryItemSlot>(this, InventorySlotClass);
     itemSlot->SetItemReference(InItem);
     
     if (SizeBoxes[InIndex]->HasAnyChildren() && !bDragStartFromQuickSlot)
     {
-        CDebug::Print("ClearChildren");
+        //CDebug::Print("ClearChildren");
         //SizeBoxes[InIndex]->ClearChildren();
 
         ACSurvivor* survivor = Cast<ACSurvivor>(this->GetOwningPlayerPawn());
@@ -216,7 +224,7 @@ void UCQuickSlot::ProcessConsumableItemInfo(class UCItemBase* InItem, int32 InIn
 
     if (SizeBoxes[InIndex]->HasAnyChildren())
     {
-        CDebug::Print("ClearChildren");
+        //CDebug::Print("ClearChildren");
         SizeBoxes[InIndex]->ClearChildren();
     }
     SizeBoxes[InIndex]->AddChild(itemSlot);
@@ -257,7 +265,7 @@ void UCQuickSlot::RefreshConsumableQuantity()
                 if (itemBase.Get()->ID == tempItemSlot->GetItemReference()->ID)
                     quantity += itemBase.Get()->Quantity;
             }
-            CDebug::Print("total Quantity : ", quantity, FColor::White);
+            //CDebug::Print("total Quantity : ", quantity, FColor::White);
             tempItemSlot->GetItemReference()->SetQuantity(quantity);
             tempItemSlot->SetItemQuantityText(quantity);
         }
@@ -267,7 +275,7 @@ void UCQuickSlot::RefreshConsumableQuantity()
 void UCQuickSlot::SwapItemInfo(class UCItemBase* DragStartWidgetItem, class UCItemBase* OwnerWidgetItem)
 {
     bSwapCalled = true;
-    CDebug::Print("SwapItemInfo Called", FColor::Cyan);
+    //CDebug::Print("SwapItemInfo Called", FColor::Cyan);
     //if (DragStartWidgetItem->ItemType == EItemType::Consumable && OwnerWidgetItem->ItemType == EItemType::Consumable)
     //    SwapConsumableWithConsumable(DragStartWidgetItem, OwnerWidgetItem);
     //else if (DragStartWidgetItem->ItemType == EItemType::Consumable && OwnerWidgetItem->ItemType == EItemType::Hunt)

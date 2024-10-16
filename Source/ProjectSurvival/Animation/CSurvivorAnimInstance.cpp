@@ -110,7 +110,7 @@ void UCSurvivorAnimInstance::OnWeaponTypeChanged(EWeaponType InPrevType, EWeapon
 
 void UCSurvivorAnimInstance::OnRep_WeaponTypeChanged()
 {
-	CDebug::Print(TEXT("On AnimInstance WeaponType Changed"));
+	//CDebug::Print(TEXT("On AnimInstance WeaponType Changed"));
 
 }
 

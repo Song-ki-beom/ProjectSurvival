@@ -180,7 +180,7 @@ void UCInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, cons
 {
 	if (DragItemVisualClass)
 	{
-		CDebug::Print("DragVisual Item ID : ", ItemReference->ID, FColor::Silver);
+		//CDebug::Print("DragVisual Item ID : ", ItemReference->ID, FColor::Silver);
 
 		UCDragItemVisual* DragVisual = CreateWidget<UCDragItemVisual>(this, DragItemVisualClass); //ui이므로 에디터에 있는 블루프린트 위젯 클래스로부터 동적 생성
 
@@ -238,7 +238,7 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 
 		if (DragItem == ItemReference)
 		{
-			CDebug::Print("Same Item Detected");
+			//CDebug::Print("Same Item Detected");
 			return false;
 		}
 		else
@@ -377,7 +377,7 @@ void UCInventoryItemSlot::SetItemReference(UCItemBase* ItemIn)
 	if (ItemReference == nullptr)
 	{
 		ItemReference = ItemIn;
-		CDebug::Print("ItemReference ID is ", ItemIn->ID ,FColor::Blue);
+		//CDebug::Print("ItemReference ID is ", ItemIn->ID ,FColor::Blue);
 	}
 
 	 ItemReference->ID = ItemIn->ID;
@@ -404,8 +404,8 @@ void UCInventoryItemSlot::SetRemainDurability(int32 InDurability)
 {
 	if (ItemReference)
 	{
-		CDebug::Print("InDurability :", InDurability, FColor::Emerald);
-		CDebug::Print("MaxDurability :", ItemReference->ItemStats.MaxDurability, FColor::Emerald);
+		//CDebug::Print("InDurability :", InDurability, FColor::Emerald);
+		//CDebug::Print("MaxDurability :", ItemReference->ItemStats.MaxDurability, FColor::Emerald);
 
 		DurabilityProgressBar->SetPercent(static_cast<float>(InDurability) / static_cast<float>(ItemReference->ItemStats.MaxDurability));
 	}

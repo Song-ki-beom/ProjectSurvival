@@ -40,7 +40,9 @@ ACSurvivorController::ACSurvivorController()
 		//CDebug::Print("buildWidgetFinder Succeeded", FColor::Green);
 	}
 	else
+	{
 		CDebug::Print("buildWidgetFinder Failed", FColor::Red);
+	}
 
 	//static ConstructorHelpers::FClassFinder<UUserWidget> registerRespawnLocationFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Build/WBP_BuildWidget.WBP_BuildWidget_C'"));
 	//if (registerRespawnLocationFinder.Succeeded())
@@ -439,10 +441,14 @@ void ACSurvivorController::FocusChattingBox()
 			gameInstance->ChattingBox->SetInputMode();
 		}
 		else
+		{
 			CDebug::Print("gameInstance->ChattingBox is not Valid");
+		}
 	}
 	else
+	{
 		CDebug::Print("gameInstance is not Valid");
+	}
 }
 
 void ACSurvivorController::ToggleWorldMap()
@@ -587,14 +593,14 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 	{
 		FString enumValueAsString = StaticEnum<EWeaponType>()->GetNameByValue((int64)quickSlotItem->HuntData.WeaponType).ToString();
 
-		CDebug::Print("QuickSlot WeaponType : ", enumValueAsString);
+		//CDebug::Print("QuickSlot WeaponType : ", enumValueAsString);
 
 		if (quickSlotItem->ItemStats.RemainDurability == 0)
 			return;
 
 		if (Survivor->GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
 		{
-			CDebug::Print("Montage is Playing");
+			//CDebug::Print("Montage is Playing");
 			return;
 		}
 
@@ -644,7 +650,7 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 
 		if (quickSlotItem && quickSlotItemWidget)
 		{
-			CDebug::Print("Set Using Weapon Called");
+			//CDebug::Print("Set Using Weapon Called");
 			Survivor->GetWeaponComponent()->SetUsingWeapon(quickSlotItem, quickSlotItemWidget);
 		}
 	}
@@ -737,7 +743,7 @@ void ACSurvivorController::RequestSetRespawnLocationName_Implementation(class AC
 
 void ACSurvivorController::BroadcastDestroyPlayerLocation_Implementation()
 {
-	CDebug::Print("BroadcastDestroyPlayerLocation_Implementation Called");
+	//CDebug::Print("BroadcastDestroyPlayerLocation_Implementation Called");
 
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance)

@@ -75,7 +75,6 @@ void ACStructure_Ceiling::CheckForward_Wall()
 
 	if (bForward_WallHit)
 	{
-		CDebug::Print("Hi");
 		//DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 130.0f + forwardHitResult.GetComponent()->GetUpVector() * 20.0f);
 		CenterRotation = forwardHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 180, 0);

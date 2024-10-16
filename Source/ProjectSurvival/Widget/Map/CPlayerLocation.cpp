@@ -72,7 +72,7 @@ void UCPlayerLocation::ShowPlayerLocation()
 
 void UCPlayerLocation::OnDestroyedSurvivor(class AActor* InActor)
 {
-	CDebug::Print("OnDestroyedSurvivor Called");
+	//CDebug::Print("OnDestroyedSurvivor Called");
 
 	FVector SpawnLocation = FVector(0.0f, 0.0f, 100.0f);
 	FRotator SpawnRotation = FRotator(0.0f, 0.0f, 0.0f);

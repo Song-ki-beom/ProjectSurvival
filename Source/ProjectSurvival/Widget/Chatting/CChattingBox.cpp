@@ -117,7 +117,7 @@ void UCChattingBox::SendMessage(const FText& InText, ETextCommit::Type CommitMet
 
 	if (CommitMethod == ETextCommit::OnUserMovedFocus)
 	{
-		CDebug::Print("Focus Moved");
+		//CDebug::Print("Focus Moved");
 		InputMessageBox->SetText(InputMessageBox->GetText());
 	}
 }

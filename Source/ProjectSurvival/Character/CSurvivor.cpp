@@ -169,7 +169,7 @@ void ACSurvivor::BeginPlay()
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	FText tempName = gameInstance->GetLobbySurvivorName();
 	FString stringName = tempName.ToString();
-	CDebug::Print(stringName);
+	//CDebug::Print(stringName);
 
 	if (HasAuthority())
 	{
@@ -413,7 +413,9 @@ void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialSt
 				GameInstance->WorldMap->GetPersonalSurvivorController()->SetInputMode(FInputModeUIOnly());
 			}
 			else
+			{
 				CDebug::Print("mainHUD is not valid");
+			}
 		}
 	}
 }
@@ -715,7 +717,7 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 
 		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0 || bIsQuickSlotItemValid)
 		{
-			CDebug::Print("InventoryContents Found and Create BackPack At Server", FColor::Green);
+			//CDebug::Print("InventoryContents Found and Create BackPack At Server", FColor::Green);
 
 			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
 
@@ -742,10 +744,14 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 				//}
 			}
 			else
+			{
 				CDebug::Print("InClass Is Not Valid In Server", FColor::Green);
+			}
 		}
 		else
+		{
 			CDebug::Print("InventoryContents is Empty In Server", FColor::Green);
+		}
 	}
 	else
 	{
@@ -769,7 +775,7 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 
 		if (this->GetInventoryComponent()->GetInventoryContents().Num() > 0 || bIsQuickSlotItemValid)
 		{
-			CDebug::Print("InventoryContents Found and Create BackPack In Client", FColor::Red);
+			//CDebug::Print("InventoryContents Found and Create BackPack In Client", FColor::Red);
 
 			UClass* backPackClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Build/BP_CStructure_BackPack.BP_CStructure_BackPack_C'"));
 
@@ -795,10 +801,14 @@ void ACSurvivor::BroadcastRemoveSurvivor_Implementation()
 				//	}
 			}
 			else
+			{
 				CDebug::Print("InClass Is Not Valid In Client", FColor::Red);
+			}
 		}
 		else
+		{
 			CDebug::Print("InventoryContents is Empty In Client", FColor::Red);
+		}
 	}
 
 	SetActorEnableCollision(false);
@@ -884,17 +894,21 @@ void ACSurvivor::PerformAddMessage(const FText& InSurvivorNameText, const FText&
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
 	if (gameInstance)
 	{
-		CDebug::Print("CGameInstance is Valid", gameInstance);
+		//CDebug::Print("CGameInstance is Valid", gameInstance);
 		if (gameInstance->ChattingBox)
 		{
-			CDebug::Print(TEXT("gameInstance->ChattingBox is Valid"), gameInstance->ChattingBox);
+			//CDebug::Print(TEXT("gameInstance->ChattingBox is Valid"), gameInstance->ChattingBox);
 			gameInstance->ChattingBox->AddMessageToMessageBox(InSurvivorNameText, InMessageText);
 		}
 		else
+		{
 			CDebug::Print(TEXT("gameInstance->ChattingBox is is Not Valid"), FColor::Red);
+		}
 	}
 	else
+	{
 		CDebug::Print(("CGameInstance is Not Valid"), FColor::Red);
+	}
 }
 
 void ACSurvivor::BroadcastSetName_Implementation(const FText& InText, uint32 NetGUIDValue)
@@ -967,7 +981,9 @@ void ACSurvivor::BroadcastRespawnSurvivor_Implementation(FVector InLocation)
 			// 스테이터스 변경하는 내용 추가
 		}
 		else
+		{
 			CDebug::Print("mainHUD is not valid");
+		}
 	}
 
 	SetActorEnableCollision(true);

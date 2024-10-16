@@ -87,7 +87,7 @@ void UCInventoryPanel::RefreshInventory()
         for (TWeakObjectPtr<UCItemBase> InventoryItem : InventoryReference->GetInventoryContents())
         {
             UCInventoryItemSlot* ItemSlot = CreateWidget<UCInventoryItemSlot>(this, InventorySlotClass);
-            CDebug::Print("Widget Created, ID is ", InventoryItem->ID, FColor::Magenta);
+            //CDebug::Print("Widget Created, ID is ", InventoryItem->ID, FColor::Magenta);
             ItemSlot->SetItemReference(InventoryItem.Get());
             ItemSlot->SetHUDReference(InventoryReference->GetHUDReference());
             InventoryPanel->AddChildToWrapBox(ItemSlot);
@@ -100,14 +100,20 @@ void UCInventoryPanel::RefreshInventory()
     {
         UCQuickSlot* quickSlot = Cast<UCQuickSlot>(mainHUD->GetQuickSlotWidget());
         if (quickSlot)
+        {
             quickSlot->RefreshConsumableQuantity();
+        }
         else
+        {
             CDebug::Print("quickSlot is not Valid");
+        }
     }
     else
+    {
         CDebug::Print("mainHUD is not Valid");
+    }
 
-    CDebug::Print(TEXT("확인지점0 - Refresh 완료"));
+    //CDebug::Print(TEXT("확인지점0 - Refresh 완료"));
 }
 
 
@@ -120,7 +126,7 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
     {
         if (ItemDragDrop->DragStartWidget == this)
         {
-            CDebug::Print("DragStartWidget is Same");
+            //CDebug::Print("DragStartWidget is Same");
             return true; // 드래그가 시작된 위젯과 현재 위젯이 같으면 취소
         }
 
@@ -129,7 +135,7 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
         {
             FItemAddResult AddResult = InventoryReference->HandleAddItem(ItemDragDrop->SourceItem);
 
-            CDebug::Print(TEXT("확인지점2 - Panel 드랍 HandleAddITem 끝난 직후"));
+            //CDebug::Print(TEXT("확인지점2 - Panel 드랍 HandleAddITem 끝난 직후"));
 
             if (AddResult.OperationResult == EItemAddResult::NoItemAdded)
             {
@@ -150,10 +156,14 @@ bool UCInventoryPanel::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
                 if (survivorController->GetBuildWidget())
                     survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemDragDrop->SourceItem->ID);
                 else
+                {
                     CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+                }
             }
             else
+            {
                 CDebug::Print("survivorController is not Valid", FColor::Red);
+            }
 
             return true;
         }

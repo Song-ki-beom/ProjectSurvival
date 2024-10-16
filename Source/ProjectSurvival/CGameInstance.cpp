@@ -401,7 +401,7 @@ void UCGameInstance::OnPostLoadMapWithWorld(UWorld* InLoadedWorld)
 
 void UCGameInstance::CreateLoadingScreen()
 {
-	CDebug::Print(TEXT("Loading Screen Widget Added"));
+	//CDebug::Print(TEXT("Loading Screen Widget Added"));
 	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
 	if (LoadingScreenWidget)
 	{
@@ -412,7 +412,7 @@ void UCGameInstance::CreateLoadingScreen()
 
 void UCGameInstance::BroadcastCreateLoadingScreen_Implementation()
 {
-	CDebug::Print(TEXT("Loading Screen Widget Added"));
+	//CDebug::Print(TEXT("Loading Screen Widget Added"));
 	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
 	if (LoadingScreenWidget)
 	{

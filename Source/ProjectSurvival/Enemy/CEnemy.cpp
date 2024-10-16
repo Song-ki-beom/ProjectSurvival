@@ -218,7 +218,7 @@ void ACEnemy::BeginPlay()
 	}
 	else
 	{
-		CDebug::Print(TEXT("MovingComponent is valid in BeginPlay"));
+		//CDebug::Print(TEXT("MovingComponent is valid in BeginPlay"));
 	}
 
 
@@ -228,7 +228,7 @@ void ACEnemy::BeginPlay()
 	}
 	else
 	{
-		CDebug::Print(TEXT("EnemyAIComponent is valid in BeginPlay"));
+		//CDebug::Print(TEXT("EnemyAIComponent is valid in BeginPlay"));
 	}
 }
 
@@ -538,7 +538,7 @@ void ACEnemy::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
-		CDebug::Print(TEXT("Hit Start"));
+		//CDebug::Print(TEXT("Hit Start"));
 		FName CompleteHitID = FName(*(DamageData.HitID.ToString()) + HitActorName);
 		HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Bear"));
 		if (HitData && HitData->Montage)

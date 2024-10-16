@@ -41,7 +41,7 @@ void ACInterfaceTestActor::BeginFocus()
 		Mesh->bRenderCustomDepth = true;
 		//Mesh->MarkRenderStateDirty();
 		Mesh->SetCustomDepthStencilValue(252);
-		CDebug::Print("SetRenderCustomDepth True");
+		//CDebug::Print("SetRenderCustomDepth True");
 
 	}
 
@@ -53,7 +53,7 @@ void ACInterfaceTestActor::EndFocus()
 	{
 		Mesh->SetRenderCustomDepth(false);
 		Mesh->SetCustomDepthStencilValue(0);
-		CDebug::Print("SetRenderCustomDepth False");
+		//CDebug::Print("SetRenderCustomDepth False");
 
 	}
 
@@ -61,18 +61,18 @@ void ACInterfaceTestActor::EndFocus()
 
 void ACInterfaceTestActor::BeginInteract()
 {
-	CDebug::Print("Start InterAction");
+	//CDebug::Print("Start InterAction");
 }
 
 void ACInterfaceTestActor::EndInteract()
 {
-	CDebug::Print("End InterAction");
+	//CDebug::Print("End InterAction");
 
 }
 
 void ACInterfaceTestActor::Interact(class ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 {
-	CDebug::Print("Do Interaction!!");
+	//CDebug::Print("Do Interaction!!");
 
 }
 

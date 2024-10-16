@@ -115,7 +115,9 @@ void UCProduceItemQueueSlot::StartProduce()
 		ProduceWidget->SetProducingItemText(produceItemNameText);
 	}
 	else
+	{
 		CDebug::Print("produceWidget is not valid", FColor::Magenta);
+	}
 
 	GetWorld()->GetTimerManager().UnPauseTimer(ProgressTimerHandle);
 }
@@ -190,12 +192,18 @@ void UCProduceItemQueueSlot::SetProduceProgress()
 					if (survivorController)
 					{
 						if (survivorController->GetBuildWidget())
+						{
 							survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ProduceItemID);
+						}
 						else
+						{
 							CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+						}
 					}
 					else
+					{
 						CDebug::Print("survivorController is not Valid", FColor::Red);
+					}
 					break;
 				}
 				case EWidgetCall::Placeable:
@@ -353,11 +361,13 @@ void UCProduceItemQueueSlot::RemoveProduceItemQueueSlotWidget()
 			class UWrapBox* wrapBox = Cast<UWrapBox>(this->GetParent());
 			if (wrapBox)
 			{
-				CDebug::Print("wrapBox is valid");
+				//CDebug::Print("wrapBox is valid");
 				wrapBox->RemoveChild(this);
 			}
 			else
+			{
 				CDebug::Print("wrapBox is not valid");
+			}
 
 			produceWidget->CheckWrapBox(wrapBox);
 		}
@@ -377,7 +387,7 @@ void UCProduceItemQueueSlot::CancleProduce()
 	FName resourceID_4 = ProduceWidgetData.ProduceResource_4.ResourceID;
 	FName resourceID_5 = ProduceWidgetData.ProduceResource_5.ResourceID;
 
-	CDebug::Print("resourceID_1", resourceID_1);
+	//CDebug::Print("resourceID_1", resourceID_1);
 
 	if (resourceID_1 != NAME_None)
 	{
@@ -547,7 +557,11 @@ void UCProduceItemQueueSlot::CancleProduce()
 	RemoveProduceItemQueueSlotWidget();
 
 	if (ProduceWidget)
+	{
 		ProduceWidget->RefreshProduceDetail();
+	}
 	else
+	{
 		CDebug::Print("ProduceWidget is not Valid", FColor::White);
+	}
 }

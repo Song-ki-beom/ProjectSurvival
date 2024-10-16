@@ -797,17 +797,21 @@ void ACLobbySurvivor::PerformAddMessage(const FText& InSurvivorNameText, const F
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
 	if (gameInstance)
 	{
-		CDebug::Print("CGameInstance is Valid", gameInstance);
+		//CDebug::Print("CGameInstance is Valid", gameInstance);
 		if (gameInstance->ChattingBox)
 		{
-			CDebug::Print(TEXT("gameInstance->ChattingBox is Valid"), gameInstance->ChattingBox);
+			//CDebug::Print(TEXT("gameInstance->ChattingBox is Valid"), gameInstance->ChattingBox);
 			gameInstance->ChattingBox->AddMessageToMessageBox(InSurvivorNameText, InMessageText);
 		}
 		else
+		{
 			CDebug::Print(TEXT("gameInstance->ChattingBox is is Not Valid"), FColor::Red);
+		}
 	}
 	else
+	{
 		CDebug::Print(("CGameInstance is Not Valid"), FColor::Red);
+	}
 }
 
 void ACLobbySurvivor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

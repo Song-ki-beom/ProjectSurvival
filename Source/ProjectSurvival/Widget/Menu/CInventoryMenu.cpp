@@ -75,10 +75,14 @@ FReply UCInventoryMenu::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 				gameInstance->ChattingBox->SetInputMode();
 			}
 			else
+			{
 				CDebug::Print("gameInstance->ChattingBox is not Valid");
+			}
 		}
 		else
+		{
 			CDebug::Print("gameInstance is not Valid");
+		}
 
 		return FReply::Handled();
 	}
@@ -104,12 +108,18 @@ bool UCInventoryMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 			if (survivorController)
 			{
 				if (survivorController->GetBuildWidget())
+				{
 					survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemDragDrop->SourceItem->ID);
+				}
 				else
+				{
 					CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+				}
 			}
 			else
+			{
 				CDebug::Print("survivorController is not Valid", FColor::Red);
+			}
 		}
 		else
 		{

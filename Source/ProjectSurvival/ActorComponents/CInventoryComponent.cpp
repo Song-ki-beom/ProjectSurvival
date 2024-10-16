@@ -432,7 +432,7 @@ void UCInventoryComponent::AddNewItem(UCItemBase* InItem, const int32 AmountToAd
 	InventoryTotalWeight += NewItem->GetItemStackWeight();
 	OnInventoryUpdated.Broadcast();
 
-	CDebug::Print(TEXT("확인지점1 - AddNewItem 완료"));
+	//CDebug::Print(TEXT("확인지점1 - AddNewItem 완료"));
 }
 
 

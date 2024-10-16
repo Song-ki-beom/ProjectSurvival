@@ -14,7 +14,7 @@ void UCBuildItemSlot::SetBuildItemSlotInfo(class UTexture2D* InTexture, FName In
 	StructureQuantityText->SetText(quantityText);
 	StructureQuantityText->SetVisibility(ESlateVisibility::Visible);
 
-	CDebug::Print("UCBuildItemSlot InItemID : ", InItemID);
+	//CDebug::Print("UCBuildItemSlot InItemID : ", InItemID);
 	StructureID = InItemID;
 	StructureQuantity = InQuantity;
 	StructureClass = InClass;
@@ -23,7 +23,7 @@ void UCBuildItemSlot::SetBuildItemSlotInfo(class UTexture2D* InTexture, FName In
 
 void UCBuildItemSlot::ClearBuildItemSlotInfo()
 {
-	CDebug::Print("ClearBuildItemSlotInfo Called");
+	//CDebug::Print("ClearBuildItemSlotInfo Called");
 	StructureImage->SetVisibility(ESlateVisibility::Hidden);
 	StructureQuantityText->SetVisibility(ESlateVisibility::Hidden);
 	StructureID = NAME_None;
