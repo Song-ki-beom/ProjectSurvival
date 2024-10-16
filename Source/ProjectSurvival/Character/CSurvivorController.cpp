@@ -551,41 +551,45 @@ void ACSurvivorController::PressQuickSlot(FKey InPressedKey)
 
 	if (quickSlotItem->ItemType == EItemType::Consumable)
 	{
-		for (TWeakObjectPtr<UCItemBase> tempObjectPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+		// 퀵슬롯에 등록된 아이템 사용
+		if (quickSlotItem->Quantity > 1)
 		{
-			if (tempObjectPtr.IsValid())
+			for (TWeakObjectPtr<UCItemBase> tempObjectPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
 			{
-				if (tempObjectPtr->ID == quickSlotItem->ID)
+				if (tempObjectPtr.IsValid())
 				{
-					// 먹는 몽타주 재생
-					if (this->HasAuthority())
+					if (tempObjectPtr->ID == quickSlotItem->ID)
 					{
-						Survivor->BroadcastDoSpecialAction(ESpecialState::Eat);
-						Survivor->BroadcastUseConsumable(tempObjectPtr->ID);
-
-					}
-					else
-					{
-						Survivor->RequestDoSpecialAction(ESpecialState::Eat);
-						Survivor->RequestUseConsumable(tempObjectPtr->ID);
-					}
-
-					// 퀵슬롯에 등록된 아이템 사용
-					if (quickSlotItem->Quantity > 1)
-					{
-
 						Survivor->GetInventoryComponent()->RemoveAmountOfItem(tempObjectPtr.Get(), 1);
 						break;
 					}
-
-					else if (quickSlotItem->Quantity == 1)
+				}
+			}
+		}
+		else if (quickSlotItem->Quantity == 1)
+		{
+			for (TWeakObjectPtr<UCItemBase> tempObjectPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
+			{
+				if (tempObjectPtr.IsValid())
+				{
+					if (tempObjectPtr->ID == quickSlotItem->ID)
 					{
 						Survivor->GetInventoryComponent()->RemoveSingleItem(tempObjectPtr.Get());
 						break;
 					}
-					
 				}
 			}
+		}
+
+		// 먹는 몽타주 재생
+		if (this->HasAuthority())
+		{
+			Survivor->BroadcastDoSpecialAction(ESpecialState::Eat);
+		}
+		else
+		{
+			Survivor->RequestDoSpecialAction(ESpecialState::Eat);
+
 		}
 
 	}

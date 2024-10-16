@@ -56,7 +56,7 @@ void UCHarvestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 
-void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAmount, EWeaponType CauserWeaponType)
+void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmount)
 {
 		
 
@@ -79,33 +79,17 @@ void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAm
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
 			//CDebug::Print(debugText, FColor::Blue);
 
-			float FinalDamageAmount = InDamageAmount;
-			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "1"))
-			{
-				FinalDamageAmount *= 1.5f;
-			}
-			else if (CauserWeaponType == EWeaponType::StoneAxe || CauserWeaponType == EWeaponType::IronAxe)
-			{
-				if (hitIndex == "22" || hitIndex == "23" || hitIndex == "24")
-				{
-					FinalDamageAmount *= 1.4f;
-				}
-			}
-			else
-			{
-				FinalDamageAmount = 0.0f;
-			}
 			if (CheckIsFoliageInstance(HitResult))
 			{
 				
-					SwitchFoligeToDestructible(hitIndex, FinalDamageAmount,SpawnTransform);
+					SwitchFoligeToDestructible(hitIndex, InDamageAmount,SpawnTransform);
 				
 
 			}
 			else if (CheckIsDestructInstance(HitResult))
 			{
 
-					AddForceToDestructible(FinalDamageAmount, DestructibleActor);
+					AddForceToDestructible(InDamageAmount , DestructibleActor);
 			}
 
 	
@@ -194,6 +178,7 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 
 				// Spawn ADestructibleActor
 				ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+<<<<<<< HEAD
 				if (destructibleActor)
 				{
 					//CDebug::Print(TEXT("Destructible Actor Spawn Succeeded"));
@@ -205,6 +190,8 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 
 				}
 
+=======
+>>>>>>> parent of 31a491f (10.16 버그 머지)
 				destructibleActor->SetUp(InSpawnTransform,Row);
 				destructibleActor->AccumulateDamage(damageAmount);
 				

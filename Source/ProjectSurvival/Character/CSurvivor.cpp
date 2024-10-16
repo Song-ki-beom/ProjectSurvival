@@ -45,8 +45,6 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Hearing.h"
 #include "Enemy/CEnemy_Bear.h"
-#include "Struct/CItemDataStructures.h"
-
 ACSurvivor::ACSurvivor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -146,11 +144,16 @@ ACSurvivor::ACSurvivor()
 
 	MovingComponent->SetSpeed(ESpeedType::Run);
 
-	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
-	if (DataTableAsset.Succeeded())
-	{
-		ItemDataTable = DataTableAsset.Object;
-	}
+	////AI 피아식별 세팅
+	//  // AIPerceptionStimuliSourceComponent 생성
+	//PerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("PerceptionStimuliSource"));
+	//
+	//// 시각 또는 청각 같은 인식 가능한 자극을 등록
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Hearing>());
+
+	//// AI에 의한 인식 자극을 활성화
+	//PerceptionStimuliSource->bAutoRegister = true;
 
 }
 
@@ -369,8 +372,6 @@ float ACSurvivor::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 
 void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 {
-	if (SpecialState == ESpecialState::Jump && !StatusComponent->CanSpendStamina(10.0f)) return;
-
 	if (!DoSpecialActionDatas[(int32)SpecialState].bCanMove)
 		MovingComponent->Stop();
 
@@ -382,20 +383,13 @@ void ACSurvivor::PerformDoSpecialAction(ESpecialState SpecialState)
 
 	if (SpecialState == ESpecialState::Jump && !this->GetCharacterMovement()->IsFalling() && !GetMesh()->GetAnimInstance()->IsAnyMontagePlaying())
 	{
-		if (HasAuthority())
-		{
-			StatusComponent->ReduceStamina(10.0f);
-		}
 		MontageComponent->Montage_Play(DoSpecialActionDatas[(int32)SpecialState].Montage, DoSpecialActionDatas[(int32)SpecialState].PlayRate);
 		this->Jump();
-		
 	}
 }
 
 void ACSurvivor::BroadcastDoSpecialAction_Implementation(ESpecialState SpecialState)
 {
-	
-
 	PerformDoSpecialAction(SpecialState);
 
 	if (SpecialState == ESpecialState::Dead)
@@ -840,21 +834,6 @@ void ACSurvivor::BroadcastHidePlayerLocation_Implementation(uint32 InNetworkGUID
 void ACSurvivor::RequestHidePlayerLocation_Implementation(uint32 InNetworkGUIDValue)
 {
 	BroadcastHidePlayerLocation(InNetworkGUIDValue);
-}
-
-void ACSurvivor::BroadcastUseConsumable_Implementation(FName ItemID)
-{
-	const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(ItemID, "Consumable Use");
-	if (ItemData)
-	{
-		StatusComponent->RecoverHealth(ItemData->ItemStats.DamageValue);
-		StatusComponent->RecoverHunger(ItemData->ItemStats.DamageValue);
-	}
-}
-
-void ACSurvivor::RequestUseConsumable_Implementation(FName ItemID)
-{
-	BroadcastUseConsumable(ItemID);
 }
 
 void ACSurvivor::SetWorldMapOpacity(float Value)

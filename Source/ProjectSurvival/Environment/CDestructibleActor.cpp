@@ -15,6 +15,7 @@ ACDestructibleActor::ACDestructibleActor()
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
+<<<<<<< HEAD
 	RootComponent = DestructibleComponent;
 	DropItemID = FName("Harvest_1");
 	MaxDamageThreshold = 100.0f;
@@ -24,6 +25,9 @@ ACDestructibleActor::ACDestructibleActor()
 
 	
 
+=======
+	DestructibleComponent->SetupAttachment(GetRootComponent());
+>>>>>>> parent of 31a491f (10.16 버그 머지)
 
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
@@ -46,7 +50,10 @@ void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void ACDestructibleActor::SetUp(FTransform InstanceTransform, FDestructibleStruct* DestructibleStruct)
 {
 	DestructibleMesh = DestructibleStruct->DestructibleMesh;
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 31a491f (10.16 버그 머지)
 	DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
 	DestructibleComponent->SetWorldTransform(InstanceTransform);
 	MaxDamageThreshold = DestructibleStruct->MaxDamageThreshold;
@@ -137,18 +144,8 @@ void ACDestructibleActor::CreateDropItem()
 		// 디스트럭티블 메쉬의  절반 높이 가져오기 (Z 축 기준)
 		FVector MeshBounds = DestructibleComponent->Bounds.BoxExtent;
 		float HalfHeight = MeshBounds.Z;
-		float DropHeightRatio = 0.5f;
 		// 스폰 위치 설정 시 절반 높이를 고려하여 Y축에만 오프셋을 적용
-		if (ItemData->ID == "Harvest_1")
-		{
-			DropHeightRatio = 0.7f;
-		}
-		else if (ItemData->ID == "Harvest_2")
-		{
-			DropHeightRatio = 0.3f;
-		}
-
-		FVector SpawnLocation = this->GetActorLocation() + FVector(0.0f, 0.0f, HalfHeight*DropHeightRatio);
+		FVector SpawnLocation = this->GetActorLocation() + FVector(0.0f, 0.0f, HalfHeight*0.7f);
 
 	for (int i = 0; i < DropItemNum; i++)
 	{

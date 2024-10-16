@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-//#pragma warning(push)
-//#pragma warning(disable : 4996)
-//#pragma warning(disable : 4706)
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4706)
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -55,9 +55,13 @@ private:
 		class UDataTable* ItemDataTable;
 
 	FTimerHandle TimerHandle;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere,Replicated)
 		class UDestructibleComponent* DestructibleComponent;
+<<<<<<< HEAD
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRef_DestructibleMeshSet) 
+=======
+	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRef_DestructibleMeshSet)
+>>>>>>> parent of 31a491f (10.16 버그 머지)
 		class UDestructibleMesh* DestructibleMesh;
 	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;

@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
 #include "DestructibleComponent.h"
-#include "ActorComponents/CWeaponComponent.h"
 #include "CHarvestComponent.generated.h"
 
 
@@ -30,7 +29,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
-	void ApplyHarvestEvent(FHitResult HitResult, float InDamageAmount, EWeaponType CauserWeaponType);
+	void HarvestBoxTrace(FHitResult HitResult, float InDamageAmount);
 
 private:
 	bool CheckIsFoliageInstance(const FHitResult& Hit);
