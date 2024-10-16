@@ -36,7 +36,7 @@ bool UCBTD_IsSurvivorAround::CalculateRawConditionValue(UBehaviorTreeComponent& 
 	}
 	else
 	{
-		SearchSphereRadius = 350.0f;
+		SearchSphereRadius = 300.0f;
 	}
 
 	FVector TraceStart = Enemy->GetActorLocation();

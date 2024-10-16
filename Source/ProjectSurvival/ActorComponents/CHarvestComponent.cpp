@@ -56,7 +56,7 @@ void UCHarvestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 
-void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmount)
+void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAmount, EWeaponType CauserWeaponType)
 {
 		
 
@@ -79,17 +79,33 @@ void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmou
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
 			CDebug::Print(debugText, FColor::Blue);
 
+			float FinalDamageAmount = InDamageAmount;
+			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "1"))
+			{
+				FinalDamageAmount *= 1.5f;
+			}
+			else if (CauserWeaponType == EWeaponType::StoneAxe || CauserWeaponType == EWeaponType::IronAxe)
+			{
+				if (hitIndex == "22" || hitIndex == "23" || hitIndex == "24")
+				{
+					FinalDamageAmount *= 1.4f;
+				}
+			}
+			else
+			{
+				FinalDamageAmount = 0.0f;
+			}
 			if (CheckIsFoliageInstance(HitResult))
 			{
 				
-					SwitchFoligeToDestructible(hitIndex, InDamageAmount,SpawnTransform);
+					SwitchFoligeToDestructible(hitIndex, FinalDamageAmount,SpawnTransform);
 				
 
 			}
 			else if (CheckIsDestructInstance(HitResult))
 			{
 
-					AddForceToDestructible(InDamageAmount , DestructibleActor);
+					AddForceToDestructible(FinalDamageAmount, DestructibleActor);
 			}
 
 		
@@ -185,8 +201,19 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 
 				// Spawn ADestructibleActor
 				ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+				if (destructibleActor)
+				{
+					CDebug::Print(TEXT("Destructible Actor Spawn Succeeded"));
+
+				}
+				else
+				{
+					CDebug::Print(TEXT("Destructible Actor Spawn Failed"));
+
+				}
+
 				destructibleActor->SetUp(InSpawnTransform,Row);
-				destructibleActor->AccumulateDamage(damageAmount);
+				//destructibleActor->AccumulateDamage(damageAmount);
 				
 		
 

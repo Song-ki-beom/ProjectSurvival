@@ -15,7 +15,23 @@ ACDestructibleActor::ACDestructibleActor()
 	bReplicates = true;
 	PrimaryActorTick.bCanEverTick = false;
 	DestructibleComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleMesh")); 
-	DestructibleComponent->SetupAttachment(GetRootComponent());
+	RootComponent = DestructibleComponent;
+	DropItemID = FName("Harvest_1");
+	MaxDamageThreshold = 100.0f;
+	DropItemNum = 3.0f;
+	DropOffsetRange = 50.0f;
+	//DestructibleComponent->SetupAttachment(GetRootComponent());
+
+	//static ConstructorHelpers::FObjectFinder<UDestructibleMesh> MeshAsset(TEXT("'/Game/PirateIsland/Include/Meshes/Foliage/Trees/SM_Common_Tree_04_DM.SM_Common_Tree_04_DM'"));
+
+	//if (MeshAsset.Succeeded())
+	//{
+	//	// Destructible Mesh를 DestructibleComponent에 설정
+	//	DestructibleComponent->SetDestructibleMesh(MeshAsset.Object);
+	//}
+
+	
+
 
 	ConstructorHelpers::FObjectFinder<UDataTable> DataTableAsset(TEXT("DataTable'/Game/PirateIsland/Include/Datas/Widget/Inventory/DT_Items.DT_Items'"));
 	if (DataTableAsset.Succeeded())
@@ -27,19 +43,20 @@ ACDestructibleActor::ACDestructibleActor()
 void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
+	//DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
 	DOREPLIFETIME(ACDestructibleActor, AccumulatedDamage);
 	DOREPLIFETIME(ACDestructibleActor, EarnItemRatio);
 	DOREPLIFETIME(ACDestructibleActor, MaxDamageThreshold);
-	DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
+	//DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
 
 }
 
 void ACDestructibleActor::SetUp(FTransform InstanceTransform, FDestructibleStruct* DestructibleStruct)
 {
 	DestructibleMesh = DestructibleStruct->DestructibleMesh;
-	DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
-	DestructibleComponent->SetWorldTransform(InstanceTransform);
+
+	//DestructibleComponent->SetDestructibleMesh(DestructibleMesh);
+	//DestructibleComponent->SetWorldTransform(InstanceTransform);
 	MaxDamageThreshold = DestructibleStruct->MaxDamageThreshold;
 	EarnItemRatio = DestructibleStruct->EarnItemRatio;
 	DropItemID = DestructibleStruct->DropItemID;
@@ -128,8 +145,18 @@ void ACDestructibleActor::CreateDropItem()
 		// 디스트럭티블 메쉬의  절반 높이 가져오기 (Z 축 기준)
 		FVector MeshBounds = DestructibleComponent->Bounds.BoxExtent;
 		float HalfHeight = MeshBounds.Z;
+		float DropHeightRatio = 0.5f;
 		// 스폰 위치 설정 시 절반 높이를 고려하여 Y축에만 오프셋을 적용
-		FVector SpawnLocation = this->GetActorLocation() + FVector(0.0f, 0.0f, HalfHeight*0.7f);
+		if (ItemData->ID == "Harvest_1")
+		{
+			DropHeightRatio = 0.7f;
+		}
+		else if (ItemData->ID == "Harvest_2")
+		{
+			DropHeightRatio = 0.3f;
+		}
+
+		FVector SpawnLocation = this->GetActorLocation() + FVector(0.0f, 0.0f, HalfHeight*DropHeightRatio);
 
 	for (int i = 0; i < DropItemNum; i++)
 	{
