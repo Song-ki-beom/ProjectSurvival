@@ -285,7 +285,7 @@ void ACStructure_Placeable::CheckCenter()
 		centerBoxTraceTypeQuery,
 		bCenterBoxTraceComplex,
 		centerBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		centerBoxHitResult,
 		true,
 		FLinearColor::Green,

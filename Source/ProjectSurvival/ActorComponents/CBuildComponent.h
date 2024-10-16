@@ -63,10 +63,8 @@ private:
 		void ReceiveSpawnedActor(class ACStructure_Placeable* SpawnedActor);
 
 private:
-	class ACSurvivor* Survivor;
-
-	//UPROPERTY()
-	//	class UCBuildWidget* BuildWidget;
+	UPROPERTY()
+		class ACSurvivor* Survivor;
 	UPROPERTY(Replicated)
 		class ACStructure* SpawnedStructure;
 	UPROPERTY()
@@ -87,11 +85,13 @@ private:
 		class ACStructure_Placeable* SpawnedPlaceable;
 	UPROPERTY()
 		class UDataTable* ItemDataTable;
+	UPROPERTY()
+		UMaterialInstance* RedMaterial;
+	UPROPERTY()
+		UMaterialInstance* GreenMaterial;
+	UPROPERTY()
+		TSubclassOf<ACStructure> StructureClass;
 
-	UMaterialInstance* RedMaterial;
-	UMaterialInstance* GreenMaterial;
-
-	TSubclassOf<ACStructure> StructureClass;
 	EBuildStructureElement StructureElement;
 	FTransform StructureTransform;
 	bool bIsBuildable;

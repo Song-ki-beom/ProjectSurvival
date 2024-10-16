@@ -94,8 +94,9 @@ private:
 	UPROPERTY()
 		class UCGameInstance* GameInstance;
 	
+	UPROPERTY()
+		class UDataTable* DifficultyData;
 
-	class UDataTable* DifficultyData;
 	int32 ServerDifficultyIndex = 0;
 };
 

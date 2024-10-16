@@ -170,7 +170,6 @@ void UCGameInstance::RenewServerList()
 			SessionSearch->bIsLanQuery = false;
 		SessionSearch->MaxSearchResults = 100;
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-		UE_LOG(LogTemp, Warning, TEXT("Start find session"));
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 	}
 }
@@ -314,7 +313,6 @@ void UCGameInstance::CreateSession()
 		else
 			sessionSettings.bIsLANMatch = false;
 
-		UE_LOG(LogTemp, Warning, TEXT("bIsLANMatch : %d"), sessionSettings.bIsLANMatch);
 		sessionSettings.bUsesPresence = true;
 		sessionSettings.NumPublicConnections = 4;
 		sessionSettings.bAllowJoinInProgress = true;
