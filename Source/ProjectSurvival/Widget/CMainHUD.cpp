@@ -2,6 +2,7 @@
 #include "Widget/Menu/CInventoryMenu.h"
 #include "Widget/Inventory/CInteractionWidget.h"
 #include "Widget/Inventory/CInventorySubMenu.h"
+#include "Widget/CrossHair/CCrossHairWidget.h"
 #include "Widget/Inventory/CInventoryItemSlot.h"
 #include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Widget/Produce/CProduceWidget.h"
@@ -20,12 +21,12 @@
 
 ACMainHUD::ACMainHUD()
 {
+
 }
 
 void ACMainHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	CDebug::Print(TEXT("FUCK YOU Main Map"));
 
 	if (InteractionWidgetClass)
 	{
@@ -99,6 +100,13 @@ void ACMainHUD::BeginPlay()
 		LowHealthWidget = CreateWidget<UCLowHealthWidget>(GetWorld(), LowHealthWidgetClass);
 		LowHealthWidget->AddToViewport(0);
 		LowHealthWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (CrossHairWidgetClass)
+	{
+		CrossHairWidget = CreateWidget<UCCrossHairWidget>(GetWorld(), CrossHairWidgetClass);
+		CrossHairWidget->AddToViewport(0);
+		CrossHairWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -300,6 +308,16 @@ void ACMainHUD::HideSubMenu()
 		InventorySubMenuWidget->RemoveFromViewport();
 	}
 
+}
+
+void ACMainHUD::ShowCrossHair()
+{
+	CrossHairWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ACMainHUD::HideCrossHair()
+{
+	CrossHairWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ACMainHUD::ToggleHiddenMenu()

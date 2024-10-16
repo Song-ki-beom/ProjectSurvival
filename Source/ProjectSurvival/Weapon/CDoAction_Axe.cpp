@@ -98,7 +98,8 @@ void UCDoAction_Axe::Slash()
 				} 
 				else //Static Mesh or Destructible Mesh면 
 				{
-					survivor->GetHarvestComponent()->HarvestBoxTrace(Hit, HarvestDamage);
+					EWeaponType CauserWeaponType = survivor->GetWeaponComponent()->GetWeaponType();
+					survivor->GetHarvestComponent()->ApplyHarvestEvent(Hit, HarvestDamage, CauserWeaponType);
 				}
 				
 			}

@@ -56,32 +56,9 @@ void UCHarvestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 
 
-void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmount)
+void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAmount, EWeaponType CauserWeaponType)
 {
-		////Trace 관련 세팅
-		//FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
-		//FVector Start = FVector(OwnerCharacter->GetActorLocation().X, OwnerCharacter->GetActorLocation().Y, OwnerCharacter->GetActorLocation().Z + 45.0f) + ForwardVector.GetSafeNormal() * TraceOffset;
-		//FVector End = Start + ForwardVector.GetSafeNormal() * TraceDistance;
-		//FQuat Rot = FQuat(OwnerCharacter->GetActorRotation());
-
-		//FVector HalfSize = FVector(TraceDistance / 2.0f, TraceDistance / 2.0f, TraceDistance / 2.0f);
-		//FHitResult HitResult;
-		//FCollisionQueryParams CollisionParams;
-		//CollisionParams.AddIgnoredActor(OwnerCharacter);
-
-		////BoxTrace 
-		//bool bHit = GetWorld()->SweepSingleByChannel(
-		//	HitResult,
-		//	Start,
-		//	End,
-		//	Rot,
-		//	ECC_WorldStatic,
-		//	FCollisionShape::MakeBox(HalfSize),
-		//	CollisionParams
-		//);
-
-		//DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
-		//DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+		
 
 			FString hitObjectName = *HitResult.Component->GetName();
 
@@ -102,17 +79,33 @@ void UCHarvestComponent::HarvestBoxTrace(FHitResult HitResult,float InDamageAmou
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
 			CDebug::Print(debugText, FColor::Blue);
 
+			float FinalDamageAmount = InDamageAmount;
+			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "1"))
+			{
+				FinalDamageAmount *= 1.5f;
+			}
+			else if (CauserWeaponType == EWeaponType::StoneAxe || CauserWeaponType == EWeaponType::IronAxe)
+			{
+				if (hitIndex == "22" || hitIndex == "23" || hitIndex == "24")
+				{
+					FinalDamageAmount *= 1.4f;
+				}
+			}
+			else
+			{
+				FinalDamageAmount = 0.0f;
+			}
 			if (CheckIsFoliageInstance(HitResult))
 			{
 				
-					SwitchFoligeToDestructible(hitIndex, InDamageAmount,SpawnTransform);
+					SwitchFoligeToDestructible(hitIndex, FinalDamageAmount,SpawnTransform);
 				
 
 			}
 			else if (CheckIsDestructInstance(HitResult))
 			{
 
-					AddForceToDestructible(InDamageAmount , DestructibleActor);
+					AddForceToDestructible(FinalDamageAmount, DestructibleActor);
 			}
 
 		
@@ -208,8 +201,19 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 
 				// Spawn ADestructibleActor
 				ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
+				if (destructibleActor)
+				{
+					CDebug::Print(TEXT("Destructible Actor Spawn Succeeded"));
+
+				}
+				else
+				{
+					CDebug::Print(TEXT("Destructible Actor Spawn Failed"));
+
+				}
+
 				destructibleActor->SetUp(InSpawnTransform,Row);
-				destructibleActor->AccumulateDamage(damageAmount);
+				//destructibleActor->AccumulateDamage(damageAmount);
 				
 		
 

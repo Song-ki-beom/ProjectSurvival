@@ -122,7 +122,7 @@ bool UCStatusComponent::IsFriendly()
 
 void UCStatusComponent::StackFriendShip(float StackAmount)
 {
-	float NewFriendShip = CurrentFriendship + StackAmount*2;
+	float NewFriendShip = CurrentFriendship + StackAmount;
 	NewFriendShip = FMath::Clamp(NewFriendShip, 0.0f, MaxFriendShip);
 	BroadcastUpdateFriendShip(NewFriendShip);
 }

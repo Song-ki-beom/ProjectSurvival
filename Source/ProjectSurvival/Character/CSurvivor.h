@@ -85,6 +85,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		virtual void BroadcastDoSpecialAction(ESpecialState SpecialState);
 
+	//Use Consumable
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastUseConsumable(FName ItemID);
+	UFUNCTION(Server, Reliable)
+		void RequestUseConsumable(FName ItemID);
+
 
 	// 팀 ID 설정 및 반환 함수
 	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; };
@@ -127,11 +133,15 @@ private:
 
 	UFUNCTION(Server, Reliable)
 		void RequestHidePlayerLocation(uint32 InNetworkGUIDValue);
-
 	UFUNCTION()
 		void SetWorldMapOpacity(float Value);
 
+	
+
+
 protected:
+	UPROPERTY()
+		class UDataTable* ItemDataTable;
 	UPROPERTY()
 		FGenericTeamId TeamId; // 팀 ID 저장 변수
 

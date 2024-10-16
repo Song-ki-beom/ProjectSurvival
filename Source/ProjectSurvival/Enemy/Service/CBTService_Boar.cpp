@@ -44,12 +44,4 @@ void UCBTService_Boar::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
         return;
     }
 
-    //else if (state->IsIdleMode())
-    //{
-    //    state->ChangeType(EStateType::Combat);
-    //};
-
-
-
-
 }

@@ -117,6 +117,11 @@ bool UCEnemyAIComponent::IsFollowingMode()
 	return GetAIStateType() == EAIStateType::Following;
 }
 
+bool UCEnemyAIComponent::IsRunAwayMode()
+{
+	return GetAIStateType() == EAIStateType::RunAway;
+}
+
 bool UCEnemyAIComponent::IsHostileMode()
 {
 	return GetAIReputationType() == EAIReputationType::Hostile;
@@ -175,6 +180,11 @@ void UCEnemyAIComponent::SetExhaustMode()
 void UCEnemyAIComponent::SetFollowingMode()
 {
 	ChangeAIStateType(EAIStateType::Following);
+}
+
+void UCEnemyAIComponent::SetRunAwayMode()
+{
+	ChangeAIStateType(EAIStateType::RunAway);
 }
 
 void UCEnemyAIComponent::SetHostileMode()

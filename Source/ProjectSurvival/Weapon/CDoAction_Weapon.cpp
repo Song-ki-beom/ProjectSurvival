@@ -145,6 +145,9 @@ void UCDoAction_Weapon::WeaponHitTrace()
 		objectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 		objectQueryParams.AddObjectTypesToQuery(ECC_Destructible);
 
+
+
+
 		World = OwnerCharacter->GetWorld();
 
 		//BoxTrace 
@@ -184,7 +187,8 @@ void UCDoAction_Weapon::WeaponHitTrace()
 				{
 					if (survivor != nullptr && OwnerCharacter->HasAuthority())
 					{
-						survivor->GetHarvestComponent()->HarvestBoxTrace(hit, HarvestDamage);
+						EWeaponType CauserWeaponType =survivor->GetWeaponComponent()->GetWeaponType();
+						survivor->GetHarvestComponent()->ApplyHarvestEvent(hit, HarvestDamage, CauserWeaponType);
 					}
 					bIsValidHit = true;
 				}

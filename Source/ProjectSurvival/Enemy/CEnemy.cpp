@@ -92,7 +92,7 @@ ACEnemy::ACEnemy()
 	SlopeCheckArrow->ArrowSize = 2.0f;
 	SlopeCheckArrow->ArrowColor = FColor::Red;
 	SlopeCheckArrow->bHiddenInGame = false;
-	SlopeCheckArrow->SetVisibility(true);
+	SlopeCheckArrow->SetVisibility(false);
 
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
@@ -110,7 +110,7 @@ ACEnemy::ACEnemy()
 	
 	
 	BoxCollision->bHiddenInGame = false;
-	BoxCollision->SetVisibility(true);
+	BoxCollision->SetVisibility(false);
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> HPBarClassFinder(TEXT("WidgetBlueprint'/Game/PirateIsland/Include/Blueprints/Widget/Status/WBP_EnemyStatusBar.WBP_EnemyStatusBar_C'"));
 	if (HPBarClassFinder.Succeeded())
@@ -880,7 +880,7 @@ void ACEnemy::CreateDropItem()
 void ACEnemy::EatFood(ACPickUp* TargetPickUp)
 {
 	StatusComponent->RecoverHunger(TargetPickUp->ItemReference->ItemStats.DamageValue);
-	StatusComponent->StackFriendShip(TargetPickUp->ItemReference->ItemStats.DamageValue*3);
+	StatusComponent->StackFriendShip(TargetPickUp->ItemReference->ItemStats.DamageValue);
 	TargetPickUp->Destroy();
 }
 

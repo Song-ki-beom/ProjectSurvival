@@ -85,19 +85,19 @@ void ACArrow::Tick(float DeltaTime)
 	float CapsuleHalfHeight = Capsule->GetScaledCapsuleHalfHeight();
 	float CapsuleRadius = Capsule->GetScaledCapsuleRadius();
 
-	 //캡슐 디버그 드로잉 (파라미터: 월드, 위치, 회전, 반지름, 절반 높이, 세그먼트 수, 색상, 지속 시간, 두께)
-	DrawDebugCapsule(
-		GetWorld(),
-		CapsuleLocation,
-		CapsuleHalfHeight,
-		CapsuleRadius,
-		CapsuleRotation.Quaternion(),
-		FColor::Green,  // 표시할 색상
-		false,          // 지속적으로 그릴지 여부 (false면 1초 동안만 그려짐)
-		-1.0f,          // 그려진 시간이 끝나는 시간 (-1이면 계속 표시)
-		0,              // 깊이 우선 순위 (0이면 기본값)
-		2.0f            // 선의 두께
-	);
+	
+	//DrawDebugCapsule(
+	//	GetWorld(),
+	//	CapsuleLocation,
+	//	CapsuleHalfHeight,
+	//	CapsuleRadius,
+	//	CapsuleRotation.Quaternion(),
+	//	FColor::Green,  
+	//	false,          
+	//	-1.0f,          
+	//	0,            
+	//	2.0f            
+	//);
 
 }
 

@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#pragma warning(push)
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4706)
+//#pragma warning(push)
+//#pragma warning(disable : 4996)
+//#pragma warning(disable : 4706)
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -55,9 +55,9 @@ private:
 		class UDataTable* ItemDataTable;
 
 	FTimerHandle TimerHandle;
-	UPROPERTY(VisibleAnywhere,Replicated)
+	UPROPERTY(VisibleAnywhere)
 		class UDestructibleComponent* DestructibleComponent;
-	UPROPERTY(VisibleAnywhere, Replicated, ReplicatedUsing = OnRef_DestructibleMeshSet)
+	UPROPERTY(VisibleAnywhere) //, Replicated, ReplicatedUsing = OnRef_DestructibleMeshSet
 		class UDestructibleMesh* DestructibleMesh;
 	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;

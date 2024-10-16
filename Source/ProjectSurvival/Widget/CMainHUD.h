@@ -37,6 +37,8 @@ public:
 	void UpdateInteractionWidget(const FInteractableData* InteractableData);
 	void ShowSubMenu(FVector2D Position, class UCInventoryItemSlot* InSlotReference, ERightClickStartWidget InRightClickStartWidget, bool bIsStackable);
 	void HideSubMenu();
+	void ShowCrossHair();
+	void HideCrossHair();
 	void ToggleHiddenMenu();
 	void ShowHiddenMenu();
 	void HideHiddenMenu();
@@ -68,7 +70,8 @@ public:
 	TSubclassOf<class UCStatusPanel> StatusPanelClass;
 	UPROPERTY(EditAnywhere,Category = "Widgets")
 	TSubclassOf<class UCLowHealthWidget> LowHealthWidgetClass;
-
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+	TSubclassOf<class UCCrossHairWidget> CrossHairWidgetClass;
 	
 
 protected:
@@ -92,6 +95,8 @@ protected:
 		class UCStatusPanel* StatusPanel;
 	UPROPERTY()
 		class UCLowHealthWidget* LowHealthWidget;
+	UPROPERTY()
+		class UCCrossHairWidget* CrossHairWidget;
 
 	UPROPERTY(EditAnywhere)
 		class USoundWave* OpenInventory;

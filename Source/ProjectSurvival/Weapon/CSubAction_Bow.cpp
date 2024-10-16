@@ -13,6 +13,7 @@
 #include "Weapon/CDoAction.h"
 #include "Weapon/CDoAction_Bow.h"
 #include "Weapon/CAttachment_Bow.h"
+#include "Widget/CMainHUD.h"
 
 UCSubAction_Bow::UCSubAction_Bow()
 {
@@ -26,8 +27,11 @@ void  UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* 
 		AmmoComponent = Cast<UCAmmoComponent>(InOwner->GetComponentByClass(UCAmmoComponent::StaticClass()));
 		SpringArm = Cast<USpringArmComponent>(InOwner->GetComponentByClass(USpringArmComponent::StaticClass()));
 		Camera = Cast<UCameraComponent>(InOwner->GetComponentByClass(UCameraComponent::StaticClass()));
+		APlayerController* PlayerController = Cast<APlayerController>(InOwner->GetController());
+		MainHUD = Cast<ACMainHUD>(PlayerController->GetHUD());
 		
 	}
+
 	{
 		FOnTimelineVector timeLine;
 
@@ -58,6 +62,9 @@ void UCSubAction_Bow::Pressed()
 	if(Camera==nullptr) return;
 	
 	Super::Pressed();
+	if(MainHUD)
+	MainHUD->ShowCrossHair();
+
 	State->OnSubActionMode();
 	{
 		//OriginData.TargetArmLength = SpringArm->TargetArmLength;
@@ -90,6 +97,8 @@ void UCSubAction_Bow::Released()
 	if(Camera == nullptr) return;
 
 	Super::Released();
+	if (MainHUD)
+		MainHUD->HideCrossHair();
 	State->OffSubActionMode();
 
 	{
@@ -112,7 +121,7 @@ void UCSubAction_Bow::Released()
 void UCSubAction_Bow::OnAiming(FVector Output)
 {
 	Camera->FieldOfView = Output.X;
-	CDebug::Print("Camera FieldOfView",Camera->FieldOfView);
+	//CDebug::Print("Camera FieldOfView",Camera->FieldOfView);
 	if (!!Bend)
 		*Bend = Output.Y;
 }
