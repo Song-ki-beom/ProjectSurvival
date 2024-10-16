@@ -160,15 +160,21 @@ void ACStructure_Placeable::OpenActorInventory(const ACSurvivor* Survivor, class
 					}
 				}
 				else
+				{
 					CDebug::Print("ActorInventoryWidget is not Valid");
+				}
 			}
 			else
+			{
 				CDebug::Print("ActorInventoryWidgetClass is not Valid");
+			}
 		}
 		}
 	}
 	else
+	{
 		CDebug::Print("Survivor is not valid");
+	}
 }
 
 void ACStructure_Placeable::CheckHeight()
@@ -285,7 +291,7 @@ void ACStructure_Placeable::CheckCenter()
 		centerBoxTraceTypeQuery,
 		bCenterBoxTraceComplex,
 		centerBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		centerBoxHitResult,
 		true,
 		FLinearColor::Green,
@@ -350,9 +356,11 @@ void ACStructure_Placeable::DoBuildTypeInteract()
 					}
 				}
 				else
+				{
 					CDebug::Print("RespawnLocationRegistWidget is not valid");
+				}
 
-				CDebug::Print("CreateWidget Called");
+				//CDebug::Print("CreateWidget Called");
 			}
 		}
 
@@ -852,7 +860,7 @@ bool ACStructure_Placeable::CheckMaxStack(const FItemInformation InItemInformati
 
 void ACStructure_Placeable::CheckWoodResource()
 {
-	CDebug::Print("CheckWoodResource Called");
+	//CDebug::Print("CheckWoodResource Called");
 	
 	if (!PlaceableProduceWidget)
 		return;

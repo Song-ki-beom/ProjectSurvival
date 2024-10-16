@@ -206,7 +206,7 @@ void UCWeaponComponent::SetMode(EWeaponType InNewType)
 		if (Datas[(int32)InNewType]->GetEquipment() == nullptr) return;
 
 
-		CDebug::Print("SetMode Called");
+		//CDebug::Print("SetMode Called");
 		
 		//FString Name = OwnerCharacter->GetName();
 		//Broadcast_Equip(Name);
@@ -228,7 +228,7 @@ void UCWeaponComponent::SetMode(EWeaponType InNewType)
 
 	else
 	{
-		CDebug::Print("Request Set Mode Called", FColor::Magenta);
+		//CDebug::Print("Request Set Mode Called", FColor::Magenta);
 		RequestSetMode(InNewType);
 	}
 }
@@ -279,13 +279,13 @@ void UCWeaponComponent::Broadcast_Equip_Implementation(const FString& InName)
 
 void UCWeaponComponent::OnRef_PrevTypeChanged()
 {
-	CDebug::Print(TEXT("OnPrevTypeChanged"));
+	//CDebug::Print(TEXT("OnPrevTypeChanged"));
 }
 
 void UCWeaponComponent::OnRef_TypeChanged()
 {
-	CDebug::Print(FString("NewWeaponType : %d",(int32)Type));
-	CDebug::Print(TEXT("OnTypeChanged"));
+	//CDebug::Print(FString("NewWeaponType : %d",(int32)Type));
+	//CDebug::Print(TEXT("OnTypeChanged"));
 	SetModeReplicate();
 }
 

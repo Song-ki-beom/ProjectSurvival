@@ -39,7 +39,7 @@ void ACStructure_Ceiling::CheckCenter()
 		centerBoxTraceTypeQuery,
 		bCenterBoxTraceComplex,
 		centerBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		centerBoxHitResult,
 		true,
 		FLinearColor::Green,
@@ -66,7 +66,7 @@ void ACStructure_Ceiling::CheckForward_Wall()
 		forwardObjectTypeQuery,
 		false,
 		forwardBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		forwardHitResult,
 		true,
 		FLinearColor::Green,
@@ -75,7 +75,6 @@ void ACStructure_Ceiling::CheckForward_Wall()
 
 	if (bForward_WallHit)
 	{
-		CDebug::Print("Hi");
 		//DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 130.0f + forwardHitResult.GetComponent()->GetUpVector() * 20.0f);
 		CenterRotation = forwardHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 180, 0);
@@ -102,7 +101,7 @@ void ACStructure_Ceiling::CheckBackward_Wall()
 		backwardObjectTypeQuery,
 		false,
 		backwardBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		backwardHitResult,
 		true,
 		FLinearColor::Green,
@@ -137,7 +136,7 @@ void ACStructure_Ceiling::CheckLeft_Wall()
 		leftObjectTypeQuery,
 		false,
 		leftBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		leftHitResult,
 		true,
 		FLinearColor::Green,
@@ -172,7 +171,7 @@ void ACStructure_Ceiling::CheckRight_Wall()
 		rightObjectTypeQuery,
 		false,
 		rightBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		rightHitResult,
 		true,
 		FLinearColor::Green,
@@ -206,7 +205,7 @@ void ACStructure_Ceiling::CheckForward_Ceiling()
 		forwardObjectTypeQuery,
 		false,
 		forwardBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		forwardHitResult,
 		true,
 		FLinearColor::Green,
@@ -239,7 +238,7 @@ void ACStructure_Ceiling::CheckBackward_Ceiling()
 		backwardObjectTypeQuery,
 		false,
 		backwardBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		backwardHitResult,
 		true,
 		FLinearColor::Green,
@@ -272,7 +271,7 @@ void ACStructure_Ceiling::CheckLeft_Ceiling()
 		leftObjectTypeQuery,
 		false,
 		leftBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		leftHitResult,
 		true,
 		FLinearColor::Green,
@@ -305,7 +304,7 @@ void ACStructure_Ceiling::CheckRight_Ceiling()
 		rightObjectTypeQuery,
 		false,
 		rightBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		rightHitResult,
 		true,
 		FLinearColor::Green,

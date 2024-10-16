@@ -62,7 +62,7 @@ void UCInteractionWidget::NativeConstruct()
 
 FReply UCInteractionWidget::NativeOnMouseWheel(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
-	CDebug::Print(TEXT("NativeOnMouseWheel Dectected"));
+	//CDebug::Print(TEXT("NativeOnMouseWheel Dectected"));
 	//if (MouseEvent.GetWheelDelta() < 0) // 마우스 휠 아래로
 	//{
 	//	MoveFocusToNextButton();
@@ -77,7 +77,7 @@ FReply UCInteractionWidget::NativeOnMouseWheel(const FGeometry& MyGeometry, cons
 
 FReply UCInteractionWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	CDebug::Print(TEXT("NativeOnMouseButtonDown Dectected"));
+	//CDebug::Print(TEXT("NativeOnMouseButtonDown Dectected"));
 	/*SetFocus();*/
 	return Super::NativeOnMouseButtonDown(InGeometry,InMouseEvent);
 }
@@ -157,7 +157,7 @@ void UCInteractionWidget::OnRepairButtonClicked()
 
 void UCInteractionWidget::ShowHiddenMenu()
 {
-	CDebug::Print("ShowHiddenMenu", FColor::Magenta);
+	//CDebug::Print("ShowHiddenMenu", FColor::Magenta);
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
 		if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
@@ -213,7 +213,7 @@ void UCInteractionWidget::HideHiddenMenu()
 
 void UCInteractionWidget::ToggleHiddenMenu()
 {
-	CDebug::Print("ToggleHiddenMenu Called", FColor::Magenta);
+	//CDebug::Print("ToggleHiddenMenu Called", FColor::Magenta);
 
 	if ((InteractType == EInteractableType::Build || InteractType == EInteractableType::Container) && !bIsDropMesh)
 	{
@@ -231,7 +231,7 @@ void UCInteractionWidget::ToggleHiddenMenu()
 		}
 		else
 		{
-			CDebug::Print("bIsCantPickUp FALSE", FColor::Magenta);
+			//CDebug::Print("bIsCantPickUp FALSE", FColor::Magenta);
 
 			if (ExtraOptionBox->GetVisibility() == ESlateVisibility::Collapsed)
 			{

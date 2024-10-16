@@ -190,7 +190,7 @@ void UCWorldMap::RefreshSurvivorLocationOnWorldMap(float LocationX, float Locati
 
 void UCWorldMap::SetActorOnWorldMap(class AActor* InActor)
 {
-	CDebug::Print("SetActorOnWorldMap Called", FColor::White);
+	//CDebug::Print("SetActorOnWorldMap Called", FColor::White);
 	if (InActor)
 	{
 		CDebug::Print("InActor Is Valid");
@@ -207,7 +207,7 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 
 	if (InActor)
 	{
-		CDebug::Print("CreateRespawnLocationOnWorldMap Called", FColor::Red);
+		//CDebug::Print("CreateRespawnLocationOnWorldMap Called", FColor::Red);
 
 		float actorLocationX = InActor->GetActorLocation().X;
 		float actorLocationY = InActor->GetActorLocation().Y;
@@ -232,7 +232,7 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 			// 위젯이 유효하면 WorldMapCanvasPanel에 추가
 			if (addedRespawnLocation)
 			{
-				CDebug::Print("addedRespawnLocation is Valid", FColor::Red);
+				//CDebug::Print("addedRespawnLocation is Valid", FColor::Red);
 
 				WorldMapCanvasPanel->AddChild(addedRespawnLocation);
 
@@ -260,14 +260,18 @@ void UCWorldMap::CreateRespawnLocationOnWorldMap(AActor* InActor)
 
 
 
-				CDebug::Print("Array Num : ", RespawnLocationPtrArray.Num(), FColor::Cyan);
+				//CDebug::Print("Array Num : ", RespawnLocationPtrArray.Num(), FColor::Cyan);
 			}
 			else
+			{
 				CDebug::Print("addedRespawnLocation is Not Valid", FColor::Red);
+			}
 		}
 	}
 	else
+	{
 		CDebug::Print("InActor Is Not Valid At WorldMap", FColor::Red);
+	}
 }
 
 void UCWorldMap::RefreshRespawnLocationOnWorldMap()
@@ -281,7 +285,7 @@ void UCWorldMap::RefreshRespawnLocationOnWorldMap()
 
 void UCWorldMap::Test()
 {
-	CDebug::Print("Array Num : ", RespawnLocationPtrArray.Num(), FColor::Cyan);
+	//CDebug::Print("Array Num : ", RespawnLocationPtrArray.Num(), FColor::Cyan);
 }
 
 void UCWorldMap::HideSurvivorLocationOnWorldMap(uint32 NetGUIDValue)

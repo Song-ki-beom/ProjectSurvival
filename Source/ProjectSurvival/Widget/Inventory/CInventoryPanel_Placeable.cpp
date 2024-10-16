@@ -75,16 +75,20 @@ bool UCInventoryPanel_Placeable::NativeOnDrop(const FGeometry& InGeometry, const
 					if (survivorController->GetBuildWidget())
 						survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemDragDrop->SourceItem->ID);
 					else
+					{
 						CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+					}
 				}
 				else
+				{
 					CDebug::Print("survivorController is not Valid", FColor::Red);
+				}
 
 			}
 			else
 			{
-				CDebug::Print("NotContain");
-				CDebug::Print(ItemDragDrop->DragStartWidget->GetName());
+				//CDebug::Print("NotContain");
+				//CDebug::Print(ItemDragDrop->DragStartWidget->GetName());
 			}
 			return false;
 		}
@@ -114,7 +118,9 @@ void UCInventoryPanel_Placeable::RefreshPlaceableInventory()
 				PlaceableInventoryPanel->AddChildToWrapBox(ItemSlot);
 			}
 			else
+			{
 				CDebug::Print("ItemSlot is not Valid");
+			}
 		}
 		else
 		{

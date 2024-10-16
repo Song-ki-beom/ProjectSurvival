@@ -325,7 +325,7 @@ void UCBuildWidget::RefreshBuildWidgetQuantity(FName InItemID)
 						}
 					}
 				}
-				CDebug::Print("newQuantity : ", newQuantity);
+				//CDebug::Print("newQuantity : ", newQuantity);
 				itemSlot->SetStructureQuantity(newQuantity);
 				break;
 			}

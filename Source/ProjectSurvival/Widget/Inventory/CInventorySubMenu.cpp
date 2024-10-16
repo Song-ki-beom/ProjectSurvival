@@ -232,7 +232,9 @@ void UCInventorySubMenu::UpdateSubMenu(ERightClickStartWidget InRightClickStartW
         }
     }
     else
+    {
         CDebug::Print("Slot Reference is not valid", FColor::White);
+    }
 
 }
 
@@ -278,7 +280,7 @@ void UCInventorySubMenu::HandleOnRepairButtonClicked()
         {
             if (widgetClass)
             {
-                CDebug::Print("widgetClass is valid");
+                //CDebug::Print("widgetClass is valid");
 
 
                 UCProduceRecipe* recipeWidget = CreateWidget<UCProduceRecipe>(GetWorld(), widgetClass);
@@ -537,7 +539,9 @@ void UCInventorySubMenu::HandleBuildRegisterButton()
         }
     }
     else
+    {
         CDebug::Print("BuildWidget is not Valid");
+    }
 }
 
 void UCInventorySubMenu::SelectQ()
@@ -681,7 +685,7 @@ void UCInventorySubMenu::Repair()
 
     if (recipeNumber == checkNumber)
     {
-        CDebug::Print("Can Repair");
+        //CDebug::Print("Can Repair");
     }
 
     if (recipeNumber == checkNumber)
@@ -722,11 +726,15 @@ void UCInventorySubMenu::Repair()
                             }
                         }
                         else
+                        {
                             CDebug::Print("tempItem is not Valid");
+                        }
                     }
                 }
                 else
+                {
                     CDebug::Print("Placeable is not Valid", FColor::Magenta);
+                }
             }
         }
 

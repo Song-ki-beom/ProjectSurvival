@@ -86,6 +86,9 @@ void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 		case 0:
 		{
 			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Easy")), TEXT("Find Easy"), true);
+			if (!difficultyInfo)
+				return;
+
 			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
 			DifficultyText->SetText(difficultyInfo->DifficultySummary);
 			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
@@ -97,6 +100,9 @@ void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 		case 1:
 		{
 			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Normal")), TEXT("Find Normal"), true);
+			if (!difficultyInfo)
+				return;
+
 			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
 			DifficultyText->SetText(difficultyInfo->DifficultySummary);
 			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
@@ -108,6 +114,9 @@ void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 		case 2:
 		{
 			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Hard")), TEXT("Find Normal"), true);
+			if (!difficultyInfo)
+				return;
+
 			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
 			DifficultyText->SetText(difficultyInfo->DifficultySummary);
 			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
@@ -119,6 +128,9 @@ void UCDifficultyWidget::UpdateDifficultyInfo(int InIndex)
 		case 3:
 		{
 			FDifficultyInfo* difficultyInfo = DifficultyData->FindRow<FDifficultyInfo>(FName(TEXT("Extreme")), TEXT("Find Normal"), true);
+			if (!difficultyInfo)
+				return;
+
 			DifficultyImage->SetBrushFromTexture(difficultyInfo->DifficultyTexture);
 			DifficultyText->SetText(difficultyInfo->DifficultySummary);
 			DifficultyDesc_1->SetText(difficultyInfo->DifficultyDetail_1);
@@ -154,6 +166,7 @@ void UCDifficultyWidget::UpdateClientDifficulty()
 	}
 }
 
+// 난이도 버튼에 바인드된 함수
 void UCDifficultyWidget::OnEasy()
 {
 	ACLobbySurvivorController* lobbySurvivorController = Cast<ACLobbySurvivorController>(GetWorld()->GetFirstPlayerController());

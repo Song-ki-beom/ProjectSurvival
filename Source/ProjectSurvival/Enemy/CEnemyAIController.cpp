@@ -160,7 +160,7 @@ void ACEnemyAIController::RunAI()
 {
     if (bIsBehaviorTreeInitialized)
     {
-        CDebug::Print(TEXT("Behavior Tree and Blackboard are already initialized"));
+        //CDebug::Print(TEXT("Behavior Tree and Blackboard are already initialized"));
         return;
     };
 

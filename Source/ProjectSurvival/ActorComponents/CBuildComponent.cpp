@@ -30,6 +30,7 @@ UCBuildComponent::UCBuildComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 	bIsBuilding = false;
+
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> redMaterialFinder(TEXT("MaterialInstanceConstant'/Game/PirateIsland/Include/Materials/Builds/MI_Build_Red.MI_Build_Red'"));
 	if (redMaterialFinder.Succeeded())
 	{
@@ -135,63 +136,63 @@ void UCBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UCBuildComponent::SelectQ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectQ");
+	//CDebug::Print("SelectQ");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectW(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectW");
+	//CDebug::Print("SelectW");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectE(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectE");
+	//CDebug::Print("SelectE");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectA(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectA");
+	//CDebug::Print("SelectA");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectS(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectS");
+	//CDebug::Print("SelectS");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectD(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectD");
+	//CDebug::Print("SelectD");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectZ(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectZ");
+	//CDebug::Print("SelectZ");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectX(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectX");
+	//CDebug::Print("SelectX");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
 
 void UCBuildComponent::SelectC(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
 {
-	CDebug::Print("SelectC");
+	//CDebug::Print("SelectC");
 
 	SpawnBuildStructureElement(InClass, InElement, InItemID);
 }
@@ -200,11 +201,10 @@ void UCBuildComponent::BuildSpawnedStructure()
 {
 	if (!bIsBuildable)
 	{
-		CDebug::Print("You Can't Build There", FColor::Cyan);
+		//CDebug::Print("You Can't Build There", FColor::Cyan);
 		return;
 	}
 
-	//SubStructureQuantity();
 	FName itemID = SpawnedStructure->GetBuildStructureID();
 
 	for (TWeakObjectPtr<UCItemBase> itemPtr : Survivor->GetInventoryComponent()->GetInventoryContents())
@@ -232,32 +232,12 @@ void UCBuildComponent::BuildSpawnedStructure()
 						{
 							if (survivorController->GetBuildWidget())
 								survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(itemID);
-							else
-								CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
 						}
-						else
-							CDebug::Print("survivorController is not Valid", FColor::Red);
 
-
-						//buildItemSlot->SubStructureQuantity();
 						break;
 					}
 				}
 			}
-			//for (UCBuildItemSlot* buildItemSlot : BuildWidget->GetBuildItemSlotArray())
-			//{
-			//	if (!buildItemSlot)
-			//		continue;
-			//
-			//	if (buildItemSlot->GetBuildItemSlotID() == itemID)
-			//	{
-			//		buildItemSlot->SubStructureQuantity();
-			//		break;
-			//	}
-			//}
-
-			//if (BuildWidget)
-			//	CDebug::Print("BuildWidget ISVALID");
 		}
 	}
 
@@ -273,14 +253,10 @@ void UCBuildComponent::BuildSpawnedStructure()
 	}
 	else
 	{
-		CDebug::Print("Spawned Structure : ", SpawnedStructure);
+		//CDebug::Print("Spawned Structure : ", SpawnedStructure);
 		StructureTransform = SpawnedStructure->GetActorTransform();
 		RequestBuild(StructureClass, StructureTransform);
 	}
-
-
-
-	//Survivor->GetInventoryComponent()->
 }
 
 void UCBuildComponent::ClearSpawnedStructure()
@@ -300,8 +276,6 @@ void UCBuildComponent::BroadcastRegisterOnWorldMap_Implementation(class AActor* 
 			gameInstance->WorldMap->CreateRespawnLocationOnWorldMap(InActor);
 		}
 	}
-	else
-		CDebug::Print("InActor is Valid At BuildComponent 291Line", FColor::Purple);
 }
 
 void UCBuildComponent::SpawnBuildStructureElement(TSubclassOf<ACStructure> InClass, EBuildStructureElement InElement, FName InItemID)
@@ -781,15 +755,6 @@ void UCBuildComponent::BuildStartCeiling()
 				SpawnedCeiling->SetActorRotation(structureRotation);
 				bIsSnapped = false;
 				bIsBuildable = false;
-				
-				//structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-				//structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-				//structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
-				//SpawnedWall->SetActorLocation(structureLocation);
-				//structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
-				//SpawnedWall->SetActorRotation(structureRotation);
-				//bIsSnapped = false;
-				//bIsBuildable = false;
 			}
 		}
 		else
@@ -892,15 +857,6 @@ void UCBuildComponent::BuildStartRamp()
 				SpawnedRamp->SetActorRotation(structureRotation);
 				bIsSnapped = false;
 				bIsBuildable = false;
-			
-				//structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
-				//structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
-				//structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
-				//SpawnedWall->SetActorLocation(structureLocation);
-				//structureRotation = Survivor->GetActorRotation() + FRotator(0, 90, 0);
-				//SpawnedWall->SetActorRotation(structureRotation);
-				//bIsSnapped = false;
-				//bIsBuildable = false;
 			}
 		}
 		else

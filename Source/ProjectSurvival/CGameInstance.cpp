@@ -170,7 +170,6 @@ void UCGameInstance::RenewServerList()
 			SessionSearch->bIsLanQuery = false;
 		SessionSearch->MaxSearchResults = 100;
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-		UE_LOG(LogTemp, Warning, TEXT("Start find session"));
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 	}
 }
@@ -314,7 +313,6 @@ void UCGameInstance::CreateSession()
 		else
 			sessionSettings.bIsLANMatch = false;
 
-		UE_LOG(LogTemp, Warning, TEXT("bIsLANMatch : %d"), sessionSettings.bIsLANMatch);
 		sessionSettings.bUsesPresence = true;
 		sessionSettings.NumPublicConnections = 4;
 		sessionSettings.bAllowJoinInProgress = true;
@@ -403,7 +401,7 @@ void UCGameInstance::OnPostLoadMapWithWorld(UWorld* InLoadedWorld)
 
 void UCGameInstance::CreateLoadingScreen()
 {
-	CDebug::Print(TEXT("Loading Screen Widget Added"));
+	//CDebug::Print(TEXT("Loading Screen Widget Added"));
 	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
 	if (LoadingScreenWidget)
 	{
@@ -414,7 +412,7 @@ void UCGameInstance::CreateLoadingScreen()
 
 void UCGameInstance::BroadcastCreateLoadingScreen_Implementation()
 {
-	CDebug::Print(TEXT("Loading Screen Widget Added"));
+	//CDebug::Print(TEXT("Loading Screen Widget Added"));
 	LoadingScreenWidget = CreateWidget<UCLoadingScreenWidget>(GetWorld(), LoadingScreenWidgetClass);
 	if (LoadingScreenWidget)
 	{

@@ -143,21 +143,31 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 								}
 							}
 							else
+							{
 								CDebug::Print("ID not match", FColor::Magenta);
+							}
 						}
 						else
+						{
 							CDebug::Print("itemBase is not valid", FColor::Magenta);
+						}
 					}
 				}
 				else
+				{
 					CDebug::Print("Survivor is not Valid", FColor::Magenta);
+				}
 			}
 		}
 		UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
 		if (produceWidget)
+		{
 			produceWidget->AddProduceItemToQueue(InID);
+		}
 		else
+		{
 			CDebug::Print("produceWidget : is not valid", FColor::Magenta);
+		}
 	}
 	//else
 	//	CDebug::Print("Can't Produce");
@@ -228,11 +238,15 @@ void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeab
 							}
 						}
 						else
+						{
 							CDebug::Print("tempItem is not Valid");
+						}
 					}
 				}
 				else
+				{
 					CDebug::Print("InOwner is not Valid", FColor::Magenta);
+				}
 			}
 		}
 

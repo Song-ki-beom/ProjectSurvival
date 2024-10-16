@@ -77,7 +77,7 @@ void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAm
 			FString hitIndex = hitObjectName.Right(StringLength - StartIndex - 1);
 
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
-			CDebug::Print(debugText, FColor::Blue);
+			//CDebug::Print(debugText, FColor::Blue);
 
 			float FinalDamageAmount = InDamageAmount;
 			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "1"))
@@ -119,7 +119,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 	{
 		InstanceIndex = Hit.Item;
 		FString debugText = TEXT("Hitted Polige Mesh Index") + FString::FromInt(InstanceIndex);
-		CDebug::Print(debugText);
+		//CDebug::Print(debugText);
 		InstanceToRemove->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
 		if (OwnerCharacter->HasAuthority())
 		{
@@ -196,7 +196,7 @@ void UCHarvestComponent::SwitchFoligeToDestructible(const FString& hitIndex, flo
 				ACDestructibleActor* destructibleActor = GetWorld()->SpawnActor<ACDestructibleActor>(ACDestructibleActor::StaticClass(), SpawnLocation, SpawnRotation, SpawnParams);
 				if (destructibleActor)
 				{
-					CDebug::Print(TEXT("Destructible Actor Spawn Succeeded"));
+					//CDebug::Print(TEXT("Destructible Actor Spawn Succeeded"));
 
 				}
 				else

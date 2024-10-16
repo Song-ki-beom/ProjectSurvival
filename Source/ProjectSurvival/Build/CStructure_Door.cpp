@@ -99,7 +99,7 @@ void ACStructure_Door::CheckCenter()
 		centerBoxTraceTypeQuery,
 		bCenterBoxTraceComplex,
 		centerBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		centerBoxHitResult,
 		true,
 		FLinearColor::Green,
@@ -125,7 +125,7 @@ void ACStructure_Door::CheckUp_DoorFrame()
 		upObjectTypeQuery,
 		false,
 		upBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		upHitResult,
 		true,
 		FLinearColor::Green,
@@ -134,7 +134,7 @@ void ACStructure_Door::CheckUp_DoorFrame()
 
 	if (bUp_DoorFrameHit)
 	{
-		CDebug::Print("Result : ", upHitResult.GetComponent());
+		//CDebug::Print("Result : ", upHitResult.GetComponent());
 		this->SetActorLocation(upHitResult.GetComponent()->GetComponentLocation() + upHitResult.GetComponent()->GetForwardVector() * 15.0f + upHitResult.ImpactNormal * 120.0f);
 		CenterRotation = upHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);

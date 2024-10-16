@@ -131,7 +131,7 @@ void UCCustomizeComponent::PerformSetHeadMesh(FName InHeadName, FName InHeadColo
 	FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(ReplicatedHeadName, TEXT("Head"));
 	USkeletalMesh* headMesh = headMeshRow->HeadMesh;
 	Survivor->GetHeadMeshComponent()->SetSkeletalMesh(headMesh);
-	CDebug::Print(ReplicatedHeadName.ToString(), FColor::Green);
+	//CDebug::Print(ReplicatedHeadName.ToString(), FColor::Green);
 
 	ReplicatedHeadColorName = InHeadColorName;
 	FSkeletalHeadMeshColorRow* headMeshColorRow = CustomizeHeadColorData->FindRow<FSkeletalHeadMeshColorRow>(ReplicatedHeadColorName, TEXT("HeadColor"));
@@ -268,7 +268,7 @@ void UCCustomizeComponent::UpdateHeadMesh()
 		FSkeletalHeadMeshRow* headMeshRow = CustomizeHeadData->FindRow<FSkeletalHeadMeshRow>(ReplicatedHeadName, TEXT("Head"));
 		USkeletalMesh* headMesh = headMeshRow->HeadMesh;
 		Survivor->GetHeadMeshComponent()->SetSkeletalMesh(headMesh);
-		CDebug::Print(ReplicatedHeadName.ToString(), FColor::Green);
+		//CDebug::Print(ReplicatedHeadName.ToString(), FColor::Green);
 	}
 }
 

@@ -346,19 +346,25 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 				break;
 			}
 			}
-			CDebug::Print(AddResult.ResultMessage.ToString());
+			//CDebug::Print(AddResult.ResultMessage.ToString());
 		}
 
 		ACSurvivorController* survivorController = Cast<ACSurvivorController>(Taker->GetController());
 		if (survivorController)
 		{
 			if (survivorController->GetBuildWidget())
+			{
 				survivorController->GetBuildWidget()->RefreshBuildWidgetQuantity(ItemReference->ID);
+			}
 			else
+			{
 				CDebug::Print("survivorController->GetBuildWidget() is not Valid", FColor::Red);
+			}
 		}
 		else
+		{
 			CDebug::Print("survivorController is not Valid", FColor::Red);
+		}
 	}
 }
 
@@ -378,5 +384,7 @@ void ACPickUp::SetTransform()
 {
 	//CDebug::Print("SetTransform Called", FColor::Blue);
 	if (HasAuthority())
+	{
 		BroadcastSetTransform(this->GetActorTransform());
+	}
 }

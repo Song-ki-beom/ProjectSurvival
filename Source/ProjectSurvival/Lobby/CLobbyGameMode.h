@@ -17,17 +17,13 @@ public:
 	ACLobbyGameMode();
 
 protected:
-	void PostLogin(APlayerController* NewPlayer) override;
 	void Tick(float DeltaSeconds) override;
+	void PostLogin(APlayerController* NewPlayer) override;
 	
-private:
-	UFUNCTION()
-		void TriggerSeamlessTravel();
-
 public:
 	void ReadyPlayer();
-	bool CheckPlayer();
 	void StartGame();
+	bool CheckPlayer();
 	
 
 private:
