@@ -217,10 +217,13 @@ void ACSurvivor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 void ACSurvivor::Landed(const FHitResult& Hit)
 {
-	if (this->HasAuthority())
-		BroadcastDoSpecialAction(ESpecialState::Land);
-	else
-		RequestDoSpecialAction(ESpecialState::Land);
+	if (this->StateComponent->GetStateType() != EStateType::Hit)
+	{
+		if (this->HasAuthority())
+			BroadcastDoSpecialAction(ESpecialState::Land);
+		else
+			RequestDoSpecialAction(ESpecialState::Land);
+	}
 }
 
 void ACSurvivor::DoAction()
@@ -620,8 +623,8 @@ void ACSurvivor::RemoveCharacter()
 {
 	if (this->HasAuthority())
 		BroadcastRemoveSurvivor();
-	else
-		RequestRemoveSurvivor();
+	//else
+	//	RequestRemoveSurvivor();
 }
 
 void ACSurvivor::SetSurvivorNameVisibility()
