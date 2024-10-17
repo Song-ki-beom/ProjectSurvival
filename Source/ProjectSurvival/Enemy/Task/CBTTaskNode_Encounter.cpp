@@ -37,7 +37,7 @@ EBTNodeResult::Type UCBTTaskNode_Encounter::ExecuteTask(UBehaviorTreeComponent& 
     if (Controller == nullptr) return EBTNodeResult::Failed;
     OwnerEnemy = Cast<ACEnemy>(Controller->GetPawn());
     StateComponent = Cast<UCStateComponent>(OwnerEnemy->GetComponentByClass(UCStateComponent::StaticClass()));
-
+    AIComponent = Cast<UCEnemyAIComponent>(OwnerEnemy->GetComponentByClass(UCEnemyAIComponent::StaticClass()));
     FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(OwnerEnemy->GetActorLocation(), TargetActor->GetActorLocation());
 
     TargetRot.Pitch = OwnerEnemy->GetActorRotation().Pitch;
@@ -79,9 +79,15 @@ void UCBTTaskNode_Encounter::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 {
     Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
     if (StateComponent == nullptr) return FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-
+    //CDebug::Print("Bear Current State is:", (int32)StateComponent->GetStateType());
     if (StateComponent->IsIdleMode() || StateComponent->IsCombatMode())
     {
+        if (AIComponent)
+        {
+            AIComponent->GetBlackboard()->SetValueAsBool(FName("bHasEncountered"), true);
+            OwnerEnemy->GetMesh()->GetAnimInstance()->Montage_Stop(0.2f);
+        }
+
         FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded); //FinishLatentTask : ExecuteTask 에 대해서 InProgress 인 작업을 지연 종료 시킴  
         return;
     }

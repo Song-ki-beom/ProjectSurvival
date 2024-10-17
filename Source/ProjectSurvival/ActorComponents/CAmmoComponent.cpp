@@ -10,6 +10,7 @@
 #include "ActorComponents/CMovingComponent.h"
 #include "Components/PoseableMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Perception/AISense_Damage.h"
 #include "Weapon/CAttachment_Bow.h"
 #include "Weapon/CArrow.h"
 #include "DrawDebugHelpers.h"
@@ -44,6 +45,15 @@ void UCAmmoComponent::OnArrowHit(AActor* InCauser, ACharacter* InOtherCharacter)
         FActionDamageEvent e;
         e.HitID = FName("Survivor_Bow");
         InOtherCharacter->TakeDamage(0, e, OwnerCharacter->GetController(), OwnerCharacter);
+
+        UAISense_Damage::ReportDamageEvent(
+            OwnerCharacter->GetWorld(),
+            InOtherCharacter,
+            OwnerCharacter,
+            1,
+            OwnerCharacter->GetActorLocation(),
+            FVector::ZeroVector
+        );
 
     }
 }

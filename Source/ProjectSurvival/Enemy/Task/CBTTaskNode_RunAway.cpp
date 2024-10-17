@@ -34,7 +34,7 @@ EBTNodeResult::Type UCBTTaskNode_RunAway::ExecuteTask(UBehaviorTreeComponent& Ow
     if (Target == nullptr) return EBTNodeResult::Failed;
     FVector RunAwayDirection = Enemy->GetActorLocation() - Target->GetActorLocation();
     RunAwayDirection = RunAwayDirection.GetSafeNormal();
-    FVector RunAwayLocation = Enemy->GetActorLocation() + (RunAwayDirection*RunAwayAmount);
+    FVector RunAwayLocation = Enemy->GetActorLocation() + (RunAwayDirection*RunAwayAmount*1.3f);
     UNavigationSystemV1* naviSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(Enemy->GetWorld());
     if (naviSystem == nullptr) return EBTNodeResult::Failed;
     FNavLocation point(RunAwayLocation);

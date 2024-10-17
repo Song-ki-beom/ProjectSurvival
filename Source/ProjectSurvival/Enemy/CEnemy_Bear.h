@@ -21,7 +21,7 @@ public:
 	virtual void End_DoAction() override;
 
 protected:
-
+	virtual void ApplyHitData() override;
 protected:
 	virtual void BeginPlay() override;
 

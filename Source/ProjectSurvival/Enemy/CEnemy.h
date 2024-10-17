@@ -52,33 +52,33 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadcastUpdateHealthBar(FLinearColor InColor);
 	
+
+
 //Damage Interface Override
-	//virtual void Damage(FDamageData* DamageData) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 		class AController* EventInstigator, AActor* DamageCauser) override;
-
-	//Montage 
-	void AfterABPBindDynamic();
-
 	//Eat Food
 	void EatFood(class ACPickUp* TargetPickUp);
 
 	// 팀 ID 설정 및 반환 함수
 	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; };
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamId) override;
-	//virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
-	
+
+
+protected:
+	//Montage 
+	void AfterABPBindDynamic();
+	virtual void ApplyHitData();
+	virtual void Die();
+	virtual void RemoveCharacter();
+	//Material 
+	virtual  void CreateDynamicMaterial();
+	virtual  void ChangeMeshColor(FLinearColor InColor);
 private:
 	//Hit
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastApplyHitData(FDamageData InDamageData);
-	virtual void ApplyHitData();
-	virtual void Die();
-	virtual void RemoveCharacter();
-
-	//Material 
-	virtual  void CreateDynamicMaterial();
-	virtual  void ChangeMeshColor(FLinearColor InColor);
+	
 	void ResetColor();
 	
 	//Drop Item
@@ -92,6 +92,8 @@ private:
 	void OnStateTypeChangedHandler(EStateType PrevType, EStateType NewType);
 	UFUNCTION()
 	void OnBecameFriendlyHandler();
+	
+	//Mesh Rotation
 	void RotateMeshToSlope(float InDeltaTime);
 
 	//Montage

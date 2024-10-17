@@ -3,6 +3,7 @@
 
 #include "Enemy/CEnemy_Bear.h"
 #include "Enemy/CEnemyAIController.h"
+#include "ActorComponents/CStatusComponent.h"
 #include "ActorComponents/CEnemyAIComponent.h"
 ACEnemy_Bear::ACEnemy_Bear() : ACEnemy()
 {
@@ -21,6 +22,10 @@ ACEnemy_Bear::ACEnemy_Bear() : ACEnemy()
 
 float ACEnemy_Bear::DoAction()
 {
+	if (HasAuthority())
+	{
+		StatusComponent->ReduceHunger(20.0f);
+	}
 	return Super::DoAction();
 	//Attack 몽타주 실행부분 
 
@@ -38,15 +43,22 @@ void ACEnemy_Bear::End_DoAction()
 {
 	Super::End_DoAction();
 
-	//Attack 몽타주 중단부분
+	
+}
+
+void ACEnemy_Bear::ApplyHitData()
+{
+	if (HasAuthority())
+	{
+		StatusComponent->ReduceHunger(10.0f);
+	}
+	Super::ApplyHitData();
 }
 
 void ACEnemy_Bear::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//AIState
-	/*if(AIComponent)
-		AIComponent->ChangeAIReputationType(EAIReputationType::Hostile);*/
+
 
 }

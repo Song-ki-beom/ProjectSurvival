@@ -36,8 +36,10 @@ void UCDoAction::DoAction()
 	if (bInAction || StateComponent->IsActionMode()) return;
 	if (!StatusComponent->CanSpendStamina(10.0f)) return;
 
-
-	StatusComponent->ReduceStamina(15.0f);
+	if (OwnerCharacter->HasAuthority())
+	{
+		StatusComponent->ReduceStamina(15.0f);
+	}
 	bInAction = true;
 	if (DoActionDatas.Num() > 0)
 		DoActionDatas[ActionIdx].DoAction(OwnerCharacter);

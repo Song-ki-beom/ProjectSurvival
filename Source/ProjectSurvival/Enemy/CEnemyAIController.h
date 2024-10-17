@@ -73,19 +73,28 @@ private:
 		class UAIPerceptionComponent* Perception;
 	UPROPERTY()
 		class UBehaviorTreeComponent* BehaviorTreeComp;
-	
 	bool bIsBehaviorTreeInitialized;
- 
+	
+	UPROPERTY()
 	class  ACEnemy* Enemy;
-	class  UAISenseConfig_Sight* Sight;
-	class  UCEnemyAIComponent* AIComponent;
-	FTimerHandle TickTimerHandle;
+	UPROPERTY()
+	class  UAISenseConfig_Sight* SightConfig;
+	UPROPERTY()
+	class UAISenseConfig_Damage* DamageConfig;
 
+	UPROPERTY()
+	class  UCEnemyAIComponent* AIComponent;
+
+
+	FTimerHandle TickTimerHandle;
 	bool bIsAggroCoolDown = true;
 	float CooldownTime =  3.0f;
 	FTimerHandle AggroTimerHandle;
+	UPROPERTY()
 	TArray<AActor*> CandidateActors;
+	UPROPERTY()
 	AActor* TargetActor;
+	UPROPERTY()
 	AActor* FriendlyTargetActor;
 	FVector TargetLocation;
 

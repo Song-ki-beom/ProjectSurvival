@@ -117,7 +117,7 @@ protected:
 		float MaxHunger = 100.0f;
 	float CurrentHunger = 0.0f;
 	UPROPERTY(EditAnywhere, Category = "Hunger")
-		float HungerDecreaseAmount = 15.0f;
+		float HungerDecreaseAmount = 5.0f;
 
 	//Stamina
 	UPROPERTY(EditAnywhere, Category = "Stamina")

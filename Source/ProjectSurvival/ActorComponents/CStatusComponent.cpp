@@ -38,11 +38,13 @@ void UCStatusComponent::BeginPlay()
 	CurrentHunger = MaxHunger;
 	CurrentStamina = MaxStamina;
 	CurrentFriendship = 0;
+
 	if (GetOwner()->HasAuthority()) //서버만 실행 
 	{
-		GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 1.0f, true); //1초마다 반복해서 실행 
+		
 		if (OwnerCharacter->Tags.Contains("Player"))
 		{
+			GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 2.0f, true); //1초마다 반복해서 실행 
 			GetWorld()->GetTimerManager().SetTimer(StaminaRecoverTimerHandle, this, &UCStatusComponent::RecoverStaminaByTime, 0.35f, true); //0.35초마다 반복해서 실행 
 		}
 		
@@ -70,12 +72,6 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 				{
 					ApplyDamage(7.0f);
 				}
-				APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
-				if (PlayerController && PlayerController->IsLocalController())
-				{
-					//PlayerController->ClientStartCameraShake(StarveCameraShakeClass, 1.0f);
-				}
-				// 타이머 리셋
 				TimeSinceStarvation = 0.0f;
 			}
 

@@ -14,6 +14,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Damage.h"
 
 ACEnemyAIController::ACEnemyAIController()
 {
@@ -23,22 +24,30 @@ ACEnemyAIController::ACEnemyAIController()
    
     Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception"));
 
-    Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
+
+    //Sight Config
+    SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight"); //Sight , Hearing 중에 Sight 감지 모드로 설정 
     SetPerceptionComponent(*Perception);
 
-    Sight->SightRadius = 1000;      
-    Sight->LoseSightRadius = 1100;  
-    Sight->PeripheralVisionAngleDegrees = 120; // 인식하는 시야 범위 
-    Sight->SetMaxAge(3);  //인식한 상대를 기억하는 시간 
+    SightConfig->SightRadius = 1000;
+    SightConfig->LoseSightRadius = 1100;
+    SightConfig->PeripheralVisionAngleDegrees = 120; // 인식하는 시야 범위 
+    SightConfig->SetMaxAge(3);  //인식한 상대를 기억하는 시간 
 
-    Sight->DetectionByAffiliation.bDetectEnemies = true;        
-    Sight->DetectionByAffiliation.bDetectNeutrals = false;
-    Sight->DetectionByAffiliation.bDetectFriendlies = false;    
+    SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+    SightConfig->DetectionByAffiliation.bDetectNeutrals = false;
+    SightConfig->DetectionByAffiliation.bDetectFriendlies = false;
+
+    // Damage Config
+    DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("Damage"));
+    DamageConfig->SetMaxAge(6.0f); 
+
    
-    GetPerceptionComponent()->ConfigureSense(*Sight);
+    GetPerceptionComponent()->ConfigureSense(*SightConfig);
+    GetPerceptionComponent()->ConfigureSense(*DamageConfig);
+    GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
     GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACEnemyAIController::OnPerceptionUpdated);
-    GetPerceptionComponent()->SetDominantSense(*Sight->GetSenseImplementation());
-    
+
   
 }
 
@@ -50,46 +59,15 @@ void ACEnemyAIController::BeginPlay()
     Super::BeginPlay();
     GetWorld()->GetTimerManager().SetTimer(TickTimerHandle, this, &ACEnemyAIController::CustomTick, 0.1f, true);
 
-    //// PathFollowingComponent의 Repathing 기능을 사용하여 경로 재계산 설정
-    //if (UPathFollowingComponent* PathFollowingComp = GetPathFollowingComponent())
-    //{
-    //    PathFollowingComp->OnRequestFinished.AddUObject(this, &ACEnemyAIController::OnMoveCompleted);
-    //}
-
 }
 
-//void ACEnemyAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
-//{
-//    Super::OnMoveCompleted(RequestID, Result);
-//      if (Result.IsInterrupted())
-//    {
-//    CDebug::Print(TEXT("Path is blocked, recalculating..."));
-//
-//    // 경로가 막혔을 경우 경로 재계산 로직 추가
-//    FTimerHandle RetryMoveHandle;
-//    GetWorld()->GetTimerManager().SetTimer(RetryMoveHandle, this, &ACEnemyAIController::RetryMoveToLocation, 0.5f, false);
-//    }
-//}
 
-//void ACEnemyAIController::RetryMoveToLocation()
-//{
-//    FNavPathSharedPtr NavPath;
-//    FAIMoveRequest MoveRequest(TargetLocation);
-//
-//    MoveRequest.SetUsePathfinding(true);
-//    //MoveRequest.SetAllowPartialPath(true);  // 차단된 경우에도 가능한 경로 사용
-//    MoveRequest.SetProjectGoalLocation(true);
-//    MoveRequest.SetAcceptanceRadius(50.0f);
-//    // 새로운 경로를 계산하여 다시 이동 시도
-//    if(!TargetLocation.IsZero())
-//            MoveTo(MoveRequest, &NavPath);
-//}
 
 void ACEnemyAIController::UpdatePerception()
 {
     if (GetPerceptionComponent())
     {
-       // GetPerceptionComponent()->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
+      
         TArray<AActor*> AllActors;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllActors);
 
@@ -246,9 +224,9 @@ void ACEnemyAIController::OnUnPossess()
 
 void ACEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-    //CDebug::Print("Player Detected!!!!!!");
+   
 
-    if (!bIsAggroCoolDown) return;
+    if (!bIsAggroCoolDown && TargetActor) return;
 
     Perception->GetCurrentlyPerceivedActors(nullptr, CandidateActors); //이미 Sight 컨피그에 의해 플레이어를 적으로 인식하도록 함 
 

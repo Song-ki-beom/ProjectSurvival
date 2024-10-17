@@ -48,7 +48,7 @@ EBTNodeResult::Type UCBTTaskNode_Roam::ExecuteTask(UBehaviorTreeComponent& Owner
     }
 
     AIComponent->SetRoamingLocation(point.Location);
-    DrawDebug(Enemy->GetWorld(), point.Location);
+    //DrawDebug(Enemy->GetWorld(), point.Location);
     return EBTNodeResult::InProgress;
 }
 

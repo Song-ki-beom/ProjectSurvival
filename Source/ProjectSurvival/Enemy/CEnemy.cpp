@@ -36,7 +36,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Hearing.h"
-
+#include "Perception/AISense_Damage.h"
 ACEnemy::ACEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -137,7 +137,8 @@ ACEnemy::ACEnemy()
 	// 시각 또는 청각 같은 인식 가능한 자극을 등록
 	PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
 	PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Hearing>());
-
+	//PerceptionStimuliSource->RegisterForSense(TSubclassOf<UAISense_Damage>());
+	PerceptionStimuliSource->RegisterForSense(UAISense_Damage::StaticClass());
 	// AI에 의한 인식 자극을 활성화
 	PerceptionStimuliSource->bAutoRegister = true;
 
@@ -365,8 +366,8 @@ void ACEnemy::AttackTraceHit()
 		CollisionParams
 	);
 
-	DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
-	DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
+	//DrawDebugBox(GetWorld(), Start, HalfSize, Rot, FColor::Red, false, 1.0f);
+	//DrawDebugBox(GetWorld(), End, HalfSize, Rot, FColor::Red, false, 1.0f);
 
 
 	TArray<ACharacter*> HitPlayers;
@@ -389,6 +390,7 @@ void ACEnemy::AttackTraceHit()
 				FActionDamageEvent e;
 				e.HitID = DoActionDatas[AttackIdx].ActionID;
 				HitCharacter->TakeDamage(0, e, this->GetController(), this);
+
 
 			}
 			
@@ -483,6 +485,8 @@ float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageE
 			DamageData.HitID = ((FActionDamageEvent*)&DamageEvent)->HitID;
 		}
 
+		
+
 
 	}
 
@@ -538,7 +542,7 @@ void ACEnemy::ApplyHitData()
 
 	if (HitDataTable != nullptr)
 	{
-		//CDebug::Print(TEXT("Hit Start"));
+		
 		FName CompleteHitID = FName(*(DamageData.HitID.ToString()) + HitActorName);
 		HitData = HitDataTable->FindRow<FHitData>(CompleteHitID, FString("Hit_Bear"));
 		if (HitData && HitData->Montage)
@@ -564,7 +568,7 @@ void ACEnemy::ApplyHitData()
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();
 
-				if (hitCnt >= MaxhitCnt)
+				if (hitCnt >= MaxhitCnt || GetDistanceTo(targetActor) > 1200.0f)
 				{
 					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
 					if (this->HasAuthority()) AIController->ChangeTarget(targetActor); //타겟 변경 
