@@ -35,10 +35,7 @@ ACDestructibleActor::ACDestructibleActor()
 void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-<<<<<<< Updated upstream
-	//DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
-=======
->>>>>>> Stashed changes
+
 	DOREPLIFETIME(ACDestructibleActor, AccumulatedDamage);
 	DOREPLIFETIME(ACDestructibleActor, EarnItemRatio);
 	DOREPLIFETIME(ACDestructibleActor, MaxDamageThreshold);
