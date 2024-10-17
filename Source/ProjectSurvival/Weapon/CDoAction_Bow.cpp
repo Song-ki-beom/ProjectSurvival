@@ -41,7 +41,7 @@ void  UCDoAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* I
 
 void UCDoAction_Bow::DoAction()
 {
-    if(!StateComponent->IsIdleMode()) return;
+    if(!StateComponent->IsIdleMode()&& !StateComponent->IsCombatMode()) return;
     if(!StateComponent->IsSubActionMode()) return;
     //if (!AmmoComponent->GetIsArrowFullyCreated()) return;
     Super::DoAction();
@@ -83,10 +83,7 @@ void UCDoAction_Bow::Begin_DoAction()
     APlayerController* PlayerController = Cast<APlayerController>(OwnerCharacter->GetController());
     if (PlayerController)
     {
-         //화면 중앙에 있는 크로스헤어의 좌표 계산
-        //int32 ViewportSizeX, ViewportSizeY;
-        //PlayerController->GetViewportSize(ViewportSizeX, ViewportSizeY);
-        //FVector2D CrosshairPosition(ViewportSizeX * 0.5f, ViewportSizeY * 0.5f); // 화면의 중앙 지점 좌표
+       
 
         FVector2D CrosshairPosition;
         if (OwnerCharacter->GetWorld()->GetGameViewport())

@@ -37,17 +37,17 @@ public:
 		virtual void OnBeginEquip() {};
 	UFUNCTION()
 		virtual void OnUnEquip() {};
-public:
-	virtual void DestroyWeapon() {};
 
-public:  
+	virtual void DestroyWeapon() {};
+  
 	// 콜리젼 관련 
 	UFUNCTION()  virtual void OnAttachmentBeginCollision() {};
 	UFUNCTION()  virtual void OnAttachmentEndCollision() {};
 	UFUNCTION()  virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, AActor* InAttackerCauser, class ACharacter* InOther) {};
 	UFUNCTION()  virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class ACharacter* InOther) {};
 
-
+	UFUNCTION()
+		virtual void OnMontageInterrupted();
 
 
 
@@ -62,6 +62,8 @@ protected:
 		class UCStateComponent* StateComponent;
 	UPROPERTY()
 		class UCStatusComponent* StatusComponent;
+	UPROPERTY()
+		class UCMontageComponent* MontageComponent;
 	UPROPERTY()
 		class UWorld* World;
 

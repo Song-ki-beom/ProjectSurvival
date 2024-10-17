@@ -43,7 +43,7 @@ private:
 	void SelectX();
 	void SelectC();
 
-	// DoAction + Harvest
+	// DoAction 
 	void DoAction();
 	void SubActionPressed();
 	void SubActionReleased();

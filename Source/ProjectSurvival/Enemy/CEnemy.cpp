@@ -562,10 +562,15 @@ void ACEnemy::ApplyHitData()
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();
 
-				if (hitCnt >= MaxhitCnt || GetDistanceTo(targetActor) > 1200.0f)
+				if (hitCnt >= MaxhitCnt || (AIController->GetTarget() == nullptr&&GetDistanceTo(targetActor) > 1200.0f))
 				{
+					
 					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
-					if (this->HasAuthority()) AIController->ChangeTarget(targetActor); //타겟 변경 
+					if (this->HasAuthority())
+					{
+						AIController->StopMovement();
+						AIController->ChangeTarget(targetActor); //타겟 변경 
+					}
 					//Look At
 					FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
 					LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);

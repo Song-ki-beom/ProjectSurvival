@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ActorComponents/CAmmoComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "Animation/CBowAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "ActorComponents/CStateComponent.h"
@@ -29,6 +30,11 @@ void UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* I
 	AmmoComponent = Cast<UCAmmoComponent>(InOwner->GetComponentByClass(UCAmmoComponent::StaticClass()));
 	SpringArm = Cast<USpringArmComponent>(InOwner->GetComponentByClass(USpringArmComponent::StaticClass()));
 	Camera = Cast<UCameraComponent>(InOwner->GetComponentByClass(UCameraComponent::StaticClass()));		
+	MontageComponent = Cast<UCMontageComponent>(InOwner->GetComponentByClass(UCMontageComponent::StaticClass()));
+	if (MontageComponent)
+	{
+		MontageComponent->OnMontageFinalEnded.AddDynamic(this, &UCSubAction_Bow::OnMontageEnded);
+	}
 
 	OwnerCharacter = InOwner;
 
@@ -51,6 +57,13 @@ void  UCSubAction_Bow::Tick_Implementation(float InDeltaTime)
 	Timeline.TickTimeline(InDeltaTime);
 }
 
+
+
+
+void UCSubAction_Bow::OnMontageEnded()
+{
+	//Released();
+}
 
 void UCSubAction_Bow::Pressed()
 {

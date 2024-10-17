@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "ActorComponents/CStateComponent.h"
 #include "ActorComponents/CMovingComponent.h"
+#include "ActorComponents/CMontageComponent.h"
 #include "ActorComponents/CStatusComponent.h"
 #include "Character/CSurvivorController.h"
 #include "Utility/CDebug.h"
@@ -29,6 +30,11 @@ void UCDoAction::BeginPlay
 	MovingComponent = Cast<UCMovingComponent>(OwnerCharacter->GetComponentByClass(UCMovingComponent::StaticClass()));
 	StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
 	StatusComponent = Cast<UCStatusComponent>(OwnerCharacter->GetComponentByClass(UCStatusComponent::StaticClass()));
+	MontageComponent = Cast<UCMontageComponent>(OwnerCharacter->GetComponentByClass(UCMontageComponent::StaticClass()));
+	if (MontageComponent)
+	{
+		MontageComponent->OnMontageInterrupted.AddDynamic(this, &UCDoAction::OnMontageInterrupted);
+	}
 }
 
 void UCDoAction::DoAction()
@@ -67,4 +73,9 @@ void UCDoAction::End_DoAction()
 	if (!DoActionDatas[ActionIdx].bCanMove)
 		MovingComponent->Move();
 	
+}
+
+void UCDoAction::OnMontageInterrupted()
+{
+	End_DoAction();
 }

@@ -35,7 +35,7 @@ EBTNodeResult::Type UCBTTaskNode_Approach::ExecuteTask(UBehaviorTreeComponent& O
 EBTNodeResult::Type UCBTTaskNode_Approach::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     Super::AbortTask(OwnerComp, NodeMemory);
-    //Enemy->End_DoAction();
+    controller->StopMovement();
     return EBTNodeResult::Failed;
 
 }
@@ -73,3 +73,7 @@ void UCBTTaskNode_Approach::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 
 
 }
+
+
+
+

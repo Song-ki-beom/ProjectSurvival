@@ -34,7 +34,10 @@ public:
 public:  
 	void  BeginPlay(class ACharacter* InOwner, class ACAttachment* InAttachment, class UCEquipment* InEquipment, class UCDoAction* InDoAction) override;
 	void  Tick_Implementation(float InDeltaTime) override;
-public: 
+
+	UFUNCTION()
+		virtual void OnMontageEnded();
+
 	void Pressed()    override;
 	void Released()   override;
 
@@ -45,6 +48,9 @@ private:
 		class UCameraComponent* Camera;
 	UPROPERTY()
 		class UCAmmoComponent* AmmoComponent;
+	UPROPERTY()
+		class UCMontageComponent* MontageComponent;
+
 	UPROPERTY()
 		class UCBowAnimInstance* AnimInstance_Bow;
 	UPROPERTY()
