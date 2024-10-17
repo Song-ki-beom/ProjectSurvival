@@ -558,7 +558,7 @@ void ACEnemy::ApplyHitData()
 			if (!StatusComponent->IsDead())
 			{
 				ChangeMeshColor(FLinearColor::Red); //Material Change 
-				GetWorld()->GetTimerManager().SetTimer(ResetColorTimerHandle, this, &ACEnemy::ResetColor, 0.7f, false);
+				GetWorld()->GetTimerManager().SetTimer(ResetColorTimerHandle, this, &ACEnemy::ResetColor, 0.5f, false);
 				FVector start = GetActorLocation();
 				UObject* FoundObject = NetDriver->GuidCache->GetObjectFromNetGUID(DamageData.CharacterID, true);
 				AActor* targetActor = HitData->FindActorByNetGUID(DamageData.CharacterID, GetWorld());

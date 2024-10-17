@@ -68,8 +68,10 @@ void FHitData::PlaySoundWave(ACharacter* InOwner)
 
 	UWorld* world = InOwner->GetWorld();
 	FVector location = InOwner->GetActorLocation();
-
-	UGameplayStatics::SpawnSoundAtLocation(world, Sound, location);
+	if(HitSoundAttenuation)
+		UGameplayStatics::SpawnSoundAtLocation(world, Sound, location, FRotator::ZeroRotator, 1.0f, 1.0f, 0.0f, HitSoundAttenuation);
+	else
+		UGameplayStatics::SpawnSoundAtLocation(world, Sound, location);
 
 }
 

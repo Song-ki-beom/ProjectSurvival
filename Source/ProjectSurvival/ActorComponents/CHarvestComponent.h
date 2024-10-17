@@ -38,16 +38,14 @@ private:
 	bool CheckIsDestructInstance(const FHitResult& Hit);
 	void SwitchFoligeToDestructible(const FString& hitIndex, float damageAmount, FTransform InSpawnTransform);
 	void AddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
-	/*UFUNCTION(Server, Reliable)
-		void RequestSwitchFoligeToDestructible(const FString& InHitIndex, float IndamageAmount, FTransform InSpawnTransform);*/
-	/*UFUNCTION(Server, Reliable)
-		void RequestRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);*/
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadCastRemoveFoliageInstance(UInstancedStaticMeshComponent* InInstanceToRemove, int32 InInstanceIndex);
 	UFUNCTION(Server, Reliable)
 		void RequestAddForceToDestructible(float IndamageAmount, class ACDestructibleActor* InDestructibleActor);
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastSwitchFoligeToDestructible(UDestructibleMesh* InDestructibleMesh, FTransform InstanceTransform, float InMaxDamageThreshold, int32 InDropItemRatio, float InDamageAmount);
+	UFUNCTION(NetMulticast, Reliable)
+		void BroadcastPlayHarvestEffect(const FHitResult HitResult);
 
 
 private:
@@ -63,8 +61,11 @@ private:
 		class  UInstancedStaticMeshComponent* InstanceToRemove;
 	
 	class UCGameInstance* GameInstance;
-	class ACharacter* OwnerCharacter;
-	class ACDestructibleActor* DestructibleActor;
-
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class ACDestructibleActor* DestructibleActor;
+	UPROPERTY(EditAnywhere)
+		class UParticleSystem* HarvestParticle;
 
 };

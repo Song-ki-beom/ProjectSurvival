@@ -187,6 +187,7 @@ void UCDoAction_Weapon::WeaponHitTrace()
 				{
 					if (survivor != nullptr && OwnerCharacter->HasAuthority())
 					{
+
 						EWeaponType CauserWeaponType =survivor->GetWeaponComponent()->GetWeaponType();
 						survivor->GetHarvestComponent()->ApplyHarvestEvent(hit, HarvestDamage, CauserWeaponType);
 					}

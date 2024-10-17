@@ -103,7 +103,8 @@ public:
 		FVector EffectLocation = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere)
 		FVector EffectScale = FVector::OneVector;
-
+	UPROPERTY(EditAnywhere)
+		class USoundAttenuation* HitSoundAttenuation;
 public:
 	void SendDamage(class ACharacter* InAttacker, AActor* InAttackCauser, class ACharacter* InOther);
 	void PlayMontage(class ACharacter* InOwner);
@@ -113,6 +114,7 @@ public:
 	AActor* FindActorByNetGUID(FNetworkGUID NetGUID, UWorld* World);
 
 public:
+	UPROPERTY()
 	TArray<APawn*> StopPawns;
 private:
 	FTimerHandle handle;

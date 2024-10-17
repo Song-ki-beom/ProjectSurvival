@@ -16,7 +16,7 @@
 #include "CGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-
+#include "Particles/ParticleSystem.h"
 
 UCHarvestComponent::UCHarvestComponent()
 {
@@ -95,6 +95,14 @@ void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAm
 			{
 				FinalDamageAmount *= 1.0f;
 			}
+			
+
+
+			//PlayChopEffect
+			if (OwnerCharacter->HasAuthority())
+				BroadcastPlayHarvestEffect(HitResult);
+
+
 			if (CheckIsFoliageInstance(HitResult))
 			{
 				
@@ -248,6 +256,19 @@ void UCHarvestComponent::AddForceToDestructible(float IndamageAmount , class ACD
 	}
 	DestructibleActor = nullptr;
 
+}
+
+void UCHarvestComponent::BroadcastPlayHarvestEffect_Implementation(const FHitResult HitResult)
+{
+	if (HarvestParticle == nullptr) return;
+	FVector hitLocation = HitResult.ImpactPoint; // 히트된 지점의 위치
+	UGameplayStatics::SpawnEmitterAtLocation(
+		OwnerCharacter->GetWorld(),
+		HarvestParticle,  
+		hitLocation,     
+		FRotator::ZeroRotator,
+		true           
+	);
 }
 
 void UCHarvestComponent::RequestAddForceToDestructible_Implementation(float IndamageAmount, class ACDestructibleActor* InDestructibleActor)
