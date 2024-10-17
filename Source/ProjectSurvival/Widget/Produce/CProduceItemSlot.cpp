@@ -2,6 +2,7 @@
 #include "Widget/Produce/CProduceWidget.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 bool UCProduceItemSlot::Initialize()
@@ -30,9 +31,11 @@ void UCProduceItemSlot::SetProduceSlotID(FName InID)
 void UCProduceItemSlot::ClickProduceSlotButton()
 {
 	UCProduceWidget* produceWidget = Cast<UCProduceWidget>(this->GetTypedOuter<UUserWidget>());
-	if (produceWidget)
+	if (produceWidget && ClickSound)
 	{
 		produceWidget->SetProduceDetail(ItemID, produceWidget->GetProducePanelSwitcherIndex(), produceWidget->GetWidgetCall());
+		
+		UGameplayStatics::PlaySound2D(this, ClickSound);
 	}
 	else
 	{

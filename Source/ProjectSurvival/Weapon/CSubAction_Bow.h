@@ -39,11 +39,16 @@ public:
 	void Released()   override;
 
 private:
-	class USpringArmComponent* SpringArm;
-	class UCameraComponent* Camera;
-	class UCAmmoComponent* AmmoComponent;
-	class UCBowAnimInstance* AnimInstance_Bow;
-	class ACMainHUD* MainHUD;
+	UPROPERTY()
+		class USpringArmComponent* SpringArm;
+	UPROPERTY()
+		class UCameraComponent* Camera;
+	UPROPERTY()
+		class UCAmmoComponent* AmmoComponent;
+	UPROPERTY()
+		class UCBowAnimInstance* AnimInstance_Bow;
+	UPROPERTY()
+		class ACMainHUD* MainHUD;
 private:
 	UPROPERTY(EditAnywhere, Category = "Aiming")
 		class UCurveVector* Curve;   
@@ -51,7 +56,8 @@ private:
 		FAimData  AimData;
 	UPROPERTY(EditAnywhere, Category = "Aiming")
 		float  AimingSpeed = 200.0f; 
-
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
 private: 
 	UFUNCTION()
 		void OnAiming(FVector Output);

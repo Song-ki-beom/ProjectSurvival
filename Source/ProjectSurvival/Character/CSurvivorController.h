@@ -94,6 +94,12 @@ private:
 
 	FTimerHandle UpdateListenerTransformHandle;
 
+	UPROPERTY(EditAnywhere)
+		class USoundWave* WorldMapOpenSound;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* WorldMapCloseSound;
+
 public:
 	// 서버 RPC 함수 테스트
 	UFUNCTION(Server, Reliable)

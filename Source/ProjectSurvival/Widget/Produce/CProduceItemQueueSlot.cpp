@@ -12,6 +12,7 @@
 #include "Components/Button.h"
 #include "Components/WrapBox.h"
 #include "Components/ProgressBar.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 bool UCProduceItemQueueSlot::Initialize()
@@ -555,6 +556,9 @@ void UCProduceItemQueueSlot::CancleProduce()
 	}
 	
 	RemoveProduceItemQueueSlotWidget();
+
+	if (CancleSound)
+		UGameplayStatics::PlaySound2D(this, CancleSound);
 
 	if (ProduceWidget)
 	{

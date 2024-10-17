@@ -19,6 +19,7 @@
 #include "Widget/CMainHUD.h"
 #include "Build/CStructure_Placeable.h"
 #include "CGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 void UCProduceWidget::NativeConstruct()
@@ -40,7 +41,7 @@ void UCProduceWidget::NativeConstruct()
 			SetProduceWindowName(FText::FromString(TEXT("제작 - 생존자")));
 			CreateBuildProduceItemSlot(1, 18);
 			CreateToolProduceItemSlot(1, 2);
-			CreateWeaponProduceItemSlot(3, 4);
+			CreateWeaponProduceItemSlot(3, 5);
 			IgniteButton->GetParent()->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
@@ -670,6 +671,8 @@ void UCProduceWidget::StartProduce()
 	if (ProduceQueue->GetChildrenCount() > 5)
 	{
 		// 대기열 가득참
+		if (CannotProduceSound)
+			UGameplayStatics::PlaySound2D(this, CannotProduceSound);
 		return;
 	}
 
@@ -767,6 +770,10 @@ void UCProduceWidget::AddProduceItemToQueue(FName InID)
 
 				ProduceQueue->AddChildToWrapBox(produceItemQueueSlot);
 				//produceItemQueueSlot->CheckWrapBox(ProduceQueue);
+
+				if (CanProduceSound)
+					UGameplayStatics::PlaySound2D(this, CanProduceSound);
+
 				CheckWrapBox(ProduceQueue);
 			}
 		}
@@ -825,6 +832,9 @@ void UCProduceWidget::ClickBuildStructureButton()
 	{
 		ProducePanelSwitcher->SetActiveWidgetIndex(0);
 		RefreshProduceDetail();
+
+		if (ClickSound)
+			UGameplayStatics::PlaySound2D(this, ClickSound);
 	}
 	else
 		CDebug::Print("ProducePanelSwitcher is not Valid");
@@ -838,6 +848,9 @@ void UCProduceWidget::ClickToolButton()
 	{
 		ProducePanelSwitcher->SetActiveWidgetIndex(1);
 		RefreshProduceDetail();
+
+		if (ClickSound)
+			UGameplayStatics::PlaySound2D(this, ClickSound);
 	}
 	else
 		CDebug::Print("ProducePanelSwitcher is not Valid");
@@ -851,6 +864,9 @@ void UCProduceWidget::ClickWeaponButton()
 	{
 		ProducePanelSwitcher->SetActiveWidgetIndex(2);
 		RefreshProduceDetail();
+
+		if (ClickSound)
+			UGameplayStatics::PlaySound2D(this, ClickSound);
 	}
 	else
 		CDebug::Print("ProducePanelSwitcher is not Valid");

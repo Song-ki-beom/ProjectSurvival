@@ -11,6 +11,7 @@
 #include "Widget/Inventory/CItemBase.h"
 #include "Widget/Inventory/CInventoryPanel_Placeable.h"
 #include "Build/CStructure_Placeable.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utility/CDebug.h"
 
 void UCProduceDetail::SetProduceDetailIcon(UTexture2D* InTexture2D)
@@ -169,8 +170,13 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 			CDebug::Print("produceWidget : is not valid", FColor::Magenta);
 		}
 	}
-	//else
-	//	CDebug::Print("Can't Produce");
+	else
+	{
+		if (CannotProduceSound)
+			UGameplayStatics::PlaySound2D(this, CannotProduceSound);
+
+		//CDebug::Print("Can't Produce");
+	}
 }
 
 void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeable* InOwner)
@@ -261,6 +267,11 @@ void UCProduceDetail::ProducePlaceableItem(FName InID, class ACStructure_Placeab
 				survivorController->RequestAddProduceItemToQueue(InID, InOwner);
 		}
 	}
-	//else
-	//	CDebug::Print("Can't Produce");
+	else
+	{
+		//CDebug::Print("Can't Produce");
+
+		if (CannotProduceSound)
+			UGameplayStatics::PlaySound2D(this, CannotProduceSound);
+	}
 }

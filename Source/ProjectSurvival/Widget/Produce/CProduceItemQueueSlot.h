@@ -64,4 +64,6 @@ private:
 		class ACStructure_Placeable* IgniteUsingPlaceable;
 	UPROPERTY()
 		class UCItemBase* ProduceTargetItem;
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CancleSound;
 };

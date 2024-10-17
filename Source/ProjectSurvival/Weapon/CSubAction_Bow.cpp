@@ -30,11 +30,7 @@ void UCSubAction_Bow::BeginPlay(class ACharacter* InOwner, class ACAttachment* I
 	SpringArm = Cast<USpringArmComponent>(InOwner->GetComponentByClass(USpringArmComponent::StaticClass()));
 	Camera = Cast<UCameraComponent>(InOwner->GetComponentByClass(UCameraComponent::StaticClass()));		
 
-	UCGameInstance* gameInstance = Cast<UCGameInstance>(InOwner->GetWorld()->GetGameInstance());
-	if (gameInstance)
-	{
-		MainHUD = Cast<ACMainHUD>(gameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
-	}
+	OwnerCharacter = InOwner;
 
 	FOnTimelineVector timeLine;
 	timeLine.BindUFunction(this, "OnAiming");
@@ -64,8 +60,13 @@ void UCSubAction_Bow::Pressed()
 	
 	Super::Pressed();
 	
-	if(MainHUD)
-		MainHUD->ShowCrossHair();
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(OwnerCharacter->GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(gameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+			mainHUD->ShowCrossHair();
+	}
 
 	State->OnSubActionMode();
 	{
@@ -100,8 +101,13 @@ void UCSubAction_Bow::Released()
 
 	Super::Released();
 
-	if (MainHUD)
-		MainHUD->HideCrossHair();
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(OwnerCharacter->GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		ACMainHUD* mainHUD = Cast<ACMainHUD>(gameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
+		if (mainHUD)
+			mainHUD->HideCrossHair();
+	}
 
 	State->OffSubActionMode();
 
