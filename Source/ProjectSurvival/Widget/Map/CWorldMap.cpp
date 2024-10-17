@@ -121,11 +121,7 @@ void UCWorldMap::CreateSurvivorLocationOnWorldMap(const FText& InText, uint32 Ne
 {
 	TWeakObjectPtr<UCPlayerLocation>* playerLocationPtr = PlayerLocationMap.Find(NetGUIDValue);
 
-	if (playerLocationPtr && playerLocationPtr->IsValid())
-	{
-
-	}
-	else
+	if (!(playerLocationPtr && playerLocationPtr->IsValid()))
 	{
 		if (PlayerLocationClass)
 		{

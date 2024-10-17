@@ -620,8 +620,8 @@ void ACSurvivor::RemoveCharacter()
 {
 	if (this->HasAuthority())
 		BroadcastRemoveSurvivor();
-	else
-		RequestRemoveSurvivor();
+	//else
+	//	RequestRemoveSurvivor();
 }
 
 void ACSurvivor::SetSurvivorNameVisibility()
