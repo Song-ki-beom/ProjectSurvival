@@ -18,11 +18,9 @@
 // Sets default values
 ACPickUp::ACPickUp()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
 	SetRootComponent(PickupMesh);
-	PickupMesh->SetSimulatePhysics(false);
+	//PickupMesh->SetSimulatePhysics(false);
 	PickupMesh->SetEnableGravity(true);
 	SetReplicates(true);
 
@@ -39,13 +37,6 @@ void ACPickUp::BeginPlay()
 	Super::BeginPlay();
 
 	InitializePickup(UCItemBase::StaticClass(), ItemQuantity);
-
-	if (this->HasAuthority())
-	{
-		GetWorld()->GetTimerManager().SetTimer(TransformTimerHandle, this, &ACPickUp::SetTransform, 0.05f, true);
-		if (!bTransformTimerUse)
-			GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
-	}
 }
 
 void ACPickUp::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -144,7 +135,7 @@ void ACPickUp::InitializePickup(const TSubclassOf<class UCItemBase> BaseClass, c
 			if (((ItemReference->ItemType != EItemType::Build) && (ItemReference->ItemType != EItemType::Container)))
 			{
 				PickupMesh->SetCollisionProfileName(FName("Item"));
-				PickupMesh->SetSimulatePhysics(true);
+				//PickupMesh->SetSimulatePhysics(false);
 			}
 			UpdateInteractableData();
 		}
@@ -166,29 +157,33 @@ void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity, int32 Remain
 
 void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
 {
-	ItemReference = ItemToDrop;
-	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
-	ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
-	ItemReference->Inventory = nullptr;
-	MeshToChange = ItemToDrop->AssetData.Mesh;
-	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
-	//DT_Items에 DropMesh가 있을 경우 DropMesh로 드롭, 없을 경우 Mesh로 드롭 (ex.) Build 아이템을 빌드 위젯으로 spawn하지 않고 메뉴에서 직접 Drop )
-	if (ItemToDrop->AssetData.DropMesh)
+	if (ItemToDrop)
 	{
-		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.DropMesh);
-		ItemReference->bIsDropMesh = true;
-		
-	}
-	else
+		ItemReference = ItemToDrop;
+		InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
+		ItemReference->NumericData.Weight = ItemToDrop->GetItemSingleWeight(); // UCItemBase에서 Item 무게 가져와 설정
+		ItemReference->Inventory = nullptr;
+		MeshToChange = ItemToDrop->AssetData.Mesh;
 		PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+		//DT_Items에 DropMesh가 있을 경우 DropMesh로 드롭, 없을 경우 Mesh로 드롭 (ex.) Build 아이템을 빌드 위젯으로 spawn하지 않고 메뉴에서 직접 Drop )
+		if (ItemToDrop->AssetData.DropMesh)
+		{
+			PickupMesh->SetStaticMesh(ItemToDrop->AssetData.DropMesh);
+			ItemReference->bIsDropMesh = true;
 
-	if (((ItemReference->ItemType != EItemType::Build)&&(ItemReference->ItemType != EItemType::Container)) || ItemReference->AssetData.DropMesh)
-	{
-		PickupMesh->SetCollisionProfileName(FName("Item"));
-		PickupMesh->SetSimulatePhysics(true);
+		}
+		else
+			PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
+
+		if (((ItemReference->ItemType != EItemType::Build) && (ItemReference->ItemType != EItemType::Container)) || ItemReference->AssetData.DropMesh)
+		{
+			PickupMesh->SetCollisionProfileName(FName("Item"));
+			PickupMesh->SetSimulatePhysics(true);
+		}
+
+		UpdateInteractableData();
+		ApplyTransformSync();
 	}
-
-	UpdateInteractableData();
 }
 
 void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity, int32 RemainDurability)
@@ -365,6 +360,19 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 		{
 			CDebug::Print("survivorController is not Valid", FColor::Red);
 		}
+	}
+}
+
+void ACPickUp::ApplyTransformSync()
+{
+	
+
+	if (this->HasAuthority())
+	{
+		PickupMesh->SetSimulatePhysics(true);
+		GetWorld()->GetTimerManager().SetTimer(TransformTimerHandle, this, &ACPickUp::SetTransform, 0.05f, true);
+		//if (!bTransformTimerUse)
+		//	GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
 	}
 }
 

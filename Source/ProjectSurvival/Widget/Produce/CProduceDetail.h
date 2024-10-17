@@ -36,4 +36,10 @@ private:
 		class UScrollBox* ProduceDetailRecipeScroll;
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* ProduceDetailFlavorText;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CanProduceSound;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CannotProduceSound;
 };

@@ -109,4 +109,14 @@ private:
 	FName SelectedConsumableID;
 
 	bool bIsIgniting = false;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* ClickSound;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CanProduceSound;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* CannotProduceSound;
+
 };

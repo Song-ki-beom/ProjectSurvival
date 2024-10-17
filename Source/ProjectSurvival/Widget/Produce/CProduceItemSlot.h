@@ -26,4 +26,7 @@ private:
 		class UButton* ProduceItemSlotButton;
 
 	FName ItemID;
+
+	UPROPERTY(EditAnywhere)
+		class USoundWave* ClickSound;
 };

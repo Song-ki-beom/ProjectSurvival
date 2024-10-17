@@ -30,6 +30,7 @@
 #include "Weapon/CDoAction.h"
 #include "Components/SizeBox.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ACSurvivorController::ACSurvivorController()
 {
@@ -469,9 +470,21 @@ void ACSurvivorController::ToggleWorldMap()
 		if (gameInstance->WorldMap && gameInstance->MiniMap)
 		{
 			if (gameInstance->WorldMap->GetVisibility() == ESlateVisibility::Hidden)
+			{
 				gameInstance->WorldMap->SetVisibility(ESlateVisibility::Visible);
+				if (WorldMapOpenSound)
+				{
+					UGameplayStatics::PlaySound2D(this, WorldMapOpenSound);
+				}
+			}
 			else
+			{
 				gameInstance->WorldMap->SetVisibility(ESlateVisibility::Hidden);
+				if (WorldMapCloseSound)
+				{
+					UGameplayStatics::PlaySound2D(this, WorldMapCloseSound);
+				}
+			}
 		
 			if (gameInstance->MiniMap->GetVisibility() == ESlateVisibility::Hidden)
 				gameInstance->MiniMap->SetVisibility(ESlateVisibility::Visible);

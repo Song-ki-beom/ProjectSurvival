@@ -95,7 +95,8 @@ void UCMontageComponent::BroadcastMontage_Play_Implementation(UAnimMontage* InMo
 // session
 void UCMontageComponent::Montage_Play(UAnimMontage* InMontage, float InPlayRate)
 {
-	MontageDelay= OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(InMontage, InPlayRate);
+	if (OwnerCharacter && InMontage)
+		MontageDelay= OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_Play(InMontage, InPlayRate);
 	//CDebug::Print("Montage Delay:", MontageDelay);
 }
 

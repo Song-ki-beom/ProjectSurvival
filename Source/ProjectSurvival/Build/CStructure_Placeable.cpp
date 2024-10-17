@@ -103,7 +103,7 @@ void ACStructure_Placeable::BeginPlay()
 					PlaceableProduceWidget->CreateBuildProduceItemSlot(1, 18);
 					PlaceableProduceWidget->CreateToolProduceItemSlot(1, 2);
 					PlaceableProduceWidget->CreateToolProduceItemSlot(6, 7);
-					PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 4);
+					PlaceableProduceWidget->CreateWeaponProduceItemSlot(3, 5);
 					PlaceableProduceWidget->CreateWeaponProduceItemSlot(8, 9);
 					PlaceableProduceWidget->SetButtonVisivility(ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Visible, ESlateVisibility::Collapsed);
 					break;

@@ -167,6 +167,12 @@ void ACSurvivor::BeginPlay()
 	Hands->SetMasterPoseComponent(GetMesh());
 
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
+	if (gameInstance)
+	{
+		//gameInstance->CreateMap();
+		//CDebug::Print("CreateMap Called", FColor::Magenta);
+	}
+
 	FText tempName = gameInstance->GetLobbySurvivorName();
 	FString stringName = tempName.ToString();
 	//CDebug::Print(stringName);
@@ -620,8 +626,7 @@ void ACSurvivor::RemoveCharacter()
 
 void ACSurvivor::SetSurvivorNameVisibility()
 {
-	// 게임 인스턴스 기반으로 고유한 서바이버 찾을때까지 반복
-
+	// 게임 인스턴스 기반으로 고유한 생존자 찾을때까지 반복
 	if (!PersonalSurvivor)
 	{
 		UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
@@ -631,14 +636,6 @@ void ACSurvivor::SetSurvivorNameVisibility()
 			{
 				if (NetDriver && NetDriver->GuidCache)
 				{
-					//UObject* foundObject = NetDriver->GuidCache->GetObjectFromNetGUID(gameInstance->WorldMap->GetPersonalGUID(), true);
-					//if (foundObject)
-					//{
-					//	ACSurvivor* survivor = Cast<ACSurvivor>(foundObject);
-					//	if (survivor)
-					//		PersonalSurvivor = survivor;
-					//}
-
 					PersonalSurvivor = gameInstance->WorldMap->GetPersonalSurvivor();
 				}
 			}
@@ -646,7 +643,7 @@ void ACSurvivor::SetSurvivorNameVisibility()
 	}
 	else
 	{
-		// 다른 서바이버 위치 검사
+		// 다른 생존자 위치 검사
 		for (TActorIterator<ACSurvivor> It(GetWorld()); It; ++It)
 		{
 			ACSurvivor* otherSurvivor = *It;
@@ -916,11 +913,18 @@ void ACSurvivor::BroadcastSetName_Implementation(const FText& InText, uint32 Net
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance)
 	{
-		gameInstance->WorldMap->CreateSurvivorLocationOnWorldMap(InText, NetGUIDValue);
+		if (gameInstance->WorldMap)
+		{
+			gameInstance->WorldMap->CreateSurvivorLocationOnWorldMap(InText, NetGUIDValue);
+		}
+		else
+		{
+			CDebug::Print("gameInstance->WorldMap is not valid - BroadcastSetName_Implementation");
+		}
 	}
 	else
 	{
-		CDebug::Print("gameInstance is not valid");
+		CDebug::Print("gameInstance is not valid - BroadcastSetName_Implementation");
 	}
 }
 
@@ -934,11 +938,18 @@ void ACSurvivor::BroadcastSetLocation_Implementation(float LocationX, float Loca
 	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetWorld()->GetGameInstance());
 	if (gameInstance)
 	{
-		gameInstance->WorldMap->RefreshSurvivorLocationOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
+		if (gameInstance->WorldMap)
+		{
+			gameInstance->WorldMap->RefreshSurvivorLocationOnWorldMap(LocationX, LocationY, RotationZ, NetGUIDValue);
+		}
+		else
+		{
+			CDebug::Print("gameInstance->WorldMap is not valid - BroadcastSetLocation_Implementation");
+		}
 	}
 	else
 	{
-		CDebug::Print("gameInstance is not valid");
+		CDebug::Print("gameInstance is not valid - BroadcastSetLocation_Implementation");
 	}
 }
 
