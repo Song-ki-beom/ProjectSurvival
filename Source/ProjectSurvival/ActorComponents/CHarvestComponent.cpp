@@ -127,7 +127,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 	{
 		InstanceIndex = Hit.Item;
 		FString debugText = TEXT("Hitted Polige Mesh Index") + FString::FromInt(InstanceIndex);
-		CDebug::Print(debugText);
+		//CDebug::Print(debugText);
 		InstanceToRemove->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
 		if (OwnerCharacter->HasAuthority())
 		{

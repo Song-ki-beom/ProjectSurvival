@@ -22,7 +22,7 @@ ACEnemy_Bear::ACEnemy_Bear() : ACEnemy()
 
 float ACEnemy_Bear::DoAction()
 {
-	if (HasAuthority())
+	if (HasAuthority() && GetGenericTeamId() != 1) // teamid 가 아군이 아닐때만 reduce
 	{
 		StatusComponent->ReduceHunger(20.0f);
 	}
@@ -48,7 +48,7 @@ void ACEnemy_Bear::End_DoAction()
 
 void ACEnemy_Bear::ApplyHitData()
 {
-	if (HasAuthority())
+	if (HasAuthority()&& GetGenericTeamId() != 1) // teamid 가 아군이 아닐때만 reduce
 	{
 		StatusComponent->ReduceHunger(10.0f);
 	}

@@ -161,7 +161,7 @@ void UCDoAction_Weapon::WeaponHitTrace()
 			collisionParams
 		);
 
-		DrawDebugBox(World, start, halfSize, rot, FColor::Red, false, 1.0f);
+		//DrawDebugBox(World, start, halfSize, rot, FColor::Red, false, 1.0f);
 
 		if (bHit)
 		{

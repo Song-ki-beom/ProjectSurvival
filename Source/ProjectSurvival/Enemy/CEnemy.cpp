@@ -51,13 +51,9 @@ ACEnemy::ACEnemy()
 		ItemDataTable = DataTableAsset.Object;
 	}
 
-	//AI 세팅
-	/*static ConstructorHelpers::FClassFinder<ACEnemyAIController> AIControllerFinder(TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/Character/Animal/Bear/BP_CEnemyAIController_Bear.BP_CEnemyAIController_Bear_C'"));*/
-	/*if (AIControllerFinder.Class != nullptr)
-	{*/
-		//AIControllerClass = AIControllerFinder.Class; //AIController 클래스 설정..이 클래스를 기반으로 게임 시작 시 자동설정
-		AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; //이 캐릭터가 스폰될때 AIController 에 의해 빙의됨 
-	//}
+	
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; //이 캐릭터가 스폰될때 AIController 에 의해 빙의됨 
+	
 
 	//Component Setting & Replicate
 	StatusComponent = CreateDefaultSubobject<UCStatusComponent>(TEXT("StatusComponent"));
@@ -123,12 +119,10 @@ ACEnemy::ACEnemy()
 	HPBarWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 25.0f));
 	HPBarWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 	HPBarWidgetComponent->SetDrawAtDesiredSize(true);
-	//HPBarWidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
 	HPBarWidgetComponent->SetWidgetClass(HPBarWidgetClass);
 	HPBarWidgetComponent->InitWidget();
 	HPBarWidgetComponent->SetVisibility(true);
-	//HPBarWidgetComponent->PrimaryComponentTick.bCanEverTick = true;
-	//HPBarWidgetComponent->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+	
 
 		//AI 피아식별 세팅
 	  // AIPerceptionStimuliSourceComponent 생성
@@ -667,7 +661,7 @@ void ACEnemy::OnBecameFriendlyHandler()
 			FCollisionShape::MakeSphere(SearchSphereRadius),
 			QueryParams
 		);
-		DrawDebugSphere(GetWorld(), TraceStart, SearchSphereRadius, 50, FColor::Green, false, 0.1f);
+		//DrawDebugSphere(GetWorld(), TraceStart, SearchSphereRadius, 50, FColor::Green, false, 0.1f);
 
 
 		if (bHit)
@@ -701,6 +695,7 @@ void ACEnemy::OnBecameFriendlyHandler()
 					APlayerController* PlayerController = Cast<APlayerController>(TargetPawn->GetController());
 					if (PlayerController)
 					{
+						StatusComponent->RecoverHunger(100.0f);
 						AIController->ChangeTarget(NULL);
 						SetGenericTeamId(FGenericTeamId(1));
 						AIController->ForceUpdatePerception();
@@ -729,8 +724,7 @@ void ACEnemy::RotateMeshToSlope(float InDeltaTime)
 	FVector Start = SlopeCheckArrow->GetComponentLocation();
 	FVector End = Start + (SlopeCheckArrow->GetUpVector() * (-500.0f));  //아래로 라인트레이스
 	FHitResult HitResult;
-	//FCollisionQueryParams TraceParams;
-	//TraceParams.
+	
 
 	FCollisionQueryParams TraceParams;
 	TraceParams.bTraceComplex = true;

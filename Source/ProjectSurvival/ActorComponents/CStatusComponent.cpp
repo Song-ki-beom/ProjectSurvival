@@ -66,11 +66,11 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 
 			// 5초가 지났을 때마다 Starvation데미지 적용
-			if (TimeSinceStarvation >= 5.0f)
+			if (TimeSinceStarvation >= 7.0f)
 			{
 				if (GetOwner()->HasAuthority())
 				{
-					ApplyDamage(7.0f);
+					ApplyDamage(5.0f);
 				}
 				TimeSinceStarvation = 0.0f;
 			}

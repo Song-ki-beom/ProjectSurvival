@@ -149,21 +149,6 @@ void ACEnemyAIController::RunAI()
         bIsBehaviorTreeInitialized = true;
     }
     
-        // Blackboard를 각 인스턴스마다 독립적으로 설정
-    //Blackboard = NewObject<UBlackboardComponent>(this);
-    //if (Blackboard && UseBlackboard(Enemy->GetBehaviorTree()->BlackboardAsset, Blackboard))
-    //{
-    //    // 동적으로 새로운 Behavior Tree 생성 및 할당
-    //    UBehaviorTreeComponent* NewBehaviorTreeComponent = NewObject<UBehaviorTreeComponent>(this);
-    //    NewBehaviorTreeComponent->StartTree(*Enemy->GetBehaviorTree(), EBTExecutionMode::Looped);
-    //    BehaviorTreeComp = NewBehaviorTreeComponent;
-    //    bIsBehaviorTreeInitialized = true; // 초기화 완료로 설정
-    //    UE_LOG(LogTemp, Log, TEXT("Behavior Tree and Blackboard successfully initialized."));
-    //}
-    //else
-    //{
-    //    UE_LOG(LogTemp, Error, TEXT("Failed to initialize Blackboard or run Behavior Tree."));
-    //}
 }
 
 void ACEnemyAIController::StopAI()
@@ -190,7 +175,7 @@ ETeamAttitude::Type ACEnemyAIController::GetTeamAttitudeTowards(const AActor& Ot
         
         if (OtherTeamId == MyTeamID)
         {
-            return ETeamAttitude::Friendly; //Friendly
+            return ETeamAttitude::Friendly; 
         }
         else if (OtherTeamId == FGenericTeamId(2))
         {
@@ -198,7 +183,7 @@ ETeamAttitude::Type ACEnemyAIController::GetTeamAttitudeTowards(const AActor& Ot
         }
         else
         {
-            return ETeamAttitude::Hostile; //Hostile
+            return ETeamAttitude::Hostile; 
         }
     }
 
