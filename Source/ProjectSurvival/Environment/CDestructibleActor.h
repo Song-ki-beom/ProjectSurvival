@@ -59,7 +59,7 @@ private:
 		class UDestructibleComponent* DestructibleComponent;
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRef_DestructibleMeshSet) 
 		class UDestructibleMesh* DestructibleMesh;
-	UPROPERTY(VisibleAnywhere ,Replicated, ReplicatedUsing = OnRep_AccumulateDamage)
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_AccumulateDamage)
 		float AccumulatedDamage=0.0f;
 	UPROPERTY(VisibleAnywhere,Replicated)
 		int32 EarnItemRatio;

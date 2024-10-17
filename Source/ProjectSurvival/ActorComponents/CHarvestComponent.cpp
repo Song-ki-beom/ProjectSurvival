@@ -77,23 +77,23 @@ void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAm
 			FString hitIndex = hitObjectName.Right(StringLength - StartIndex - 1);
 
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
-			//CDebug::Print(debugText, FColor::Blue);
+			CDebug::Print(debugText, FColor::Blue);
 
 			float FinalDamageAmount = InDamageAmount;
-			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "1"))
+			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "0"))
 			{
 				FinalDamageAmount *= 1.5f;
 			}
 			else if (CauserWeaponType == EWeaponType::StoneAxe || CauserWeaponType == EWeaponType::IronAxe)
 			{
-				if (hitIndex == "22" || hitIndex == "23" || hitIndex == "24")
+				if (hitIndex == "8" || hitIndex == "7" || hitIndex == "9")
 				{
 					FinalDamageAmount *= 1.4f;
 				}
 			}
 			else
 			{
-				FinalDamageAmount = 0.0f;
+				FinalDamageAmount *= 1.0f;
 			}
 			if (CheckIsFoliageInstance(HitResult))
 			{
@@ -119,7 +119,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 	{
 		InstanceIndex = Hit.Item;
 		FString debugText = TEXT("Hitted Polige Mesh Index") + FString::FromInt(InstanceIndex);
-		//CDebug::Print(debugText);
+		CDebug::Print(debugText);
 		InstanceToRemove->GetInstanceTransform(InstanceIndex, SpawnTransform, true);
 		if (OwnerCharacter->HasAuthority())
 		{
