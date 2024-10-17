@@ -125,7 +125,7 @@ void ACStructure_Door::CheckUp_DoorFrame()
 		upObjectTypeQuery,
 		false,
 		upBoxActorsToIgnore,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		upHitResult,
 		true,
 		FLinearColor::Green,

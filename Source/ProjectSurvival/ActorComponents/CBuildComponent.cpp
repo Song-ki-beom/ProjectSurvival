@@ -999,7 +999,7 @@ void UCBuildComponent::BuildStartDoor()
 
 		if (bIsSnapped)
 		{
-			CDebug::Print("DoorSnapped");
+			//CDebug::Print("DoorSnapped");
 			SpawnedDoor->CheckCenter();
 			if (!SpawnedDoor->GetDoorCenterHit())
 				bIsBuildable = (!SpawnedDoor->GetDoorCenterHit());
