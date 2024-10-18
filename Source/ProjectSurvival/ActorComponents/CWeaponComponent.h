@@ -100,7 +100,8 @@ public:
 	FWeaponTypeChanged  OnWeaponTypeChanged;
 
 private:  
-	class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
 	UPROPERTY(VisibleAnyWhere, Replicated , ReplicatedUsing = OnRef_PrevTypeChanged)
 	EWeaponType PrevType = EWeaponType::Max;
 	UPROPERTY(VisibleAnyWhere,Replicated , ReplicatedUsing = OnRef_TypeChanged)

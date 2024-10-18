@@ -64,9 +64,11 @@ protected:
 	FTimerHandle InteractAroundTimerHandle;
 
 private:
-	class ACharacter* OwnerCharacter;
 	UPROPERTY()
-	class ACMainHUD* HUD;
+		class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class ACMainHUD* HUD;
+
 	bool bIsLongPress;
 	bool bIsExtraOptionOn;
 };

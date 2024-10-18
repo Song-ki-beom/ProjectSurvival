@@ -74,8 +74,10 @@ public:
 		FArrow TempArrow;
 private:
 	UPROPERTY()
-	class ACharacter* OwnerCharacter;
-	class UCStateComponent* StateComponent;
+		class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class UCStateComponent* StateComponent;
+
 	TArray<FArrow> Arrows;
 	bool bArrowFullyCreated;
 	

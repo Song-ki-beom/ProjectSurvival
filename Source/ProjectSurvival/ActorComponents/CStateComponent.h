@@ -56,7 +56,9 @@ public:
     FStateTypeChanged OnStateTypeChanged;
 
 private:
-    class ACharacter* OwnerCharacter;
+    UPROPERTY()
+        class ACharacter* OwnerCharacter;
+
     EStateType  Type = EStateType::Idle;
     bool        bInSubActionMode = false;
 

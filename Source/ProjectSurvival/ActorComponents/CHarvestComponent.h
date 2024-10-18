@@ -59,8 +59,8 @@ private:
 		int32 InstanceIndex = NO_INDEX;
 	UPROPERTY(VisibleAnywhere, Replicated)
 		class  UInstancedStaticMeshComponent* InstanceToRemove;
-	
-	class UCGameInstance* GameInstance;
+	UPROPERTY()
+		class UCGameInstance* GameInstance;
 	UPROPERTY()
 		class ACharacter* OwnerCharacter;
 	UPROPERTY()

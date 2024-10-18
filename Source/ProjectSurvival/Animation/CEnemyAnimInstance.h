@@ -35,9 +35,12 @@ protected: // ABP에서 사용할 변수
 
 private:
 	
-	//참조용 
-	class ACharacter* OwnerCharacter;
-	class UCStateComponent* StateComponent;
+	//참조용
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class UCStateComponent* StateComponent;
+
 	bool bCastEnded = false; // OwnerCharacter 캐스트 되기 전 NativeUpdateAnimation 호출 방지 변수
 	FRotator PrevRotation;
 

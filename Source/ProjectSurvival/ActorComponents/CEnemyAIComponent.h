@@ -98,7 +98,8 @@ public:
 	FAIStateTypeChanged OnAIStateTypeChanged;
 	FAIReputationTypeChanged OnAIReputationTypeChanged;
 private:
-	class UBlackboardComponent* Blackboard; 
+	UPROPERTY()
+		class UBlackboardComponent* Blackboard; 
 
 public:
 	FORCEINLINE void SetBlackboard(class UBlackboardComponent* InBlackboard)

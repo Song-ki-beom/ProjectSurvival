@@ -101,8 +101,8 @@ public:
 	FTimerHandle HungerReductionTimerHandle;
 	FTimerHandle StarvationTimerHandle;
 	
-
-	class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
 
 protected:
 	//Health

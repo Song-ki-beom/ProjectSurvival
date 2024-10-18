@@ -49,8 +49,11 @@ protected: // ABP에서 사용할 변수
 	
 
 private:
-	class ACharacter* OwnerCharacter;
-	class UCWeaponComponent* Weapon;
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class UCWeaponComponent* Weapon;
+
 	bool bCastEnded = false; // OwnerCharacter 캐스트 되기 전 NativeUpdateAnimation 호출 방지 변수
 };
 
