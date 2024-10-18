@@ -364,20 +364,12 @@ void UCGameInstance::OnPreLoadMap(const FString& MapName)
 		FLoadingScreenAttributes LoadingScreen;
 		LoadingScreen.MoviePaths.Init("LoadingScreen", 3);
 		LoadingScreen.bAutoCompleteWhenLoadingCompletes = false;
-		//LoadingScreen.WidgetLoadingScreen = LoadingScreenWidget->TakeWidget();
-		//LoadingScreen.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
 		LoadingScreen.MinimumLoadingScreenDisplayTime = 3;
 		LoadingScreen.bMoviesAreSkippable = false;
 		LoadingScreen.bWaitForManualStop = false;
 		LoadingScreen.PlaybackType = EMoviePlaybackType::MT_LoadingLoop;
 		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	}
-
-	/*if (LoadingScreenWidget)
-	{
-		CDebug::Print(TEXT("OnPreLoadMap"));
-		LoadingScreenWidget->AddToViewport();
-	}*/
 
 }
 
@@ -386,11 +378,6 @@ void UCGameInstance::OnPostLoadMapWithWorld(UWorld* InLoadedWorld)
 
 	GetMoviePlayer()->StopMovie();
 
-	/*if (LoadingScreenWidget)
-	{
-		CDebug::Print(TEXT("OnPostLoadMapWithWorld"));
-		LoadingScreenWidget->RemoveFromViewport();
-	}*/
 }
 
 

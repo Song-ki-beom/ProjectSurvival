@@ -325,6 +325,12 @@ void ACEnemy::RequestDoAction_Implementation()
 	DoAction();
 }
 
+void ACEnemy::RequestMoveStop_Implementation()
+{
+	CDebug::Print("Request Move STOP");
+	AIController->StopMovement();
+}
+
 void ACEnemy::PerformDoAction(int32 InAttackIdx)
 {
 	AttackIdx = InAttackIdx;
@@ -457,6 +463,8 @@ void ACEnemy::BroadcastChangeMesh_Implementation()
 		bChangeMesh = true;
 }
 
+
+
 float ACEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser) 
 {
@@ -562,15 +570,29 @@ void ACEnemy::ApplyHitData()
 				FVector direction = target - start;
 				direction = direction.GetSafeNormal();
 
-				if (hitCnt >= MaxhitCnt || (AIController->GetTarget() == nullptr&&GetDistanceTo(targetActor) > 1200.0f))
+				if (hitCnt >= MaxhitCnt || (!bHasFirstHitted && GetDistanceTo(targetActor) > 1200.0f))
 				{
+					if(bHasFirstHitted)
+						MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
 					
-					MontageComponent->Montage_Play(HitData->Montage, HitData->PlayRate); //몽타주 재생 
+					if (!bHasFirstHitted)
+					{
+						bHasFirstHitted = true;
+					}
+
+					
+					
+					
 					if (this->HasAuthority())
 					{
 						AIController->StopMovement();
 						AIController->ChangeTarget(targetActor); //타겟 변경 
 					}
+					else
+					{
+						RequestMoveStop();
+					}
+					
 					//Look At
 					FRotator LookAtRotation = FRotationMatrix::MakeFromX(direction).Rotator();
 					LookAtRotation = FRotator(0.0f, LookAtRotation.Yaw, 0.0f);
@@ -580,7 +602,7 @@ void ACEnemy::ApplyHitData()
 				}
 				else
 				{
-					LaunchCharacter(-direction * HitData->Launch*(0.75f), false, false);
+					LaunchCharacter(-direction * HitData->Launch, false, false);
 				}
 		
 
