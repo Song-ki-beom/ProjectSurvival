@@ -77,7 +77,7 @@ void UCSubAction_Bow::Pressed()
 	if (gameInstance)
 	{
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(gameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
-		if (mainHUD)
+		if (OwnerCharacter->IsLocallyControlled())
 			mainHUD->ShowCrossHair();
 	}
 
@@ -118,7 +118,7 @@ void UCSubAction_Bow::Released()
 	if (gameInstance)
 	{
 		ACMainHUD* mainHUD = Cast<ACMainHUD>(gameInstance->WorldMap->GetPersonalSurvivorController()->GetHUD());
-		if (mainHUD)
+		if (OwnerCharacter->IsLocallyControlled())
 			mainHUD->HideCrossHair();
 	}
 
