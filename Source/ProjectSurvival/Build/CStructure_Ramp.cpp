@@ -33,7 +33,7 @@ void ACStructure_Ramp::CheckHeight()
 		objectTypeQuery,
 		false,
 		ignores,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		floorHitResult,
 		true,
 		FLinearColor::Yellow,

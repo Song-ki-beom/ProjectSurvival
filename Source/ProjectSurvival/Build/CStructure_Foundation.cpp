@@ -49,7 +49,7 @@ void ACStructure_Foundation::CheckHeight()
 		objectTypeQuery,
 		false,
 		ignores,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		floorHitResult,
 		true,
 		FLinearColor::Yellow,

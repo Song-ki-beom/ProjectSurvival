@@ -24,9 +24,11 @@ void UCInventorySubMenu::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
     {
         if (!IsHovered())
         {
+            if (!SlotReference)
+                return;
+
             OnFocusOnSubMenuEnded.Broadcast();
-            if (SlotReference)
-                SlotReference->ToggleTooltip();
+            SlotReference->ToggleTooltip();
 
            // NativeOnMouseEnter(Geometry, PointerEvent);
             return;
@@ -248,6 +250,9 @@ void UCInventorySubMenu::HandleOnRepairButtonClicked()
     UCInventoryPanel_Placeable* placeableInventoryPanel = Cast<UCInventoryPanel_Placeable>(SlotReference->GetParent()->GetTypedOuter<UUserWidget>());
     if (!placeableInventoryPanel)
     {
+        if (!SlotReference)
+            return;
+
         OnUseButtonClicked.Broadcast();
         OnFocusOnSubMenuEnded.Broadcast();
         SlotReference->ToggleTooltip();
@@ -268,6 +273,9 @@ void UCInventorySubMenu::HandleOnRepairButtonClicked()
     {
         if (SlotReference->GetItemReference()->ItemStats.RemainDurability == SlotReference->GetItemReference()->ItemStats.MaxDurability)
         {
+            if (!SlotReference)
+                return;
+
             OnUseButtonClicked.Broadcast();
             OnFocusOnSubMenuEnded.Broadcast();
             SlotReference->ToggleTooltip();
@@ -478,6 +486,9 @@ void UCInventorySubMenu::HandleOnFinalSplitButtonClicked()
 
         if (IsNumeric)
         {
+            if (!SlotReference)
+                return;
+
             // 숫자로 변환
             int32 InputNum = FCString::Atoi(*InputNumString);
             if (SlotReference->Split(InputNum))
@@ -504,6 +515,9 @@ void UCInventorySubMenu::HandleOnFinalSplitButtonClicked()
 
 void UCInventorySubMenu::HandleOnCancelButtonClicked()
 {
+    if (!SlotReference)
+        return;
+
     if (SelectedStructureKey != ESelectedStructure::None)
         SelectedStructureKey = ESelectedStructure::None;
 
@@ -515,6 +529,9 @@ void UCInventorySubMenu::HandleOnCancelButtonClicked()
 
 void UCInventorySubMenu::HandleBuildRegisterButton()
 {
+    if (!SlotReference)
+        return;
+
     if (SelectedStructureKey == ESelectedStructure::None)
         return;
 
@@ -525,7 +542,7 @@ void UCInventorySubMenu::HandleBuildRegisterButton()
     TSubclassOf<ACStructure> structureClass = structureInfo->StructureClass;
     EBuildStructureElement structureElem = structureInfo->StructureElement;
 
-    if (SurvivorController->GetBuildWidget())
+    if (SurvivorController->GetBuildWidget() && SlotReference)
     {
         SurvivorController->GetBuildWidget()->SaveStructureInfo(slotID, SelectedStructureKey, texture, structureClass, structureElem);
         SelectedStructureKey = ESelectedStructure::None;
@@ -663,6 +680,9 @@ int UCInventorySubMenu::CalculateRepairDemand(int32 ResourceDemand)
 
 void UCInventorySubMenu::Repair()
 {
+    if (!SlotReference)
+        return;
+
     int32 recipeNumber = RepairRecipeScroll->GetAllChildren().Num();
     int32 checkNumber = 0;
 

@@ -22,6 +22,8 @@ ACStructure_Door::ACStructure_Door()
 	PickupMesh->SetupAttachment(PivotArrow);
 	PickupMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
+	PreviewBox->SetupAttachment(PickupMesh);
+	PreviewBox->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	//DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
 	//DoorMesh->SetupAttachment(PivotArrow);
 	//DoorMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
@@ -134,7 +136,8 @@ void ACStructure_Door::CheckUp_DoorFrame()
 
 	if (bUp_DoorFrameHit)
 	{
-		this->SetActorLocation(upHitResult.GetComponent()->GetComponentLocation() + upHitResult.GetComponent()->GetForwardVector() * 15.0f + upHitResult.ImpactNormal * 120.0f);
+		TempRoot->SetWorldLocation(upHitResult.GetComponent()->GetComponentLocation() + upHitResult.GetComponent()->GetForwardVector() * 15.0f + upHitResult.ImpactNormal * 120.0f);
+		//this->SetActorLocation(upHitResult.GetComponent()->GetComponentLocation() + upHitResult.GetComponent()->GetForwardVector() * 15.0f + upHitResult.ImpactNormal * 120.0f);
 		CenterRotation = upHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
 	}
