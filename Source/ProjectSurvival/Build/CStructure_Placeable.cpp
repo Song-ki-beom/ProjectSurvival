@@ -75,9 +75,9 @@ void ACStructure_Placeable::BeginPlay()
 					case EPlaceableStructureType::CampFire:
 						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
 						break;
-					//case EPlaceableStructureType::BackPack:
-					//	PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 생존자 가방")));
-					//	break;
+					case EPlaceableStructureType::BackPack:
+						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 생존자 가방")));
+						break;
 					default:;
 					}
 				}

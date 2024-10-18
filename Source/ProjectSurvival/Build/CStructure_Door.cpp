@@ -111,7 +111,7 @@ void ACStructure_Door::CheckUp_DoorFrame()
 {
 	FHitResult upHitResult;
 	FVector upStartLocation = this->GetActorLocation();
-	FVector upEndLocation = this->GetActorLocation() + this->GetActorUpVector() * 250.0f;
+	FVector upEndLocation = this->GetActorLocation() + this->GetActorUpVector() * 300.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> upObjectTypeQuery;
 	upObjectTypeQuery.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel5));
 
@@ -134,7 +134,6 @@ void ACStructure_Door::CheckUp_DoorFrame()
 
 	if (bUp_DoorFrameHit)
 	{
-		CDebug::Print("Result : ", upHitResult.GetComponent());
 		this->SetActorLocation(upHitResult.GetComponent()->GetComponentLocation() + upHitResult.GetComponent()->GetForwardVector() * 15.0f + upHitResult.ImpactNormal * 120.0f);
 		CenterRotation = upHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);

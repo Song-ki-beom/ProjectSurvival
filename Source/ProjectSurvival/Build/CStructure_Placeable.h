@@ -158,7 +158,6 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastRepair(int32 ItemIdx, FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType);
 
-
 private:
 	int32 GetIndexOfNonFullStackByID(const FItemInformation InItemInformation);
 	bool CheckMaxStack(const FItemInformation InItemInformation, const int32 InIndex);
@@ -181,7 +180,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 		EPlaceableStructureType PlaceableStructureType;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 		EPlaceableStructureType BeforePlaceableStructureType;
 
 	UPROPERTY(EditAnywhere)
