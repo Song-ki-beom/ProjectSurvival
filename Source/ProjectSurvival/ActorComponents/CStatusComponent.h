@@ -107,7 +107,7 @@ public:
 protected:
 	//Health
 	UPROPERTY(EditAnywhere, Category = "Health")
-	float MaxHealth = 100.0f;
+		float MaxHealth = 100.0f;
 	float CurrentHealth = 0.0f;
 	int32 DamagedHealthCoef = 0;
 	bool bCoefChanged = false;
@@ -118,6 +118,7 @@ protected:
 	float CurrentHunger = 0.0f;
 	UPROPERTY(EditAnywhere, Category = "Hunger")
 		float HungerDecreaseAmount = 5.0f;
+	float TimeSinceStarvation = 0.0f;
 
 	//Stamina
 	UPROPERTY(EditAnywhere, Category = "Stamina")
@@ -135,13 +136,15 @@ protected:
 	float CurrentFriendship = 0.0f;
 	bool bIsFriendly = false;
 
+	
+	//DifficultyCoef<- 난이도 계수
+	float DifficultyCoef = 1.0f;
+
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMatineeCameraShake> StarveCameraShakeClass; //허기로 인한 Starve 이펙트 카메라 쉐이크 
 	
-	float TimeSinceStarvation = 0.0f;
-	//DifficultyCoef<- 난이도 계수
-	float DifficultyCoef = 1.0f;
+	
 
 	
 

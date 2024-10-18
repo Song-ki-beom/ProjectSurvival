@@ -48,7 +48,7 @@ bool UCBTD_IsFoodAround::CalculateRawConditionValue(UBehaviorTreeComponent& Owne
 		FCollisionShape::MakeSphere(SphereRadius),
 		QueryParams
 	);
-	DrawDebugSphere(GetWorld(), TraceStart, SphereRadius, 50, FColor::Green, false, 0.1f);
+	//DrawDebugSphere(GetWorld(), TraceStart, SphereRadius, 50, FColor::Green, false, 0.1f);
 
 	// 트레이스된 PickUp Actor들을 담을 TArray
 	TArray<ACPickUp*> PickUpsInSphere;

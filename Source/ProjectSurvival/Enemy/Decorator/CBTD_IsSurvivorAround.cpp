@@ -58,7 +58,7 @@ bool UCBTD_IsSurvivorAround::CalculateRawConditionValue(UBehaviorTreeComponent& 
 		FCollisionShape::MakeSphere(SearchSphereRadius),
 		QueryParams
 	);
-	DrawDebugSphere(GetWorld(), TraceStart, SearchSphereRadius, 50, FColor::Red, false, 0.1f);
+	//DrawDebugSphere(GetWorld(), TraceStart, SearchSphereRadius, 50, FColor::Red, false, 0.1f);
 
 
 	if (bHit)

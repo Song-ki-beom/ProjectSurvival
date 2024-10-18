@@ -48,6 +48,9 @@ public:
 	virtual void BroadcastDisableMesh();
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void BroadcastChangeMesh();
+	UFUNCTION(Server, Reliable)
+	virtual void RequestMoveStop();
+
 
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadcastUpdateHealthBar(FLinearColor InColor);
@@ -179,6 +182,7 @@ protected:
 	FTimerHandle DieTimerHandle;
 	int32 hitCnt = 0;
 	int32 MaxhitCnt = 3;
+	bool bHasFirstHitted = false;
 	//Material
 	FLinearColor OriginalMeshColor = FLinearColor::White;
 	FTimerHandle ResetColorTimerHandle;
