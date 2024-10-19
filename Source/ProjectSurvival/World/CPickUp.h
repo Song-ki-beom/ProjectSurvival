@@ -39,8 +39,8 @@ public:
 	void PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity);
 	
 	//Drop&PickUp 리플리케이트
-	UFUNCTION(Server, Reliable)
-	void RequestInitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability = -1);
+	/*UFUNCTION(Server, Reliable)
+	void RequestInitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability = -1);*/
 	UFUNCTION(NetMulticast, Reliable)
 	void BroadCastInitializeDrop(FName ItemID, const int32 InQuantity, int32 RemainDurability = -1);
 //	UFUNCTION(Server, Reliable)
@@ -78,9 +78,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "PickupInitialization")
 		int32 ItemQuantity;
-
-	//UPROPERTY(VisibleAnywhere)
-	//	class USceneComponent* RootComponent;
 
 	UPROPERTY(VisibleAnywhere)
 		class UArrowComponent* PivotArrow;

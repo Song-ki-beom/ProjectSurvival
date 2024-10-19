@@ -28,10 +28,10 @@ void UCLowHealthWidget::ShowLowHealthEffect()
 {
     if (LowHealthAnim)
     {
-        // 위젯을 보이게 설정
+      
         this->SetVisibility(ESlateVisibility::Visible);
 
-        // 애니메이션 재생
+      
         PlayAnimation(LowHealthAnim);
 
         GetWorld()->GetTimerManager().SetTimer(LowHealthTimerHandle, this, &UCLowHealthWidget::HideLowHealthEffect, 0.7f, false);

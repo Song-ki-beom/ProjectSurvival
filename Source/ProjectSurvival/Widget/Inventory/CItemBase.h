@@ -64,43 +64,26 @@ public:
 	UPROPERTY()
 		class UCInventoryComponent* Inventory; //참고할 인벤토리
 
-	//UPROPERTY(EditAnywhere, Category = "Item" , Replicated)
-	//int32 Quantity; //같은 아이템 항목에서 개수를 분리하는 등의 액션을 취하기 위해 따로 수량 변수 사용 (ex.) 나무 뗄감 x3 에서 한개 떼어서 버릴때)
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	FName ID;
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	EItemType ItemType;
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	FItemStats ItemStats;
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	FItemTextData TextData;
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	FItemNumericData NumericData;
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	FItemAssetData AssetData;
-	//UPROPERTY(EditAnywhere, Category = "Item", Replicated)
-	//	FBuildData BuildData;
-
 	UPROPERTY(EditAnywhere, Category = "Item")
-		int32 Quantity; //같은 아이템 항목에서 개수를 분리하는 등의 액션을 취하기 위해 따로 수량 변수 사용 (ex.) 나무 뗄감 x3 에서 한개 떼어서 버릴때)
+		int32 Quantity; //스택 수 같은 아이템 항목에서 개수를 분리하는 등의 액션을 취하기 위해 따로 수량 변수 사용 (ex.) 나무 뗄감 x3 에서 한개 떼어서 버릴때)
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FName ID;
+		FName ID; //데이터 테이블에서 아이템을 인식하는데 필요한 고유 식별 수단
 	UPROPERTY(EditAnywhere, Category = "Item")
-		EItemType ItemType;
+		EItemType ItemType; // 해당 아이템의 속성을 구분하는 Enum
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FItemStats ItemStats;
+		FItemStats ItemStats; // DamageValue, 내구도 등 아이템의 Status 관련 수치를 모아둔 Struct
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FItemTextData TextData;
+		FItemTextData TextData; // 툴팁이나 월드상에서의 상호작용 UI 에 표시할 FText 를 모아둔 Struct
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FItemNumericData NumericData;
+		FItemNumericData NumericData; // 무게 , 슬롯 당 스택 사이즈 등 인벤토리와의 상호작용할때 필요한 수치를 모아둔 Struct
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FItemAssetData AssetData;
+		FItemAssetData AssetData; // 슬롯 UI에 표시되는 아이콘 Texture, 월드 상에 보여지는 Mesh 를 모아둔 Struct
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FProduceWidgetData ProduceData;
+		FProduceWidgetData ProduceData; //아이템 제작에 필요한 정보를 모아둔 Struct 
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FBuildData BuildData;
+		FBuildData BuildData; // 건축물(Container) 빌드에 필요한 정보를 모아둔 Struct
 	UPROPERTY(EditAnywhere, Category = "Item")
-		FHuntData HuntData;
+		FHuntData HuntData; // ItemType 이 Hunt(무기)일 경우, 해당 무기의 WeaponType을 저장해둔 데이터 
 
 	bool bIsCopy;
 	bool bIsPickup;

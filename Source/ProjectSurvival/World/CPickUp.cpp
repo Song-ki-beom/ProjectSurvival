@@ -148,11 +148,7 @@ void ACPickUp::InitializeDrop(FName ItemID, const int32 InQuantity, int32 Remain
 	{
 		BroadCastInitializeDrop(ItemID, InQuantity, RemainDurability);
 	}
-	else
-	{
-		//CDebug::Print("RequestInitializeDrop Called");
-		RequestInitializeDrop(ItemID, InQuantity, RemainDurability);
-	}
+
 }
 
 void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuantity)
@@ -186,10 +182,10 @@ void ACPickUp::PerformInitializeDrop(UCItemBase* ItemToDrop, const int32 InQuant
 	}
 }
 
-void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity, int32 RemainDurability)
-{
-	InitializeDrop(ItemID, InQuantity, RemainDurability);
-}
+//void ACPickUp::RequestInitializeDrop_Implementation(FName ItemID, const int32 InQuantity, int32 RemainDurability)
+//{
+//	InitializeDrop(ItemID, InQuantity, RemainDurability);
+//}
 
 void ACPickUp::BroadCastInitializeDrop_Implementation(FName ItemID, const int32 InQuantity, int32 RemainDurability)
 {
@@ -302,7 +298,6 @@ void ACPickUp::Interact(ACSurvivor* PlayerCharacter, bool bIsLongPressed)
 
 void ACPickUp::TakePickup(const ACSurvivor* Taker)
 {
-	//CDebug::Print("TakePickup");
 
 	if (!IsPendingKillPending()) //픽업 아이템이 Destroy 되고 있는지 체크 
 	{
@@ -325,7 +320,7 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 					OnUpdatePartialAdded.Broadcast(ItemReference->Quantity);
 				}
 				UpdateInteractableData(); //PickUp 아이템 수량 조정 
-				Taker->GetInteractionComponent()->UpdateInteractionWidget(); //인벤 ui  업뎃
+				Taker->GetInteractionComponent()->UpdateInteractionWidget(); //인터렉션 ui  업뎃
 				break;
 			}
 			case EItemAddResult::AllItemAdded:
@@ -336,12 +331,12 @@ void ACPickUp::TakePickup(const ACSurvivor* Taker)
 				}
 				else
 				{
-					OnRequestDesroyCalled.Broadcast();//RequestDestroy() 호출을 클라이언트에서 하도록 델리게이트로 브로드캐스트 ;
+					OnRequestDesroyCalled.Broadcast();//RequestDestroy() 호출을 클라이언트에서 하도록 델리게이트로 브로드캐스트
 				}
 				break;
 			}
 			}
-			//CDebug::Print(AddResult.ResultMessage.ToString());
+			
 		}
 
 		ACSurvivorController* survivorController = Cast<ACSurvivorController>(Taker->GetController());
@@ -371,8 +366,6 @@ void ACPickUp::ApplyTransformSync()
 	{
 		PickupMesh->SetSimulatePhysics(true);
 		GetWorld()->GetTimerManager().SetTimer(TransformTimerHandle, this, &ACPickUp::SetTransform, 0.05f, true);
-		//if (!bTransformTimerUse)
-		//	GetWorld()->GetTimerManager().ClearTimer(TransformTimerHandle);
 	}
 }
 
@@ -390,7 +383,7 @@ void ACPickUp::DoBuildTypeInteract()
 
 void ACPickUp::SetTransform()
 {
-	//CDebug::Print("SetTransform Called", FColor::Blue);
+	
 	if (HasAuthority())
 	{
 		BroadcastSetTransform(this->GetActorTransform());
