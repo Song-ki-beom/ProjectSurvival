@@ -49,6 +49,7 @@ private:
 
 
 private:
+	class UCGameInstance* GameInstance;
 	UPROPERTY(VisibleAnywhere, Replicated)
 		FString HitIndex;
 	UPROPERTY(VisibleAnywhere, Replicated)
@@ -59,8 +60,6 @@ private:
 		int32 InstanceIndex = NO_INDEX;
 	UPROPERTY(VisibleAnywhere, Replicated)
 		class  UInstancedStaticMeshComponent* InstanceToRemove;
-	UPROPERTY()
-		class UCGameInstance* GameInstance;
 	UPROPERTY()
 		class ACharacter* OwnerCharacter;
 	UPROPERTY()

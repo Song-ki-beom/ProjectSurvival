@@ -136,7 +136,7 @@ void ACStructure_Foundation::CheckRight()
 
 	if (bRightHit)
 	{
-		DrawDebugLine(GetWorld(), rightHitResult.GetComponent()->GetComponentLocation(), rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), rightHitResult.GetComponent()->GetComponentLocation(), rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 171.0f);
 		CenterRotation = rightHitResult.ImpactNormal.GetSafeNormal().Rotation() + FRotator(0,90,0);
 		this->SetActorRotation(CenterRotation);
@@ -169,7 +169,7 @@ void ACStructure_Foundation::CheckLeft()
 
 	if (bLeftHit)
 	{
-		DrawDebugLine(GetWorld(), leftHitResult.GetComponent()->GetComponentLocation(), leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), leftHitResult.GetComponent()->GetComponentLocation(), leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 171.0f);
 		CenterRotation = leftHitResult.ImpactNormal.GetSafeNormal().Rotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
@@ -202,7 +202,7 @@ void ACStructure_Foundation::CheckBackward()
 
 	if (bBackwardHit)
 	{
-		DrawDebugLine(GetWorld(), backwardHitResult.GetComponent()->GetComponentLocation(), backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), backwardHitResult.GetComponent()->GetComponentLocation(), backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 171.0f);
 		CenterRotation = backwardHitResult.ImpactNormal.GetSafeNormal().Rotation();// +FRotator(0, 0, 0);
 		this->SetActorRotation(CenterRotation);
@@ -235,7 +235,7 @@ void ACStructure_Foundation::CheckForward()
 
 	if (bForwardHit)
 	{
-		DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		//DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 171.0f);
 		CenterRotation = forwardHitResult.ImpactNormal.GetSafeNormal().Rotation() + FRotator(0, 180, 0);
 		this->SetActorRotation(CenterRotation);

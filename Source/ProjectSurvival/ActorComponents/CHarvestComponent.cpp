@@ -77,7 +77,7 @@ void UCHarvestComponent::ApplyHarvestEvent(FHitResult HitResult,float InDamageAm
 			FString hitIndex = hitObjectName.Right(StringLength - StartIndex - 1);
 
 			FString debugText = TEXT("Hitted Polige Mesh Type ") + hitIndex;
-			CDebug::Print(debugText, FColor::Blue);
+			//CDebug::Print(debugText, FColor::Blue);
 
 			float FinalDamageAmount = InDamageAmount;
 			if ((CauserWeaponType == EWeaponType::IronPick || CauserWeaponType == EWeaponType::StonePick) && (hitIndex == "0"))
@@ -141,7 +141,7 @@ bool UCHarvestComponent::CheckIsFoliageInstance(const FHitResult& Hit)
 	}
 	else
 	{
-		CDebug::Print(TEXT("Cannot Convert to FOlige Mesh"));
+		//CDebug::Print(TEXT("Cannot Convert to FOlige Mesh"));
 	}
 	return false;
 

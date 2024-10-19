@@ -756,14 +756,14 @@ void ACEnemy::RotateMeshToSlope(float InDeltaTime)
 	FCollisionQueryParams TraceParams;
 	TraceParams.bTraceComplex = true;
 	TraceParams.AddIgnoredActor(this);
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 2.0f);
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1.0f, 0, 2.0f);
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, TraceParams))
 	{
 		FVector ImpactNormal = HitResult.ImpactNormal;
 		FVector ImpactStart = HitResult.ImpactPoint;
 		FVector ImpactEnd = ImpactStart + (ImpactNormal * 150.0f);
-		DrawDebugLine(GetWorld(), ImpactStart, ImpactEnd, FColor::Green, false, 1.0f, 0, 2.0f);
+		//DrawDebugLine(GetWorld(), ImpactStart, ImpactEnd, FColor::Green, false, 1.0f, 0, 2.0f);
 
 
 		//FRotator TargetRotator = FRotationMatrix::MakeFromZ(ImpactNormal).Rotator();

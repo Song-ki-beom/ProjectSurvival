@@ -75,7 +75,7 @@ void ACStructure_Ceiling::CheckForward_Wall()
 
 	if (bForward_WallHit)
 	{
-		//DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 130.0f + forwardHitResult.GetComponent()->GetUpVector() * 20.0f);
 		CenterRotation = forwardHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 180, 0);
 		this->SetActorRotation(CenterRotation);
@@ -110,7 +110,7 @@ void ACStructure_Ceiling::CheckBackward_Wall()
 
 	if (bBackward_WallHit)
 	{
-		//DrawDebugLine(GetWorld(), backwardHitResult.GetComponent()->GetComponentLocation(), backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), backwardHitResult.GetComponent()->GetComponentLocation(), backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(backwardHitResult.GetComponent()->GetComponentLocation() + backwardHitResult.ImpactNormal * 130.0f + backwardHitResult.GetComponent()->GetUpVector() * 20.0f);
 		CenterRotation = backwardHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 0, 0);
 		this->SetActorRotation(CenterRotation);
@@ -145,7 +145,7 @@ void ACStructure_Ceiling::CheckLeft_Wall()
 
 	if (bLeft_WallHit)
 	{
-		//DrawDebugLine(GetWorld(), leftHitResult.GetComponent()->GetComponentLocation(), leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), leftHitResult.GetComponent()->GetComponentLocation(), leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(leftHitResult.GetComponent()->GetComponentLocation() + leftHitResult.ImpactNormal * 130.0f + leftHitResult.GetComponent()->GetUpVector() * 20.0f);
 		CenterRotation = leftHitResult.GetComponent()->GetComponentRotation() + FRotator(0, 90, 0);
 		this->SetActorRotation(CenterRotation);
@@ -180,7 +180,7 @@ void ACStructure_Ceiling::CheckRight_Wall()
 
 	if (bRight_WallHit)
 	{
-		//DrawDebugLine(GetWorld(), rightHitResult.GetComponent()->GetComponentLocation(), rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), rightHitResult.GetComponent()->GetComponentLocation(), rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(rightHitResult.GetComponent()->GetComponentLocation() + rightHitResult.ImpactNormal * 130.0f + rightHitResult.GetComponent()->GetUpVector() * 20.0f);
 		CenterRotation = rightHitResult.GetComponent()->GetComponentRotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);

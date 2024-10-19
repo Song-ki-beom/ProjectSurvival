@@ -281,7 +281,7 @@ bool UCInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragD
 			}
 
 			FString EnumString = UEnum::GetValueAsString(DragDropResult);
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("DragDropResult: %s"), *EnumString));
+			//GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("DragDropResult: %s"), *EnumString));
 		}
 		
 		switch (DragDropResult)

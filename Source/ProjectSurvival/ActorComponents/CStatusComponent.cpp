@@ -44,8 +44,8 @@ void UCStatusComponent::BeginPlay()
 		
 		if (OwnerCharacter->Tags.Contains("Player"))
 		{
-			GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 4.0f, true); //4초마다 반복해서 실행 
-			GetWorld()->GetTimerManager().SetTimer(StaminaRecoverTimerHandle, this, &UCStatusComponent::RecoverStaminaByTime, 0.35f, true); //0.35초마다 반복해서 실행 
+			GetWorld()->GetTimerManager().SetTimer(HungerReductionTimerHandle, this, &UCStatusComponent::ReduceHungerByTime, 10.0f, true); //4초마다 반복해서 실행 
+			GetWorld()->GetTimerManager().SetTimer(StaminaRecoverTimerHandle, this, &UCStatusComponent::RecoverStaminaByTime, 0.25f, true); //0.35초마다 반복해서 실행 
 		}
 		
 	}
@@ -65,8 +65,8 @@ void UCStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 
 
-			// 7초가 지났을 때마다 Starvation데미지 적용
-			if (TimeSinceStarvation >= 7.0f)
+			// 8초가 지났을 때마다 Starvation데미지 적용
+			if (TimeSinceStarvation >= 8.0f)
 			{
 				if (GetOwner()->HasAuthority())
 				{

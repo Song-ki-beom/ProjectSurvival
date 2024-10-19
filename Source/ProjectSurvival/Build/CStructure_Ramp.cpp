@@ -118,7 +118,7 @@ void ACStructure_Ramp::CheckForward()
 
 	if (bForwardHit)
 	{
-		//DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
+		////DrawDebugLine(GetWorld(), forwardHitResult.GetComponent()->GetComponentLocation(), forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 300.0f, FColor::Blue);
 		this->SetActorLocation(forwardHitResult.GetComponent()->GetComponentLocation() + forwardHitResult.ImpactNormal * 171.0f);
 		CenterRotation = forwardHitResult.ImpactNormal.GetSafeNormal().Rotation() + FRotator(0, -90, 0);
 		this->SetActorRotation(CenterRotation);
