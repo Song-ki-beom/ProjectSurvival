@@ -180,7 +180,8 @@ protected:
 	TArray<TWeakObjectPtr<UCItemBase>> InventoryContents;
 	
 private:
-	class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
 	UPROPERTY(Replicated)
 		class ACMainHUD* HUD;
 };

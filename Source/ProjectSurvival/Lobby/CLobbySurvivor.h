@@ -200,13 +200,20 @@ private:
 	FVector OriginalSpringArmLocation;
 
 	// 커스터마이징 관련
-	class UDataTable* CustomizeHeadData;
-	class UDataTable* CustomizeHeadColorData;
-	class UDataTable* CustomizePantsData;
-	class UDataTable* CustomizePantsColorData;
-	class UDataTable* CustomizeBootsData;
-	class UDataTable* CustomizeSkinColorData;
-	class UDataTable* CustomizeSingleData;
+	UPROPERTY()
+		class UDataTable* CustomizeHeadData;
+	UPROPERTY()
+		class UDataTable* CustomizeHeadColorData;
+	UPROPERTY()
+		class UDataTable* CustomizePantsData;
+	UPROPERTY()
+		class UDataTable* CustomizePantsColorData;
+	UPROPERTY()
+		class UDataTable* CustomizeBootsData;
+	UPROPERTY()
+		class UDataTable* CustomizeSkinColorData;
+	UPROPERTY()
+		class UDataTable* CustomizeSingleData;
 
 	UPROPERTY()
 		int32 ValidHairRowNumber;
@@ -243,12 +250,18 @@ private:
 	UPROPERTY()
 		class USkeletalMeshComponent* Hands;
 
-	UMaterialInterface* MeshColorMaterial;
-	UMaterialInstanceDynamic* DynamicHeadMeshColorMaterial;
-	UMaterialInstanceDynamic* DynamicBootsMeshColorMaterial;
-	UMaterialInstanceDynamic* DynamicPantsMeshColorMaterial;
-	UMaterialInstanceDynamic* DynamicBodyMeshColorMaterial;
-	UMaterialInstanceDynamic* DynamicHandsMeshColorMaterial;
+	UPROPERTY()
+		UMaterialInterface* MeshColorMaterial;
+	UPROPERTY()
+		UMaterialInstanceDynamic* DynamicHeadMeshColorMaterial;
+	UPROPERTY()
+		UMaterialInstanceDynamic* DynamicBootsMeshColorMaterial;
+	UPROPERTY()
+		UMaterialInstanceDynamic* DynamicPantsMeshColorMaterial;
+	UPROPERTY()
+		UMaterialInstanceDynamic* DynamicBodyMeshColorMaterial;
+	UPROPERTY()
+		UMaterialInstanceDynamic* DynamicHandsMeshColorMaterial;
 
 	TArray<FName> CustomizeRowNames;
 

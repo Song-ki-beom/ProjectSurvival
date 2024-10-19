@@ -70,7 +70,8 @@ private:
 	void Jump();
 
 private:
-	class ACSurvivor* Survivor;
+	UPROPERTY()
+		class ACSurvivor* Survivor;
 	
 	FGenericTeamId TeamId;
 

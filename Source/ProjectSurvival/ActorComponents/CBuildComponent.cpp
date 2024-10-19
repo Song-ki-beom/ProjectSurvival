@@ -482,7 +482,7 @@ void UCBuildComponent::BuildStartFoundation()
 				tempObjectTypeQuery,
 				false,
 				tempActorsIgnore,
-				EDrawDebugTrace::Persistent,
+				EDrawDebugTrace::None,
 				tempHitResults,
 				true,
 				FLinearColor::Green,
@@ -562,7 +562,6 @@ void UCBuildComponent::BuildStartWall()
 				bIsBuildable = (!SpawnedWall->GetWallCenterHit());
 			else
 			{
-				// DownHit로 Foundation을 찾았지만 이미 다른구조물이나 무언가가있을때
 				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
 				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
@@ -589,7 +588,7 @@ void UCBuildComponent::BuildStartWall()
 				tempObjectTypeQuery,
 				false,
 				tempActorsIgnore,
-				EDrawDebugTrace::Persistent,
+				EDrawDebugTrace::None,
 				tempHitResults,
 				true,
 				FLinearColor::Green,
@@ -910,7 +909,6 @@ void UCBuildComponent::BuildStartDoorFrame()
 				bIsBuildable = (!SpawnedDoorFrame->GetDoorFrameCenterHit());
 			else
 			{
-				// DownHit로 Foundation을 찾았지만 이미 다른구조물이나 무언가가있을때
 				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
 				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
@@ -937,7 +935,7 @@ void UCBuildComponent::BuildStartDoorFrame()
 				tempObjectTypeQuery,
 				false,
 				tempActorsIgnore,
-				EDrawDebugTrace::Persistent,
+				EDrawDebugTrace::None,
 				tempHitResults,
 				true,
 				FLinearColor::Green,
@@ -999,13 +997,13 @@ void UCBuildComponent::BuildStartDoor()
 
 		if (bIsSnapped)
 		{
-			//CDebug::Print("DoorSnapped");
 			SpawnedDoor->CheckCenter();
 			if (!SpawnedDoor->GetDoorCenterHit())
+			{
 				bIsBuildable = (!SpawnedDoor->GetDoorCenterHit());
+			}
 			else
 			{
-				// DownHit로 Foundation을 찾았지만 이미 다른구조물이나 무언가가있을때
 				structureLocation.X = Survivor->GetActorLocation().X + Survivor->GetControlRotation().Vector().X * 500.0f;
 				structureLocation.Y = Survivor->GetActorLocation().Y + Survivor->GetControlRotation().Vector().Y * 500.0f;
 				structureLocation.Z = Survivor->GetActorLocation().Z + 100.0f;
@@ -1032,7 +1030,7 @@ void UCBuildComponent::BuildStartDoor()
 				tempObjectTypeQuery,
 				false,
 				tempActorsIgnore,
-				EDrawDebugTrace::Persistent,
+				EDrawDebugTrace::None,
 				tempHitResults,
 				true,
 				FLinearColor::Green,
@@ -1125,7 +1123,7 @@ void UCBuildComponent::BuildStartStair()
 				tempObjectTypeQuery,
 				false,
 				tempActorsIgnore,
-				EDrawDebugTrace::Persistent,
+				EDrawDebugTrace::None,
 				tempHitResults,
 				true,
 				FLinearColor::Green,

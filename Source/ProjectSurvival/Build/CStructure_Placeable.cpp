@@ -75,9 +75,9 @@ void ACStructure_Placeable::BeginPlay()
 					case EPlaceableStructureType::CampFire:
 						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 모닥불")));
 						break;
-					//case EPlaceableStructureType::BackPack:
-					//	PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 생존자 가방")));
-					//	break;
+					case EPlaceableStructureType::BackPack:
+						PlaceableWidget->SetInventoryWindowName(FText::FromString(TEXT("인벤토리 - 생존자 가방")));
+						break;
 					default:;
 					}
 				}
@@ -200,7 +200,7 @@ void ACStructure_Placeable::CheckHeight()
 		objectTypeQuery,
 		false,
 		ignores,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		floorHitResult,
 		true,
 		FLinearColor::Yellow,
@@ -247,7 +247,7 @@ void ACStructure_Placeable::CheckDown_FoundationAndCeiling()
 		objectTypeQuery,
 		false,
 		ignores,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		actorHitResult,
 		true,
 		FLinearColor::Yellow,

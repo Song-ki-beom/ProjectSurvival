@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -67,9 +67,10 @@ private:
 		void ExitGame();
 
 private:
-	class ACLobbySurvivor* LobbySurvivor;
-	class ACLobbySurvivorController* SurvivorController;
-
+	UPROPERTY()
+		class ACLobbySurvivor* LobbySurvivor;
+	UPROPERTY()
+		class ACLobbySurvivorController* SurvivorController;
 	UPROPERTY(meta = (BindWidget))
 		class UButton* HairLeftButton;
 	UPROPERTY(meta = (BindWidget))

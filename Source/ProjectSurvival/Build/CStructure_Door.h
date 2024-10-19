@@ -32,6 +32,7 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 		void BroadcastCloseDoor();
 
+	class USceneComponent* GetDoorRootComponent() { return TempRoot; }
 private:
 	bool bCenterHit;
 	bool bUp_DoorFrameHit;

@@ -75,7 +75,9 @@ public:
 	FORCEINLINE void DisableFixedCamera() { bFixedCamera = false; }
 
 private:
-	class ACharacter* OwnerCharacter;
+	UPROPERTY()
+		class ACharacter* OwnerCharacter;
+
 	float TargetSpeed = Speed[(int32)ESpeedType::Run]; //목표로 설정한 Max Walk Speed;
 	float SpeedInterpRate = 5.0f; //속도변환 보간 Speed;
 };

@@ -26,7 +26,8 @@ private:
 		void ChangeSurvivorNameColor(const FLinearColor& InLinearColor);
 
 private:
-	class ACSurvivorController* SurvivorController;
+	UPROPERTY()
+		class ACSurvivorController* SurvivorController;
 
 	UPROPERTY(meta = (BindWidget))
 		class UScrollBox* MessageScrollBox;

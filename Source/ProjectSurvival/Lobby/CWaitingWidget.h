@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -26,9 +26,10 @@ public:
 	void UpdateClientDifficulty();
 
 private:
-	class ACLobbySurvivor* LobbySurvivor;
-	class ACLobbyGameMode* LobbyGameMode;
-
+	UPROPERTY()
+		class ACLobbySurvivor* LobbySurvivor;
+	UPROPERTY()
+		class ACLobbyGameMode* LobbyGameMode;
 	UPROPERTY(meta = (BindWidget))
 		class UCDifficultyWidget* DifficultyWidget;
 

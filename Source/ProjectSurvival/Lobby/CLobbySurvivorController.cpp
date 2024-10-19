@@ -1,4 +1,4 @@
-﻿#include "Lobby/CLobbySurvivorController.h"
+#include "Lobby/CLobbySurvivorController.h"
 #include "Lobby/CCustomizeWidget.h"
 #include "Lobby/CWaitingWidget.h"
 #include "Lobby/CSurvivorName.h"
@@ -46,14 +46,17 @@ void ACLobbySurvivorController::GetCustomizeInfo()
 
 void ACLobbySurvivorController::LoadWaitingWidget()
 {
-	WaitingWidget = CreateWidget<UCWaitingWidget>(this, WaitingClass);
-	if (IsValid(WaitingWidget))
+	if (WaitingClass)
 	{
-		WaitingWidget->SetUpWidget();
-		WaitingWidget->SetVisibility(ESlateVisibility::Collapsed);
+		WaitingWidget = CreateWidget<UCWaitingWidget>(this, WaitingClass);
+		if (IsValid(WaitingWidget))
+		{
+			WaitingWidget->SetUpWidget();
+			WaitingWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else
+			UE_LOG(LogTemp, Warning, TEXT("WaitingWidget is not valid"));
 	}
-	else
-		UE_LOG(LogTemp, Warning, TEXT("WaitingWidget is not valid"));
 }
 
 void ACLobbySurvivorController::SetVisibleWaitingWidget()

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -88,6 +88,7 @@ private:
 		TSubclassOf<class UUserWidget> ServerRowClass;
 
 	ICLobbyInterface* LobbyInterface;
+
 	TOptional<uint32> SelectedIndex;
 };
 

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
@@ -42,7 +42,7 @@ private:
 		TSubclassOf<class UUserWidget> WaitingClass;
 	UPROPERTY()
 		class UCWaitingWidget* WaitingWidget;
-
-	class ACLobbySurvivor* LobbySurvivor;
+	UPROPERTY()
+		class ACLobbySurvivor* LobbySurvivor;
 };
 

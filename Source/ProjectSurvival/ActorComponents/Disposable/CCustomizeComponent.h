@@ -47,18 +47,28 @@ private:
 		void OnRep_ReplicatedSkinColorName();
 		void UpdateSkinColor();
 private:
-	AActor* ComponentOwner;
-	class ACSurvivor* Survivor;
+	UPROPERTY()
+		AActor* ComponentOwner;
+	UPROPERTY()
+		class ACSurvivor* Survivor;
+
 	TArray<FName> CustomizeRowNames;
 
 	// 커스터마이징 관련
-	class UDataTable* CustomizeHeadData;
-	class UDataTable* CustomizeHeadColorData;
-	class UDataTable* CustomizePantsData;
-	class UDataTable* CustomizePantsColorData;
-	class UDataTable* CustomizeBootsData;
-	class UDataTable* CustomizeSkinColorData;
-	class UDataTable* CustomizeSingleData;
+	UPROPERTY()
+		class UDataTable* CustomizeHeadData;
+	UPROPERTY()
+		class UDataTable* CustomizeHeadColorData;
+	UPROPERTY()
+		class UDataTable* CustomizePantsData;
+	UPROPERTY()
+		class UDataTable* CustomizePantsColorData;
+	UPROPERTY()
+		class UDataTable* CustomizeBootsData;
+	UPROPERTY()
+		class UDataTable* CustomizeSkinColorData;
+	UPROPERTY()
+		class UDataTable* CustomizeSingleData;
 
 	UPROPERTY(ReplicatedUsing = OnRep_ReplicatedHeadName)
 		FName ReplicatedHeadName;
