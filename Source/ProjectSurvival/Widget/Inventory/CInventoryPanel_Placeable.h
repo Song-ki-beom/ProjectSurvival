@@ -61,6 +61,6 @@ private:
 		TSubclassOf<class UCInventoryItemSlot> InventorySlotClass;
 	UPROPERTY()
 		TArray<UCItemBase*> WidgetItems;
-
-	class ACStructure_Placeable* OwnerActor;
+	UPROPERTY()
+		class ACStructure_Placeable* OwnerActor;
 };

@@ -58,7 +58,8 @@ private:
         float LifeSpanAfterCollision = 1.0f;
 
 private:
-    TArray<AActor*> Ignores;
+    UPROPERTY()
+        TArray<AActor*> Ignores;
     bool bIsShooting;
     FVector ForwardVector;
 public:

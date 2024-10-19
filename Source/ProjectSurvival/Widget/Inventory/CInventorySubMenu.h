@@ -151,9 +151,13 @@ public:
 		class UButton* RepairCancleButton;
 	
 private:
-	TArray<UButton*> BuildButtons;
-	class ACSurvivorController* SurvivorController;
-	class UDataTable* BuildStructureData;
+	UPROPERTY()
+		TArray<UButton*> BuildButtons;
+	UPROPERTY()
+		class ACSurvivorController* SurvivorController;
+	UPROPERTY()
+		class UDataTable* BuildStructureData;
+
 	ESelectedStructure SelectedStructureKey = ESelectedStructure::None;
 	EItemType TextItemType;
 	bool bBeforeHideActionButton = false;

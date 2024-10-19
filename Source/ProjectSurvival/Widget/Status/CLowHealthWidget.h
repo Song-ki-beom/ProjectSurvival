@@ -27,6 +27,8 @@ public:
 		UWidgetAnimation* LowHealthAnim;
 
 private:
-	class UCStatusComponent* StatusComponent;
+	UPROPERTY()
+		class UCStatusComponent* StatusComponent;
+
 	FTimerHandle LowHealthTimerHandle;
 };

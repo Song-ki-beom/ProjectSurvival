@@ -39,7 +39,9 @@ private:
 		class UProgressBar* WeightBar;
 
 private:
-	class UCStatusComponent* StatusComponent;
-	class UCInventoryComponent* InventoryComponent;
+	UPROPERTY()
+		class UCStatusComponent* StatusComponent;
+	UPROPERTY()
+		class UCInventoryComponent* InventoryComponent;
 
 };

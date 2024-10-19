@@ -145,7 +145,7 @@ void UCProduceDetail::ProduceSurvivorItem(FName InID)
 							}
 							else
 							{
-								CDebug::Print("ID not match", FColor::Magenta);
+								//CDebug::Print("ID not match", FColor::Magenta);
 							}
 						}
 						else

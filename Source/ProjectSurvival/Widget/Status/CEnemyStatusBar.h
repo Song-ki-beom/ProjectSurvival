@@ -45,7 +45,8 @@ private:
 		void OnBecameFriendlyHandler();
 
 private:
-	class ACharacter*  OwnerEnemyCharacter;
+	UPROPERTY()
+		class ACharacter*  OwnerEnemyCharacter;
 	UPROPERTY(meta = (BindWidget))
 		class UProgressBar* HealthBar;
 	UPROPERTY(meta = (BindWidget))
@@ -61,6 +62,7 @@ private:
 
 
 private:
-	class UCStatusComponent* StatusComponent;
+	UPROPERTY()
+		class UCStatusComponent* StatusComponent;
 
 };

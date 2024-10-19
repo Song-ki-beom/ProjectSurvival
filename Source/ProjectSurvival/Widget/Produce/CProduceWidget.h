@@ -97,10 +97,12 @@ private:
 
 	EWidgetCall WidgetCall;
 
-	class ACStructure_Placeable* OwnerActor;
-
-	class ACSurvivor* Survivor;
-	class UCInventoryComponent* InventoryComponent;
+	UPROPERTY()
+		class ACStructure_Placeable* OwnerActor;
+	UPROPERTY()
+		class ACSurvivor* Survivor;
+	UPROPERTY()
+		class UCInventoryComponent* InventoryComponent;
 
 	FName SelectedBuildID;
 	FName SelectedToolID;

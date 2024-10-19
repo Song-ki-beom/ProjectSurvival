@@ -108,13 +108,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "HUD")
 	class ACMainHUD* HUDReference; //SubMenu를 표시할 HUD 
 
+	UPROPERTY()
 	class UCInventoryTooltip* ToolTip;
 
 
 private:
 	bool bIsTooltipToggled =false;
 	int32 UniqueItemIndexInWrapBox;
-	UUserWidget* OwnerWidget;
+
+	UPROPERTY()
+		UUserWidget* OwnerWidget;
 	EDragDropResult DragDropResult;
 	ERightClickStartWidget RightClickStartWidget = ERightClickStartWidget::None;
 };

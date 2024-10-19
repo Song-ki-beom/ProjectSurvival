@@ -54,8 +54,8 @@ private:
 		class UCBuildItemSlot* BuildItemSlotX;
 	UPROPERTY(meta = (BindWidget))
 		class UCBuildItemSlot* BuildItemSlotC;
-
-	TArray<UCBuildItemSlot*> BuildItemSlotArray;
+	UPROPERTY()
+		TArray<UCBuildItemSlot*> BuildItemSlotArray;
 
 	//UPROPERTY(meta = (BindWidget))
 	//	class UImage* StructureImageQ;

@@ -21,6 +21,6 @@ public:
 private:
 	UPROPERTY(meta = (BindWidget))
 		class UListView* EarnedItemList;
-
-	TMap<UObject*, FTimerHandle> ItemTimers;
+	UPROPERTY()
+		TMap<UObject*, FTimerHandle> ItemTimers;
 };
