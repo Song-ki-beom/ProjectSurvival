@@ -18,9 +18,13 @@ protected:
 	EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
-	class ACEnemyAIController* Controller;
-	class ACEnemy* Enemy;
-	class UCEnemyAIComponent* AIComponent;
-	class UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class ACEnemyAIController* Controller;
+	UPROPERTY()
+		class ACEnemy* Enemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class UCMovingComponent* MovingComponent;
 
 };

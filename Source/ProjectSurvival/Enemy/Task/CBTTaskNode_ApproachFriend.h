@@ -24,10 +24,14 @@ protected:
 		float AcceptanceDistance = 200;
 
 private:
-	class ACEnemyAIController* controller;
-	class  ACEnemy* Enemy;
-	class UCEnemyAIComponent* AIComponent;
-	class  UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class ACEnemyAIController* controller;
+	UPROPERTY()
+		class ACEnemy* Enemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class UCMovingComponent* MovingComponent;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")

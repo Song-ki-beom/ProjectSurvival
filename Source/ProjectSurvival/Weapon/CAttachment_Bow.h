@@ -19,8 +19,8 @@ protected:
 	void BeginPlay() override;
 public:
 	void Tick(float DeltaTime) override;
-	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-public:  //Component
+	
+public:  
 	UPROPERTY(VisibleAnywhere)
 		class USkeletalMeshComponent* SkeletalMesh;
 
@@ -36,7 +36,7 @@ public:
 	void OnUnEquip_Implementation()   override;
 
 public:
-	float* GetBend();
+		float* GetBend();
 private:
 	FVector2D OriginViewPitchRange;
 };

@@ -31,5 +31,6 @@ private:
 	float StoneHarvestDamage = 0.0f;
 	float WoodHarvestDamage = 0.0f;
 
-	class UBoxComponent* HitBox;
+	UPROPERTY()
+		class UBoxComponent* HitBox;
 };

@@ -210,23 +210,25 @@ void UCInteractionComponent::PerformInteractionCheck()
 		if (GetWorld()->SweepSingleByChannel(TraceHit, TraceStart, TraceEnd, BoxRotation, ECC_Visibility, FCollisionShape::MakeBox(BoxHalfSize), QueryParams))
 		{
 			//UInteractionInterface 를 상속받고 있는지 검출(상호작용 가능한 액터인지)
-			if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			if (TraceHit.GetActor())
 			{
-				
-
-				if (TraceHit.GetActor() != InteractionData.CurrentInteractable) 
+				if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 				{
-					HideHiddenMenu();
-					FoundInteractable(TraceHit.GetActor());
-					return;
-				}
 
-				if (TraceHit.GetActor() == InteractionData.CurrentInteractable) //최근에 감지한 액터면 
-				{
-					return;
+
+					if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
+					{
+						HideHiddenMenu();
+						FoundInteractable(TraceHit.GetActor());
+						return;
+					}
+
+					if (TraceHit.GetActor() == InteractionData.CurrentInteractable) //최근에 감지한 액터면 
+					{
+						return;
+					}
 				}
 			}
-
 
 		}
 

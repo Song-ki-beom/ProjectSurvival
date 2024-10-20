@@ -23,11 +23,16 @@ public:
 
 
 private:
-	class ACEnemyAIController* Controller;
-	class ACEnemy* Enemy;
-	class UCEnemyAIComponent* AIComponent;
-	class UCMovingComponent* MovingComponent;
-	class UCStateComponent* StateComponent;
+	UPROPERTY()
+		class ACEnemyAIController* Controller;
+	UPROPERTY()
+		class ACEnemy* Enemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class UCStateComponent* StateComponent;
 	int32 count;
 	FTimerHandle TimerHandle_RetriggerableDelay;
 

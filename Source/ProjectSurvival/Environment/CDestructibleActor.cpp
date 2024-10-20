@@ -40,7 +40,9 @@ void ACDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(ACDestructibleActor, EarnItemRatio);
 	DOREPLIFETIME(ACDestructibleActor, MaxDamageThreshold);
 	DOREPLIFETIME(ACDestructibleActor, DestructibleMesh);
+	DOREPLIFETIME(ACDestructibleActor, DestructibleComponent);
 
+	
 }
 
 void ACDestructibleActor::SetUp(FTransform InstanceTransform, FDestructibleStruct* DestructibleStruct)
@@ -97,6 +99,7 @@ void ACDestructibleActor::AccumulateDamage(float DamageAmount)
 
 void ACDestructibleActor::BroadcastAccumulateDamage_Implementation(float NewAccumulatedDamage)
 {
+	DestructibleComponent->SetEnableGravity(true);
 	this->GetDestructibleComponent()->ApplyRadiusDamage(NewAccumulatedDamage, GetActorLocation(), 1.0f, 1.0f, true);
 }
 

@@ -27,10 +27,12 @@ protected:
 
 
 public:
+	UFUNCTION()
+		class UUserWidget* GetInventoryPanel() { return WBP_InventoryPanel; }
+
+public:
 	UPROPERTY()
 		class ACSurvivor* PlayerCharacter;
-
-	class UUserWidget* GetInventoryPanel() { return WBP_InventoryPanel; }
 
 private:
 	UPROPERTY(meta = (BindWidget))

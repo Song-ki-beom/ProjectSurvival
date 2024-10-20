@@ -21,10 +21,14 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
-	FBlackboardKeySelector Target;       
-	class ACEnemyAIController* Controller;
-	class ACEnemy* Enemy;
-	class UCEnemyAIComponent* AIComponent;
-	class UCMovingComponent* MovingComponent;
+	FBlackboardKeySelector Target;   
+	UPROPERTY()
+		class ACEnemyAIController* Controller;
+	UPROPERTY()
+		class ACEnemy* Enemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class UCMovingComponent* MovingComponent;
 	
 };

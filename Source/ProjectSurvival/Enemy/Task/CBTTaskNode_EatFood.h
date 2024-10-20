@@ -28,11 +28,16 @@ protected:
 
 
 private:
-	class ACEnemyAIController* controller;
-	class  ACEnemy* Enemy;
-	class UCEnemyAIComponent* AIComponent;
-	class  UCMovingComponent* MovingComponent;
-	class UCMontageComponent* MontageComponent;
+	UPROPERTY()
+		class ACEnemyAIController* controller;
+	UPROPERTY()
+		class  ACEnemy* Enemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class  UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class UCMontageComponent* MontageComponent;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")

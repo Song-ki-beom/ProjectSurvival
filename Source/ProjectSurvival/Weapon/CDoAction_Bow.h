@@ -29,12 +29,16 @@ public:
 	void OnUnEquip()    override;
 
 private: 
-	class UPoseableMeshComponent* PoseableMesh; 
-	class USkeletalMeshComponent* SkeletalMesh;
-	class UCAmmoComponent* AmmoComponent;
+	UPROPERTY()
+		class UPoseableMeshComponent* PoseableMesh; 
+	UPROPERTY()
+		class USkeletalMeshComponent* SkeletalMesh;
+	UPROPERTY()
+		class UCAmmoComponent* AmmoComponent;
 public:
 	void End_BowString();   
-	class  UCBowAnimInstance* AnimInstance_Bow;
+	UPROPERTY()
+		class  UCBowAnimInstance* AnimInstance_Bow;
 private:
 	FVector OriginLocation;        
 	bool    bAttachedString = true; 

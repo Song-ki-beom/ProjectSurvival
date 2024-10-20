@@ -29,11 +29,17 @@ private:
 		FBlackboardKeySelector EncounterKey;
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 		FBlackboardKeySelector TargetKey;
-	class ACEnemyAIController* Controller;
-	class ACEnemy* OwnerEnemy;
-	class UCEnemyAIComponent* AIComponent;
-	class UCMovingComponent* MovingComponent;
-	class UCStateComponent* StateComponent;
+
+	UPROPERTY()
+		class ACEnemyAIController* Controller;
+	UPROPERTY()
+		class ACEnemy* OwnerEnemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class UCStateComponent* StateComponent;
 	//FTimerHandle TimerHandle_RetriggerableDelay;
 	FTimerHandle TimerHandle_AbortDelay;
 };

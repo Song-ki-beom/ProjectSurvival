@@ -34,10 +34,14 @@ protected:
 		float RunAwayAmount = 2000;
 
 private:
-	class ACEnemyAIController* controller;
-	class  ACEnemy* Enemy;
-	class UCEnemyAIComponent* AIComponent;
-	class  UCMovingComponent* MovingComponent;
+	UPROPERTY()
+		class ACEnemyAIController* controller;
+	UPROPERTY()
+		class  ACEnemy* Enemy;
+	UPROPERTY()
+		class UCEnemyAIComponent* AIComponent;
+	UPROPERTY()
+		class  UCMovingComponent* MovingComponent;
 
 
 
