@@ -398,46 +398,6 @@ void ACStructure_Placeable::SetRespawnLocationText(const FText& InText)
 
 void ACStructure_Placeable::PerformAddItem(FName InID, int32 InQuantity, FItemNumericData InNumericData, EItemType InItemType, FItemStats InItemStats, EWeaponType InWeaponType)
 {
-	//FItemInformation addedItemInfo;
-	//addedItemInfo.ItemID = InID;
-	//addedItemInfo.Quantity = InQuantity;
-	//addedItemInfo.NumericData = InNumericData;
-	//addedItemInfo.ItemType = InItemType;
-	//CDebug::Print("PerformAddItem Durability : ", InItemStats.RemainDurability);
-	//addedItemInfo.ItemStats = InItemStats;
-
-	//// 스택이 가능한 아이템인지 검사
-	//if (addedItemInfo.NumericData.bIsStackable)
-	//{
-	//	// 최대 스택이 아니면서 ID가 같은 인덱스를 반환, 못 찾을 경우 -1 반환
-	//	int32 resultIndex = GetIndexOfNonFullStackByID(addedItemInfo);
-	//	if (resultIndex == -1)
-	//		ItemInfoArray.Add(addedItemInfo);
-	//	else
-	//	{
-	//		// 더했을 때 최대 스택을 초과하는지 검사
-	//		if (CheckMaxStack(addedItemInfo, resultIndex))
-	//		{
-	//			int32 addQuantity = ItemInfoArray[resultIndex].NumericData.MaxStackSize - ItemInfoArray[resultIndex].Quantity;
-	//			ItemInfoArray[resultIndex].Quantity += addQuantity;
-
-	//			// 최대 스택만큼 더하고 남은 양만큼 다시 PerformAddItem 호출
-	//			PerformAddItem(addedItemInfo.ItemID, addedItemInfo.Quantity - addQuantity, addedItemInfo.NumericData, addedItemInfo.ItemType, addedItemInfo.ItemStats);
-	//		}
-	//		else
-	//			ItemInfoArray[resultIndex].Quantity += addedItemInfo.Quantity;
-	//	}
-	//}
-	//else
-	//	ItemInfoArray.Add(addedItemInfo);
-
-	//// TArray는 리플리케이트 되더라도 특정 인덱스의 내용물만 바꾸는 것으로는 리플리케이트 되지 않음
-	//// 새로 초기화 해주거나 행렬 원소 갯수가 변경되어야 리플리케이트가 적용됨
-	//SharedItemInfoArray = ItemInfoArray;
-	//// 클라이언트에서 AddItemInfoToWidget() 호출하기위한 OnRep_WidgetRefreshTrigger 트리거
-	//WidgetRefreshTrigger++;
-
-	//AddItemInfoToWidget();
 
 	FItemInformation addedItemInfo;
 	addedItemInfo.ItemID = InID;
@@ -482,11 +442,7 @@ void ACStructure_Placeable::BroadcastAddItem_Implementation(FName InID, int32 In
 
 void ACStructure_Placeable::PerformRemoveItem(int32 idxRemove)
 {
-	//ItemInfoArray.RemoveAt(idxRemove);
-	//SharedItemInfoArray = ItemInfoArray;
-	//AddItemInfoToWidget();
-	//WidgetRefreshTrigger++;
-
+	
 	ItemInfoArray.RemoveAt(idxRemove);
 	AddItemInfoToWidget();
 
@@ -504,11 +460,7 @@ void ACStructure_Placeable::BroadcastRemoveItem_Implementation(int32 idxRemove)
 
 void ACStructure_Placeable::PerformRemoveAmountOfItem(int32 idxRemove, int32 AmountToRemove)
 {
-	//ItemInfoArray[idxRemove].Quantity -= AmountToRemove;
-	//SharedItemInfoArray = ItemInfoArray;
-	//AddItemInfoToWidget();
-	//WidgetRefreshTrigger++;
-
+	
 	ItemInfoArray[idxRemove].Quantity -= AmountToRemove;
 	AddItemInfoToWidget();
 }
@@ -520,10 +472,6 @@ void ACStructure_Placeable::BroadcastRemoveAmountOfItem_Implementation(int32 idx
 
 void ACStructure_Placeable::PerformSwapItem(int32 idxBase, int32 idxDrag)
 {
-	//ItemInfoArray.Swap(idxBase, idxDrag);
-	//SharedItemInfoArray = ItemInfoArray;
-	//AddItemInfoToWidget();
-	//WidgetRefreshTrigger++;
 
 	ItemInfoArray.Swap(idxBase, idxDrag);
 	AddItemInfoToWidget();
@@ -536,26 +484,6 @@ void ACStructure_Placeable::BroadcastSwapItem_Implementation(int32 idxBase, int3
 
 void ACStructure_Placeable::PerformCombineItem(int32 idxBase, int32 idxDrag)
 {
-	//int32 AmountLeftToDistribute = ItemInfoArray[idxDrag].Quantity;
-	//const int32 AmountToMakeFullStack = ItemInfoArray[idxBase].NumericData.MaxStackSize - ItemInfoArray[idxBase].Quantity; //남은 수납가능 재고량 계산 
-	//if (AmountToMakeFullStack >= AmountLeftToDistribute) //재고량이 넘치면 다 넣고 드래그 아이템 삭제
-	//{
-	//	ItemInfoArray[idxBase].Quantity += AmountLeftToDistribute;
-	//	ItemInfoArray.RemoveAt(idxDrag);
-
-	//}
-	//else if (AmountToMakeFullStack < AmountLeftToDistribute) // 다 넣을수 없으면 일부만 넣기 
-	//{
-	//	//기존 인벤 아이템에 add
-	//	ItemInfoArray[idxBase].Quantity += AmountToMakeFullStack;
-
-	//	//넣은 개수만큼 기존의 빼오는 아이템 재고에 Subtract 
-	//	AmountLeftToDistribute -= AmountToMakeFullStack;
-	//	ItemInfoArray[idxDrag].Quantity = AmountLeftToDistribute;
-	//}
-	//SharedItemInfoArray = ItemInfoArray;
-	//AddItemInfoToWidget();
-	//WidgetRefreshTrigger++;
 
 	int32 AmountLeftToDistribute = ItemInfoArray[idxDrag].Quantity;
 	const int32 AmountToMakeFullStack = ItemInfoArray[idxBase].NumericData.MaxStackSize - ItemInfoArray[idxBase].Quantity; //남은 수납가능 재고량 계산 
@@ -585,23 +513,6 @@ void ACStructure_Placeable::BroadcastCombineItem_Implementation(int32 idxBase, i
 
 void ACStructure_Placeable::PerformSplitItem(int32 ItemIdx, int32 AmountToSplit)
 {
-	//FItemInformation addedItemInfo;
-	//addedItemInfo.ItemID = ItemInfoArray[ItemIdx].ItemID;
-	//addedItemInfo.Quantity = AmountToSplit;
-	//addedItemInfo.NumericData = ItemInfoArray[ItemIdx].NumericData;
-	//addedItemInfo.ItemType = ItemInfoArray[ItemIdx].ItemType;
-
-	//// 스택이 가능한 아이템인지 검사
-	//if (addedItemInfo.NumericData.bIsStackable)
-	//{
-
-	//	ItemInfoArray[ItemIdx].Quantity -= AmountToSplit;
-	//	ItemInfoArray.Add(addedItemInfo);
-	//	SharedItemInfoArray = ItemInfoArray;
-	//	AddItemInfoToWidget();
-	//	WidgetRefreshTrigger++;
-
-	//}
 
 	FItemInformation addedItemInfo;
 	addedItemInfo.ItemID = ItemInfoArray[ItemIdx].ItemID;
@@ -629,30 +540,7 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 	// 추가하기 전 UCItemBase 배열 초기화
 	ActorInventoryContents.Empty();
 
-	//// 리플리케이트된 FItemData의 배열 SharedItemInfoArray를 기반으로 UCItemBase 생성
-	//for (int32 tempIndex = 0; tempIndex < SharedItemInfoArray.Num(); tempIndex++)
-	//{
-	//	FName tempID = SharedItemInfoArray[tempIndex].ItemID;
-	//	FItemData* itemData = ItemDataTable->FindRow<FItemData>(tempID, TEXT(""));
-	//	if (itemData)
-	//	{
-	//		UCItemBase* ItemCopy = NewObject<UCItemBase>(StaticClass());
-	//		ItemCopy->ID = tempID;
-	//		ItemCopy->Quantity = SharedItemInfoArray[tempIndex].Quantity;
-	//		ItemCopy->ItemType = itemData->ItemType;
-	//		ItemCopy->TextData = itemData->TextData;
-	//		ItemCopy->ItemStats = SharedItemInfoArray[tempIndex].ItemStats;
-	//		ItemCopy->NumericData = itemData->NumericData;
-	//		ItemCopy->AssetData = itemData->AssetData;
-	//		ItemCopy->bIsCopy = true;
-
-	//		ActorInventoryContents.Add(ItemCopy);
-	//	}
-	//	else
-	//		CDebug::Print("Itemdata is not Valid", FColor::Magenta);
-	//}
-
-	// 리플리케이트된 FItemData의 배열 SharedItemInfoArray를 기반으로 UCItemBase 생성
+	// 리플리케이트된 FItemData의 배열 ItemInfoArray를 기반으로 UCItemBase 생성
 	for (int32 tempIndex = 0; tempIndex < ItemInfoArray.Num(); tempIndex++)
 	{
 		FName tempID = ItemInfoArray[tempIndex].ItemID;
@@ -700,10 +588,6 @@ void ACStructure_Placeable::AddItemInfoToWidget()
 	}
 }
 
-//void ACStructure_Placeable::OnRep_WidgetRefreshTrigger()
-//{
-//	AddItemInfoToWidget();
-//}
 
 void ACStructure_Placeable::BroadcastAddProduceItemToQueue_Implementation(FName ItemID, class ACStructure_Placeable* InPlaceable)
 {
@@ -935,15 +819,7 @@ void ACStructure_Placeable::CreatePlaceableRemainBag(class AActor* InDestroyedAc
 //타입 , 수량 순으로 정렬 
 void ACStructure_Placeable::PerformSortInfoWidget()
 {
-	//if (ItemInfoArray.Num() == 0) return;
-
-
-	////병합 정렬 사용 
-	//MergeSort(ItemInfoArray, 0, ItemInfoArray.Num() - 1);
-	//SharedItemInfoArray = ItemInfoArray;
-	//AddItemInfoToWidget();
-	//WidgetRefreshTrigger++;
-
+	
 	if (ItemInfoArray.Num() == 0) return;
 
 	//병합 정렬 사용 
@@ -1024,10 +900,3 @@ void ACStructure_Placeable::MergeSort(TArray<FItemInformation>& Array, int Left,
 	}
 }
 
-//void ACStructure_Placeable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-//
-//	//DOREPLIFETIME(ACStructure_Placeable, WidgetRefreshTrigger);
-//	//DOREPLIFETIME(ACStructure_Placeable, SharedItemInfoArray);
-//}

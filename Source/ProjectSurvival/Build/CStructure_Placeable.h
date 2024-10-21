@@ -198,17 +198,13 @@ protected:
 
 
 private:
-	//UPROPERTY()
-	//	class ACSurvivorController* PersonalSurvivorController;
 
 	UPROPERTY()
 		class UCInventoryPanel_Placeable* PlaceableWidget;
-	//UPROPERTY(ReplicatedUsing = OnRep_WidgetRefreshTrigger)
-	//	int32 WidgetRefreshTrigger;
+	
 	UPROPERTY()
 		TArray<UCItemBase*> ActorInventoryContents;
-	//UPROPERTY(Replicated)
-	//	TArray<FItemInformation> SharedItemInfoArray;
+	
 	UPROPERTY()
 		TArray<FItemInformation> ItemInfoArray;
 	UPROPERTY()

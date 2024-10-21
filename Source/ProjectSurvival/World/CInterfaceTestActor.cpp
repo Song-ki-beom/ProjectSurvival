@@ -39,9 +39,7 @@ void ACInterfaceTestActor::BeginFocus()
 		//깊이 버퍼에 메쉬를 등록 
 		Mesh->SetRenderCustomDepth(true);
 		Mesh->bRenderCustomDepth = true;
-		//Mesh->MarkRenderStateDirty();
 		Mesh->SetCustomDepthStencilValue(252);
-		//CDebug::Print("SetRenderCustomDepth True");
 
 	}
 
@@ -53,7 +51,6 @@ void ACInterfaceTestActor::EndFocus()
 	{
 		Mesh->SetRenderCustomDepth(false);
 		Mesh->SetCustomDepthStencilValue(0);
-		//CDebug::Print("SetRenderCustomDepth False");
 
 	}
 

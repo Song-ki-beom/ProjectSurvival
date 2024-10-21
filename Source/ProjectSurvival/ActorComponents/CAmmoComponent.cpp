@@ -185,8 +185,6 @@ void UCAmmoComponent::PerformShootArrow(FVector Start, FVector End)
         if (arrow == nullptr) return;
         FVector FireDirection = (TargetLocation - arrow->GetActorLocation()).GetSafeNormal();
 
-        // 화살의 방향을 회전하여 맞추기
-        //arrow->SetActorRotation(FireDirection.Rotation());
 
 
         arrow->OnHit.AddDynamic(this, &UCAmmoComponent::OnArrowHit);

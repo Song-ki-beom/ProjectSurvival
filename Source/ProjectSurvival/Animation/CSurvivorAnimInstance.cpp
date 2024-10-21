@@ -51,7 +51,7 @@ void UCSurvivorAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	float NewPitch = UKismetMathLibrary::FInterpTo(Pitch, OwnerCharacter->GetBaseAimRotation().Pitch, DeltaSeconds, 25);
 	if (!OwnerCharacter->IsLocallyControlled())
 	{
-		const FVector AimDirWS = OwnerCharacter->GetBaseAimRotation().Vector();
+		const FVector AimDirWS = OwnerCharacter->GetBaseAimRotation().Vector(); //월드 공간의 rotation
 		const FVector AimDirLS = OwnerCharacter->ActorToWorld().InverseTransformVectorNoScale(AimDirWS);//월드 공간->로컬 공간으로 변환..월드 좌표에서의 회전값과 로컬 좌표에서의 회전값이 다르게 해석되었기 때문임
 		const FRotator AimRotLS = AimDirLS.Rotation();
 		NewPitch = AimRotLS.Pitch;

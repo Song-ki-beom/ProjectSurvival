@@ -281,13 +281,10 @@ void UCWeaponComponent::Broadcast_Equip_Implementation(const FString& InName)
 
 void UCWeaponComponent::OnRef_PrevTypeChanged()
 {
-	//CDebug::Print(TEXT("OnPrevTypeChanged"));
 }
 
 void UCWeaponComponent::OnRef_TypeChanged()
 {
-	//CDebug::Print(FString("NewWeaponType : %d",(int32)Type));
-	//CDebug::Print(TEXT("OnTypeChanged"));
 	SetModeReplicate();
 }
 
