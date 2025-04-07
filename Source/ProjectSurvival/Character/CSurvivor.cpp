@@ -45,6 +45,7 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Hearing.h"
 #include "Enemy/CEnemy_Bear.h"
+#include "CTestActorForRep.h"
 #include "Struct/CItemDataStructures.h"
 
 ACSurvivor::ACSurvivor()
@@ -864,6 +865,67 @@ void ACSurvivor::SetWorldMapOpacity(float Value)
 	{
 		gameInstance->WorldMap->SetColorAndOpacity(FLinearColor(1, 1, 1, Value));
 	}
+}
+
+void ACSurvivor::GiveSignal_Implementation()
+{
+	UCGameInstance* gameInstance = Cast<UCGameInstance>(GetGameInstance());
+
+}
+
+void ACSurvivor::SpawnTestActor()
+{
+	
+	RequestSpawnTestActor(this->GetController());
+
+}
+
+
+
+void ACSurvivor::RequestSpawnTestActor_Implementation(AController* playercontroller)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr) return;
+
+	// 블루프린트 경로 (에디터에서 복사해서 사용 가능)
+	FString BlueprintPath = TEXT("Blueprint'/Game/PirateIsland/Include/Blueprints/BP_CTestActorForRep.BP_CTestActorForRep'");
+	UBlueprint* BlueprintAsset = Cast<UBlueprint>(StaticLoadObject(UBlueprint::StaticClass(), nullptr, *BlueprintPath));
+
+	if (BlueprintAsset == nullptr)
+	{
+		CDebug::Print("TestActor Asset Not Found");
+		return;
+	}
+
+	if (BlueprintAsset && BlueprintAsset->GeneratedClass)
+	{
+		UClass* SpawnClass = BlueprintAsset->GeneratedClass;
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		FVector SpawnLocation = GetActorLocation() + FVector(300.0f, 0.f, 50.0f); // 스폰 위치
+		FRotator SpawnRotation = FRotator::ZeroRotator;
+
+		// 스폰
+		ACTestActorForRep* SpawnedTestActor = World->SpawnActor<ACTestActorForRep>(SpawnClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+		if (IsValid(SpawnedTestActor))
+		{
+			CDebug::Print(TEXT("TestActor spawned successfully."));
+			if (GetOwner())
+			{
+				SpawnedTestActor->SetOwner(this);
+
+			}
+			//SpawnedTestActor->OnServerSetOwnwer(playercontroller);
+		}
+		else
+		{
+			CDebug::Print("Failed to spawn TestActor.");
+		}
+	}
+
 }
 
 void ACSurvivor::OnRep_ReplicatedSurvivorName()

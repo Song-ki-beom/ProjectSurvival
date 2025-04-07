@@ -34,6 +34,7 @@ void UCAmmoComponent::BeginPlay()
     OwnerCharacter = Cast<ACharacter>(GetOwner());
     if (OwnerCharacter)
         StateComponent = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
+
 }
 
 

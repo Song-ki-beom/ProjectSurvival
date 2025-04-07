@@ -101,6 +101,8 @@ void ACSurvivorController::SetupInputFunction()
 	if (IsValid(Survivor))
 	{
 		InputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACSurvivorController::TestInputKeyAction);
+		InputComponent->BindKey(EKeys::Y, IE_Pressed, this, &ACSurvivorController::TestInputKeyAction2);
+
 		InputComponent->BindKey(EKeys::LeftMouseButton, IE_Pressed, this, &ACSurvivorController::DoAction);
 		InputComponent->BindKey(EKeys::RightMouseButton, IE_Pressed, this, &ACSurvivorController::SubActionPressed);
 		InputComponent->BindKey(EKeys::RightMouseButton, IE_Released, this, &ACSurvivorController::SubActionReleased);
@@ -396,12 +398,24 @@ void ACSurvivorController::TestInputKeyAction()
 		//Survivor->SpawnBear();
 
 		//Survivor->GetWeaponComponent()->SetMode(EWeaponType::Bow);
-		Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronAxe);
+		//Survivor->GetWeaponComponent()->SetMode(EWeaponType::IronAxe);
+		
+		Survivor->SpawnTestActor();
+
 
 		//Survivor->HoldAxe();
 		//int32 durability = Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->GetItemReference()->ItemStats.RemainDurability--;
 
 		//Survivor->GetWeaponComponent()->GetUsingWeaponSlot()->SetRemainDurability(durability);
+	}
+}
+
+
+void ACSurvivorController::TestInputKeyAction2()
+{
+	if (Survivor)
+	{
+		Survivor->GiveSignal();
 	}
 }
 

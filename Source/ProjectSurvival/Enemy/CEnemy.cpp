@@ -381,7 +381,6 @@ void ACEnemy::AttackTraceHit()
 			UPrimitiveComponent* HitComponent = Hit.GetComponent();
 			if (HitComponent && HitComponent->IsA<USkeletalMeshComponent>()) //스켈레탈 메시가 검출되었는지
 			{
-				FActionDamageEvent e;
 				continue; // Skeletal Mesh는 무시
 			}
 			else if ((Hit.GetActor() != nullptr) && (HitCharacter = Cast<ACharacter>(Hit.GetActor()))) //Character 로 형변환 가능하면 적에게 데미지

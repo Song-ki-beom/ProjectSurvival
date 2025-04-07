@@ -102,7 +102,14 @@ public:
 		void RequestDoSpecialAction(ESpecialState SpecialState);
 
 	UFUNCTION()
-	void SpawnBear();
+		void SpawnBear();
+	UFUNCTION()
+		void SpawnTestActor();
+	UFUNCTION(Server,Reliable)
+		void GiveSignal();
+	UFUNCTION(Server, Reliable)
+		void RequestSpawnTestActor(class AController* playercontroller);
+
 
 private:
 	//Name  
@@ -217,8 +224,8 @@ private:
 
 	//Damage
 	UPROPERTY(EditAnywhere, Category = "HitData")
-	FDamageData DamageData;
-	FHitData* HitData;
+	FDamageData DamageData; // 값 타입일 때는 USTRUCT() 도 GC 대상에 포함됨
+	FHitData* HitData; // USTRUCT() 에 대한 RAW POINTER 는 GC 대상에 포함될 수 없으므로 UProperty() 기능을 사용할 수 없다.
 
 	//Special Action
 	UPROPERTY(EditAnywhere)
